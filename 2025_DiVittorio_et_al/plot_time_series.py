@@ -3,7 +3,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import sys
 
-sys.path.append('/home/ac.myint1/scripts')
+sys.path.append('./../scripts')
 from utility_plots import plot_colors, set_figure_options
 from utility_dataframes import clean_up_dataframe
 
@@ -76,7 +76,6 @@ for index, file in enumerate(files):
     y_mean = df.groupby('Year',as_index=False)['NPP (gC/m^2/s)'].mean()['NPP (gC/m^2/s)']
     y_Jan = df[df['Month'] == 1]['NPP (gC/m^2/s)']
     y_July = df[df['Month'] == 7]['NPP (gC/m^2/s)']
-    print(y_Jan)
 
     ax.plot(x,y_mean, label=plot_labels[index]+ ' (Annual mean)', color=plot_colors[index], linestyle='solid', linewidth=2)
     ax.plot(x,y_Jan, label=plot_labels[index] + ' (January)', color=plot_colors[index], linestyle='dotted', linewidth=2)

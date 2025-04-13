@@ -1,0 +1,50 @@
+[
+	{
+        "output_paths":["/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run"],
+        "extracted_output_file":"./../2025_DiVittorio_et_al/control_elm_h0_time_series.dat",
+        "output_file_name_substrings":["elm.h0"],
+        "start_year":2015,
+        "end_year":2100,
+        "variables":["DWT_CONV_CFLUX_GRC", "DWT_CONV_CFLUX_DRIBBLED", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX",
+        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS"],
+        "include_units_in_header":"True"
+    },
+    {
+        "output_paths":["/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run"],
+        "extracted_output_file":"./../2025_DiVittorio_et_al/control_eam_h0_time_series.dat",
+        "output_file_name_substrings":["eam.h0"],
+        "start_year":2015,
+        "end_year":2100,
+        "variables":["TREFHT", "PRECC"],
+        "include_units_in_header":"True"
+    },
+    {
+        "output_paths":["/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run/"],
+        "extracted_output_file":"./../2025_DiVittorio_et_al/full_feedback_elm_h0_time_series.dat",
+        "output_file_name_substrings":["elm.h0"],
+        "start_year":2015,
+        "end_year":2100,
+        "variables":["DWT_CONV_CFLUX_GRC", "DWT_CONV_CFLUX_DRIBBLED", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX",
+        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS"],
+        "include_units_in_header":"True"
+    },
+    {
+        "output_paths":["/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run/"],
+        "extracted_output_file":"./../2025_DiVittorio_et_al/full_feedback_eam_h0_time_series.dat",
+        "output_file_name_substrings":["eam.h0"],
+        "start_year":2015,
+        "end_year":2100,
+        "variables":["TREFHT", "PRECC"],
+        "include_units_in_header":"True"
+    },
+    {
+        "output_paths":["/lcrc/group/e3sm/ac.myint1/e3sm_scratch/20250401_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run"],
+        "extracted_output_file":"./../test/elm_h0_time_series.dat",
+        "output_file_name_substrings":["elm.h0"],
+        "start_year":2015,
+        "end_year":2100,
+        "variables":["DWT_CONV_CFLUX_GRC", "DWT_CONV_CFLUX_DRIBBLED", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX",
+        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS"],
+        "include_units_in_header":"True"
+    }
+]
