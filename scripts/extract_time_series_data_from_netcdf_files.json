@@ -15,7 +15,7 @@
         "output_file_name_substrings":["eam.h0"],
         "start_year":2015,
         "end_year":2100,
-        "variables":["TREFHT", "PRECC"],
+        "variables":["TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"],
         "include_units_in_header":"True"
     },
     {
@@ -34,7 +34,7 @@
         "output_file_name_substrings":["eam.h0"],
         "start_year":2015,
         "end_year":2100,
-        "variables":["TREFHT", "PRECC"],
+        "variables":["TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"],
         "include_units_in_header":"True"
     },
     {

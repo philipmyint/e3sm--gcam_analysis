@@ -1,0 +1,30 @@
+[
+	{
+        "output_files":["./../2025_DiVittorio_et_al/control_eam_h0_time_series.dat","./../2025_DiVittorio_et_al/full_feedback_eam_h0_time_series.dat"],
+        "plot_name":"./../2025_DiVittorio_et_al/time_series_TREFHT",
+        "plot_labels":["Control", "Full feedback"],
+        "plot_variables":["TREFHT (K)"],
+        "y_label":"Reference height temperature (K)",
+        "start_year":2015,
+        "end_year":2100,
+        "width":8.5,
+        "height":7,
+        "x_scale":"linear",
+        "y_scale":"linear",
+        "plot_Jan_July": "True"
+    },
+    {
+        "output_files":["./../2025_DiVittorio_et_al/control_eam_h0_time_series.dat","./../2025_DiVittorio_et_al/full_feedback_eam_h0_time_series.dat"],
+        "plot_name":"./../2025_DiVittorio_et_al/time_series_PRECIP",
+        "plot_labels":["Control", "Full feedback"],
+        "plot_variables":["PRECC (m/s)","PRECL (m/s)","PRECSC (m/s)","PRECSL (m/s)"],
+        "y_label":"Total precipitation (m/s)"
+    },
+    {
+        "output_files":["./../2025_DiVittorio_et_al/control_elm_h0_time_series.dat","./../2025_DiVittorio_et_al/full_feedback_elm_h0_time_series.dat"],
+        "plot_name":"./../2025_DiVittorio_et_al/time_series_NPP",
+        "plot_labels":["Control", "Full feedback"],
+        "plot_variables":["NPP (gC/m^2/s)"],
+        "y_label":"Net primary production (g C/m$^2$/s)"
+    }
+]
