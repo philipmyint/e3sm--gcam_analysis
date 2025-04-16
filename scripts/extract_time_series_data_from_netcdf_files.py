@@ -1,6 +1,5 @@
 import json
 import multiprocessing
-import os
 import pandas as pd
 import sys
 import time
@@ -32,9 +31,14 @@ def put_column_means_of_netcdf_file_into_dataframe(file, variables=None, include
         xrds = xrds[variables]
     df = xrds.to_dataframe()
 
+    if ('PBOT' in variables) and ('PCO2' in variables):
+        df['XCO2'] = df['PCO2']/df['PBOT']*1e6
+
     if include_units_in_header:
         units = [xrds[var].attrs['units'] for var in xrds.data_vars]
-        df.columns = add_lists_elementwise(xrds.data_vars, units, list2_are_units=True)
+        if ('PBOT' in variables) and ('PCO2' in variables):
+            units.append('ppm')
+        df.columns = add_lists_elementwise(df.columns, units, list2_are_units=True)
 
     df = df.mean().to_frame().T
 

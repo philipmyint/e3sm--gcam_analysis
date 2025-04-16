@@ -1,7 +1,5 @@
 import json
 from matplotlib import pyplot as plt
-import multiprocessing
-import numpy as np
 import pandas as pd
 import sys
 import time

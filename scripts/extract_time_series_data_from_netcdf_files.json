@@ -2,20 +2,22 @@
 	{
         "outputs_path":"/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
         "extracted_outputs_file":"./../2025_DiVittorio_et_al/control_time_series.dat",
-        "outputs_substrings":[["elm.h0"],["eam.h0"]],
+        "outputs_substrings":[["elm.h0"], ["eam.h0"]],
         "variables":[["DWT_CONV_CFLUX_GRC", "DWT_CONV_CFLUX_DRIBBLED", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX",
-        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS"],["TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"]],
-        "include_units_in_headers":[true,true],
+        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", "PBOT", "PCO2"],
+        ["TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"]],
+        "include_units_in_headers":[true, true],
         "start_year":2015,
         "end_year":2100
     },
     {
         "outputs_path":"/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
         "extracted_outputs_file":"./../2025_DiVittorio_et_al/full_feedback_time_series.dat",
-        "outputs_substrings":[["elm.h0"],["eam.h0"]],
+        "outputs_substrings":[["elm.h0"], ["eam.h0"]],
         "variables":[["DWT_CONV_CFLUX_GRC", "DWT_CONV_CFLUX_DRIBBLED", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX",
-        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS"],["TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"]],
-        "include_units_in_headers":[true,true],
+        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", "PBOT", "PCO2"], 
+        ["TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"]],
+        "include_units_in_headers":[true, true],
         "start_year":2015,
         "end_year":2100
     }

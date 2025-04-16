@@ -1,6 +1,6 @@
 [
 	{
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat","./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
+        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
         "plot_name":"./../2025_DiVittorio_et_al/time_series_TREFHT",
         "plot_labels":["Control", "Full feedback"],
         "plot_variables":["TREFHT (K)"],
@@ -14,7 +14,7 @@
         "plot_Jan_July":true
     },
     {
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat","./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
+        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
         "plot_name":"./../2025_DiVittorio_et_al/time_series_PRECIP",
         "plot_labels":["Control", "Full feedback"],
         "plot_variables":["PRECC (m/s)","PRECL (m/s)","PRECSC (m/s)","PRECSL (m/s)"],
@@ -22,10 +22,17 @@
         "plot_Jan_July":false
     },
     {
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat","./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
+        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
         "plot_name":"./../2025_DiVittorio_et_al/time_series_NPP",
         "plot_labels":["Control", "Full feedback"],
         "plot_variables":["NPP (gC/m^2/s)"],
         "y_label":"Net primary production (g C/m$^2$/s)"
+    },
+    {
+        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
+        "plot_name":"./../2025_DiVittorio_et_al/time_series_CO2",
+        "plot_labels":["Control", "Full feedback"],
+        "plot_variables":["XCO2 (ppm)"],
+        "y_label":"CO$_2$ concentration (ppm)"
     }
 ]
