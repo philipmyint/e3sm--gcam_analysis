@@ -1,14 +1,13 @@
 import os
 
-def get_all_files_in_paths(paths, file_name_substrings=None, file_extension=None):
+def get_all_files_in_path(path, file_name_substrings=None, file_extension=None):
     file_paths = []
-    for path in paths:
-        for root, _, files in os.walk(path):
-            for file in files:
-                if not file_name_substrings or all([substring in file for substring in file_name_substrings]):
-                    if not file_extension or file.endswith(file_extension):
-                        file_path = os.path.join(root, file)
-                        file_paths.append(file_path)
+    for root, _, files in os.walk(path):
+        for file in files:
+            if not file_name_substrings or all([substring in file for substring in file_name_substrings]):
+                if not file_extension or file.endswith(file_extension):
+                    file_path = os.path.join(root, file)
+                    file_paths.append(file_path)
     return file_paths
 
 def add_lists_elementwise(list1, list2, list2_are_units=False):

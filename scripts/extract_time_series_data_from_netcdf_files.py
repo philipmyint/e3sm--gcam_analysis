@@ -5,10 +5,12 @@ import pandas as pd
 import sys
 import time
 import xarray as xr
-from utility_functions import add_lists_elementwise, get_all_files_in_paths
+from utility_functions import add_lists_elementwise, get_all_files_in_path
 from utility_dataframes import write_dataframe_to_fwf
 
 def extract_year_and_month_from_name_of_netcdf_file(file):
+
+    # Files are named *YYYY-MM.nc, so the year starts 7 characters before the .nc extension.
     index = file.find('.nc')
     index -= 7
     year = int(file[index:index+4])
@@ -43,23 +45,32 @@ def put_column_means_of_netcdf_file_into_dataframe(file, variables=None, include
     df['Month'] = month
     return df[column_names_with_year_and_month_first]
 
-def extract_time_series_data_from_netcdf_files(output_paths, extracted_output_file, output_file_name_substrings=None, 
-            start_year=2015, end_year=2100, variables=None, include_units_in_header=False):
+def extract_time_series_data_from_netcdf_files(outputs_path, extracted_outputs_file, outputs_substrings, 
+            variables, include_units_in_headers, start_year=2015, end_year=2100):
 
-    output_files = get_all_files_in_paths(output_paths, 
-                    file_name_substrings=output_file_name_substrings, file_extension='.nc')
-    output_files = get_netcdf_files_between_start_and_end_years(output_files, start_year, end_year)
+    all_dataframes = []
+    for index in range(len(outputs_substrings)):
+        output_files = get_all_files_in_path(outputs_path, 
+                            file_name_substrings=outputs_substrings[index], file_extension='.nc')
+        output_files = get_netcdf_files_between_start_and_end_years(output_files, start_year, end_year)
     
-    arguments = list(zip(output_files, [variables]*len(output_files), [include_units_in_header]*len(output_files)))
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
-        dataframes = list(pool.starmap(put_column_means_of_netcdf_file_into_dataframe, arguments))
+        arguments = list(zip(output_files, [variables[index]]*len(output_files), 
+                             [include_units_in_headers[index]]*len(output_files)))
+        with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+            dataframes_for_each_nc_file = list(pool.starmap(put_column_means_of_netcdf_file_into_dataframe, arguments))
+        
+        df = dataframes_for_each_nc_file[0]
+        for df_index in range(1, len(dataframes_for_each_nc_file)):
+            df = pd.concat([df, dataframes_for_each_nc_file[df_index]]).reset_index(drop=True)
+        df.sort_values(['Year', 'Month'], inplace=True)
     
-    df_merged = dataframes[0]
-    for df in dataframes[1:]:
-        df_merged = pd.concat([df_merged,df]).reset_index(drop=True)
-    df_merged.sort_values(['Year', 'Month'], inplace=True)
+        all_dataframes.append(df)
 
-    write_dataframe_to_fwf(extracted_output_file, df_merged)
+    df = all_dataframes[0]
+    for df_index in range(1, len(all_dataframes)):
+        df = pd.merge(df, all_dataframes[df_index], on=['Year', 'Month'], how='inner')
+
+    write_dataframe_to_fwf(extracted_outputs_file, df)
 
 if __name__ == '__main__':
 
@@ -76,4 +87,4 @@ if __name__ == '__main__':
         extract_time_series_data_from_netcdf_files(**inputs[job_index])
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"Elapsed time for {inputs[job_index]['extracted_output_file']}: {elapsed_time:.2f} seconds")
+        print(f"Elapsed time for {inputs[job_index]['extracted_outputs_file']}: {elapsed_time:.2f} seconds")
