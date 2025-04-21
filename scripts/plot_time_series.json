@@ -3,7 +3,7 @@
         "plot_names":["./../2025_DiVittorio_et_al/time_series_TREFHT", "./../2025_DiVittorio_et_al/time_series_PRECIP", 
         "./../2025_DiVittorio_et_al/time_series_NPP", "./../2025_DiVittorio_et_al/time_series_CO2"],
         "plot_variables":["TREFHT", "PRECIP", "NPP", "XCO2"],
-        "y_labels":["Reference height temperature (K)", "Total precipitation (m/s)", "Net primary production (g C/m$^2$/s)", "CO$_2$ concentration (ppm)"],
+        "y_labels":["Reference height temperature (K)", "Total precipitation (mm/month)", "Net primary production (Pg C/month)", "CO$_2$ concentration (ppm)"],
         "output_files":[["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"]],
         "plot_labels":[["Control", "Full feedback"]],
         "multipliers":[1],
