@@ -42,8 +42,7 @@ def write_dataframe_to_fwf(file_name, df, keep_index_column=False, width_index_c
         for line in fileinput.input(files=(file_name), inplace=True):
             sys.stdout.write(line[width_index_column:])
 
-def write_data_and_labels_to_fwf(file_name, data, column_labels, transpose_data=False, 
-                                 keep_index_column=False, print_to_console=False):
+def write_data_and_labels_to_fwf(file_name, data, column_labels, transpose_data=False, keep_index_column=False, print_to_console=False):
     """ 
     Stores the given data and column labels in a Pandas DataFrame and writes the contents of the DataFrame to an output file in fixed-width format.
 
@@ -158,4 +157,23 @@ def clean_up_dataframe(df, print_to_console=False):
     df.columns = columns_to_keep
     if print_to_console:
         print(f'The new columns of the modified DataFrame are:\n{df.columns}\n')
+    return df
+
+def move_columns_next_to_each_other_in_dataframe(df, column1, column2):
+    """
+    Rearranges a dataframe by moving column2 next to column1.
+
+    Parameters:
+        column1: Column next to which column2 will be moved. The order of all columns prior to column1 will be unaffected.
+        column2: Column to move next to column1.
+        df: Pandas DataFrame whose columns will be rearranged.
+
+    Returns:
+        A new dataframe with columns 1 and 2 moved next to each other.
+    """
+    index = df.columns.get_loc(column1)
+    new_columns = list(df.columns[:index]) + [column1, column2] + list(df.columns[index+1:])
+    df = df[new_columns]
+    # Remove the duplicate column2, keeping the first occurrence.
+    df = df.loc[:, ~df.columns.duplicated()]
     return df

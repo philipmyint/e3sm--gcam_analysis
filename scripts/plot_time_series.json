@@ -1,38 +1,18 @@
 [
 	{
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
-        "plot_name":"./../2025_DiVittorio_et_al/time_series_TREFHT",
-        "plot_labels":["Control", "Full feedback"],
-        "plot_variables":["TREFHT (K)"],
-        "y_label":"Reference height temperature (K)",
-        "start_year":2015,
-        "end_year":2100,
-        "width":8.5,
-        "height":7,
-        "x_scale":"linear",
-        "y_scale":"linear",
-        "plot_Jan_July":true
-    },
-    {
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
-        "plot_name":"./../2025_DiVittorio_et_al/time_series_PRECIP",
-        "plot_labels":["Control", "Full feedback"],
-        "plot_variables":["PRECC (m/s)","PRECL (m/s)","PRECSC (m/s)","PRECSL (m/s)"],
-        "y_label":"Total precipitation (m/s)",
-        "plot_Jan_July":false
-    },
-    {
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
-        "plot_name":"./../2025_DiVittorio_et_al/time_series_NPP",
-        "plot_labels":["Control", "Full feedback"],
-        "plot_variables":["NPP (gC/m^2/s)"],
-        "y_label":"Net primary production (g C/m$^2$/s)"
-    },
-    {
-        "output_files":["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
-        "plot_name":"./../2025_DiVittorio_et_al/time_series_CO2",
-        "plot_labels":["Control", "Full feedback"],
-        "plot_variables":["XCO2 (ppm)"],
-        "y_label":"CO$_2$ concentration (ppm)"
+        "plot_names":["./../2025_DiVittorio_et_al/time_series_TREFHT", "./../2025_DiVittorio_et_al/time_series_PRECIP", 
+        "./../2025_DiVittorio_et_al/time_series_NPP", "./../2025_DiVittorio_et_al/time_series_CO2"],
+        "plot_variables":["TREFHT", "PRECIP", "NPP", "XCO2"],
+        "y_labels":["Reference height temperature (K)", "Total precipitation (m/s)", "Net primary production (g C/m$^2$/s)", "CO$_2$ concentration (ppm)"],
+        "output_files":[["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"]],
+        "plot_labels":[["Control", "Full feedback"]],
+        "multipliers":[1],
+        "start_years":[2015],
+        "end_years":[2100],
+        "plot_widths":[8.5],
+        "plot_heights":[7],
+        "x_scales":["linear"],
+        "y_scales":["linear"],
+        "plot_Jan_July_options":[true]
     }
 ]
