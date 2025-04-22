@@ -65,8 +65,8 @@ def process_dataframe(df):
         df = move_columns_next_to_each_other_in_dataframe(df, 'PCO2 (Pa)', 'XCO2 (ppm)')
 
     # Convert fluxes and stocks that have units of g or kg to Pg.
-    old_labels = ['(gC/', '(g/', '(kg']
-    new_labels = ['(PgC/', '(Pg/', '(Pg']
+    old_labels = ['(gC', '(g/', '(kg']
+    new_labels = ['(PgC', '(Pg/', '(Pg']
     multipliers = [1/Pg_TO_g, 1/Pg_TO_g, 1/Pg_TO_kg]
     for index, old_label in enumerate(old_labels):
         # Make sure that the quantity is actually a flux or stock and not a mass fraction (i.e., does not have units of kg/kg).
@@ -134,7 +134,7 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
     return df[column_names_with_year_and_month_first]
 
 def extract_time_series_data_from_netcdf_files(outputs_path, extracted_outputs_file, outputs_substrings, 
-            variables, calculation_types, start_year=2015, end_year=2100):
+            variables, calculation_types, process_variables=True, start_year=2015, end_year=2100):
 
     dataframes = []
     for index in range(len(variables)):
@@ -158,7 +158,8 @@ def extract_time_series_data_from_netcdf_files(outputs_path, extracted_outputs_f
     for df_index in range(1, len(dataframes)):
         df = pd.merge(df, dataframes[df_index], on=['Year', 'Month'], how='inner')
 
-    df = process_dataframe(df)
+    if process_variables:
+        df = process_dataframe(df)
 
     write_dataframe_to_fwf(extracted_outputs_file, df)
 

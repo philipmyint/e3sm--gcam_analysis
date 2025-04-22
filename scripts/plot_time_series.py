@@ -5,25 +5,26 @@ import sys
 import time
 from utility_plots import plot_colors, set_figure_options
 
-def plot_time_series(plot_names, plot_variables, y_labels, output_files, plot_labels, multipliers, start_years, 
-                     end_years, plot_widths, plot_heights, x_scales, y_scales, plot_Jan_July_options):
+def plot_time_series(plot_names, variables, y_labels, calculation_types, output_files, labels, multipliers, start_years, 
+                     end_years, widths, heights, x_scales, y_scales, Jan_July_in_plots):
 
     for plot_index, plot_name in enumerate(plot_names):
 
         start_time = time.time()
 
-        plot_variable = plot_variables[plot_index]
+        variable = variables[plot_index]
         y_label = y_labels[plot_index]
+        calculation_type = calculation_types[plot_index]
         output_files_set = output_files[plot_index]
-        plot_labels_set = plot_labels[plot_index]
+        label_set = labels[plot_index]
         multiplier = multipliers[plot_index]
         start_year = start_years[plot_index]
         end_year = end_years[plot_index]
-        width = plot_widths[plot_index]
-        height = plot_heights[plot_index]
+        width = widths[plot_index]
+        height = heights[plot_index]
         x_scale = x_scales[plot_index]
         y_scale = y_scales[plot_index]
-        plot_Jan_July = plot_Jan_July_options[plot_index]
+        Jan_July_in_plot = Jan_July_in_plots[plot_index]
 
         fig, ax = plt.subplots(nrows=1, ncols=1)
         for file_index, file in enumerate(output_files_set):
@@ -32,18 +33,25 @@ def plot_time_series(plot_names, plot_variables, y_labels, output_files, plot_la
             df = df[(df['Year'] >= start_year) & (df['Year'] <= end_year)]
 
             for column in df.columns:
-                if plot_variable in column:
-                    plot_variable = column
+                if variable in column:
+                    variable = column
 
             x = df.groupby('Year', as_index=False).mean()['Year']
-            y_mean = df.groupby('Year', as_index=False).mean()[plot_variable]*multiplier
-            ax.plot(x, y_mean, label=plot_labels_set[file_index] + ' (Annual mean)', color=plot_colors[file_index], linestyle='solid', linewidth=2)
+            if calculation_type == 'mean':
+                y = df.groupby('Year', as_index=False).mean()[variable]*multiplier
+                if Jan_July_in_plot:
+                    ax.plot(x, y, label=label_set[file_index] + ' (Annual mean)', color=plot_colors[file_index], linestyle='solid', linewidth=2)
+                else:
+                    ax.plot(x, y, label=label_set[file_index], color=plot_colors[file_index], linestyle='solid', linewidth=2)
+            elif calculation_type == 'sum':
+                y = df.groupby('Year', as_index=False).sum()[variable]*multiplier
+                ax.plot(x, y, label=label_set[file_index], color=plot_colors[file_index], linestyle='solid', linewidth=2)
 
-            if plot_Jan_July:
-                y_Jan = df[df['Month'] == 1][plot_variable]*multiplier
-                y_July = df[df['Month'] == 7][plot_variable]*multiplier 
-                ax.plot(x, y_Jan, label=plot_labels_set[file_index] + ' (January)', color=plot_colors[file_index], linestyle='dotted', linewidth=2)
-                ax.plot(x, y_July, label=plot_labels_set[file_index] + ' (July)', color=plot_colors[file_index], linestyle='dashed', linewidth=2)
+            if Jan_July_in_plot and calculation_type == 'mean':
+                y_Jan = df[df['Month'] == 1][variable]*multiplier
+                y_July = df[df['Month'] == 7][variable]*multiplier 
+                ax.plot(x, y_Jan, label=label_set[file_index] + ' (January)', color=plot_colors[file_index], linestyle='dotted', linewidth=2)
+                ax.plot(x, y_July, label=label_set[file_index] + ' (July)', color=plot_colors[file_index], linestyle='dashed', linewidth=2)
     
         plot_options = dict(width=width, height=height, name=plot_name, x_label='Year', y_label=fr'{y_label}')
         plot_options['x_scale'] = x_scale
