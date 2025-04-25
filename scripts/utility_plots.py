@@ -8,7 +8,7 @@ plt.rc('font',family='serif',weight='bold')
 plt.rcParams['xtick.labelsize'] = 20
 plt.rcParams['ytick.labelsize'] = 20
 
-# List of colors expressed in terms of their hex codes.
+""" List of colors expressed in terms of their hex codes. """
 plot_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
 def create_contour_plot(x, y, z, options):
@@ -25,7 +25,7 @@ def create_contour_plot(x, y, z, options):
     set_figure_options(fig,ax,options)
 
 def set_figure_options(fig, ax, options):
-    handles,labels = ax.get_legend_handles_labels()
+    _,labels = ax.get_legend_handles_labels()
     if labels:
         ax.legend(prop={'size': 14},frameon=False,loc='best')
     ax.set_xlabel(options['x_label'],fontsize=24)

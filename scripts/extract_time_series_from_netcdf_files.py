@@ -28,11 +28,11 @@ def get_netcdf_files_between_start_and_end_years(file_paths, start_year, end_yea
 
 def find_gridcell_areas_in_netcdf_file(file):
     xrds = xr.open_dataset(file)
-    columns = ['area']
-    areas = create_numpy_array_from_xrds_columns(xrds, columns, [0]*len(columns))
+    variables = ['area']
+    areas = create_numpy_array_from_xrds(xrds, variables, [0]*len(variables))
     if 'elm.h0' in file:
-        columns = ['landfrac', 'landmask', 'pftmask']
-        landfrac, landmask, pftmask = create_numpy_array_from_xrds_columns(xrds, columns, [0]*len(columns))
+        variables = ['landfrac', 'landmask', 'pftmask']
+        landfrac, landmask, pftmask = create_numpy_array_from_xrds(xrds, variables, [0]*len(variables))
         areas *= landfrac*landmask*pftmask*km2_TO_m2
     elif 'eam.h0' in file:
         areas *= SURF_AREA
@@ -97,7 +97,26 @@ def process_dataframe(df):
     return df
 
 def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean'):
+    """ 
+    Extracts time series data from NetCDF files located in a simulation directory into a Pandas DataFrame that then gets written to an output file. 
+    The NetCDF files can be of more than one type (e.g., one set generated from the ELM model and another set from the EAM model in E3SM).
+    Each NetCDF file corresponds to simulation results for one month in a particular year.
 
+    Parameters:
+        outputs_path: Complete path of the directory containing the NetCDF output files from running a simulation.
+        extracted_outputs_file: Name of the file to which the DataFrame will be printed.
+        output_substrings: List where each element is itself a list of substrings. Each list corresponds to a particular type of NetCDF file and
+        indicates the substrings that must be in the names of that NetCDF file type.
+        variables: List where each element is itself a list of variables we want to extract for each type of NetCDF file. 
+        The aggregate of all variables contained these lists together will form the columns of the DataFrame.
+        calculation_types: List where each element is itself a list of strings that indicate what type of calculation we want to perform to produce 
+        time series data for each type of NetCDF file. Current options include 'area_weighted_mean_or_sum', 'mean', and 'sum'.
+        process_variables: Boolean that indicates if we want to perform further processing on the outputs in the DataFrame. This includes adding
+        new variables not in the NetCDF files (e.g., total precipitation, mole fraction CO2) or changing the units (e.g., Pg instead of g).
+
+    Returns:
+        N/A
+    """
     areas, xrds = find_gridcell_areas_in_netcdf_file(file)
     xrds = xrds[variables]
     df = xrds.to_dataframe()
@@ -105,7 +124,7 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
     units = [xrds[var].attrs['units'] for var in xrds.data_vars]
     df.columns = add_lists_elementwise(df.columns, units, list2_are_units=True)
 
-    if calculation_type in ['elm_area', 'eam_area']:
+    if calculation_type == 'area_weighted_mean_or_sum':
         df *= areas
         df = df.sum().to_frame().T
 
@@ -115,7 +134,7 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
         columns_to_modify = [label for label in df.columns if not check_substrings_in_string(['/m^2', '/m2'], label, all_or_any='any')]
         df[columns_to_modify] /= total_area
 
-        # Fluxes and stocks are global area-weighted sums and have been multiplied by areas, so we must update the labels accordingly.
+        # Fluxes and stocks are global area-weighted sums and have been multiplied by areas, so we must update the labels to remove the '/m2' part.
         for old_label in ['/m^2', '/m2']:
             condition = lambda x: old_label in x
             new_column_label_function = lambda x: x.replace(old_label, '')
@@ -135,44 +154,79 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
 
 def extract_time_series_data_from_netcdf_files(outputs_path, extracted_outputs_file, outputs_substrings, 
             variables, calculation_types, process_variables=True, start_year=2015, end_year=2100):
+    """ 
+    Extracts time series data from NetCDF files located in a simulation directory into a Pandas DataFrame that then gets written to an output file. 
+    The NetCDF files can be of more than one type (e.g., one set generated from the ELM model and another set from the EAM model in E3SM).
+    Each NetCDF file corresponds to simulation results for one month in a particular year.
 
+    Parameters:
+        outputs_path: Complete path of the directory containing the NetCDF output files from running a simulation.
+        extracted_outputs_file: Name of the file to which the DataFrame will be printed.
+        output_substrings: List where each element is itself a list of substrings. Each list corresponds to a particular type of NetCDF file and
+        indicates the substrings that must be in the names of that NetCDF file type.
+        variables: List where each element is itself a list of variables we want to extract for each type of NetCDF file. 
+        The aggregate of all variables contained these lists together will form the columns of the DataFrame.
+        calculation_types: List where each element is itself a list of strings that indicate what type of calculation we want to perform to produce 
+        time series data for each type of NetCDF file. Current options include 'area_weighted_mean_or_sum', 'mean', and 'sum'.
+        process_variables: Boolean that indicates if we want to perform further processing on the outputs in the DataFrame. This includes adding
+        new variables not in the NetCDF files (e.g., total precipitation, mole fraction CO2) or changing the units (e.g., Pg instead of g).
+
+    Returns:
+        N/A
+    """
+    # This list will store a DataFrame for each type of NetCDF file, and all elements of this list will later be merged into a single DataFrame.
     dataframes = []
+
+    # Iterate over all NetCDF file types.
     for index in range(len(variables)):
-        output_files = get_all_files_in_path(outputs_path, 
+
+        # Get all NetCDF files for this particular type.
+        netcdf_files = get_all_files_in_path(outputs_path, 
                             file_name_substrings=outputs_substrings[index], file_extension='.nc')
-        output_files = get_netcdf_files_between_start_and_end_years(output_files, start_year, end_year)
+        netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
     
-        arguments = list(zip(output_files, [variables[index]]*len(output_files), 
-                    [calculation_types[index]]*len(output_files)))
+        # Use multiprocessing to extract data from all the files. Put the data from each file into DataFrame, store all such DataFrames in a list.
+        arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), 
+                    [calculation_types[index]]*len(netcdf_files)))
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
             dataframes_for_each_nc_file = list(pool.starmap(extract_netcdf_file_into_dataframe, arguments))
         
+        # Concatenate all DataFrames in the list together to form a single DataFrame for this NetCDF type. Sort by year and month.
         df = dataframes_for_each_nc_file[0]
         for df_index in range(1, len(dataframes_for_each_nc_file)):
             df = pd.concat([df, dataframes_for_each_nc_file[df_index]]).reset_index(drop=True)
         df.sort_values(['Year', 'Month'], inplace=True)
     
+        # Add the DataFrame for this NetCDF type into the master list.
         dataframes.append(df)
 
+    # Combine the DataFrames for all NetCDF types into a single large DataFrame by merging on the year and month columns.
     df = dataframes[0]
     for df_index in range(1, len(dataframes)):
         df = pd.merge(df, dataframes[df_index], on=['Year', 'Month'], how='inner')
 
+    # Process the variables if specified to do so.
     if process_variables:
         df = process_dataframe(df)
 
+    # Write the DataFrame to the specified output file.
     write_dataframe_to_fwf(extracted_outputs_file, df)
 
+
+###---------------Begin execution---------------###
 if __name__ == '__main__':
 
+    # Run this script together with the input JSON file on the command line.
     if len(sys.argv) != 2:
         print('Usage: extract_time_series_data_from_netcdf_files.py `path/to/json/input/file\'')
         sys.exit()
 
+    # Read and load the JSON file.
     input_file = sys.argv[1]
     with open(input_file) as f:
         inputs = json.load(f)
 
+    # Process each dictionary (block) in the JSON file, one at a time, to produce an output file for each dictionary.
     for job_index in range(len(inputs)):
         start_time = time.time()
         extract_time_series_data_from_netcdf_files(**inputs[job_index])

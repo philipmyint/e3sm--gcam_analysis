@@ -15,10 +15,10 @@ def write_dataframe_to_fwf(file_name, df, keep_index_column=False, width_index_c
     Writes the contents of a Pandas DataFrame to an output file in fixed-width format (fwf), omitting the index column if specified to do so.
 
     Parameters:
-        1) file_name (string): Directory location and name of the output file.
-        2) df (Pandas DataFrame): DataFrame in which the data to be written to the output file are stored.
-        3) keep_index_column (bool): Specifies whether to print the index column in the output file (default = False).
-        4) width_index_column (int): Specifies the number of characters that span the width of the index column (default = None).
+        file_name: Directory location and name of the output file.
+        df: DataFrame in which the data to be written to the output file are stored.
+        keep_index_column: Specifies whether to print the index column in the output file.
+        width_index_column: Specifies the number of characters that span the width of the index column.
 
     Returns:
         N/A
@@ -47,13 +47,13 @@ def write_data_and_labels_to_fwf(file_name, data, column_labels, transpose_data=
     Stores the given data and column labels in a Pandas DataFrame and writes the contents of the DataFrame to an output file in fixed-width format.
 
     Parameters:
-        1) file_name (string): Directory location and name of the output file.
-        2) data (Array or list): Contains one or more columns of data.
-        3) column_labels (list): List of strings representing the column labels.
-        4) transpose_data (bool): Indicates if it is necessary to transpose the data (which it would be if the data are stored in a list of lists,
-            for example) so that the data appear along the columns of the output file rather along the rows (default = False).
-        5) keep_index_column (bool): Specifies whether to print the index column in the output file (default = False).
-        6) print_to_console (bool): Indicates if the contents of the data should be printed to the console (default = False).
+        file_name: Directory location and name of the output file.
+        data: Contains one or more columns of data.
+        column_labels: List of strings representing the column labels.
+        transpose_data: Indicates if it is necessary to transpose the data (which it would be if the data are stored in a list of lists, for example)
+        so that the data appear along the columns of the output file rather along the rows.
+        keep_index_column: Specifies whether to print the index column in the output file.
+        print_to_console: Indicates if the contents of the data should be printed to the console.
 
     Returns:
         N/A
@@ -67,20 +67,20 @@ def write_data_and_labels_to_fwf(file_name, data, column_labels, transpose_data=
     write_dataframe_to_fwf(file_name, df, keep_index_column)
 
 def write_data_and_labels_to_csv(file_name, data, column_labels=None, transpose_data=False, 
-                                 keep_index_column=False, keep_header=True, separation='\t', format='%12.8e'):
+                                 keep_index_column=False, keep_header=True, separation=',', format='%12.8e'):
     """ 
     Stores the given data and column labels in a Pandas DataFrame and writes the contents of the DataFrame to a csv file.
 
     Parameters:
-        1) file_name (string): Directory location and name of the output file.
-        2) data (Array or list): Contains one or more columns of data.
-        3) column_labels (list): List of strings representing the column labels.
-        4) transpose_data (bool): Indicates if it is necessary to transpose the data (which it would be if the data are stored in a list of lists,
-            for example) so that the data appear along the columns of the output file rather along the rows (default = False).
-        5) keep_index_column (bool): Specifies whether to print the index column in the output file (default = False).
-        6) keep_header (bool): Indicates if the output file should contain headers for column labels (default = True).
-        7) separation (string): Indicates the character(s) to be used as column separators (default = tabs).
-        8) format (string): Format for floats in the output file.
+        file_name: Directory location and name of the output file.
+        data: Contains one or more columns of data.
+        column_labels: List of strings representing the column labels.
+        transpose_data: Indicates if it is necessary to transpose the data (which it would be if the data are stored in a list of lists, for example)
+        so that the data appear along the columns of the output file rather along the rows.
+        keep_index_column: Specifies whether to print the index column in the output file.
+        keep_header: Indicates if the output file should contain headers for column labels.
+        separation: Indicates the character(s) to be used as column separators.
+        format: Format for floats in the output file.
 
     Returns:
         N/A
@@ -100,11 +100,11 @@ def clean_up_dataframe(df, print_to_console=False):
     column, which will contain only NaN entries, should be deleted.
 
     Parameters:
-        1) df (Pandas DataFrame): DataFrame to be cleaned.
-        2) print_to_console (bool): Indicates if the contents of the data should be printed to the console to monitor the progress (default = False).
+        df: DataFrame to be cleaned.
+        print_to_console: Indicates if the contents of the data should be printed to the console to monitor the progress.
 
     Returns:
-        df (Pandas DataFrame): DataFrame after cleaning operations have been applied.
+        df: DataFrame after cleaning operations have been applied.
     """
     if print_to_console:
         print(f'\nThe original columns of the DataFrame are:\n{df.columns}\n')
@@ -161,15 +161,15 @@ def clean_up_dataframe(df, print_to_console=False):
 
 def move_columns_next_to_each_other_in_dataframe(df, column1, column2):
     """
-    Rearranges a dataframe by moving column2 next to column1.
+    Rearranges a Pandas DataFrame by moving column2 next to column1.
 
     Parameters:
         column1: Column next to which column2 will be moved. The order of all columns prior to column1 will be unaffected.
         column2: Column to move next to column1.
-        df: Pandas DataFrame whose columns will be rearranged.
+        df: DataFrame whose columns will be rearranged.
 
     Returns:
-        A new dataframe with columns 1 and 2 moved next to each other.
+        A new DataFrame with column1 and column2 moved next to each other.
     """
     index = df.columns.get_loc(column1)
     new_columns = list(df.columns[:index]) + [column1, column2] + list(df.columns[index+1:])

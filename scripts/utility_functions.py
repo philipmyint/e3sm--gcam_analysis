@@ -6,13 +6,14 @@ def add_lists_elementwise(list1, list2, list2_are_units=False):
     Performs elementwise addition of two lists.
 
     Parameters:
-        1) list1: The first list.
-        2) list2: The second list.
-        3) list2_are_units: Boolean that specifies whether list2 represents the units corresponding to list1,
-        the latter of which are presumably column headers.
+        list1: The first list.
+        list2: The second list.
+        list2_are_units: Boolean that specifies whether list2 represents the units corresponding to list1. This would be useful for the case
+        for forming column headers, where list1 specifies the quantities and list2 specifies the corresponding units for those quantities.
 
     Returns:
-        A new list containing the element-wise sums of list1 and list2.
+        A new list containing the element-wise sums of list1 and list2. If list2_are_units is True, then the elements of list2 will be in parentheses 
+        (i.e., each element of the combined list will be of the form 'a (b)', where a is from list1 and b is from list2).
         Returns None if the lists are not of the same length.
     """
     if len(list1) != len(list2):
@@ -29,6 +30,7 @@ def check_substrings_in_list(substrings, list, all_or_any='all'):
     Parameters:
         substring: A list of strings (substrings to search for).
         list: A list of strings (strings to search within).
+        all_or_any: String whose value should be either 'all' or 'any'.
 
     Returns:
         True if either all or any of the elements of substrings are substrings of at least one element in list, False otherwise.
@@ -45,6 +47,7 @@ def check_substrings_in_string(substrings, string, all_or_any='all'):
     Parameters:
         substring: A list of strings (substrings to search for).
         string: String to search within.
+        all_or_any: String whose value should be either 'all' or 'any'.
 
     Returns:
         True if either all or any of the elements of substrings are substrings of the string, False otherwise.
@@ -54,9 +57,20 @@ def check_substrings_in_string(substrings, string, all_or_any='all'):
     else:
         return any(substring in string for substring in substrings)
 
-def create_numpy_array_from_xrds_columns(xrds, columns, fill_nan_values):
+def create_numpy_array_from_xrds(xrds, variables, fill_nan_values):
+    """
+    Creates a list of NumPy arrays from the specified variables of an xarray dataset. 
+
+    Parameters:
+        xrds: xarray Dataset.
+        variables: List of variables.
+        fill_nan_values: List that indicates what to set NaN values to for each variable.
+
+    Returns:
+        List of arrays, one for each xrds variable. If only one variable is specified, then a single array (not a list with this array) is returned.
+    """
     np_arrays = []
-    for index, column in enumerate(columns):
+    for index, column in enumerate(variables):
         array = xrds[column].to_numpy().reshape(-1,1)
         array = np.nan_to_num(array, nan=fill_nan_values[index])
         np_arrays.append(array)
@@ -66,6 +80,18 @@ def create_numpy_array_from_xrds_columns(xrds, columns, fill_nan_values):
         return np_arrays
 
 def get_all_files_in_path(path, file_name_substrings=None, file_extension=None):
+    """
+    Get a list of complete paths for all files that are in a particular directory.
+
+    Parameters:
+        path: Path of directory where we want to search for files.
+        file_name_substrings: A list of all substrings that must be in the file names.
+        file_extension: File extension that should be in all files. 
+
+    Returns:
+        A list with complete paths to all files in the directory. 
+        If both file_name_substrings and file_extension are None, then all files in the directory will be included in the list.
+    """
     file_paths = []
     for root, _, files in os.walk(path):
         for file in files:
@@ -81,10 +107,8 @@ def modify_list_based_on_condition(original_list, condition, new_value_function)
 
     Parameters:
         original_list: The list to be modified.
-        condition: A function that takes an element as input and returns True if the
-                    condition is met, and False otherwise.
-        new_value_function: A function that takes an element as input and returns
-                            the new value to replace the original element.
+        condition: A function that takes an element as input and returns True if the condition is met, and False otherwise.
+        new_value_function: A function that takes an element as input and returns the new value to replace the original element.
 
     Returns:
         A new list with the modified elements.

@@ -8,7 +8,7 @@
         "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "WOODC"],
         ["SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", 
         "TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"]],
-        "calculation_types":["elm_area", "eam_area"],
+        "calculation_types":["area_weighted_mean_or_sum", "area_weighted_mean_or_sum"],
         "process_variables":true,
         "start_year":2015,
         "end_year":2100
@@ -22,7 +22,7 @@
         "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "WOODC"],
         ["SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", 
         "TREFHT", "PRECC", "PRECL", "PRECSC", "PRECSL"]],
-        "calculation_types":["elm_area", "eam_area"],
+        "calculation_types":["area_weighted_mean_or_sum", "area_weighted_mean_or_sum"],
         "process_variables":true,
         "start_year":2015,
         "end_year":2100
