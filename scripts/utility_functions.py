@@ -8,12 +8,12 @@ def add_lists_elementwise(list1, list2, list2_are_units=False):
     Parameters:
         list1: The first list.
         list2: The second list.
-        list2_are_units: Boolean that specifies whether list2 represents the units corresponding to list1. This would be useful for the case
-        for forming column headers, where list1 specifies the quantities and list2 specifies the corresponding units for those quantities.
+        list2_are_units: Boolean that specifies whether list2 represents the units corresponding to list1. This would be useful when forming 
+                         column headers, where list1 specifies the quantities and list2 specifies the corresponding units for those quantities.
 
     Returns:
         A new list containing the element-wise sums of list1 and list2. If list2_are_units is True, then the elements of list2 will be in parentheses 
-        (i.e., each element of the combined list will be of the form 'a (b)', where a is from list1 and b is from list2).
+        so that each element of the combined list will be of the form 'a (b)', where a is from list1 and b is from list2.
         Returns None if the lists are not of the same length.
     """
     if len(list1) != len(list2):
@@ -57,6 +57,23 @@ def check_substrings_in_string(substrings, string, all_or_any='all'):
     else:
         return any(substring in string for substring in substrings)
 
+def convert_month_numbers_to_(substrings, string, all_or_any='all'):
+    """
+    Checks if either all or any of the elements of the substrings list are substrings of the string.
+
+    Parameters:
+        substring: A list of strings (substrings to search for).
+        string: String to search within.
+        all_or_any: String whose value should be either 'all' or 'any'.
+
+    Returns:
+        True if either all or any of the elements of substrings are substrings of the string, False otherwise.
+    """
+    if all_or_any == 'all':
+        return all(substring in string for substring in substrings)
+    else:
+        return any(substring in string for substring in substrings)
+
 def create_numpy_array_from_xrds(xrds, variables, fill_nan_values):
     """
     Creates a list of NumPy arrays from the specified variables of an xarray dataset. 
@@ -81,7 +98,7 @@ def create_numpy_array_from_xrds(xrds, variables, fill_nan_values):
 
 def get_all_files_in_path(path, file_name_substrings=None, file_extension=None):
     """
-    Get a list of complete paths for all files that are in a particular directory.
+    Gets a list of complete paths for all files that are in a particular directory.
 
     Parameters:
         path: Path of directory where we want to search for files.
