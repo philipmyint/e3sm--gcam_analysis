@@ -74,21 +74,21 @@ def convert_month_numbers_to_(substrings, string, all_or_any='all'):
     else:
         return any(substring in string for substring in substrings)
 
-def create_numpy_array_from_xrds(xrds, variables, fill_nan_values):
+def create_numpy_array_from_ds(ds, variables, fill_nan_values):
     """
-    Creates a list of NumPy arrays from the specified variables of an xarray dataset. 
+    Creates a list of NumPy arrays from the specified variables of an xarray Dataset. 
 
     Parameters:
-        xrds: xarray Dataset.
+        ds: xarray Dataset.
         variables: List of variables.
         fill_nan_values: List that indicates what to set NaN values to for each variable.
 
     Returns:
-        List of arrays, one for each xrds variable. If only one variable is specified, then a single array (not a list with this array) is returned.
+        List of arrays, one for each ds variable. If only one variable is specified, then a single array (not a list with this array) is returned.
     """
     np_arrays = []
     for index, column in enumerate(variables):
-        array = xrds[column].to_numpy().reshape(-1,1)
+        array = ds[column].to_numpy().reshape(-1,1)
         array = np.nan_to_num(array, nan=fill_nan_values[index])
         np_arrays.append(array)
     if len(np_arrays) == 1:

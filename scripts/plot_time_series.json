@@ -1,27 +1,18 @@
 [
     {
         "variables": [],
-        "output_files": ["./../2025_DiVittorio_et_al/control_time_series.dat", "./../2025_DiVittorio_et_al/full_feedback_time_series.dat"],
-        "output_labels": ["Control", "Full feedback"],
+        "output_files": ["./../2025_DiVittorio_et_al/control_time_series.csv", "./../2025_DiVittorio_et_al/full_feedback_time_series.csv",
+        "./../2025_DiVittorio_et_al/ag_scaling_time_series.csv", "./../2025_DiVittorio_et_al/carbon_scaling_time_series.csv"],
+        "output_labels": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
         "plot_directories": "./../2025_DiVittorio_et_al/",
-        "plot_names": {},
         "y_labels": {"XCO2": "CO$_2$ concentration (ppm)", "SFCO2": "CO$_2$ surface flux (Pg C/month)"},
         "calculation_types": {"PRECIP": "sum", "NPP": "sum"},
-        "multipliers": 1,
-        "start_years": 2015,
-        "end_years": 2100,
-        "widths": 10,
-        "heights": 8,
-        "x_scales": "linear",
-        "y_scales": "linear",
         "x_limits": {"XCO2": [2015, 2100]},
         "y_limits": {"XCO2": [400, 600]},
-        "include_seasons": {"XCO2": {"spring": false, "summer": true, "autumn": false, "winter": true}},
-        "seasons_to_plot_separately": {"XCO2": {"spring": true, "summer": true, "autumn": true, "winter": true}},
+        "use_latex": true,
+        "include_seasons": {"XCO2": {"MAM": false, "JJA": true, "SON": false, "DJF": true}},
+        "seasons_to_plot_separately": {"XCO2": {"MAM": true, "JJA": true, "SON": true, "DJF": true}},
         "monthly_time_series_plot": {"XCO2": true},
-        "monthly_time_series_start_year": {},
-        "monthly_time_series_end_year": 2100,
-        "monthly_time_series_x_limits": {},
-        "monthly_time_series_y_limits": {}
+        "monthly_time_series_end_year": 2100
     }
 ]

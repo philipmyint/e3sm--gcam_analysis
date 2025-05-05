@@ -1,41 +1,20 @@
 from matplotlib import pyplot as plt
-import numpy as np
-from matplotlib import cm, ticker
 
-# Use LaTeX fonts for figures and set font size of tick labels.
-plt.rc('text',usetex=True)
-plt.rc('font',family='serif',weight='bold')
-plt.rcParams['xtick.labelsize'] = 20
-plt.rcParams['ytick.labelsize'] = 20
-
-""" Hex codes of Matplotlib Tableau color palette. """
-""" Colors: blue, orange, green, red, purple, brown, pink, gray, olive, cyan. """
-plot_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
-
-""" Dictionary of default input values for time series plots. """
-default_inputs_time_series = {'plot_directories': './',
-                    'plot_names': 'time_series',
-                    'calculation_types': 'mean',
-                    'multipliers': 1,
-                    'start_years': 2015,
-                    'end_years': 2100,
-                    'widths': 10.0,
-                    'heights': 8.0,
-                    'x_scales': 'linear',
-                    'y_scales': 'linear',
-                    'x_limits': 'default',
-                    'y_limits': 'default',
-                    'include_seasons': {'spring': False, 'summer': False, 'autumn': False, 'winter': False},
-                    'seasons_to_plot_separately': {'spring': False, 'summer': False, 'autumn': False, 'winter': False},
-                    'monthly_time_series_plot': False,
-                    'monthly_time_series_start_year': 2071,
-                    'monthly_time_series_end_year': 2090,
-                    'monthly_time_series_x_limits': 'default',
-                    'monthly_time_series_y_limits': 'default'
-                    }
-
+# Default values for different plotting options
+width_default = 10  #inches
+height_default = 8  #inches
+scale_default = 'linear'    #other options include 'log'
+axis_limits_default = 'default'
+num_contour_levels_default = 20
+axis_label_size_default = 24
+tick_label_size_default = 20
+legend_label_size_default = 14
+legend_on_default = True
+linewidth_default = 2
+""" Hex codes of Matplotlib Tableau color palette: blue, orange, green, red, purple, brown, pink, gray, olive, cyan. """
+plot_colors_default = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 """ Tuples for different line styles in plots. """
-linestyle_tuples = [
+linestyle_tuples_default = [
     ('solid',                 (0, ())),
     ('dashed',                (0, (5, 5))),
     ('dotted',                (0, (1, 5))),
@@ -48,6 +27,37 @@ linestyle_tuples = [
     ('dashdotdotted',         (0, (3, 5, 1, 5, 1, 5))),
     ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
     ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
+
+""" Dictionary of default input values for time series plots. """
+default_inputs_time_series = {'plot_directories': './',
+                    'calculation_types': 'mean',
+                    'multipliers': 1,
+                    'start_years': 2015,
+                    'end_years': 2100,
+                    'widths': width_default,
+                    'heights': height_default,
+                    'x_scales': scale_default,
+                    'y_scales': scale_default,
+                    'x_limits': axis_limits_default,
+                    'y_limits': axis_limits_default,
+                    'x_tick_label_sizes': tick_label_size_default,
+                    'y_tick_label_sizes': tick_label_size_default,
+                    'x_label_sizes': axis_label_size_default,
+                    'y_label_sizes': axis_label_size_default,
+                    'legend_label_sizes': legend_label_size_default,
+                    'legends_on': legend_on_default,
+                    'linewidths': linewidth_default,
+                    'plot_colors': plot_colors_default,
+                    'linestyle_tuples': linestyle_tuples_default,
+                    'use_latex': False, 
+                    'include_seasons': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
+                    'seasons_to_plot_separately': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
+                    'monthly_time_series_plot': False,
+                    'monthly_time_series_start_year': 2071,
+                    'monthly_time_series_end_year': 2090,
+                    'monthly_time_series_x_limits': axis_limits_default,
+                    'monthly_time_series_y_limits': axis_limits_default
+}
 
 def create_contour_plot(x, y, z, options):
     """
@@ -63,14 +73,14 @@ def create_contour_plot(x, y, z, options):
         N/A.
     """
     fig,ax = plt.subplots(nrows=1, ncols=1)
-    levels = options.get('levels', 20)
+    levels = options.get('levels', num_contour_levels_default)
     #levels = [0,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,200,300]
     plot = ax.contourf(x, y, z, levels=levels)
     cbar = fig.colorbar(plot)
-    cbar.ax.tick_params(labelsize=20) 
+    cbar.ax.tick_params(labelsize=tick_label_size_default) 
     cbar_label = options.get('cbar_label', None)
     if cbar_label:
-        cbar.set_label(fr'{cbar_label}', fontsize=24)
+        cbar.set_label(fr'{cbar_label}', fontsize=axis_label_size_default)
     cbar.set_ticks(cbar.locator.tick_values(z.min(), z.max()))
     set_figure_options(fig, ax, options)
 
@@ -86,11 +96,18 @@ def set_figure_options(fig, ax, options):
     Returns:
         N/A.
     """
-    _,labels = ax.get_legend_handles_labels()
-    if labels:
-        ax.legend(prop={'size': 14}, frameon=False, loc='best')
-    ax.set_xlabel(options['x_label'], fontsize=24)
-    ax.set_ylabel(options['y_label'], fontsize=24)
+    # Use LaTeX fonts for figures and set font size of tick labels.
+    if options['use_latex']:
+        plt.rc('text',usetex=True)
+        plt.rc('font',family='serif',weight='bold')
+    if options['legend_on']:
+        ax.legend(prop={'size': options['legend_label_size']}, frameon=False, loc='best')
+    else:
+        ax.legend().set_visible(False)
+    ax.set_xlabel(options['x_label'], fontsize=options['x_label_size'])
+    plt.rcParams['xtick.labelsize'] = options['x_tick_label_size']
+    ax.set_ylabel(options['y_label'], fontsize=options['y_label_size'])
+    plt.rcParams['ytick.labelsize'] = options['y_tick_label_size']
     x_scale = options.get('x_scale', None)
     if x_scale:
         ax.set_xscale(x_scale)

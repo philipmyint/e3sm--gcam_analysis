@@ -1,7 +1,7 @@
 import fileinput
+import multiprocessing
 import numpy as np
 import pandas as pd
-import re
 import sys
 
 # These options will format floating-point values in scientific notation as specified below and will display the 
@@ -132,6 +132,25 @@ def move_columns_next_to_each_other_in_dataframe(df, column1, column2):
     df = df[new_columns]
     # Remove the duplicate column2, keeping the first occurrence.
     df = df.loc[:, ~df.columns.duplicated()]
+    return df
+
+def read_file_into_dataframe(file_name, clean_up_df=False):
+    """ 
+    Reads a csv or fixed-width-format file, puts the contents into a Pandas DataFrame, and returns the DataFrame.
+
+    Parameters:
+        file_name: Complete path and name of the output file.
+        clean_up_df: Boolean that specifies if we want to call clean_up_dataframe() on the DataFrame before returning it.
+
+    Returns:
+        DataFrame containing the contents of the file.
+    """
+    if '.csv' in file_name:
+        df = pd.read_csv(file_name)
+    else:
+        df = pd.read_fwf(file_name)
+    if clean_up_df:
+        df = clean_up_dataframe(df)
     return df
 
 def write_data_and_labels_to_csv(file_name, data, column_labels=None, transpose_data=False, 
