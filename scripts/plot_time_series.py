@@ -274,8 +274,7 @@ if __name__ == '__main__':
     for index in range(len(inputs)):
         # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
         list_of_inputs_for_each_plot.extend(process_inputs(inputs[index]))
-    for key, value in list_of_inputs_for_each_plot[0].items():
-        print(key, value)
+
     # Create all of the times series plots in parallel.
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
         pool.map(plot_time_series, list_of_inputs_for_each_plot)
