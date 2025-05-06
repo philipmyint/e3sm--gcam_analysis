@@ -205,7 +205,7 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         df = process_dataframe(df)
 
     # Write the DataFrame to the specified output file.
-    if write_to_csv or '.csv' in output_file:
+    if write_to_csv or output_file.endswith('.csv'):
         df.to_csv(output_file, index=False)
     else:
         write_dataframe_to_fwf(output_file, df)
@@ -216,7 +216,7 @@ if __name__ == '__main__':
 
     # Run this script together with the input JSON file on the command line.
     if len(sys.argv) != 2:
-        print('Usage: extract_time_series_from_netcdf_files.py `path/to/json/input/file\'')
+        print('Usage: extract_time_series_from_e3sm_outputs.py `path/to/json/input/file\'')
         sys.exit()
 
     # Read and load the JSON file.

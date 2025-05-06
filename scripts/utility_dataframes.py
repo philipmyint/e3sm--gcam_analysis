@@ -145,7 +145,7 @@ def read_file_into_dataframe(file_name, clean_up_df=False):
     Returns:
         DataFrame containing the contents of the file.
     """
-    if '.csv' in file_name:
+    if file_name.endswith('.csv'):
         df = pd.read_csv(file_name)
     else:
         df = pd.read_fwf(file_name)

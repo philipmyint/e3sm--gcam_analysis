@@ -1,3 +1,4 @@
+import cartopy.crs as ccrs
 import json
 from matplotlib import pyplot as plt
 import multiprocessing
@@ -9,83 +10,64 @@ import time
 import xarray as xr
 from utility_constants import MONTH_NUM_TO_NAME
 from utility_dataframes import get_columns_without_units_in_dataframe, get_matching_column_in_dataframe
-from utility_plots import default_inputs_time_series, set_figure_options
-from matplotlib.colors import ListedColormap, LinearSegmentedColormap
-import cartopy.crs as ccrs
+from utility_plots import *
 
-def xr_plot_global(data):
+""" Dictionary of default input values for spatial plots. """
+default_inputs_spatial_data = {'plot_directories': './',
+                    'calculation_types': 'mean',
+                    'multipliers': 1,
+                    'start_years': 2071,
+                    'end_years': 2090,
+                    'projections': ccrs.Robinson,
+                    'cbars_on': True,
+                    'cmap': 'bwr',
+                    'widths': width_default,
+                    'heights': height_default,
+                    'x_scales': scale_default,
+                    'y_scales': scale_default,
+                    'x_limits': axis_limits_default,
+                    'y_limits': axis_limits_default,
+                    'x_tick_label_sizes': tick_label_size_default,
+                    'y_tick_label_sizes': tick_label_size_default,
+                    'x_label_sizes': axis_label_size_default,
+                    'y_label_sizes': axis_label_size_default,
+                    'legend_label_sizes': legend_label_size_default,
+                    'legends_on': legend_on_default,
+                    'linewidths': linewidth_default,
+                    'plot_colors': plot_colors_default,
+                    'linestyle_tuples': linestyle_tuples_default,
+                    'use_latex': False
+}
 
-    da_plot = data['da']
-    cmap_col = data['cmap_col']
-    title = data['title'] 
-    fig_wt = data['width'] 
-    fig_ht = data['height']
-    levels = data['levels'] 
-    fname = data['fname'] 
-    stipple_data = None
+def xr_plot_global(inputs):
+
+    start_time = time.time()
+    da = inputs['da']
+    cmap_col = inputs['cmap_col']
+    projection = inputs['projections']
+    title = inputs['title'] 
+    fig_wt = inputs['widths'] 
+    fig_ht = inputs['heights']
+    levels = inputs['levels'] 
+    fname = inputs['fname']
+    cbar_on = inputs['cbar_on'] 
 
     fig = plt.figure(figsize=(fig_wt, fig_ht))
-    ax  = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection = ccrs.Robinson(central_longitude=0))
+    ax  = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=projection())
 
     cmap = plt.get_cmap(cmap_col)
-    if(cmap_col == 'bwr'):
-        cmap.set_extremes(under='darkblue', over='darkred')
-    else:
-        cmap.set_extremes(under='white', over='darkred')
 
-    # spatial plot using xarray
-    #fg = da_plot.plot.contourf(ax          = ax,
-    fg = da_plot.plot(ax          = ax,
-                      transform   = ccrs.PlateCarree(), # coordinate system of data
-                      levels      = levels, 
-                      #norm        = norm,
-                      cmap        = cmap,
-                      extend      = 'both',
-                      add_colorbar= False)
-
-    # Add stippling
-    if stipple_data is not None:
-        mask = stipple_data <= 0.05
-        tmp = mask.values
-        tmp = tmp[tmp == True]
-        print(tmp.size)
-        ax.contourf(stipple_data.lon, stipple_data.lat, mask,  1, hatches=['', 'xx'], alpha=0,
-                    transform=ccrs.PlateCarree())
+    fg = da.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=cmap, extend='both', add_colorbar= False)
 
     # Add title
     ax.set_title(title)
 
     # Add colorbar
     cax = fig.add_axes([ax.get_position().x1+0.01, ax.get_position().y0, 0.02, ax.get_position().height])
-    cbar = plt.colorbar(fg, cax=cax)
+    #cbar = plt.colorbar(fg, cax=cax)
 
-    if levels is None:
-        cbar.ax.tick_params(labelsize=15, length=0)
-    '''else:
-        maxval = np.amax(np.absolute(levels[1:-1]))
-        if maxval < 0.2:
-            fmt = "%5.3f"
-            pad = 28
-        elif maxval < 10.0:
-            fmt = "%5.2f"
-            pad = 40
-        elif maxval < 100.0:
-            fmt = "%5.0f"
-            pad = 25
-        elif maxval < 10000.0:
-            fmt = "%5.0f"
-            pad = 30
-        elif maxval > 9999.0:
-            fmt = "%.0f"
-            pad = 50
-        else:
-            fmt = "%6.1f"
-            pad = 40
-
-        cbar.set_ticks(levels[1:-1])
-        labels = [fmt % level for level in levels[1:-1]]
-        cbar.ax.set_yticklabels(labels, ha='right')
-        cbar.ax.tick_params(labelsize=15, pad=pad, length=0)'''
+    #if levels is None:
+    #    cbar.ax.tick_params(labelsize=15, length=0)
 
     # Min, Mean, Max
     ax.text(x=0.88, y=0.9, s='Max\nMean\nMin', ha='left', fontsize=15, transform=ax.transAxes)
@@ -101,19 +83,36 @@ def xr_plot_global(data):
 ###---------------Begin execution---------------###
 if __name__ == '__main__':
 
-    list = []
-    variables = ['NPP', 'TOTECOSYSC']
+    # Run this script together with the input JSON file on the command line.
+    if len(sys.argv) != 2:
+        print('Usage: plot_spatial_data.py `path/to/json/input/file\'')
+        sys.exit()
+
+    # Read and load the JSON file.
+    input_file = sys.argv[1]
+    with open(input_file) as f:
+        inputs = json.load(f)
+    
+    # Process each block in the JSON file to produce a list of dictionaries, where each specifies time series plotting options for a single variable.
+    start_time = time.time()
+    list_of_inputs_for_each_plot = []
+    for index in range(len(inputs)):
+        # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
+        list_of_inputs_for_each_plot.extend(process_inputs(inputs[index]))
+
+    list2 = []
+    variables = ['TOTECOSYSC']
     start_time = time.time()
     
-    options = []
+    '''options = []
     for variable in variables:
         files = ['./../2025_DiVittorio_et_al/control_spatial_data_elm.nc', './../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc']
         for index, file in enumerate(files):
-            ds = xr.open_dataset(files[index])[variable].mean(dim='year')
-            list.append(ds)
-        da = list[0] - list[1]
+            ds = xr.open_dataset(files[index]).mean(dim='year')[variable]
+            list2.append(ds)
+        da = list2[0] - list2[1]
         cmap_col = 'bwr'
-        data = {'da': da, 'cmap_col': cmap_col, 'title': 'title', 'width': 10, 'height': 8, 'fname':'plot_spatial', 'levels':None}
+        data = {'da': da, 'cmap_col': cmap_col, 'title': 'title', 'width': 10, 'height': 8, 'fname':'plot_spatial', 'levels':None, 'projection':ccrs.Robinson}
         options.append(data)
     
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
@@ -121,4 +120,4 @@ if __name__ == '__main__':
 
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Elapsed time for: {elapsed_time:.2f} seconds")
+    print(f"Elapsed time for: {elapsed_time:.2f} seconds")'''

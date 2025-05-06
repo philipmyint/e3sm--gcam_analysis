@@ -4,13 +4,13 @@ import sys
 import time
 import xarray as xr
 from utility_constants import *
-from utility_functions import get_all_files_in_path
+from utility_functions import check_substrings_in_list, get_all_files_in_path
 from utility_e3sm_netcdf import get_netcdf_files_between_start_and_end_years
 
 def process_inputs(inputs):    
     """ 
     Processes a dictionary of inputs (keys are options, values are choices for those options) for extracting spatial data from E3SM-generated NetCDF 
-    files and printing the output to smaller, focused NetCDF files that contain spatial data only for the variables specified in the dictionary.
+    files and printing that data to smaller, focused NetCDF files that contain spatial data only for the variables specified in the dictionary.
 
     Parameters:
         inputs: Dictionary containing the user choice inputs for different options. This dictionary may be incomplete or have invalid values.
@@ -48,6 +48,39 @@ def process_inputs(inputs):
         list_of_inputs_for_each_output_file.append(inputs_for_this_output_file)
     return list_of_inputs_for_each_output_file
 
+def process_dataset(ds):    
+    """ 
+    Processes an xarray Dataset to add a total precipitation variable (including change units from m/s to mm/year) and 
+    add a variable for the atmospheric mole fraction of CO2 in units of ppm.
+
+    Parameters:
+        ds: Dataset to process.
+
+    Returns:
+        The processed Dataset.
+    """
+    variables = list(ds.keys())
+
+    # Add a new variable for the total precipitation, and update the variable labels.
+    precip_variables = ['PRECC', 'PRECL', 'PRECSC', 'PRECSL']
+    if check_substrings_in_list(precip_variables, variables, all_or_any='all'):
+        ds[precip_variables] *= years_TO_s*m_TO_mm
+        for precip_variable in precip_variables:
+            ds[precip_variable].attrs['units'] = 'mm/year'
+        ds['PRECIP'] = ds[precip_variables].to_array(dim='variable').sum(dim='variable')
+        ds['PRECIP'].attrs = {'units':'mm/year', 'description':'Total precipitation rate'}
+
+    # Calculate the atmospheric mole fraction of CO2 in units of ppm, which is defined as a mole fraction in dry air (with humidity subtracted out).
+    pressure_variables = ['PBOT', 'PCO2', 'QBOT']
+    if check_substrings_in_list(pressure_variables, variables, all_or_any='all'):
+        # See derivation of H2O partial pressure formula at https://cran.r-project.org/web/packages/humidity/vignettes/humidity-measures.html.
+        partial_pressure_H2O = ds['PBOT']*ds['QBOT']/(0.622 + (0.378*ds['QBOT']))
+        # Add this CO2 variable to 
+        ds['XCO2'] = mole_fraction_TO_ppm*ds['PCO2']/(ds['PBOT'] - partial_pressure_H2O)
+        ds['XCO2'].attrs = {'units':'ppm', 'description':'CO2 mole fraction in dry air'}
+    
+    return ds
+
 def extract_spatial_data_from_netcdf_files(inputs):
     """ 
     Extracts time series data from E3SM-generated NetCDF files of a particular type that are located in a simulation directory and puts this data into
@@ -81,6 +114,9 @@ def extract_spatial_data_from_netcdf_files(inputs):
     # Take the mean over all months in each year so that the Dataset records only an annual mean value for each variable at each lat/lon coordinate.
     ds = ds.groupby('time.year').mean()
 
+    # Add total precipitation (in units of mm/year) and CO2 concentration variables to the Dataset.
+    ds = process_dataset(ds)
+
     # Write the Dataset to a NetCDF file.
     ds.to_netcdf(output_file, mode='w')
 
@@ -95,7 +131,7 @@ if __name__ == '__main__':
 
     # Run this script together with the input JSON file on the command line.
     if len(sys.argv) != 2:
-        print('Usage: extract_spatial_data_from_netcdf_files.py `path/to/json/input/file\'')
+        print('Usage: extract_spatial_data_from_e3sm_outputs.py `path/to/json/input/file\'')
         sys.exit()
 
     # Read and load the JSON file.

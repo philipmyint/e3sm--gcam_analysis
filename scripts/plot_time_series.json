@@ -1,12 +1,11 @@
 [
     {
-        "variables": [],
         "output_files": ["./../2025_DiVittorio_et_al/control_time_series.csv", "./../2025_DiVittorio_et_al/full_feedback_time_series.csv",
         "./../2025_DiVittorio_et_al/ag_scaling_time_series.csv", "./../2025_DiVittorio_et_al/carbon_scaling_time_series.csv"],
         "output_labels": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
-        "plot_directories": "./../2025_DiVittorio_et_al/",
-        "y_labels": {"XCO2": "CO$_2$ concentration (ppm)", "SFCO2": "CO$_2$ surface flux (Pg C/month)"},
-        "calculation_types": {"PRECIP": "sum", "NPP": "sum"},
+        "plot_directory": "./../2025_DiVittorio_et_al/",
+        "y_label": {"XCO2": "CO$_2$ concentration (ppm)", "SFCO2": "CO$_2$ surface flux (Pg C/month)"},
+        "calculation_type": {"PRECIP": "sum", "NPP": "sum"},
         "x_limits": {"XCO2": [2015, 2100]},
         "y_limits": {"XCO2": [400, 600]},
         "use_latex": true,

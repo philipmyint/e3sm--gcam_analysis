@@ -1,0 +1,9 @@
+[
+    {
+        "output_files": [["./../2025_DiVittorio_et_al/full_feedback_spatial_data_eam.nc", "./../2025_DiVittorio_et_al/control_spatial_data_eam.nc"],
+        ["./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/control_spatial_data_elm.nc"]],
+        "variables": [],
+        "plot_directories": "./",
+        "use_latex": true
+    }
+]

@@ -41,6 +41,10 @@ def process_inputs(inputs):
         variables.remove('Year')
         variables.remove('Month')
         inputs['variables'] = variables
+    # If the user entered a string to indicate a single variable, put that string in a list.
+    if isinstance(variables, str):
+        variables = [variables]
+        inputs['variables'] = variables
 
     # For the plotting options that have not been specified in the inputs dictionary, add keys for them if necessary and use the default values.
     for key in default_inputs_time_series.keys():
@@ -59,20 +63,20 @@ def process_inputs(inputs):
                 inputs[key] = dict.fromkeys(variables, value)
 
     # For each variable, if a plotting option is missing (has not been specified), fill in with the default corresponding to that plotting option.
-    if 'plot_names' not in inputs:
-        inputs['plot_names'] = {}
-    if 'y_labels' not in inputs:
-        inputs['y_labels'] = {}
+    if 'plot_name' not in inputs:
+        inputs['plot_name'] = {}
+    if 'y_label' not in inputs:
+        inputs['y_label'] = {}
     for variable in variables:
         # Default for the plot names is to call it 'time_series_[var_name]', where '[var_name]' is the name of the variable.
-        if not any(key == variable for key in inputs['plot_names'].keys()):
-            inputs['plot_names'][variable] = os.path.join(inputs['plot_directories'][variable], 'time_series_' + variable)
+        if not any(key == variable for key in inputs['plot_name'].keys()):
+            inputs['plot_name'][variable] = os.path.join(inputs['plot_directory'][variable], 'time_series_' + variable)
         # Default for the y_label of a variable is to use the column header for that variable from the DataFrame.
-        if not any(key == variable for key in inputs['y_labels'].keys()):
-            inputs['y_labels'][variable] = get_matching_column_in_dataframe(df, variable)
+        if not any(key == variable for key in inputs['y_label'].keys()):
+            inputs['y_label'][variable] = get_matching_column_in_dataframe(df, variable)
         # Default for the other plotting options are specified in the default_inputs_time_series dictionary.
         for key, value in inputs.items():
-            if key not in ['variables', 'plot_names', 'y_labels']:
+            if key not in ['variables', 'plot_name', 'y_label']:
                 if not any(value_key == variable for value_key in value.keys()):
                     inputs[key][variable] = default_inputs_time_series[key]
 
@@ -106,29 +110,30 @@ def plot_time_series(inputs):
     # Get all plotting options for both annual and monthly time series plots.
     output_files = inputs['output_files'][variable]
     output_labels = inputs['output_labels'][variable]
-    plot_directory = inputs['plot_directories'][variable]
-    plot_name = os.path.join(plot_directory, inputs['plot_names'][variable])
-    y_label = inputs['y_labels'][variable]
-    calculation_type = inputs['calculation_types'][variable]
-    multiplier = inputs['multipliers'][variable]
-    start_year = inputs['start_years'][variable]
-    end_year = inputs['end_years'][variable]
-    width = inputs['widths'][variable]
-    height = inputs['heights'][variable]
-    x_scale = inputs['x_scales'][variable]
-    y_scale = inputs['y_scales'][variable]
+    plot_directory = inputs['plot_directory'][variable]
+    plot_name = os.path.join(plot_directory, inputs['plot_name'][variable])
+    y_label = inputs['y_label'][variable]
+    calculation_type = inputs['calculation_type'][variable]
+    multiplier = inputs['multiplier'][variable]
+    start_year = inputs['start_year'][variable]
+    end_year = inputs['end_year'][variable]
+    width = inputs['width'][variable]
+    height = inputs['height'][variable]
+    x_scale = inputs['x_scale'][variable]
+    y_scale = inputs['y_scale'][variable]
     x_limits = inputs['x_limits'][variable]
     y_limits = inputs['y_limits'][variable]
-    x_tick_label_size = inputs['x_tick_label_sizes'][variable]
-    y_tick_label_size = inputs['y_tick_label_sizes'][variable]
-    x_label_size = inputs['x_label_sizes'][variable]
-    y_label_size = inputs['y_label_sizes'][variable]
-    legend_on = inputs['legends_on'][variable]
-    legend_label_size = inputs['legend_label_sizes'][variable]
-    linewidth = inputs['linewidths'][variable]
+    x_tick_label_size = inputs['x_tick_label_size'][variable]
+    y_tick_label_size = inputs['y_tick_label_size'][variable]
+    x_label_size = inputs['x_label_size'][variable]
+    y_label_size = inputs['y_label_size'][variable]
+    legend_on = inputs['legend_on'][variable]
+    legend_label_size = inputs['legend_label_size'][variable]
+    linewidth = inputs['linewidth'][variable]
     plot_colors = inputs['plot_colors'][variable]
     linestyle_tuples = inputs['linestyle_tuples'][variable]
     use_latex = inputs['use_latex'][variable]
+    produce_png = inputs['produce_png'][variable]
     include_seasons = inputs['include_seasons'][variable]
     seasons_to_plot_separately = inputs['seasons_to_plot_separately'][variable]
 
@@ -137,6 +142,7 @@ def plot_time_series(inputs):
     plot_options.update(zip(['x_scale', 'y_scale', 'x_limits', 'y_limits', 'use_latex'], [x_scale, y_scale, x_limits, y_limits, use_latex]))
     plot_options.update(zip(['x_tick_label_size', 'y_tick_label_size', 'legend_on'], [x_tick_label_size, y_tick_label_size, legend_on]))
     plot_options.update(zip(['x_label_size', 'y_label_size', 'legend_label_size'], [x_label_size, y_label_size, legend_label_size]))
+    plot_options.update(zip(['produce_png'], [produce_png]))
 
     # Get plotting options relevant only to the monthly time series.
     monthly_time_series_plot = inputs['monthly_time_series_plot'][variable]
@@ -144,6 +150,13 @@ def plot_time_series(inputs):
     monthly_time_series_end_year = inputs['monthly_time_series_end_year'][variable]
     monthly_time_series_x_limits = inputs['monthly_time_series_x_limits'][variable]
     monthly_time_series_y_limits = inputs['monthly_time_series_y_limits'][variable]
+
+    if use_latex:
+        # Use LaTeX fonts for figures and set font size of tick labels.
+        plt.rc('text', usetex=True)
+        plt.rc('font', family='serif', weight='bold')
+    plt.rcParams['xtick.labelsize'] = x_tick_label_size
+    plt.rcParams['ytick.labelsize'] = y_tick_label_size
 
     # Figure and axis objects for annual time series (+ possibly including seasons), seasons separately, and monthly time series plots.
     fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -261,7 +274,8 @@ if __name__ == '__main__':
     for index in range(len(inputs)):
         # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
         list_of_inputs_for_each_plot.extend(process_inputs(inputs[index]))
-    
+    for key, value in list_of_inputs_for_each_plot[0].items():
+        print(key, value)
     # Create all of the times series plots in parallel.
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
         pool.map(plot_time_series, list_of_inputs_for_each_plot)

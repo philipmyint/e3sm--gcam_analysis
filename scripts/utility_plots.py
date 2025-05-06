@@ -1,16 +1,18 @@
 from matplotlib import pyplot as plt
 
-# Default values for different plotting options
-width_default = 10  #inches
-height_default = 8  #inches
-scale_default = 'linear'    #other options include 'log'
-axis_limits_default = 'default'
+# Default values for different plotting options.
+width_default = 10  # inches.
+height_default = 8  # inches.
+scale_default = 'linear'    # other options include 'linear' and 'log'.
+axis_limits_default = None
 num_contour_levels_default = 20
 axis_label_size_default = 24
 tick_label_size_default = 20
 legend_label_size_default = 14
 legend_on_default = True
 linewidth_default = 2
+produce_png_default = False
+use_latex_default = False
 """ Hex codes of Matplotlib Tableau color palette: blue, orange, green, red, purple, brown, pink, gray, olive, cyan. """
 plot_colors_default = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 """ Tuples for different line styles in plots. """
@@ -29,27 +31,28 @@ linestyle_tuples_default = [
     ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
 
 """ Dictionary of default input values for time series plots. """
-default_inputs_time_series = {'plot_directories': './',
-                    'calculation_types': 'mean',
-                    'multipliers': 1,
-                    'start_years': 2015,
-                    'end_years': 2100,
-                    'widths': width_default,
-                    'heights': height_default,
-                    'x_scales': scale_default,
-                    'y_scales': scale_default,
+default_inputs_time_series = {'plot_directory': './',
+                    'calculation_type': 'mean',
+                    'multiplier': 1,
+                    'start_year': 2015,
+                    'end_year': 2100,
+                    'width': width_default,
+                    'height': height_default,
+                    'x_scale': scale_default,
+                    'y_scale': scale_default,
                     'x_limits': axis_limits_default,
                     'y_limits': axis_limits_default,
-                    'x_tick_label_sizes': tick_label_size_default,
-                    'y_tick_label_sizes': tick_label_size_default,
-                    'x_label_sizes': axis_label_size_default,
-                    'y_label_sizes': axis_label_size_default,
-                    'legend_label_sizes': legend_label_size_default,
-                    'legends_on': legend_on_default,
-                    'linewidths': linewidth_default,
+                    'x_tick_label_size': tick_label_size_default,
+                    'y_tick_label_size': tick_label_size_default,
+                    'x_label_size': axis_label_size_default,
+                    'y_label_size': axis_label_size_default,
+                    'legend_label_size': legend_label_size_default,
+                    'legend_on': legend_on_default,
+                    'linewidth': linewidth_default,
                     'plot_colors': plot_colors_default,
                     'linestyle_tuples': linestyle_tuples_default,
-                    'use_latex': False, 
+                    'use_latex': use_latex_default, 
+                    'produce_png': produce_png_default, 
                     'include_seasons': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
                     'seasons_to_plot_separately': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
                     'monthly_time_series_plot': False,
@@ -96,32 +99,41 @@ def set_figure_options(fig, ax, options):
     Returns:
         N/A.
     """
-    # Use LaTeX fonts for figures and set font size of tick labels.
-    if options['use_latex']:
-        plt.rc('text',usetex=True)
-        plt.rc('font',family='serif',weight='bold')
-    if options['legend_on']:
-        ax.legend(prop={'size': options['legend_label_size']}, frameon=False, loc='best')
+    if options.get('use_latex', use_latex_default):
+        # Use LaTeX fonts for figures and set font size of tick labels.
+        plt.rc('text', usetex=True)
+        plt.rc('font', family='serif', weight='bold')
+    legend_on = options.get('legend_on', legend_on_default)
+    if legend_on:
+        ax.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, frameon=False, loc='best')
     else:
         ax.legend().set_visible(False)
-    ax.set_xlabel(options['x_label'], fontsize=options['x_label_size'])
-    plt.rcParams['xtick.labelsize'] = options['x_tick_label_size']
-    ax.set_ylabel(options['y_label'], fontsize=options['y_label_size'])
-    plt.rcParams['ytick.labelsize'] = options['y_tick_label_size']
-    x_scale = options.get('x_scale', None)
-    if x_scale:
-        ax.set_xscale(x_scale)
-    y_scale = options.get('y_scale', None)
-    if y_scale:
-        ax.set_yscale(y_scale)
-    x_limits = options.get('x_limits', 'default')
-    if x_limits != 'default':
+    ax.set_xlabel(options['x_label'], fontsize=options.get('x_label_size', axis_label_size_default))
+    plt.rcParams['xtick.labelsize'] = options.get('x_tick_label_size', tick_label_size_default)
+    ax.set_ylabel(options['y_label'], fontsize=options.get('y_label_size', axis_label_size_default))
+    plt.rcParams['ytick.labelsize'] = options.get('y_tick_label_size', tick_label_size_default)
+    x_scale = options.get('x_scale', scale_default)
+    ax.set_xscale(x_scale)
+    y_scale = options.get('y_scale', scale_default)
+    ax.set_yscale(y_scale)
+    x_limits = options.get('x_limits', axis_limits_default)
+    if not x_limits:
         ax.set_xlim(x_limits)
-    y_limits = options.get('y_limits', 'default')
-    if y_limits != 'default':
+    y_limits = options.get('y_limits', axis_limits_default)
+    if not y_limits:
         ax.set_ylim(y_limits)
-    width = options['width']
-    height = options['height']
+    width = options.get('width', width_default)
+    height = options.get('height', height_default)
     fig.set_size_inches(width, height)
     name = options['name']
-    fig.savefig(f'{name}.pdf', format='pdf')
+    produce_png = options.get('produce_png', produce_png_default)
+    if produce_png or name.endswith('.png'):
+        if name.endswith('.png'):
+            fig.savefig(f'{name}', format='png')
+        else:
+            fig.savefig(f'{name}.png', format='png')
+    else:
+        if name.endswith('.pdf'):
+            fig.savefig(f'{name}', format='pdf')
+        else:
+            fig.savefig(f'{name}.pdf', format='pdf')
