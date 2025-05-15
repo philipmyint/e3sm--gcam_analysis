@@ -2,3 +2,5 @@ scripts/__pycache__
 .DS_Store
 2025_DiVittorio_et_al/.DS_Store
 scripts/.DS_Store
+2025_DiVittorio_et_al/time_series_plots
+2025_DiVittorio_et_al/spatial_plots
