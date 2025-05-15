@@ -99,21 +99,29 @@ def get_columns_without_units_in_dataframe(df):
             columns_without_units.append(column[:stop_index])
     return columns_without_units
 
-def get_matching_column_in_dataframe(df, variable):
+def get_matching_column_in_dataframe(df, variable, all_matches=False):
     """
-    Returns the column name in a Pandas DataFrame that matches the variable.
+    Returns the column name(s) in a Pandas DataFrame that matches the variable.
 
     Parameters:
         df: The input DataFrame.
         variable: Variable name to search for in the column names.
+        all_matches: If True, all columns that matches the variable will be returned. If False, only the first matching column will be returned.
 
     Returns:
-        The matching column name, or None if no match is found.
+        The matching column name(s), or None if no match is found.
     """
+    all_matching_columns = []
     for column in df.columns:
         if variable + ' (' in column:
-            return column
-    return None
+            if not all_matches:
+                return column
+            else:
+                all_matching_columns.append(column)
+    if all_matching_columns:
+        return all_matching_columns
+    else:
+        return None
 
 def move_columns_next_to_each_other_in_dataframe(df, column1, column2):
     """

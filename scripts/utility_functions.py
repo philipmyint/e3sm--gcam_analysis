@@ -22,7 +22,21 @@ def add_lists_elementwise(list1, list2, list2_are_units=False):
         return [a + ' (' + b + ')' for a, b in zip(list1, list2)]
     else:
         return [a + b for a, b in zip(list1, list2)]
-    
+
+def check_is_list_of_lists(data):
+    """
+    Checks if the given iterable is a list of lists.
+
+    Parameters:
+        data: Iterable we want to check is a list of lists.
+
+    Returns:
+        True if data is a list of lists, False otherwise.
+    """
+    if not isinstance(data, list):
+        return False
+    return all(isinstance(item, list) for item in data)
+
 def check_substrings_in_list(substrings, list, all_or_any='all'):
     """
     Checks if either all or any of the elements of the substrings list are substrings of at least one element in list.

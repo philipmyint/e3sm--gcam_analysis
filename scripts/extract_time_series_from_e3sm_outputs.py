@@ -22,13 +22,13 @@ def process_dataframe(df):
     # The number of years will later be used in NumPy tiling operations to produce an array with length equal to the number of rows in the DataFrame.
     start_year = df['Year'].min()
     end_year = df['Year'].max()
-    num_years = end_year - start_year
+    num_years = end_year - start_year + 1
 
     # Convert precipitation variables from m/s to mm/month, add a new column for the total precipitation, and update the column labels.
     substrings = ['PRECC', 'PRECL', 'PRECSC', 'PRECSL']
     if check_substrings_in_list(substrings, df.columns, all_or_any='all'):
         columns_to_modify = [label for label in df.columns for substring in substrings if substring in label]
-        seconds_in_months_tiled = np.tile(NUM_SECONDS_IN_MONTHS, num_years+1).reshape(-1,1)
+        seconds_in_months_tiled = np.tile(NUM_SECONDS_IN_MONTHS, num_years).reshape(-1,1)
         df[columns_to_modify] *= seconds_in_months_tiled*m_TO_mm
         df['PRECIP (mm/month)'] = df[columns_to_modify].sum(axis=1)
         condition = lambda x: any(substring in x for substring in ['PRECC', 'PRECL', 'PRECSC', 'PRECSL'])
@@ -59,7 +59,7 @@ def process_dataframe(df):
     # Convert fluxes from per second to per month.
     old_label = '/s)'
     columns_to_modify = [label for label in df.columns if old_label in label]
-    seconds_in_months_tiled = np.tile(NUM_SECONDS_IN_MONTHS, num_years+1).reshape(-1,1)
+    seconds_in_months_tiled = np.tile(NUM_SECONDS_IN_MONTHS, num_years).reshape(-1,1)
     df[columns_to_modify] *= seconds_in_months_tiled
     condition = lambda x: old_label in x
     new_column_label_function = lambda x: x.replace(old_label, '/month)')
@@ -214,18 +214,20 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
 ###---------------Begin execution---------------###
 if __name__ == '__main__':
 
-    # Run this script together with the input JSON file on the command line.
-    if len(sys.argv) != 2:
-        print('Usage: extract_time_series_from_e3sm_outputs.py `path/to/json/input/file\'')
+    # Run this script together with the input JSON file(s) on the command line.
+    start_time_total = time.time()
+    if len(sys.argv) < 2:
+        print('Usage: plot_spatial_data.py `path/to/json/input/file(s)\'')
         sys.exit()
 
-    # Read and load the JSON file.
-    input_file = sys.argv[1]
-    with open(input_file) as f:
-        inputs = json.load(f)
+    # Read and load the JSON file(s) into a list of dictionaries.
+    inputs = []
+    for index in range(1, len(sys.argv)):
+        input_file = sys.argv[index]
+        with open(input_file) as f:
+            inputs.extend(json.load(f))
 
-    # Process each block in the JSON file to produce an output file for each dictionary.
-    start_time_total = time.time()
+    # Process each dictionary to produce a list of smaller dictionaries, each of which specifies data extraction options for a single output file.
     for index in range(len(inputs)):
         start_time = time.time()
         extract_time_series_from_netcdf_files(**inputs[index])

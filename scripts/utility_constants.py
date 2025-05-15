@@ -4,9 +4,13 @@ import numpy as np
 km_TO_m = 1e3
 km2_TO_m2 = km_TO_m*km_TO_m
 days_TO_s = 86400
+days_TO_hours = 24
+hours_TO_mins = 60
 years_TO_days = 365
 years_TO_s = years_TO_days*days_TO_s
 years_TO_months = 12
+years_TO_hours = years_TO_days*days_TO_hours
+years_TO_mins = years_TO_hours*hours_TO_mins
 kg_TO_g = 1e3
 Pg_TO_kg = 1e12
 Pg_TO_g = Pg_TO_kg*kg_TO_g

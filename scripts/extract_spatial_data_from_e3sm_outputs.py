@@ -34,9 +34,9 @@ def process_inputs(inputs):
         if input_type in ['netcdf_substrings', 'variables'] and not isinstance(inputs[input_type][0], list):
             inputs[input_type] = [inputs[input_type] for i in range(len(inputs[input_type]))]
 
-    # Now that the dictionary has been populated with a complete data extraction options for each variable, separate it into a list of dictionaries,
-    # where each of these smaller dictionaries contain the data extraction options for a single variable. Return this list of dictionaries.
-    list_of_inputs_for_each_output_file = []
+    # Now that the dictionary has been populated with complete data extraction options for each output file, separate it into a list of dictionaries,
+    # where each of these smaller dictionaries contain the data extraction options for a single output file. Return this list of dictionaries.
+    list_of_inputs = []
     for file_index in range(len(inputs['output_files'])):
         output_file = inputs['output_files'][file_index]
         netcdf_substrings = inputs['netcdf_substrings'][file_index]
@@ -45,8 +45,8 @@ def process_inputs(inputs):
         end_years = inputs['end_years'][file_index]
         inputs_for_this_output_file = {'simulation_path': inputs['simulation_path'], 'output_files': output_file, 'netcdf_substrings': netcdf_substrings}
         inputs_for_this_output_file.update({'variables': variables, 'start_years': start_years, 'end_years': end_years})
-        list_of_inputs_for_each_output_file.append(inputs_for_this_output_file)
-    return list_of_inputs_for_each_output_file
+        list_of_inputs.append(inputs_for_this_output_file)
+    return list_of_inputs
 
 def process_dataset(ds):    
     """ 
@@ -75,7 +75,6 @@ def process_dataset(ds):
     if check_substrings_in_list(pressure_variables, variables, all_or_any='all'):
         # See derivation of H2O partial pressure formula at https://cran.r-project.org/web/packages/humidity/vignettes/humidity-measures.html.
         partial_pressure_H2O = ds['PBOT']*ds['QBOT']/(0.622 + (0.378*ds['QBOT']))
-        # Add this CO2 variable to 
         ds['XCO2'] = mole_fraction_TO_ppm*ds['PCO2']/(ds['PBOT'] - partial_pressure_H2O)
         ds['XCO2'].attrs = {'units':'ppm', 'description':'CO2 mole fraction in dry air'}
     
@@ -129,18 +128,20 @@ def extract_spatial_data_from_netcdf_files(inputs):
 ###---------------Begin execution---------------###
 if __name__ == '__main__':
 
-    # Run this script together with the input JSON file on the command line.
-    if len(sys.argv) != 2:
-        print('Usage: extract_spatial_data_from_e3sm_outputs.py `path/to/json/input/file\'')
+    # Run this script together with the input JSON file(s) on the command line.
+    start_time = time.time()
+    if len(sys.argv) < 2:
+        print('Usage: plot_spatial_data.py `path/to/json/input/file(s)\'')
         sys.exit()
 
-    # Read and load the JSON file.
-    start_time = time.time()
-    input_file = sys.argv[1]
-    with open(input_file) as f:
-        inputs = json.load(f)
+    # Read and load the JSON file(s) into a list of dictionaries.
+    inputs = []
+    for index in range(1, len(sys.argv)):
+        input_file = sys.argv[index]
+        with open(input_file) as f:
+            inputs.extend(json.load(f))
 
-    # Process each block in the JSON file to produce a list of dictionaries, where each specifies data extraction options for a NetCDF output file.
+    # Process each dictionary to produce a list of smaller dictionaries, each of which specifies data extraction options for a NetCDF output file.
     list_of_inputs_for_each_output_file = []
     for index in range(len(inputs)):
         list_of_inputs_for_each_output_file.extend(process_inputs(inputs[index]))
