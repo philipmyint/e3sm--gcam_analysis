@@ -9,6 +9,7 @@
         "x_limits": {"XCO2": [2015, 2100]},
         "y_limits": {"XCO2": [400, 700]},
         "use_latex": true,
+        "p_value_file": "./../2025_DiVittorio_et_al/time_series_plots/direct/p_values.dat",
         "include_seasons": {"XCO2": {"MAM": false, "JJA": true, "SON": false, "DJF": true}},
         "seasons_to_plot_separately": {"XCO2": {"MAM": true, "JJA": true, "SON": true, "DJF": true}},
         "monthly_time_series_plot": {"XCO2": true},
@@ -28,13 +29,16 @@
             "./../2025_DiVittorio_et_al/ag_scaling_time_series_4.csv", "./../2025_DiVittorio_et_al/carbon_scaling_time_series_4.csv"]
         ],
         "output_labels": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
-        "plot_type": "ensemble_means", 
+        "plot_type": "ensemble_averages", 
         "plot_directory": "./../2025_DiVittorio_et_al/time_series_plots/ensemble",
         "y_label": {"XCO2": "CO$_2$ concentration (ppm)", "SFCO2": "CO$_2$ surface flux (Pg C/month)"},
         "calculation_type": {"PRECIP": "sum", "NPP": "sum"},
         "x_limits": {"XCO2": [2015, 2100]},
         "y_limits": {"XCO2": [400, 700]},
         "use_latex": true,
+        "p_value_file": "./../2025_DiVittorio_et_al/time_series_plots/ensemble/p_values.dat",
+        "std_annual_mean_across_all_sets_multiplier": false,
+        "std_monthly_mean_across_all_sets_multiplier": false,
         "seasons_to_plot_separately": {"XCO2": {"MAM": true, "JJA": true, "SON": true, "DJF": true}},
         "monthly_time_series_plot": {"XCO2": true},
         "monthly_time_series_end_year": 2100
@@ -60,6 +64,7 @@
         "x_limits": {"XCO2": [2015, 2100]},
         "y_limits": {"XCO2": [400, 700]},
         "use_latex": true,
+        "p_value_file": "./../2025_DiVittorio_et_al/time_series_plots/direct_ensemble/p_values.dat",
         "seasons_to_plot_separately": {"XCO2": {"MAM": true, "JJA": true, "SON": true, "DJF": true}},
         "monthly_time_series_plot": {"XCO2": true},
         "monthly_time_series_end_year": 2100

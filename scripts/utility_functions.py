@@ -145,3 +145,49 @@ def modify_list_based_on_condition(original_list, condition, new_value_function)
         A new list with the modified elements.
     """
     return [new_value_function(element) if condition(element) else element for element in original_list]
+
+def print_p_values(ttest, variable, p_value_threshold, p_value_file, output_file_or_label, p_value_file_print_only_if_below_threshold):
+    """
+    Prints the p-values from a t-test to the console and optionally prints to an output file.
+
+    Parameters:
+        ttest: t-test object.
+        variable: Variable for which the t-test was performed.
+        p_value_threshold: Threshold for the p-value. The message to the console will indicate if the p-value falls below this threshold.
+        p_value_file: Path and name for the file where the p-value result will be printed.
+        output_file_or_label: Output file or label from where the data used to perform the t-test were obtained.
+        p_value_file_print_only_if_below_threshold: If true, the p-value gets printed to the file only if it falls below the threshold.
+
+    Returns:
+        N/A.
+    """
+    if ttest.pvalue < p_value_threshold:
+        print(f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}, which is less than {p_value_threshold}')
+        if p_value_file:
+            with open(p_value_file, 'a+') as f:
+                f.write(f'{variable} in {output_file_or_label}: {ttest.pvalue:.4e}\n')
+    else:
+        print(f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}')
+        if p_value_file and not p_value_file_print_only_if_below_threshold:
+            with open(p_value_file, 'a+') as f:
+                f.write(f'{variable} in {output_file_or_label}: {ttest.pvalue:.4e})\n')
+
+def sort_file(file_path):
+    """
+    Sorts the lines of a file alphabetically.
+
+    Parameters:
+        file_path: The file to be sorted.
+
+    Returns:
+        N/A.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        return f"Error: File not found: {file_path}"
+    lines.sort()
+    with open(file_path, 'w') as file:
+        file.writelines(lines)
+    return f"File sorted successfully: {file_path}"

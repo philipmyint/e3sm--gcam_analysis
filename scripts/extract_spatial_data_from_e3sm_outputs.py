@@ -141,7 +141,7 @@ if __name__ == '__main__':
         with open(input_file) as f:
             inputs.extend(json.load(f))
 
-    # Process each dictionary to produce a list of smaller dictionaries, each of which specifies data extraction options for a NetCDF output file.
+    # Process each dictionary to produce a list of smaller dictionaries, where each specifies data extraction options for a single NetCDF output file.
     list_of_inputs_for_each_output_file = []
     for index in range(len(inputs)):
         list_of_inputs_for_each_output_file.extend(process_inputs(inputs[index]))

@@ -5,21 +5,22 @@ import multiprocessing
 import numpy as np
 import os
 import pandas as pd
+from scipy import stats
 import sys
 import time
 from utility_constants import *
 from utility_dataframes import get_columns_without_units_in_dataframe, get_matching_column_in_dataframe, read_file_into_dataframe
-from utility_functions import check_is_list_of_lists
+from utility_functions import check_is_list_of_lists, check_substrings_in_list, print_p_values, sort_file
 from utility_plots import *
 
 """ Dictionary of default input values for time series plots. """
 default_inputs_time_series = {'plot_directory': './',
                     'calculation_type': 'mean',
-                    'plot_type': 'ensemble_means',
+                    'plot_type': 'ensemble_averages',
                     'multiplier': 1,
-                    'std_annual_multiplier': None, 
+                    'std_annual_multiplier': 1, 
                     'std_seasons_multiplier': None,
-                    'std_monthly_multiplier': None,
+                    'std_monthly_multiplier': 1,
                     'error_bars_alpha': 0.2,
                     'start_year': 2015,
                     'end_year': 2100,
@@ -44,6 +45,11 @@ default_inputs_time_series = {'plot_directory': './',
                     'include_monthly_mean_across_all_sets': True,
                     'std_annual_mean_across_all_sets_multiplier': 1,
                     'std_monthly_mean_across_all_sets_multiplier': 1,
+                    'p_value_file': None,
+                    'p_value_threshold': 0.05,
+                    'p_value_file_print_only_if_below_threshold': True,
+                    'p_value_marker': 'o',
+                    'p_value_marker_size': 6, 
                     'include_seasons': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
                     'seasons_to_plot_separately': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
                     'monthly_time_series_plot': False,
@@ -86,12 +92,12 @@ def process_inputs(inputs):
         variables.remove('Year')
         variables.remove('Month')
         inputs['variables'] = variables
-    # If the user entered a string to indicate a single variable, put that string in a list.
+    # If the user entered a string indicating a single variable, put that string in a list.
     if isinstance(variables, str):
         variables = [variables]
         inputs['variables'] = variables
 
-    # For plotting options that have not been specified in the inputs dictionary, add keys for them and use the default values.
+    # Add keys for plotting options that have not been specified in the inputs dictionary, and set to an empty dictionary or use default values.
     for key in default_inputs_time_series.keys():
         if key not in inputs:
             if key in ['include_seasons', 'seasons_to_plot_separately']:
@@ -105,11 +111,15 @@ def process_inputs(inputs):
     # assume that they want to use that value/list for all the variables. Enable this by creating dictionaries with the keys given by the variables. 
     # This also covers the case above, where default values were added for all plotting options that are not specified in the inputs dictionary.
     for key, value in inputs.items():
-        if key != 'variables':
+        if key not in ['variables', 'include_seasons', 'seasons_to_plot_separately']:
             if not isinstance(value, dict):
                 # If we have a single output file and corresponding label, and these are specified as strings, turn them into a list with this string.
                 if (key == 'output_files' or key == 'output_labels') and isinstance(value, str):
                     value = [value]
+                inputs[key] = dict.fromkeys(variables, value)
+        elif key in ['include_seasons', 'seasons_to_plot_separately']:
+            # If the user entered a dictionary like {'MAM': True, 'JJA': True, 'SON': True, 'DJF': True}, use that for all of the variables.
+            if check_substrings_in_list(inputs[key].keys(), ['MAM', 'JJA', 'SON', 'DJF'], all_or_any='all'):
                 inputs[key] = dict.fromkeys(variables, value)
 
     # For each variable, if a plotting option is missing (has not been specified), fill in with the default corresponding to that plotting option.
@@ -155,9 +165,14 @@ def plot_seasons(include_seasons, ax, df, x, output_label, plot_colors, linestyl
         include_seasons: Dictionary specifying the seasons to include in the plot.
         ax: Axis object for the plot.
         df: Pandas DataFrame containing the time series data.
-        columns: String (if a single column) or list (multiple columns) for the variable in the DataFrame that we want to plot.
+        x: Years to put on the x-axis.
         output_label: Base output label.
-        plot_colors: di
+        plot_colors: List of plot line colors.
+        linestyle_tuples: Tuples for the linestyles.
+        linewidth: Thickness of the lines.
+        columns: String (if a single column) or list (multiple columns) for the datasets in the DataFrame that we want to plot.
+        std_multiplier: Multiplier on the standard deviation for plotting error bars.
+        error_bars_alpha: Opacity value for the error bars.
 
     Returns:
         N/A.
@@ -167,32 +182,46 @@ def plot_seasons(include_seasons, ax, df, x, output_label, plot_colors, linestyl
     months_leq = [5, 8, 11, 2]
     linestyle_tuples = [linestyle_tuples[2][1], linestyle_tuples[2][1], linestyle_tuples[1][1], linestyle_tuples[1][1]]
     linewidths = [linewidth+2, linewidth, linewidth+2, linewidth]
+    # Iterate over all seasons and include only the ones that are specified in the include_seasons dictionary.
     for index in range(len(seasons)):
         season = seasons[index]
         if include_seasons[season]:
-
             month_geq = months_geq[index]
             month_leq = months_leq[index]
             linestyle=linestyle_tuples[index]
             linewidth=linewidths[index]
-            
+            # December--January--February needs to be handled differently than the other seasons.
             if season == 'DJF':
                 condition = (df['Month'] >= month_geq) | (df['Month'] <= month_leq)
             else:
                 condition = (df['Month'] >= month_geq) & (df['Month'] <= month_leq)
-
+            # If we have multiple datasets to plot, calculate the standard deviation across the datasets for each year for each of the seasons.
             if isinstance(columns, list):
                 y = df[condition].groupby('Year', as_index=False).mean()[columns].mean(axis=1)
                 y_std = df[condition].groupby('Year', as_index=False).mean()[columns].std(axis=1)
             else:
                 y = df[condition].groupby('Year', as_index=False).mean()[columns]
-
+            # Add the season to the plot, including its error bar if the multiplier is not None.
             ax.plot(x, y, label=output_label + f' ({season})', color=plot_colors, linestyle=linestyle, linewidth=linewidth)
             if std_multiplier and isinstance(columns, list):
                 error = y_std*std_multiplier
                 ax.fill_between(x, y-error, y+error, color=plot_colors, alpha=error_bars_alpha)
 
 def read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=False):
+    """ 
+    Reads a file and puts the time series data for one specific variable from that file into a Pandas DataFrame. 
+
+    Parameters:
+        file: Directory and name for the file we want to read.
+        variable: The variable of interest.
+        start_year: First year in the extracted time series data.
+        end_year: Last year in the extracted time series data.
+        multiplier: Multiplier on the time series (in case the user wants to change the units).
+        return_column: Boolean that specifies if we want to additionally return the column in the DataFrame corresponding to the variable.
+
+    Returns:
+        DataFrame containing the data for the variable and also the column in the DataFrame for that variable if return_column is True.
+    """
     df = read_file_into_dataframe(file)
     df = df[(df['Year'] >= start_year) & (df['Year'] <= end_year)]
     # Find the column label for the variable, reduce the DataFrame to that column (plus columns for Year and Month).
@@ -204,15 +233,33 @@ def read_file_into_single_variable_dataframe(file, variable, start_year, end_yea
     else:
         return df
     
-def read_file_into_single_variable_dataframe_ensemble(output_files, file_index, variable, start_year, end_year, multiplier):
-    file = output_files[0][file_index]
-    num_file_sets = len(output_files)
+def read_file_set_into_single_variable_dataframe(output_files, file_set_index, variable, start_year, end_year, multiplier):
+    """ 
+    Reads a list of output files and the time series data for one specific variable in those files into a Pandas DataFrame. 
+
+    Parameters:
+        output_files: List of lists (2D matrix) for the files. We want to read in one column of this matrix, which corresponds to a particular group
+                      of files that we want to collect together into a set and later plot the various set means of a larger ensemble of sets.
+        file_set_index: The column number for the output_files matrix. This indicates the index for the group/set of files that are of interest.
+        variable: The variable of interest.
+        start_year: First year in the extracted time series data.
+        end_year: Last year in the extracted time series data.
+        multiplier: Multiplier on the time series (in case the user wants to change the units).
+
+    Returns:
+        DataFrame containing data from all files for the variable and also all DataFrame columns for the variable, one column from each of the files.
+    """
+    file = output_files[0][file_set_index]
+    num_files_in_set = len(output_files)
     df, column = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=True)
-    for file_set_index in range(num_file_sets):
-        file = output_files[file_set_index][file_index]
+    # Rename the columns before doing the join operation to avoid naming conflicts for the various columns that correspond to the variable.
+    df = df.rename(columns={column: column+f'_0_{file_set_index}'})
+    for file_index in range(1, num_files_in_set):
+        file = output_files[file_index][file_set_index]
         df_for_this_file = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier)
-        df_for_this_file = df_for_this_file.rename(columns={column: column+f'_{file_set_index+1}'})
+        df_for_this_file = df_for_this_file.rename(columns={column: column+f'_{file_index}_{file_set_index}'})
         df = pd.merge(df, df_for_this_file, on=['Year', 'Month'], how='inner')
+    # After the join operation, there will be multiple columns for the variable. Return the list of all of these columns along with the DataFrame.
     columns = get_matching_column_in_dataframe(df, variable, all_matches=True)
     return df, columns
 
@@ -220,9 +267,9 @@ def plot_time_series(inputs):
     """ 
     Parses a dictionary of inputs (keys are options, values are choices for those options) to create time series plots for a single variable. 
     Time series plots can be annual, with time presented in years (including seasonal variants that can be plotted separately), or 
-    monthly, in which the values that are plotted indicate averages between specified start and end years for each month.
-    If the output files are specified by a list of strings, the plots will show the direct values of the variables.
-    If the output files are specified by a list of lists, representing an ensemble collection, the plots will show differences between ensemble averages.
+    monthly, in which the values that are plotted indicate averages between specified start and end years for each month. 
+    Types of plots: 1) Direct plots in which each output file is treated as an individual curve in the time series collection. 2) Ensemble plots in 
+    which the files are grouped into sets and averages of each set are plotted. Output files must be specified as a list of lists for ensemble plots.
 
     Parameters:
         input: Dictionary containing the user plotting choice inputs for different options. This dictionary is assumed to be complete (pre-processed).
@@ -272,6 +319,11 @@ def plot_time_series(inputs):
     std_annual_mean_across_all_sets_multiplier = inputs['std_annual_mean_across_all_sets_multiplier']
     include_monthly_mean_across_all_sets = inputs['include_monthly_mean_across_all_sets']
     std_monthly_mean_across_all_sets_multiplier = inputs['std_monthly_mean_across_all_sets_multiplier']
+    p_value_threshold = inputs['p_value_threshold']
+    p_value_file = inputs['p_value_file']
+    p_value_file_print_only_if_below_threshold = inputs['p_value_file_print_only_if_below_threshold']
+    p_value_marker = inputs['p_value_marker']
+    p_value_marker_size = inputs['p_value_marker_size']
 
     # Set the plotting options
     plot_options = dict(width=width, height=height, name=plot_name, x_label='Year', y_label=fr'{y_label}')
@@ -299,139 +351,220 @@ def plot_time_series(inputs):
     fig_seasons, ax_seasons = plt.subplots(nrows=1, ncols=1)
     fig_monthly, ax_monthly = plt.subplots(nrows=1, ncols=1)
 
-    # Direct value plots in which each such time series plot can include one or more sets of curves, with one set for each output file.
-    if not check_is_list_of_lists(output_files) or plot_type == 'direct' or (check_is_list_of_lists(output_files) and plot_type == 'ensemble_means'):
+    # Create an empty DataFrame that will later be used to store all of the annual and monthly time series data and to calculate their statistics.
+    df_all_annual_time_series = pd.DataFrame()
+    df_all_monthly_time_series = pd.DataFrame()
+
+    # Direct plots, in which each such time series plot can include one or more sets of individual (not grouped) curves.
+    if not check_is_list_of_lists(output_files) or plot_type == 'direct':
         
-        # If output_files is a list of lists, unpack it into a list of strings, where each string specifies an output file.
+        # If output_files is a list of lists, but we want a direct plot, unpack output_files into a list of strings, one string for each output file.
         if check_is_list_of_lists(output_files) and plot_type == 'direct':
-            # Turn the corresponding output_labels and plot_colors to list of lists with enough rows to match output_labels, then unpack.
+            # Turn the corresponding output_labels and plot_colors to list of lists with enough rows to match output_labels, then unpack them.
             output_labels = [output_labels]*len(output_files)
             output_labels = list(itertools.chain.from_iterable(output_labels))
             plot_colors = [plot_colors]*len(output_files)
             plot_colors = list(itertools.chain.from_iterable(plot_colors))
             output_files = list(itertools.chain.from_iterable(output_files))
 
-        if check_is_list_of_lists(output_files) and plot_type == 'ensemble_means':
-            num_files_in_each_set = len(output_files[0])
-        else:
-            num_files_in_each_set = len(output_files)
+        # Get the total number of files and iterate over each file.
+        num_files = len(output_files)
+        for file_index in range(num_files):
 
-        df_all_annual_time_series = pd.DataFrame()
-        df_all_monthly_time_series = pd.DataFrame()
-
-        for file_index in range(num_files_in_each_set):
-
-            # Get the label for this output file and restrict between user-specified start and end years.
+            # Get the label and line color for this output file.
+            file = output_files[file_index]
             output_label = output_labels[file_index]
             line_color = plot_colors[file_index]
 
-            if not check_is_list_of_lists(output_files) or plot_type == 'direct':
-                file = output_files[file_index]
-                df, column = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=True)
-                if calculation_type == 'mean':
-                    y = df.groupby('Year', as_index=False).mean()[column]
-                elif calculation_type == 'sum':
-                    y = df.groupby('Year', as_index=False).sum()[column]
-                    plot_options['y_label'] = y_label.replace('/month', '/year')
-                
-            elif check_is_list_of_lists(output_files) and plot_type == 'ensemble_means':
-                df, columns = read_file_into_single_variable_dataframe_ensemble(output_files, file_index, variable, start_year, end_year, multiplier)
-                if calculation_type == 'mean':
-                    y = df.groupby('Year', as_index=False).mean()[columns].mean(axis=1)
-                    y_std = df.groupby('Year', as_index=False).mean()[columns].std(axis=1)
-                elif calculation_type == 'sum':
-                    y = df.groupby('Year', as_index=False).sum()[columns].mean(axis=1)
-                    y_std = df.groupby('Year', as_index=False).sum()[columns].std(axis=1)
-                    plot_options['y_label'] = y_label.replace('/month', '/year')
-            
-            # Collect and plot the annual time series. Time series data can be either averaged or summed over each month of the year.
+            # Time series data can be either averaged or summed over each month of the year.
+            df, column = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=True)
+            if calculation_type == 'mean':
+                y = df.groupby('Year', as_index=False).mean()[column]
+            elif calculation_type == 'sum':
+                # Update the labels accordingly if a sum.
+                y = df.groupby('Year', as_index=False).sum()[column]
+                plot_options['y_label'] = y_label.replace('/month', '/year')
+                    
+            # Plot the annual time series, including possibly the error bars. 
             x = df.groupby('Year', as_index=False).mean()['Year']
             ax.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+            # Join the annual time series data from the current file into the larger DataFrame.
             if file_index == 0:
                 x_series = pd.Series(x, name='Year')
                 df_all_annual_time_series = pd.concat([df_all_annual_time_series, x_series], axis=1)
-            y_series = pd.Series(y, name=f'{variable}_{file_index}')
+            y_series = pd.Series(y, name=f'{column}_{file_index}')
             df_all_annual_time_series = pd.concat([df_all_annual_time_series, y_series], axis=1)
-            if std_annual_multiplier and (check_is_list_of_lists(output_files) and plot_type == 'ensemble_means'):
-                error = y_std*std_annual_multiplier
-                ax.fill_between(x, y-error, y+error, color=plot_colors[file_index], alpha=error_bars_alpha)
 
             # Add time series for one or more seasonal averages if specified to do so.
             if calculation_type == 'mean' and any(include_seasons.values()):
-                if not check_is_list_of_lists(output_files) or plot_type == 'direct':
-                    plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column)
-                elif check_is_list_of_lists(output_files) and plot_type == 'ensemble_means':
-                    plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=columns, 
-                                 std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
+                plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column)
 
             # Create a separate time series plot for the seasonal averages if specified to do so. Set name of this seasons-only plot accordingly.
             if calculation_type == 'mean' and any(seasons_to_plot_separately.values()):
-                #print(f'{variable} {seasons_to_plot_separately}')
-                if not check_is_list_of_lists(output_files) or plot_type == 'direct':
-                    plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column)
-                elif check_is_list_of_lists(output_files) and plot_type == 'ensemble_means':
-                    plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, 
-                                 columns=columns, std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
+                plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column)
                 plot_options['name'] = plot_name + '_seasons'   
                 set_figure_options(fig_seasons, ax_seasons, plot_options)
 
             # Create the monthly time series plot for the variable if specified to do so.
             if monthly_time_series_plot:
-                if not check_is_list_of_lists(output_files) or plot_type == 'direct':
-                    df = read_file_into_single_variable_dataframe(file, variable, monthly_time_series_start_year, 
-                                                                    monthly_time_series_end_year, multiplier, return_column=False)
-                    y = df.groupby('Month', as_index=False).mean()[column]
-                    x = (df.groupby('Month', as_index=False).mean()['Month']).to_numpy()
-                    #x = np.vectorize(MONTH_NUM_TO_NAME.get)(x)
-                    ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-                    #ax_monthly.tick_params(axis='x', labelrotation=45)
-                elif check_is_list_of_lists(output_files) and plot_type == 'ensemble_means':
-                    df, columns = read_file_into_single_variable_dataframe_ensemble(output_files, file_index, variable, start_year, end_year, multiplier)
-                    y = df.groupby('Month', as_index=False).mean()[columns].mean(axis=1)
-                    y_std = df.groupby('Month', as_index=False).mean()[columns].std(axis=1)
-                    x = (df.groupby('Month', as_index=False).mean()['Month']).to_numpy()
-                    ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-                    if std_monthly_multiplier:
-                        error = y_std*std_monthly_multiplier
-                        ax_monthly.fill_between(x, y-error, y+error, color=line_color, alpha=error_bars_alpha)
-                
+                df = read_file_into_single_variable_dataframe(file, variable, monthly_time_series_start_year, 
+                                                                monthly_time_series_end_year, multiplier, return_column=False)
+                y = df.groupby('Month', as_index=False).mean()[column]
+                x = (df.groupby('Month', as_index=False).mean()['Month']).to_numpy()
+                #x = np.vectorize(MONTH_NUM_TO_NAME.get)(x)
+                ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                #ax_monthly.tick_params(axis='x', labelrotation=45)
+                # Join the monthly time series data from the current file into the larger DataFrame.
                 if file_index == 0:
                     x_series = pd.Series(x, name='Month')
                     df_all_monthly_time_series = pd.concat([df_all_monthly_time_series, x_series], axis=1)
-                y_series = pd.Series(y, name=f'{variable}_{file_index}')
+                y_series = pd.Series(y, name=f'{column}_{file_index}')
                 df_all_monthly_time_series = pd.concat([df_all_monthly_time_series, y_series], axis=1)
 
-        if include_annual_mean_across_all_sets:
-            columns = [column for column in df_all_annual_time_series.columns if column != 'Year']
-            x = df_all_annual_time_series['Year']
-            y = df_all_annual_time_series[columns].mean(axis=1)
-            ax.plot(x, y, label='Mean', color='k', linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-            if std_annual_mean_across_all_sets_multiplier:
-                error = df_all_annual_time_series[columns].std(axis=1)*std_annual_mean_across_all_sets_multiplier
-                ax.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
+        # Calculate the mean and standard deviation (for error bars) across all annual and monthly time series. Perform t-tests.
+        conditions = [include_annual_mean_across_all_sets, monthly_time_series_plot and include_monthly_mean_across_all_sets]
+        dataframes = [df_all_annual_time_series, df_all_monthly_time_series]
+        time_columns = ['Year', 'Month']
+        axes = [ax, ax_monthly]
+        std_multipliers = [std_annual_mean_across_all_sets_multiplier, std_monthly_mean_across_all_sets_multiplier]
+        for time_index, condition in enumerate(conditions):
+            df = dataframes[time_index]
+            time_column = time_columns[time_index]
+            axis = axes[time_index]
+            std_multiplier = std_multipliers[time_index]
+            if condition:
+                columns = [column for column in df.columns if column != time_column]
+                x = df[time_column]
+                y = df[columns].mean(axis=1)
+                axis.plot(x, y, label='Mean', color='k', linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                if std_multiplier:
+                    error = df[columns].std(axis=1)*std_multiplier
+                    axis.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
+            # Perform t-test to compare the entire annual or monthly time series in the first file (assumed to be control) vs. other files.
+            if not df.empty:
+                control_data = df[column + '_0']
+                for file_index in range(1, num_files):
+                    output_file = output_files[file_index]
+                    test_data = df[column + f'_{file_index}']
+                    ttest = stats.ttest_ind(control_data, test_data)
+                    print_p_values(ttest, variable, p_value_threshold, p_value_file, output_file, p_value_file_print_only_if_below_threshold)
+    
+    # Ensemble plots, in which the ensemble is further subdivided into sets/groups of curves.
+    elif check_is_list_of_lists(output_files) and plot_type == 'ensemble_averages':
 
-        if monthly_time_series_plot and include_monthly_mean_across_all_sets:
-            columns = [column for column in df_all_monthly_time_series.columns if column != 'Month']
-            x = df_all_monthly_time_series['Month']
-            y = df_all_monthly_time_series[columns].mean(axis=1)
-            ax_monthly.plot(x, y, label='Mean', color='k', linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-            if std_monthly_mean_across_all_sets_multiplier:
-                error = df_all_monthly_time_series[columns].std(axis=1)*std_monthly_mean_across_all_sets_multiplier
-                ax_monthly.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
+        # Get the total number of file sets (groups) in the ensemble and iterate over each set.
+        num_file_sets = len(output_files[0])
+        for file_set_index in range(num_file_sets):
 
-        # Finalize the annual time series plot for the variable now that all output files for the variable have been processed.
-        plot_options['name'] = plot_name
-        set_figure_options(fig, ax, plot_options)
-        
-        # Finalize the monthly time series plot for the variable now that all output files for the variable have been processed.
-        if monthly_time_series_plot:
-            plot_options['name'] = plot_name + '_monthly'
-            plot_options['x_label'] = 'Month'
-            plot_options['x_limits'] = monthly_time_series_x_limits
-            plot_options['y_limits'] = monthly_time_series_y_limits
-            set_figure_options(fig_monthly, ax_monthly, plot_options)
+            # Get the label and line color for this file set.
+            output_label = output_labels[file_set_index]
+            line_color = plot_colors[file_set_index]
 
-    # Ensemble average plots where the file sets are contained in a list of lists, and each inner list represents one set.
+            # Calculate the mean over all files in this set. Time series data can be either averaged or summed over each month of the year.
+            df, columns = read_file_set_into_single_variable_dataframe(output_files, file_set_index, variable, start_year, end_year, multiplier)
+            if calculation_type == 'mean':
+                y = df.groupby('Year', as_index=False).mean()[columns].mean(axis=1)
+                y_std = df.groupby('Year', as_index=False).mean()[columns].std(axis=1)
+                # Join the annual time series data from the current set into the larger DataFrame.
+                df_all_annual_time_series = pd.concat([df_all_annual_time_series, df.groupby('Year', as_index=False).mean()], axis=1)
+            elif calculation_type == 'sum':
+                y = df.groupby('Year', as_index=False).sum()[columns].mean(axis=1)
+                y_std = df.groupby('Year', as_index=False).sum()[columns].std(axis=1)
+                # Update the labels accordingly if a sum.
+                plot_options['y_label'] = y_label.replace('/month', '/year')
+                # Join the annual time series data from the current set into the larger DataFrame.
+                df_all_annual_time_series = pd.concat([df_all_annual_time_series, df.groupby('Year', as_index=False).sum()], axis=1)
+
+            # Plot the annual time series, including possibly the error bars. 
+            x = df.groupby('Year', as_index=False).mean()['Year']
+            ax.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+            if std_annual_multiplier:
+                error = y_std*std_annual_multiplier
+                ax.fill_between(x, y-error, y+error, color=plot_colors[file_set_index], alpha=error_bars_alpha)
+            
+            # Add time series for one or more seasonal averages if specified to do so.
+            if calculation_type == 'mean' and any(include_seasons.values()):
+                plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=columns, 
+                                 std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
+
+            # Create a separate time series plot for the seasonal averages if specified to do so. Set name of this seasons-only plot accordingly.
+            if calculation_type == 'mean' and any(seasons_to_plot_separately.values()):
+                plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, 
+                            columns=columns, std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
+                plot_options['name'] = plot_name + '_seasons'   
+                set_figure_options(fig_seasons, ax_seasons, plot_options)
+
+            # Create the monthly time series plot for the variable if specified to do so.
+            if monthly_time_series_plot:
+                df, columns = read_file_set_into_single_variable_dataframe(output_files, file_set_index, variable, start_year, end_year, multiplier)
+                y = df.groupby('Month', as_index=False).mean()[columns].mean(axis=1)
+                y_std = df.groupby('Month', as_index=False).mean()[columns].std(axis=1)
+                x = (df.groupby('Month', as_index=False).mean()['Month']).to_numpy()
+                ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                if std_monthly_multiplier:
+                    error = y_std*std_monthly_multiplier
+                    ax_monthly.fill_between(x, y-error, y+error, color=line_color, alpha=error_bars_alpha)
+                # Join the monthly time series data from the current file into the larger DataFrame.
+                df_all_monthly_time_series = pd.concat([df_all_monthly_time_series, df.groupby('Month', as_index=False).mean()], axis=1)
+
+        # Calculate the mean and error bars for each of the annual and monthly time series data set groups. Perform multiple different t-tests.
+        conditions = [include_annual_mean_across_all_sets, monthly_time_series_plot and include_monthly_mean_across_all_sets]
+        dataframes = [df_all_annual_time_series, df_all_monthly_time_series]
+        time_columns = ['Year', 'Month']
+        axes = [ax, ax_monthly]
+        std_multipliers = [std_annual_mean_across_all_sets_multiplier, std_monthly_mean_across_all_sets_multiplier]
+        for time_index, condition in enumerate(conditions):
+            df = dataframes[time_index]
+            if not df.empty:
+                time_column = time_columns[time_index]
+                axis = axes[time_index]
+                # Remove the duplicate 'Year' or 'Month' columns.
+                df = df.loc[:,~df.columns.duplicated()]
+                # Create DataFrame to store the means of each of the data set groups.
+                df_all_data_set_means = pd.DataFrame()
+                # Get all columns (except for the time) and find the columns for the first (assumed to be control) set. Calculate control set mean.
+                columns = get_matching_column_in_dataframe(df, variable, all_matches=True)
+                columns_control_set = [column for column in columns if column.endswith(f'_0')]
+                df_control_mean = df[columns_control_set].mean(axis=1)
+                df_all_data_set_means = pd.concat([df_all_data_set_means, df_control_mean], axis=1)
+                for file_set_index in range(1, num_file_sets):
+                    # Calculate the mean of the current set.
+                    columns_this_set = [column for column in columns if column.endswith(f'_{file_set_index}')]
+                    df_this_set_mean = df[columns_this_set].mean(axis=1)
+                    df_all_data_set_means = pd.concat([df_all_data_set_means, df_this_set_mean], axis=1)
+                    # Perform a t-test to compare the control against the current data set at each time period (each year or each month).
+                    color = plot_colors[file_set_index]
+                    for x in df[time_column]:
+                        control = df[df[time_column] == x][columns_control_set].to_numpy()[0]
+                        this_set = df[df[time_column] == x][columns_this_set].to_numpy()[0]
+                        ttest = stats.ttest_ind(control, this_set)
+                        if ttest.pvalue <= p_value_threshold:
+                            axis.plot(x, np.mean(this_set), marker=p_value_marker, markersize=p_value_marker_size, color=color)
+                    # Perform a t-test to compare the means of the control against the current data set as a whole over the entire time period.
+                    ttest = stats.ttest_ind(df_control_mean, df_this_set_mean)
+                    output_label = output_labels[file_set_index]
+                    print_p_values(ttest, variable, p_value_threshold, p_value_file, output_label, p_value_file_print_only_if_below_threshold)
+                # Calculate the ensemble mean, which is the mean of each of the data set means, and the error bars on this ensemble mean.
+                if condition:
+                    x = df[time_column]
+                    y = df_all_data_set_means.mean(axis=1)
+                    axis.plot(x, y, label='Mean', color='k', linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                    std_multiplier = std_multipliers[time_index]
+                    if std_multiplier:
+                        error = df_all_data_set_means.std(axis=1)*std_multiplier
+                        axis.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
+
+    # Finalize the annual time series plot for the variable now that all output files for the variable have been processed.
+    plot_options['name'] = plot_name
+    set_figure_options(fig, ax, plot_options)
+    
+    # Finalize the monthly time series plot for the variable now that all output files for the variable have been processed.
+    if monthly_time_series_plot:
+        plot_options['name'] = plot_name + '_monthly'
+        plot_options['x_label'] = 'Month'
+        plot_options['x_limits'] = monthly_time_series_x_limits
+        plot_options['y_limits'] = monthly_time_series_y_limits
+        set_figure_options(fig_monthly, ax_monthly, plot_options)
 
     # Close all the plots for the variable now that we are done with it. Record the elapsed time.
     plt.close(fig)
@@ -440,6 +573,7 @@ def plot_time_series(inputs):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time for producing plots for {variable} in {plot_directory}: {elapsed_time:.2f} seconds") 
+
 
 ###---------------Begin execution---------------###
 if __name__ == '__main__':
@@ -457,16 +591,28 @@ if __name__ == '__main__':
         with open(input_file) as f:
             inputs.extend(json.load(f))
 
-    # Process each dictionary to produce two lists of smaller dictionaries, where each smaller dictionary specifies options for a single plot.
+    # Process each dictionary to produce a list of smaller dictionaries, where each smaller dictionary specifies options for a single plot.
     start_time = time.time()
     list_of_inputs = []
     for index in range(len(inputs)):
         # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
         list_of_inputs.extend(process_inputs(inputs[index]))
 
+    # Delete all the p-value files before we do any calculations to start a fresh run.
+    for inputs in list_of_inputs:
+        file = inputs['p_value_file']
+        if os.path.exists(file): 
+            os.remove(file)
+
     # Create all of the times series plots in parallel.
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
         pool.map(plot_time_series, list_of_inputs)
+
+    # Sort all the p-value files alphabetically.
+    for inputs in list_of_inputs:
+        file = inputs['p_value_file']
+        if os.path.exists(file): 
+            sort_file(file)
     
     # Print the total execution time to produce all the plots.
     end_time = time.time()
