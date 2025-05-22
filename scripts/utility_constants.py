@@ -17,6 +17,9 @@ Pg_TO_g = Pg_TO_kg*kg_TO_g
 m_TO_mm = 1e3
 mole_fraction_TO_ppm = 1e6    
 
+""" Tiny constant used to avoid divide-by-zero errors. """
+EPSILON = 1.0e-14
+
 """ Number of days and seconds in each month (no leap years). """
 NUM_DAYS_IN_MONTHS = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])
 NUM_SECONDS_IN_MONTHS = days_TO_s*NUM_DAYS_IN_MONTHS

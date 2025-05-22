@@ -29,9 +29,9 @@ def calculate_mean_and_std_of_da_list(da_list, calculate_std=False):
     else:
         return mean_da
 
-def calculate_min_mean_max_std_of_da(da, dim=None, skipna=True, calculate_std=False):
+def calculate_statistics_of_da(da, dim=None, skipna=True):
     """
-    Calculates the min, mean, max, and optionally also the standard deviation of an xarray DataArray.
+    Calculates the min, mean, median, max, and the standard deviation of an xarray DataArray.
 
     Parameters:
         da: DataArray whose statistical properties we want to calculate.
@@ -39,16 +39,14 @@ def calculate_min_mean_max_std_of_da(da, dim=None, skipna=True, calculate_std=Fa
         skipna: If True, skip missing values (as marked by NaN). 
 
     Returns:
-        min, mean, max, and standard deviation of the DataArray.
+        min, mean, median, max, and standard deviation of the DataArray.
     """
     min = da.min(dim=dim, skipna=skipna).item()
     mean = da.mean(dim=dim, skipna=skipna).item()
+    median = da.median(dim=dim, skipna=skipna).item()
     max = da.max(dim=dim, skipna=skipna).item()
-    if calculate_std:
-        std = da.std(dim=dim, skipna=skipna).item()
-        return min, mean, max, std
-    else:
-        return min, mean, max
+    std = da.std(dim=dim, skipna=skipna).item()
+    return min, mean, median, max, std
 
 def ttest_1samp(a, popmean, dim):
     """

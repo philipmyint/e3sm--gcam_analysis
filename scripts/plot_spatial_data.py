@@ -10,12 +10,15 @@ import sys
 import time
 import xarray as xr
 from utility_constants import *
+from utility_dataframes import perform_ttest
+from utility_functions import check_is_list_of_lists, print_p_values, replace_inside_parentheses, sort_file
 from utility_plots import *
-from utility_xarray import calculate_mean_and_std_of_da_list, calculate_min_mean_max_std_of_da
+from utility_xarray import calculate_statistics_of_da
 
 """ Dictionary of default input values for spatial plots. """
 default_inputs_spatial_data = {'plot_directory': './',
                     'calculation_type': 'mean',
+                    'plot_type_for_2_sets': 'absolute_difference',
                     'multiplier': 1,
                     'start_year': 2071,
                     'end_year': 2090,
@@ -26,12 +29,12 @@ default_inputs_spatial_data = {'plot_directory': './',
                     'cbar_on': True,
                     'cbar_label_size': tick_label_size_default,
                     'cbar_limits': None,
-                    'cbar_x_offset': 0.04,
+                    'cbar_x_offset': 0.06,
                     'title_size': axis_label_size_default, 
                     'use_latex': False,
                     'produce_png': False,
                     'bbox_inches': 'tight',
-                    'min_mean_max_size': legend_label_size_default,
+                    'statistics_panel_size': legend_label_size_default,
                     'p_value_threshold': 0.05,
                     'p_value_file': None,
                     'p_value_file_print_only_if_below_threshold': True,
@@ -48,14 +51,14 @@ def process_inputs(inputs):
         inputs: Dictionary containing the user plotting choice inputs for different options. This dictionary may be incomplete or have invalid values.
 
     Returns:
-        List of dictionaries, each of which specifies all plotting options for a single variable. If the user did not select a plotting option for
-        a particular variable, the default choice for that plotting option will be selected.
+        List of dictionaries, each of which specifies completed plotting options for a single variable. If the user did not select a plotting option 
+        for a particular variable, the default choice for that plotting option will be selected.
     """
     # Turn the list of NetCDF files and their corresponding labels into a list of lists, if they are not already in that form.
     for input_type in ['netcdf_files']:
         if isinstance(inputs[input_type], str):
             inputs[input_type] = [[inputs[input_type]]]
-        elif isinstance(inputs[input_type], list) and isinstance(inputs[input_type][0], str):
+        elif isinstance(inputs[input_type], list) and not check_is_list_of_lists(inputs[input_type]):
             inputs[input_type] = [inputs[input_type]]
 
     # Read one of the NetCDF files into an xarray Dataset so that we can later get the variables contained in them and the units of these variables.
@@ -101,7 +104,7 @@ def process_inputs(inputs):
         # Default for the plot names is to call it 'spatial_[var_name]', where '[var_name]' is the name of the variable.
         if not any(key == variable for key in inputs['plot_name'].keys()):
             inputs['plot_name'][variable] = os.path.join(inputs['plot_directory'][variable], 'spatial_' + variable)
-        # Default for the title of a variable is to use the column header for that variable from the DataFrame.
+        # Default for the title of a variable is to use the column header for that variable from the Dataset.
         if not any(key == variable for key in inputs['title'].keys()):
             # Replace ^2 with $^2$ in the units for the variable, so that the intended exponent (e.g., m^2) gets rendered correctly.
             units = ds[variable].attrs['units'].replace('^2', '$^2$')
@@ -153,8 +156,9 @@ def plot_spatial_data_from_netcdf_files(inputs):
     cbar_label_size = inputs['cbar_label_size']
     cbar_limits = inputs['cbar_limits']
     cbar_x_offset = inputs['cbar_x_offset']
-    min_mean_max_size = inputs['min_mean_max_size']
+    statistics_panel_size = inputs['statistics_panel_size']
     calculation_type = inputs['calculation_type']
+    plot_type_for_2_sets = inputs['plot_type_for_2_sets']
     use_latex = inputs['use_latex']
     start_year = inputs['start_year']
     end_year = inputs['end_year']
@@ -164,99 +168,122 @@ def plot_spatial_data_from_netcdf_files(inputs):
     stippling_on = inputs['stippling_on']
     stippling_std_multiple = inputs['stippling_std_multiple']
     stippling_hatches = inputs['stippling_hatches']
-    
-    # Calculate either the mean or sum between the start and end years for each lat/lon coordinate, and display this mean or sum on the spatial plot.
-    # Store these means or sums of the variable in dataArrays. The dataArrays correspond to the NetCDF files, which are arranged in a list of lists, 
-    # where each of the inner nested lists can specify either one or two files. If they specify only one file, the spatial plots will show the value
-    # for that file; if there are two files, the spatial plots will show values for the difference between the two files (e.g., a control and a test).
-    # If the file set (outer list) contains more than one inner list, the plot will show the mean over all the inner lists (an ensemble average).
-    num_file_sets = len(netcdf_files)
-    num_files_in_each_set = len(netcdf_files[0])
-    dataArrays_to_include_in_plot = []
-    all_dataArrays = [[0 for _ in range(num_files_in_each_set)] for _ in range(num_file_sets)]
+
+    # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an xarray DataArray and then add each of these 
+    # DataArrays to a single Pandas DataFrame that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
+    # between the start and end years for each lat/lon coordinate. We will later display some function of this mean or sum on the spatial plot.
+    num_files_in_each_set = len(netcdf_files)
+    num_file_sets = len(netcdf_files[0])
+    df = pd.DataFrame()
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
-            file = netcdf_files[file_set_index][file_index]
+            file = netcdf_files[file_index][file_set_index]
             if calculation_type == 'mean':
                 da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).mean(dim='year')[variable]*multiplier
             elif calculation_type == 'sum':
                 da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).sum(dim='year')[variable]*multiplier
-                # If calculating the sum, we have to change the per-time quantities and their units accordingly.
+                # If calculating the sum, change the per-time quantities and their units accordingly.
                 per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
                 time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
                 for index, per_time_label in enumerate(per_time_labels):
                     if per_time_label in title:
                         title = title.replace(per_time_label, '')
+                        da.attrs['units'] = da.attrs['units'].replace(per_time_label, '')
                         da *= time_multipliers[index]
                         break
-            all_dataArrays[file_set_index][file_index] = da
-        if num_files_in_each_set > 1:
-            da = all_dataArrays[file_set_index][1] - all_dataArrays[file_set_index][0]
+            # If there is more than one data set, modify the labels so that we know which data set corresponds to which column of the DataFrame.
+            if num_file_sets == 2:
+                da = da.rename(f'{variable}_{file_index}_{file_set_index}')
+            df = pd.concat([df, da.to_dataframe().dropna()], axis=1)
+
+    dataArrays_to_plot = []
+    if num_file_sets == 2:
+        columns_control_set = [column for column in df.columns if column.endswith(f'_0')]
+        columns_test_set = [column for column in df.columns if column.endswith(f'_1')]
+        # If there is more than one file per data set, we can compare the two data sets by performing a t-test at each individual lat/lon coordinate.
+        if num_files_in_each_set >= 2:
+            da_pvalues = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_test_set, axis=1).fillna(1).to_xarray()
+        # Perform a t-test to compare the two spatial data sets as whole over all coordinates. Print the results to the console and to an output file.
+        df_control_set = df[columns_control_set].mean(axis=1)
+        df_test_set = df[columns_test_set].mean(axis=1)
+        ttest = stats.ttest_ind(df_control_set, df_test_set)
+        print_p_values(ttest, variable, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
+        if plot_type_for_2_sets == 'percent_difference':
+            # Plot percent differences between the two data sets. Add a tiny number to the denominator to avoid divide-by-zero errors.
+            df = (df_test_set - df_control_set)/(df_control_set + EPSILON)*100
+            da = df.to_xarray()
+            dataArrays_to_plot.append(da)
+            title = replace_inside_parentheses(title, rf'($\%$ difference)')
+        elif plot_type_for_2_sets == 'absolute_difference':
+            # Plot absolute differences between the two data sets. 
+            df = df_test_set - df_control_set
+            da = df.to_xarray()
+            dataArrays_to_plot.append(da)
+        elif plot_type_for_2_sets == 'separate_plots':
+            # Plot the two data sets individually in their own separate plots. 
+            dataArrays_to_plot.append(df_control_set.to_xarray())
+            dataArrays_to_plot.append(df_test_set.to_xarray())
+    elif num_file_sets == 1:
+        # If we have a single data set (but potentially multiple files in this data set), take the mean over all files for each lat/lon coordinate.
+        df = df.mean(axis=1)
+        da = df.to_xarray()
+        dataArrays_to_plot.append(da)
+
+    for da_index, da in enumerate(dataArrays_to_plot):
+
+        # Calculate some basic statistics of the current dataArray.
+        min, mean, median, max, std = calculate_statistics_of_da(da)
+
+        # Use LaTeX for the labels if specified to do so.
+        if use_latex:
+            plt.rc('text', usetex=True)
+            plt.rc('font', family='serif', weight='bold') 
+
+        # Plot the DataArray and optionally add the title and colorbar.
+        fig = plt.figure(figsize=(width, height))
+        ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=projection())
+        da_fig = da.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=plt.get_cmap(cmap_color), extend='both', add_colorbar=False)
+        if title:
+            plt.rcParams['axes.titlesize'] = title_size
+            ax.set_title(title)
+        if cbar_on:
+            cbar_ax = fig.add_axes([ax.get_position().x1+cbar_x_offset, ax.get_position().y0, 0.02, ax.get_position().height])
+            cbar = plt.colorbar(da_fig, cax=cbar_ax)
+            cbar.ax.tick_params(labelsize=cbar_label_size, length=0)
+            if cbar_limits:
+                cbar.mappable.set_clim(cbar_limits[0], cbar_limits[1])
+
+        # Add stippling to indicate regions of potential statistical significance. 
+        if stippling_on:
+            if num_file_sets == 2 and num_files_in_each_set >= 2 and plot_type_for_2_sets != 'separate_plots':
+                # If there are two data sets and at least two files in each data set, so that we will have previously calculated p-values at each
+                # lat/lon coordinate, the stippling will indicate regions where the value is less than the designated threshold.
+                mask = da_pvalues <= p_value_threshold
+                ax.contourf(da_pvalues.lon, da_pvalues.lat, mask, levels=1, hatches=['', stippling_hatches], alpha=0, transform=ccrs.PlateCarree())
+            else:
+                # For all other cases, the stippling will indicate regions where the value is +/- some multiple of the standard deviation 
+                # (default is 2*std) away from the mean.
+                mask = np.abs(da) >= mean + stippling_std_multiple*std
+                ax.contourf(da.lon, da.lat, mask, levels=1, hatches=['', stippling_hatches], alpha=0, transform=ccrs.PlateCarree())
+        
+        # Display statistics.
+        ax.text(x=0.88, y=0.9, s=f'Max:{max:.2e}\nMean:{mean:.2e}\nMedian:{median:.2e}\nMin:{min:.2e}', ha='left', 
+                fontsize=statistics_panel_size, transform=ax.transAxes)
+        ax.text(x=0.88, y=0.05, s=f'Std:{std:.2e}', ha='left', fontsize=statistics_panel_size, transform=ax.transAxes)
+
+        # Add additional features like coastline and oceans.
+        ax.coastlines(lw=0.6)
+
+        # Save the figure and then close it. Record the elapsed time.
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        if len(dataArrays_to_plot) > 1:
+            save_figure(plot_name + f'_set_{da_index+1}', fig, inputs)
+            print(f"Elapsed time for producing plots for {variable} (set {da_index+1}) in {plot_directory}: {elapsed_time:.2f} seconds") 
         else:
-            da = all_dataArrays[file_set_index][0]
-        dataArrays_to_include_in_plot.append(da)
-
-    # Calculate the average over all file sets to produce a mean dataArray, and calculate the statistics (e.g., min, max) of this mean dataArray.
-    da = calculate_mean_and_std_of_da_list(dataArrays_to_include_in_plot, calculate_std=False)
-    min, mean, max, std = calculate_min_mean_max_std_of_da(da, calculate_std=True)
-
-    # If the inner list(s) contain 2 files, concatenate the dataArrays over each set of inner lists and perform a t-test on the concatenated dataArray.
-    # The t-test is used to analyze whether there is a statistically significant difference between the 2 sets of files (e.g., control and test).
-    if num_files_in_each_set > 1:
-        df1 = all_dataArrays[0][0].to_dataframe().dropna()[variable]
-        df2 = all_dataArrays[0][1].to_dataframe().dropna()[variable]
-        for file_set_index in range(1, num_file_sets):
-            df1 = pd.concat([df1, all_dataArrays[file_set_index][0].to_dataframe().dropna()[variable]])
-            df2 = pd.concat([df2, all_dataArrays[file_set_index][1].to_dataframe().dropna()[variable]])
-        ttest = stats.ttest_ind(df1, df2)
-        # Print the p-values to the console and optionally print to an output file.
-        if ttest.pvalue < p_value_threshold:
-            print(f'p-value of {variable}: {ttest.pvalue:.4e}, which is less than {p_value_threshold}')
-            if p_value_file:
-                with open(p_value_file, 'a+') as f:
-                    f.write(f'{plot_directory}: ({variable}, {ttest.pvalue:.4e})\n')
-        else:
-            print(f'p-value of {variable}: {ttest.pvalue:.4e}')
-            if p_value_file and not p_value_file_print_only_if_below_threshold:
-                with open(p_value_file, 'a+') as f:
-                    f.write(f'{plot_directory}: ({variable}, {ttest.pvalue:.4e})\n')
-
-    # Use LaTeX for the labels if specified to do so.
-    if use_latex:
-        plt.rc('text', usetex=True)
-        plt.rc('font', family='serif', weight='bold') 
-
-    # Plot the DataArray and optionally add the title and colorbar.
-    fig = plt.figure(figsize=(width, height))
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=projection())
-    da_fig = da.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=plt.get_cmap(cmap_color), extend='both', add_colorbar=False)
-    if title:
-        plt.rcParams['axes.titlesize'] = title_size
-        ax.set_title(title)
-    if cbar_on:
-        cbar_ax = fig.add_axes([ax.get_position().x1+cbar_x_offset, ax.get_position().y0, 0.02, ax.get_position().height])
-        cbar = plt.colorbar(da_fig, cax=cbar_ax)
-        cbar.ax.tick_params(labelsize=cbar_label_size, length=0)
-        if cbar_limits:
-            cbar.ax.set_ylim(cbar_limits[0], cbar_limits[1])
-
-    # Add stippling to indicate regions where the value is +/- some multiple of the standard deviation (default is 2*std) away from the mean.
-    if stippling_on:
-        mask = np.abs(da) >= mean + stippling_std_multiple*std
-        ax.contourf(da.lon, da.lat, mask, levels=1, hatches=['', stippling_hatches], alpha=0, transform=ccrs.PlateCarree())
-    
-    # Display min, mean, max.
-    ax.text(x=0.88, y=0.9, s=f'Max:{max:.2e}\nMean:{mean:.2e}\nMin:{min:.2e}', ha='left', fontsize=min_mean_max_size, transform=ax.transAxes)
-
-    # Add additional features like coastline and oceans.
-    ax.coastlines(lw=0.6)
-
-    # Save the figure and then close it. Record the elapsed time.
-    save_figure(plot_name, fig, inputs)
-    plt.close(fig)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time for producing plots for {variable} in {plot_directory}: {elapsed_time:.2f} seconds")          
+            save_figure(plot_name, fig, inputs)
+            print(f"Elapsed time for producing plots for {variable} in {plot_directory}: {elapsed_time:.2f} seconds") 
+        plt.close(fig)
 
 
 ###---------------Begin execution---------------###
@@ -277,14 +304,26 @@ if __name__ == '__main__':
     
     # Process each dictionary to produce a list of smaller dictionaries, where each smaller dictionary specifies options for a single plot.
     start_time = time.time()
-    list_of_inputs_for_each_plot = []
+    list_of_inputs = []
     for index in range(len(inputs)):
         # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
-        list_of_inputs_for_each_plot.extend(process_inputs(inputs[index]))
+        list_of_inputs.extend(process_inputs(inputs[index]))
+
+    # Delete all the p-value files before we do any calculations to start a fresh run.
+    for inputs in list_of_inputs:
+        file = inputs['p_value_file']
+        if os.path.exists(file): 
+            os.remove(file)
 
     # Create all of the spatial plots in parallel.
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
-        pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs_for_each_plot)
+        pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs)
+    
+    # Sort all the p-value files alphabetically.
+    for inputs in list_of_inputs:
+        file = inputs['p_value_file']
+        if os.path.exists(file): 
+            sort_file(file)
 
     # Print the total execution time to produce all the plots.
     end_time = time.time()

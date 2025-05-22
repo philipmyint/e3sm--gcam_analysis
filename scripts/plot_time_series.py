@@ -9,7 +9,7 @@ from scipy import stats
 import sys
 import time
 from utility_constants import *
-from utility_dataframes import get_columns_without_units_in_dataframe, get_matching_column_in_dataframe, read_file_into_dataframe
+from utility_dataframes import get_columns_without_units_in_dataframe, get_matching_column_in_dataframe, perform_ttest, read_file_into_dataframe
 from utility_functions import check_is_list_of_lists, check_substrings_in_list, print_p_values, sort_file
 from utility_plots import *
 
@@ -533,14 +533,12 @@ def plot_time_series(inputs):
                     df_this_set_mean = df[columns_this_set].mean(axis=1)
                     df_all_data_set_means = pd.concat([df_all_data_set_means, df_this_set_mean], axis=1)
                     # Perform a t-test to compare the control against the current data set at each time period (each year or each month).
+                    p_values = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_this_set, axis=1).fillna(1)
+                    mask = p_values <= p_value_threshold
                     color = plot_colors[file_set_index]
-                    for x in df[time_column]:
-                        control = df[df[time_column] == x][columns_control_set].to_numpy()[0]
-                        this_set = df[df[time_column] == x][columns_this_set].to_numpy()[0]
-                        ttest = stats.ttest_ind(control, this_set)
-                        if ttest.pvalue <= p_value_threshold:
-                            axis.plot(x, np.mean(this_set), marker=p_value_marker, markersize=p_value_marker_size, color=color)
-                    # Perform a t-test to compare the means of the control against the current data set as a whole over the entire time period.
+                    axis.plot(df[time_column][mask], df_this_set_mean[mask], marker=p_value_marker, markersize=p_value_marker_size, 
+                              linestyle='None', color=color)
+                    # Perform a t-test to compare the means of the control against the current data set taken as a whole over the entire time period.
                     ttest = stats.ttest_ind(df_control_mean, df_this_set_mean)
                     output_label = output_labels[file_set_index]
                     print_p_values(ttest, variable, p_value_threshold, p_value_file, output_label, p_value_file_print_only_if_below_threshold)

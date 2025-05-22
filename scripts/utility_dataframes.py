@@ -1,7 +1,7 @@
 import fileinput
-import multiprocessing
 import numpy as np
 import pandas as pd
+from scipy import stats
 import sys
 
 # These options will format floating-point values in scientific notation as specified below and will display the 
@@ -141,6 +141,23 @@ def move_columns_next_to_each_other_in_dataframe(df, column1, column2):
     # Remove the duplicate column2, keeping the first occurrence.
     df = df.loc[:, ~df.columns.duplicated()]
     return df
+
+def perform_ttest(df, columns_set_1, columns_set_2):
+    """ 
+    Performs a t-test for the means of two (presumed) independent data sets.
+
+    Parameters:
+        df: Pandas DataFrame containing the columns for both data sets.
+        columns_set_1: List of columns in the DataFrame for the first data set.
+        columsn_set_2: List of columns in the DataFrame for the second data set.
+        
+    Returns:
+        The p-value produced by the t-test.
+    """
+    set_1 = df[columns_set_1]
+    set_2 = df[columns_set_2]
+    ttest = stats.ttest_ind(set_1, set_2)
+    return ttest.pvalue
 
 def read_file_into_dataframe(file_name, clean_up_df=False):
     """ 

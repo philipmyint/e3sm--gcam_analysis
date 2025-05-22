@@ -1,6 +1,10 @@
-./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control: (XCO2, 8.2277e-55)
-./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control: (PCO2, 2.9513e-02)
-./../2025_DiVittorio_et_al/spatial_plots/elm_carbon_scaling_minus_control: (XCO2, 2.0275e-03)
-./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble: (PCO2, 2.4679e-12)
-./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble: (XCO2, 0.0000e+00)
-./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_carbon_scaling: (XCO2, 7.8726e-36)
+PCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_absolute_difference: 2.8114e-03
+PCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_percent_difference: 2.8114e-03
+PCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_separate_plots: 2.8114e-03
+PCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_single_absolute_difference: 2.9513e-02
+PCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_single_percent_difference: 2.9513e-02
+XCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_absolute_difference: 4.4851e-90
+XCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_percent_difference: 4.4851e-90
+XCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_separate_plots: 4.4851e-90
+XCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_single_absolute_difference: 8.2277e-55
+XCO2 in ./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_single_percent_difference: 8.2277e-55
