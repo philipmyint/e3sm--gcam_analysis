@@ -187,9 +187,7 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
             dataframes_for_each_nc_file = list(pool.starmap(extract_netcdf_file_into_dataframe, arguments))
         
         # Concatenate all DataFrames in the list together to form a single DataFrame for this NetCDF type. Sort by year and month.
-        df = dataframes_for_each_nc_file[0]
-        for df_index in range(1, len(dataframes_for_each_nc_file)):
-            df = pd.concat([df, dataframes_for_each_nc_file[df_index]]).reset_index(drop=True)
+        df = pd.concat(dataframes_for_each_nc_file)
         df.sort_values(['Year', 'Month'], inplace=True)
     
         # Add the DataFrame for this NetCDF type into the master list.
