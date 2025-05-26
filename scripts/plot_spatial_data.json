@@ -48,8 +48,8 @@
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_percent_difference",
         "plot_type_for_2_sets": "percent_difference",
         "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/p_values.dat",
-        "stippling_on": true,
-        "cbar_limits": {"HR": [-100, 100], "NPP": [-100, 100], "TOTECOSYSC": [-100, 100], "TOTLITC": [-100, 100], "TOTVEGC": [-100, 100]}
+        "use_latex": true,
+        "stippling_on": true
     },
     {
         "netcdf_files": [
