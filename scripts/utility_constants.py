@@ -38,7 +38,7 @@ MM_ATM = 28.965
 
 """ Surface area of Earth in m^2. Based on authalic radius, which is a spherical radius that gives same surface area 
 as the reference ellipsoid, which is wgs84. """
-SURF_AREA = 4 * (4.0 * np.atan(1.0)) * 6371007 * 6371007
+SURF_AREA = 4 * (4.0 * np.arctan(1.0)) * 6371007 * 6371007
 
 """ Dictionary between month number and name. """
 MONTH_NUM_TO_NAME = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June',

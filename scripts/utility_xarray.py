@@ -1,6 +1,5 @@
-from scipy import stats
+import uxarray as ux
 import xarray as xr
-import xarray.ufuncs as xrf
 
 def calculate_mean_and_std_of_da_list(da_list, calculate_std=False):
     """
@@ -29,21 +28,50 @@ def calculate_mean_and_std_of_da_list(da_list, calculate_std=False):
     else:
         return mean_da
 
-def calculate_statistics_of_da(da, dim=None, skipna=True):
+def calculate_statistics_of_xarray(data, variable=None):
     """
-    Calculates the min, mean, median, max, and the standard deviation of an xarray DataArray.
+    Calculates the min, mean, median, max, and the standard deviation of an xarray or uxarray object (DataArray, Dataset, or uxarray data structure).
 
     Parameters:
-        da: DataArray whose statistical properties we want to calculate.
-        dim: Name of dimensions. If none, the reduction will be performed over all dimensions.
-        skipna: If True, skip missing values (as marked by NaN). 
+        data: Object of type xarray or uxarray whose statistical properties we want to calculate.
+        variable: Variable of interest, used in the case of an xarray Dataset or uxarray data structure (UxDataArray or UxDataset).
 
     Returns:
-        min, mean, median, max, and standard deviation of the DataArray.
+        min, mean, median, max, and standard deviation of the xarray or uxarray object.
     """
-    min = da.min(dim=dim, skipna=skipna).item()
-    mean = da.mean(dim=dim, skipna=skipna).item()
-    median = da.median(dim=dim, skipna=skipna).item()
-    max = da.max(dim=dim, skipna=skipna).item()
-    std = da.std(dim=dim, skipna=skipna).item()
+    if isinstance(data, xr.DataArray):
+        min = data.min().item()
+        mean = data.mean().item()
+        median = data.median().item()
+        max = data.max().item()
+        std = data.std().item()
+    else:
+        min = float(data[variable].min())
+        mean = float(data[variable].mean())
+        median = float(data[variable].median())
+        max = float(data[variable].max())
+        std = float(data[variable].std())
     return min, mean, median, max, std
+
+def convert_xarray_to_uxarray(data, grid, variable=None, fillna=1):
+    """
+    Converts an xarray object (DataArray or Dataset) into an uxarray object (UxDataArray or UxDataset).
+
+    Parameters:
+        data: Object of type xarray.
+        grid: Grid object for the unstructured grid contained within the uxarray object.
+        variable: Variable of interest.
+        fill_value: Value to fill NaNs.
+
+    Returns:
+        uxarray (UxDataArray or UxDataset) version of the given xarray object.
+    """
+    ds = xr.Dataset()
+    if variable:
+        ds[variable] = data
+    else:
+        ds = data
+    if fillna:
+        return ux.UxDataset.from_xarray(ds, grid).fillna(fillna)
+    else:
+        return ux.UxDataset.from_xarray(ds, grid)
