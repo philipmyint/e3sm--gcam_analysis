@@ -280,6 +280,9 @@ def plot_spatial_data_eam(inputs, grid_file):
             plt.rcParams['axes.titlesize'] = title_size
             ax.set_title(title)
         if cbar_on:
+            # Extra for the colorbar padding in case using the default (not LaTeX) font.
+            if not use_latex and cbar_x_offset < 0.09:
+                cbar_x_offset = 0.09
             cbar_ax = fig.add_axes([ax.get_position().x1+cbar_x_offset, ax.get_position().y0, 0.02, ax.get_position().height])
             if cbar_limits:
                 uxda_fig.set_clim(vmin=cbar_limits[0], vmax=cbar_limits[1])
