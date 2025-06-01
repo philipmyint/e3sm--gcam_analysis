@@ -21,7 +21,7 @@ def extract_year_and_month_from_name_of_netcdf_file(file):
 
 def find_gridcell_areas_in_netcdf_file(file):
     """ 
-    Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated NetCDF file.
+    Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated (either EAM or ELM) NetCDF file.
 
     Parameters:
         file: NetCDF file.

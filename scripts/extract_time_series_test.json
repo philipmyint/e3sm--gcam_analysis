@@ -1,0 +1,14 @@
+[
+    {
+        "simulation_path": "./../test_output/",
+        "output_file": "./test_time_series.csv",
+        "netcdf_substrings": [["elm.h0"]],
+        "variables": [["DWT_CONV_CFLUX_DRIBBLED", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX",
+        "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", "PBOT", "PCO2", "QBOT", "TBOT",
+        "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "WOODC", "PCT_LANDUNIT", "PCT_NAT_PFT"]],
+        "calculation_types": ["area_weighted_mean_or_sum"],
+        "process_variables": true,
+        "start_year": 2015,
+        "end_year": 2100
+    }
+]
