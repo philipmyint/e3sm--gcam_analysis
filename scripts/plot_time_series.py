@@ -22,6 +22,7 @@ default_inputs_time_series = {'plot_directory': './',
                     'std_seasons_multiplier': None,
                     'std_monthly_multiplier': 1,
                     'error_bars_alpha': 0.2,
+                    'areas_in_thousands_km2': True,
                     'start_year': 2015,
                     'end_year': 2100,
                     'width': width_default,
@@ -294,6 +295,7 @@ def plot_time_series(inputs):
     std_seasons_multiplier = inputs['std_seasons_multiplier']
     std_monthly_multiplier = inputs['std_monthly_multiplier']
     error_bars_alpha = inputs['error_bars_alpha']
+    areas_in_thousands_km2 = inputs['areas_in_thousands_km2']
     start_year = inputs['start_year']
     end_year = inputs['end_year']
     width = inputs['width']
@@ -324,6 +326,13 @@ def plot_time_series(inputs):
     p_value_file_print_only_if_below_threshold = inputs['p_value_file_print_only_if_below_threshold']
     p_value_marker = inputs['p_value_marker']
     p_value_marker_size = inputs['p_value_marker_size']
+
+    # For area variables that are in units of km^2, plot them in units of thousands of km^2 if specified to do so.
+    if areas_in_thousands_km2 and 'AREA' in variable and 'km^2' in y_label:
+        multiplier = 1/1000
+        y_label = y_label.replace('km^2', rf'thousands km$^2$')
+    if 'km^2' in y_label:
+        y_label = y_label.replace('km^2', rf'km$^2$')
 
     # Set the plotting options
     plot_options = dict(width=width, height=height, name=plot_name, x_label='Year', y_label=fr'{y_label}')
@@ -570,7 +579,7 @@ def plot_time_series(inputs):
     plt.close(fig_monthly)
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Elapsed time for producing plots for {variable} in {plot_directory}: {elapsed_time:.2f} seconds") 
+    print(f"Elapsed time for producing plots for {variable} in {plot_directory}: {elapsed_time:.2f} seconds")
 
 
 ###---------------Begin execution---------------###

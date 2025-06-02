@@ -113,7 +113,13 @@ def get_matching_column_in_dataframe(df, variable, all_matches=False):
     """
     all_matching_columns = []
     for column in df.columns:
-        if variable + ' (' in column:
+        units_in_column = column.find(' (') != -1
+        if units_in_column and variable + ' (' in column:
+            if not all_matches:
+                return column
+            else:
+                all_matching_columns.append(column)
+        if not units_in_column and variable in column:
             if not all_matches:
                 return column
             else:
