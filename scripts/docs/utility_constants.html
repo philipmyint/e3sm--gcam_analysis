@@ -42,6 +42,27 @@
                     <a class="variable" href="#days_TO_s">days_TO_s</a>
             </li>
             <li>
+                    <a class="variable" href="#days_TO_hours">days_TO_hours</a>
+            </li>
+            <li>
+                    <a class="variable" href="#hours_TO_mins">hours_TO_mins</a>
+            </li>
+            <li>
+                    <a class="variable" href="#years_TO_days">years_TO_days</a>
+            </li>
+            <li>
+                    <a class="variable" href="#years_TO_s">years_TO_s</a>
+            </li>
+            <li>
+                    <a class="variable" href="#years_TO_months">years_TO_months</a>
+            </li>
+            <li>
+                    <a class="variable" href="#years_TO_hours">years_TO_hours</a>
+            </li>
+            <li>
+                    <a class="variable" href="#years_TO_mins">years_TO_mins</a>
+            </li>
+            <li>
                     <a class="variable" href="#kg_TO_g">kg_TO_g</a>
             </li>
             <li>
@@ -55,6 +76,9 @@
             </li>
             <li>
                     <a class="variable" href="#mole_fraction_TO_ppm">mole_fraction_TO_ppm</a>
+            </li>
+            <li>
+                    <a class="variable" href="#EPSILON">EPSILON</a>
             </li>
             <li>
                     <a class="variable" href="#NUM_DAYS_IN_MONTHS">NUM_DAYS_IN_MONTHS</a>
@@ -107,35 +131,45 @@ utility_constants    </h1>
 </span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="n">km_TO_m</span> <span class="o">=</span> <span class="mf">1e3</span>
 </span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="n">km2_TO_m2</span> <span class="o">=</span> <span class="n">km_TO_m</span><span class="o">*</span><span class="n">km_TO_m</span>
 </span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="n">days_TO_s</span> <span class="o">=</span> <span class="mi">86400</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">kg_TO_g</span> <span class="o">=</span> <span class="mf">1e3</span>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">Pg_TO_kg</span> <span class="o">=</span> <span class="mf">1e12</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="n">Pg_TO_g</span> <span class="o">=</span> <span class="n">Pg_TO_kg</span><span class="o">*</span><span class="n">kg_TO_g</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="n">m_TO_mm</span> <span class="o">=</span> <span class="mf">1e3</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">mole_fraction_TO_ppm</span> <span class="o">=</span> <span class="mf">1e6</span>    
-</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
-</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">&quot;&quot;&quot; Number of days and seconds in each month (no leap years). &quot;&quot;&quot;</span>
-</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="n">NUM_DAYS_IN_MONTHS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">31</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">])</span>
-</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">NUM_SECONDS_IN_MONTHS</span> <span class="o">=</span> <span class="n">days_TO_s</span><span class="o">*</span><span class="n">NUM_DAYS_IN_MONTHS</span>
-</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">&quot;&quot;&quot; Molar mass of carbon (g/mol). &quot;&quot;&quot;</span>
-</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="n">MM_C</span> <span class="o">=</span> <span class="mf">12.011</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a><span class="n">days_TO_hours</span> <span class="o">=</span> <span class="mi">24</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="n">hours_TO_mins</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="n">years_TO_days</span> <span class="o">=</span> <span class="mi">365</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="n">years_TO_s</span> <span class="o">=</span> <span class="n">years_TO_days</span><span class="o">*</span><span class="n">days_TO_s</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">years_TO_months</span> <span class="o">=</span> <span class="mi">12</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="n">years_TO_hours</span> <span class="o">=</span> <span class="n">years_TO_days</span><span class="o">*</span><span class="n">days_TO_hours</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="n">years_TO_mins</span> <span class="o">=</span> <span class="n">years_TO_hours</span><span class="o">*</span><span class="n">hours_TO_mins</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="n">kg_TO_g</span> <span class="o">=</span> <span class="mf">1e3</span>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="n">Pg_TO_kg</span> <span class="o">=</span> <span class="mf">1e12</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="n">Pg_TO_g</span> <span class="o">=</span> <span class="n">Pg_TO_kg</span><span class="o">*</span><span class="n">kg_TO_g</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="n">m_TO_mm</span> <span class="o">=</span> <span class="mf">1e3</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="n">mole_fraction_TO_ppm</span> <span class="o">=</span> <span class="mf">1e6</span>    
 </span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a>
-</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">&quot;&quot;&quot; Molar mass of CO2 (g/mol). &quot;&quot;&quot;</span>
-</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="n">MM_CO2</span> <span class="o">=</span> <span class="mf">44.009</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">&quot;&quot;&quot; Tiny constant used to avoid divide-by-zero errors. &quot;&quot;&quot;</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="n">EPSILON</span> <span class="o">=</span> <span class="mf">1.0e-14</span>
 </span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>
-</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">&quot;&quot;&quot; Molar mass of CH4 (g/mol). &quot;&quot;&quot;</span>
-</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="n">MM_CH4</span> <span class="o">=</span> <span class="mf">16.043</span>
-</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a>
-</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">&quot;&quot;&quot; Molar mass of atmosphere avg (g/mol) (dry). &quot;&quot;&quot;</span>
-</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="n">MM_ATM</span> <span class="o">=</span> <span class="mf">28.965</span>
-</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a>
-</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a><span class="sd">&quot;&quot;&quot; Surface area of Earth in m^2. Based on authalic radius, which is a spherical radius that gives same surface area </span>
-</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">as the reference ellipsoid, which is wgs84. &quot;&quot;&quot;</span>
-</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="n">SURF_AREA</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span> <span class="mi">6371007</span> <span class="o">*</span> <span class="mi">6371007</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">&quot;&quot;&quot; Number of days and seconds in each month (no leap years). &quot;&quot;&quot;</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a><span class="n">NUM_DAYS_IN_MONTHS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">31</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">])</span>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="n">NUM_SECONDS_IN_MONTHS</span> <span class="o">=</span> <span class="n">days_TO_s</span><span class="o">*</span><span class="n">NUM_DAYS_IN_MONTHS</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">&quot;&quot;&quot; Molar mass of carbon (g/mol). &quot;&quot;&quot;</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="n">MM_C</span> <span class="o">=</span> <span class="mf">12.011</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">&quot;&quot;&quot; Molar mass of CO2 (g/mol). &quot;&quot;&quot;</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="n">MM_CO2</span> <span class="o">=</span> <span class="mf">44.009</span>
 </span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a>
-</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">&quot;&quot;&quot; Dictionary between month number and name. &quot;&quot;&quot;</span>
-</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="n">MONTH_NUM_TO_NAME</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;January&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;February&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;March&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;April&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;June&#39;</span><span class="p">,</span>
-</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>                     <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;July&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;August&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;September&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;October&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;November&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;December&#39;</span><span class="p">}</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">&quot;&quot;&quot; Molar mass of CH4 (g/mol). &quot;&quot;&quot;</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="n">MM_CH4</span> <span class="o">=</span> <span class="mf">16.043</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a><span class="sd">&quot;&quot;&quot; Molar mass of atmosphere avg (g/mol) (dry). &quot;&quot;&quot;</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a><span class="n">MM_ATM</span> <span class="o">=</span> <span class="mf">28.965</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a><span class="sd">&quot;&quot;&quot; Surface area of Earth in m^2. Based on authalic radius, which is a spherical radius that gives same surface area </span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a><span class="sd">as the reference ellipsoid, which is wgs84. &quot;&quot;&quot;</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="n">SURF_AREA</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span> <span class="o">*</span> <span class="mi">6371007</span> <span class="o">*</span> <span class="mi">6371007</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="sd">&quot;&quot;&quot; Dictionary between month number and name. &quot;&quot;&quot;</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a><span class="n">MONTH_NUM_TO_NAME</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;January&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;February&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;March&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;April&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;May&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;June&#39;</span><span class="p">,</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>                     <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;July&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;August&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;September&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;October&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;November&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;December&#39;</span><span class="p">}</span>
 </span></pre></div>
 
 
@@ -172,6 +206,90 @@ utility_constants    </h1>
         
     </div>
     <a class="headerlink" href="#days_TO_s"></a>
+    
+    
+
+                </section>
+                <section id="days_TO_hours">
+                    <div class="attr variable">
+            <span class="name">days_TO_hours</span>        =
+<span class="default_value">24</span>
+
+        
+    </div>
+    <a class="headerlink" href="#days_TO_hours"></a>
+    
+    
+
+                </section>
+                <section id="hours_TO_mins">
+                    <div class="attr variable">
+            <span class="name">hours_TO_mins</span>        =
+<span class="default_value">60</span>
+
+        
+    </div>
+    <a class="headerlink" href="#hours_TO_mins"></a>
+    
+    
+
+                </section>
+                <section id="years_TO_days">
+                    <div class="attr variable">
+            <span class="name">years_TO_days</span>        =
+<span class="default_value">365</span>
+
+        
+    </div>
+    <a class="headerlink" href="#years_TO_days"></a>
+    
+    
+
+                </section>
+                <section id="years_TO_s">
+                    <div class="attr variable">
+            <span class="name">years_TO_s</span>        =
+<span class="default_value">31536000</span>
+
+        
+    </div>
+    <a class="headerlink" href="#years_TO_s"></a>
+    
+    
+
+                </section>
+                <section id="years_TO_months">
+                    <div class="attr variable">
+            <span class="name">years_TO_months</span>        =
+<span class="default_value">12</span>
+
+        
+    </div>
+    <a class="headerlink" href="#years_TO_months"></a>
+    
+    
+
+                </section>
+                <section id="years_TO_hours">
+                    <div class="attr variable">
+            <span class="name">years_TO_hours</span>        =
+<span class="default_value">8760</span>
+
+        
+    </div>
+    <a class="headerlink" href="#years_TO_hours"></a>
+    
+    
+
+                </section>
+                <section id="years_TO_mins">
+                    <div class="attr variable">
+            <span class="name">years_TO_mins</span>        =
+<span class="default_value">525600</span>
+
+        
+    </div>
+    <a class="headerlink" href="#years_TO_mins"></a>
     
     
 
@@ -232,6 +350,20 @@ utility_constants    </h1>
         
     </div>
     <a class="headerlink" href="#mole_fraction_TO_ppm"></a>
+    
+            <div class="docstring"><p>Tiny constant used to avoid divide-by-zero errors.</p>
+</div>
+
+
+                </section>
+                <section id="EPSILON">
+                    <div class="attr variable">
+            <span class="name">EPSILON</span>        =
+<span class="default_value">1e-14</span>
+
+        
+    </div>
+    <a class="headerlink" href="#EPSILON"></a>
     
             <div class="docstring"><p>Number of days and seconds in each month (no leap years).</p>
 </div>
@@ -326,7 +458,7 @@ as the reference ellipsoid, which is wgs84.</p>
                 <section id="SURF_AREA">
                     <div class="attr variable">
             <span class="name">SURF_AREA</span>        =
-<span class="default_value">np.float64(510065592755264.56)</span>
+<span class="default_value">510065592755264.56</span>
 
         
     </div>

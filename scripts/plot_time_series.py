@@ -10,13 +10,14 @@ import sys
 import time
 from utility_constants import *
 from utility_dataframes import get_columns_without_units_in_dataframe, get_matching_column_in_dataframe, perform_ttest, read_file_into_dataframe
-from utility_functions import check_is_list_of_lists, check_substrings_in_list, print_p_values, sort_file
+from utility_functions import check_is_list_of_lists, check_substrings_in_list, print_p_values, replace_inside_parentheses, sort_file
 from utility_plots import *
 
 """ Dictionary of default input values for time series plots. """
 default_inputs_time_series = {'plot_directory': './',
                     'calculation_type': 'mean',
                     'plot_type': 'ensemble_averages',
+                    'plot_percent_difference': False,
                     'multiplier': 1,
                     'std_annual_multiplier': 1, 
                     'std_seasons_multiplier': None,
@@ -158,7 +159,7 @@ def process_inputs(inputs):
     return list_of_inputs
 
 def plot_seasons(include_seasons, ax, df, x, output_label, plot_colors, linestyle_tuples, linewidth, columns, 
-                 std_multiplier=None, error_bars_alpha=None):
+                 reference_data=None, file_or_file_set_index=None, std_multiplier=None, error_bars_alpha=None):
     """ 
     Adds seasons (as specified in the include_seasons dictionary) to a given time series plot. 
 
@@ -171,12 +172,16 @@ def plot_seasons(include_seasons, ax, df, x, output_label, plot_colors, linestyl
         plot_colors: List of plot line colors.
         linestyle_tuples: Tuples for the linestyles.
         linewidth: Thickness of the lines.
-        columns: String (if a single column) or list (multiple columns) for the datasets in the DataFrame that we want to plot.
+        columns: String (if a single column) or list (multiple columns) for the datasets in the DataFrame that we want to plot. 
+                 If a list, plot the mean across all columns.
+        reference_data: Dictionary to store the data from the first file or first file set, which will serve as the reference set for 
+                 percent difference calculations.
+        file_or_file_set_index: Index for the particular file or file set, so that we can flag whether the current data pertain to the reference set.
         std_multiplier: Multiplier on the standard deviation for plotting error bars.
         error_bars_alpha: Opacity value for the error bars.
 
     Returns:
-        N/A.
+        The reference_data, which will be updated with entries for the reference data for each season if this dictionary was not initially empty.
     """
     seasons = ['MAM', 'JJA', 'SON', 'DJF']
     months_geq = [3, 6, 9, 12]
@@ -184,13 +189,13 @@ def plot_seasons(include_seasons, ax, df, x, output_label, plot_colors, linestyl
     linestyle_tuples = [linestyle_tuples[2][1], linestyle_tuples[2][1], linestyle_tuples[1][1], linestyle_tuples[1][1]]
     linewidths = [linewidth+2, linewidth, linewidth+2, linewidth]
     # Iterate over all seasons and include only the ones that are specified in the include_seasons dictionary.
-    for index in range(len(seasons)):
-        season = seasons[index]
+    for season_index in range(len(seasons)):
+        season = seasons[season_index]
         if include_seasons[season]:
-            month_geq = months_geq[index]
-            month_leq = months_leq[index]
-            linestyle=linestyle_tuples[index]
-            linewidth=linewidths[index]
+            month_geq = months_geq[season_index]
+            month_leq = months_leq[season_index]
+            linestyle=linestyle_tuples[season_index]
+            linewidth=linewidths[season_index]
             # December--January--February needs to be handled differently than the other seasons.
             if season == 'DJF':
                 condition = (df['Month'] >= month_geq) | (df['Month'] <= month_leq)
@@ -202,11 +207,21 @@ def plot_seasons(include_seasons, ax, df, x, output_label, plot_colors, linestyl
                 y_std = df[condition].groupby('Year', as_index=False).mean()[columns].std(axis=1)
             else:
                 y = df[condition].groupby('Year', as_index=False).mean()[columns]
+            # If the reference data is not None or not empty, we assume that the user wants to perform a percent difference calculation.
+            if reference_data:
+                if file_or_file_set_index == 0:
+                    reference_data[season] = y
+                y = (y - reference_data[season])/(reference_data[season] + EPSILON)*100
+                if isinstance(columns, list):
+                    y_std = y_std/(reference_data[season] + EPSILON)*100
             # Add the season to the plot, including its error bar if the multiplier is not None.
-            ax.plot(x, y, label=output_label + f' ({season})', color=plot_colors, linestyle=linestyle, linewidth=linewidth)
-            if std_multiplier and isinstance(columns, list):
-                error = y_std*std_multiplier
-                ax.fill_between(x, y-error, y+error, color=plot_colors, alpha=error_bars_alpha)
+            # Do not include the reference data if plotting a percent difference. Include the data in the plot otherwise.
+            if not reference_data or file_or_file_set_index != 0:
+                ax.plot(x, y, label=output_label + f' ({season})', color=plot_colors, linestyle=linestyle, linewidth=linewidth)
+                if std_multiplier and isinstance(columns, list):
+                    error = y_std*std_multiplier
+                    ax.fill_between(x, y-error, y+error, color=plot_colors, alpha=error_bars_alpha)
+    return reference_data
 
 def read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=False):
     """ 
@@ -290,6 +305,7 @@ def plot_time_series(inputs):
     y_label = inputs['y_label']
     calculation_type = inputs['calculation_type']
     plot_type = inputs['plot_type']
+    plot_percent_difference = inputs['plot_percent_difference']
     multiplier = inputs['multiplier']
     std_annual_multiplier = inputs['std_annual_multiplier']
     std_seasons_multiplier = inputs['std_seasons_multiplier']
@@ -331,8 +347,16 @@ def plot_time_series(inputs):
     if areas_in_thousands_km2 and 'AREA' in variable and 'km^2' in y_label:
         multiplier = 1/1000
         y_label = y_label.replace('km^2', rf'thousands km$^2$')
-    if 'km^2' in y_label:
-        y_label = y_label.replace('km^2', rf'km$^2$')
+
+    # Fix the labels involving m^2 or km^2 so that they get rendered properly.
+    if 'm^2' in y_label:
+        y_label = y_label.replace('m^2', rf'm$^2$')
+
+    # Initialize dictionary to store the data from the first file or first file set, which will serve as the reference for percent difference 
+    # calculations. Also update the units in the y-axis label if plotting a percent difference.
+    reference_data = {}
+    if plot_percent_difference:
+        y_label = replace_inside_parentheses(y_label, rf'($\%$ difference)')
 
     # Set the plotting options
     plot_options = dict(width=width, height=height, name=plot_name, x_label='Year', y_label=fr'{y_label}')
@@ -393,10 +417,18 @@ def plot_time_series(inputs):
                 # Update the labels accordingly if a sum.
                 y = df.groupby('Year', as_index=False).sum()[column]
                 plot_options['y_label'] = y_label.replace('/month', '/year')
+            
+            # If plotting a percent difference with respect to the first file, store the data for that file and calculate the percent difference.
+            if plot_percent_difference:
+                if file_index == 0:
+                    reference_data['annual'] = y
+                y = (y - reference_data['annual'])/(reference_data['annual'] + EPSILON)*100
                     
             # Plot the annual time series, including possibly the error bars. 
             x = df.groupby('Year', as_index=False).mean()['Year']
-            ax.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+            # Do not include the first file if plotting a percent difference. Include the data in the plot otherwise.
+            if not plot_percent_difference or file_index != 0:
+                ax.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
             # Join the annual time series data from the current file into the larger DataFrame.
             if file_index == 0:
                 x_series = pd.Series(x, name='Year')
@@ -406,11 +438,13 @@ def plot_time_series(inputs):
 
             # Add time series for one or more seasonal averages if specified to do so.
             if calculation_type == 'mean' and any(include_seasons.values()):
-                plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column)
+                reference_data = plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column, 
+                                              reference_data=reference_data, file_or_file_set_index=file_index)
 
             # Create a separate time series plot for the seasonal averages if specified to do so. Set name of this seasons-only plot accordingly.
             if calculation_type == 'mean' and any(seasons_to_plot_separately.values()):
-                plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column)
+                reference_data = plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth,
+                                               columns=column, reference_data=reference_data, file_or_file_set_index=file_index)
                 plot_options['name'] = plot_name + '_seasons'   
                 set_figure_options(fig_seasons, ax_seasons, plot_options)
 
@@ -420,8 +454,13 @@ def plot_time_series(inputs):
                                                                 monthly_time_series_end_year, multiplier, return_column=False)
                 y = df.groupby('Month', as_index=False).mean()[column]
                 x = (df.groupby('Month', as_index=False).mean()['Month']).to_numpy()
+                if plot_percent_difference:
+                    if file_index == 0:
+                        reference_data['monthly'] = y
+                    y = (y - reference_data['monthly'])/(reference_data['monthly'] + EPSILON)*100
                 #x = np.vectorize(MONTH_NUM_TO_NAME.get)(x)
-                ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                if not plot_percent_difference or file_index != 0:
+                    ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
                 #ax_monthly.tick_params(axis='x', labelrotation=45)
                 # Join the monthly time series data from the current file into the larger DataFrame.
                 if file_index == 0:
@@ -442,7 +481,11 @@ def plot_time_series(inputs):
             axis = axes[time_index]
             std_multiplier = std_multipliers[time_index]
             if condition:
-                columns = [column for column in df.columns if column != time_column]
+                if plot_percent_difference:
+                    # If plotting a percent difference with respect to the first file, do not include that file in calculating the overall mean.
+                    columns = [column for column in df.columns if column != time_column and not column.endswith('_0')]
+                else:
+                    columns = [column for column in df.columns if column != time_column]
                 x = df[time_column]
                 y = df[columns].mean(axis=1)
                 axis.plot(x, y, label='Mean', color='k', linestyle=linestyle_tuples[0][1], linewidth=linewidth)
@@ -484,22 +527,34 @@ def plot_time_series(inputs):
                 # Join the annual time series data from the current set into the larger DataFrame.
                 df_all_annual_time_series = pd.concat([df_all_annual_time_series, df.groupby('Year', as_index=False).sum()], axis=1)
 
+            # If plotting a percent difference with respect to the first file set, store the data for that set and calculate the percent difference.
+            if plot_percent_difference:
+                if file_set_index == 0:
+                    reference_data['annual'] = y
+                # Add a tiny number to avoid divide-by-zero errors.
+                y = (y - reference_data['annual'])/(reference_data['annual'] + EPSILON)*100
+                y_std = y_std/(reference_data['annual'] + EPSILON)*100
+
             # Plot the annual time series, including possibly the error bars. 
             x = df.groupby('Year', as_index=False).mean()['Year']
-            ax.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-            if std_annual_multiplier:
-                error = y_std*std_annual_multiplier
-                ax.fill_between(x, y-error, y+error, color=plot_colors[file_set_index], alpha=error_bars_alpha)
+            # Do not include the first file set if plotting a percent difference. Include the data in the plot otherwise.
+            if not plot_percent_difference or file_set_index != 0:
+                ax.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                if std_annual_multiplier:
+                    error = y_std*std_annual_multiplier
+                    ax.fill_between(x, y-error, y+error, color=plot_colors[file_set_index], alpha=error_bars_alpha)
             
             # Add time series for one or more seasonal averages if specified to do so.
             if calculation_type == 'mean' and any(include_seasons.values()):
                 plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=columns, 
-                                 std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
+                             reference_data=reference_data, file_or_file_set_index=file_set_index, std_multiplier=std_seasons_multiplier, 
+                             error_bars_alpha=error_bars_alpha)
 
             # Create a separate time series plot for the seasonal averages if specified to do so. Set name of this seasons-only plot accordingly.
             if calculation_type == 'mean' and any(seasons_to_plot_separately.values()):
                 plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, 
-                            columns=columns, std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
+                            columns=columns, reference_data=reference_data, file_or_file_set_index=file_set_index, 
+                            std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
                 plot_options['name'] = plot_name + '_seasons'   
                 set_figure_options(fig_seasons, ax_seasons, plot_options)
 
@@ -509,10 +564,16 @@ def plot_time_series(inputs):
                 y = df.groupby('Month', as_index=False).mean()[columns].mean(axis=1)
                 y_std = df.groupby('Month', as_index=False).mean()[columns].std(axis=1)
                 x = (df.groupby('Month', as_index=False).mean()['Month']).to_numpy()
-                ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-                if std_monthly_multiplier:
-                    error = y_std*std_monthly_multiplier
-                    ax_monthly.fill_between(x, y-error, y+error, color=line_color, alpha=error_bars_alpha)
+                if plot_percent_difference:
+                    if file_set_index == 0:
+                        reference_data['monthly'] = y
+                    y = (y - reference_data['monthly'])/(reference_data['monthly'] + EPSILON)*100
+                    y_std = y_std/(reference_data['monthly'] + EPSILON)*100
+                if not plot_percent_difference or file_set_index != 0:
+                    ax_monthly.plot(x, y, label=output_label, color=line_color, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+                    if std_monthly_multiplier:
+                        error = y_std*std_monthly_multiplier
+                        ax_monthly.fill_between(x, y-error, y+error, color=line_color, alpha=error_bars_alpha)
                 # Join the monthly time series data from the current file into the larger DataFrame.
                 df_all_monthly_time_series = pd.concat([df_all_monthly_time_series, df.groupby('Month', as_index=False).mean()], axis=1)
 
@@ -527,30 +588,46 @@ def plot_time_series(inputs):
             if not df.empty:
                 time_column = time_columns[time_index]
                 axis = axes[time_index]
+
                 # Remove the duplicate 'Year' or 'Month' columns.
                 df = df.loc[:,~df.columns.duplicated()]
                 # Create DataFrame to store the means of each of the data set groups.
                 df_all_data_set_means = pd.DataFrame()
+
                 # Get all columns (except for the time) and find the columns for the first (assumed to be control) set. Calculate control set mean.
                 columns = get_matching_column_in_dataframe(df, variable, all_matches=True)
                 columns_control_set = [column for column in columns if column.endswith(f'_0')]
                 df_control_mean = df[columns_control_set].mean(axis=1)
-                df_all_data_set_means = pd.concat([df_all_data_set_means, df_control_mean], axis=1)
+
+                # For each of the non-control set, perform a t-test at each individual time period against the control, as well as an overall t-test.
                 for file_set_index in range(1, num_file_sets):
+
                     # Calculate the mean of the current set.
                     columns_this_set = [column for column in columns if column.endswith(f'_{file_set_index}')]
                     df_this_set_mean = df[columns_this_set].mean(axis=1)
-                    df_all_data_set_means = pd.concat([df_all_data_set_means, df_this_set_mean], axis=1)
-                    # Perform a t-test to compare the control against the current data set at each time period (each year or each month).
-                    p_values = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_this_set, axis=1).fillna(1)
-                    mask = p_values <= p_value_threshold
-                    color = plot_colors[file_set_index]
-                    axis.plot(df[time_column][mask], df_this_set_mean[mask], marker=p_value_marker, markersize=p_value_marker_size, 
-                              linestyle='None', color=color)
+
                     # Perform a t-test to compare the means of the control against the current data set taken as a whole over the entire time period.
                     ttest = stats.ttest_ind(df_control_mean, df_this_set_mean)
                     output_label = output_labels[file_set_index]
                     print_p_values(ttest, variable, p_value_threshold, p_value_file, output_label, p_value_file_print_only_if_below_threshold)
+
+                    # Perform a t-test to compare the control against the current data set at each time period (each year or each month).
+                    p_values = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_this_set, axis=1).fillna(1)
+                    mask = p_values <= p_value_threshold
+                    color = plot_colors[file_set_index]
+                    if plot_percent_difference:
+                        df_this_set_mean = (df_this_set_mean - df_control_mean)/df_control_mean*100
+                    df_all_data_set_means = pd.concat([df_all_data_set_means, df_this_set_mean], axis=1)
+                    axis.plot(df[time_column][mask], df_this_set_mean[mask], marker=p_value_marker, markersize=p_value_marker_size, 
+                              linestyle='None', color=color)
+                    
+                if plot_percent_difference:
+                    # If plotting a percent difference with respect to the first file (control) set, the data for the control should be set to zeros.
+                    df_control_mean -= df_control_mean
+                else:
+                    # If not plotting a percent difference, include the control set in the ensemble mean over all data sets.
+                    df_all_data_set_means = pd.concat([df_all_data_set_means, df_control_mean], axis=1)
+
                 # Calculate the ensemble mean, which is the mean of each of the data set means, and the error bars on this ensemble mean.
                 if condition:
                     x = df[time_column]
