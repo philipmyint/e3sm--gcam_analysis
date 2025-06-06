@@ -7,7 +7,7 @@ import time
 from utility_constants import *
 from utility_dataframes import move_columns_next_to_each_other_in_dataframe, write_dataframe_to_fwf
 from utility_functions import *
-from utility_e3sm_netcdf import *
+from utility_E3SM_netcdf import *
 
 def process_dataframe(df):
     """ 
@@ -90,10 +90,10 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
     Returns:
         DataFrame containing one column for each of the variables, plus year and month columns.
     """
-    # Extract the area variables from the NetCDF file and transform the variables from an xarray Dataset into a DataFrame.
+    # Extract the area as a function of lat/lon coordinate from the NetCDF file and forms an xarray Dataset for the variables.
     areas, ds, landfrac, non_landfrac = find_gridcell_areas_in_netcdf_file(file)
 
-    # Create an overall DataFrame to store all variables except those pertaining to land units and plant-functional types (PFTs).
+    # Convert the Dataset to create an overall DataFrame that stores all variables except those for land units and plant-functional types (PFTs).
     # If land units and/or PFTs are also of interest, create a second DataFrame to store them.
     variables_except_landunits_and_pfts = variables.copy()
     variables_landunits_and_pfts = []
@@ -266,20 +266,20 @@ if __name__ == '__main__':
         print('Usage: plot_spatial_data.py `path/to/json/input/file(s)\'')
         sys.exit()
 
-    # Read and load the JSON file(s) into a list of dictionaries.
-    inputs = []
+    # Read and load the JSON file(s) into a list of dictionaries. Each block in a JSON file represents one time series output file.
+    list_of_inputs = []
     for index in range(1, len(sys.argv)):
         input_file = sys.argv[index]
         with open(input_file) as f:
-            inputs.extend(json.load(f))
+            list_of_inputs.extend(json.load(f))
 
-    # Process each dictionary to produce a list of smaller dictionaries, each of which specifies data extraction options for a single output file.
-    for index in range(len(inputs)):
+    # Produce the output files one at a time.
+    for inputs in list_of_inputs:
         start_time = time.time()
-        extract_time_series_from_netcdf_files(**inputs[index])
+        extract_time_series_from_netcdf_files(**inputs)
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"Elapsed time for {inputs[index]['output_file']}: {elapsed_time:.2f} seconds")
+        print(f"Elapsed time for {inputs['output_file']}: {elapsed_time:.2f} seconds")
     
     # Print the total execution time needed to complete all data extraction operations.
     end_time = time.time()

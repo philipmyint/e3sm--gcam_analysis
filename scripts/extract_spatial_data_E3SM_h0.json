@@ -5,7 +5,7 @@
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [["TBOT", "TOTECOSYSC", "PBOT", "PCO2", "QBOT", "NPP", "HR", "TOTLITC", "TOTVEGC"],
         ["PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "TREFHT"]],
-        "start_years": 2089,
+        "start_years": 2085,
         "end_years": 2090
     },
     {
@@ -14,7 +14,7 @@
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [["TBOT", "TOTECOSYSC", "PBOT", "PCO2", "QBOT", "NPP", "HR", "TOTLITC", "TOTVEGC"],
         ["PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "TREFHT"]],
-        "start_years": 2089,
+        "start_years": 2085,
         "end_years": 2090
     },
     {
@@ -23,7 +23,7 @@
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [["TBOT", "TOTECOSYSC", "PBOT", "PCO2", "QBOT", "NPP", "HR", "TOTLITC", "TOTVEGC"],
         ["PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "TREFHT"]],
-        "start_years": 2089,
+        "start_years": 2085,
         "end_years": 2090
     }
 ]

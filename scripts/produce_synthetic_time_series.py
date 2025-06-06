@@ -30,8 +30,8 @@ def produce_synthetic_time_series(inputs):
             new_file = file.replace('.csv', f'_{index+1}.csv')
             df_new.to_csv(new_file, index=False)
         else:
-            if '.' in file:
-                new_file = file.replace('.', f'_{index+1}.')
+            if '.dat' in file:
+                new_file = file.replace('.dat', f'_{index+1}.dat')
             else:
                 new_file = file + f'_{index+1}'
             write_dataframe_to_fwf(new_file, df_new)
@@ -45,8 +45,12 @@ if __name__ == '__main__':
 
     # The ensemble will consist of a total of len(files)*num_files_in_each_set data sets.
     start_time = time.time()
-    files = ["./../2025_DiVittorio_et_al/control_time_series.csv", "./../2025_DiVittorio_et_al/full_feedback_time_series.csv",
-        "./../2025_DiVittorio_et_al/ag_scaling_time_series.csv", "./../2025_DiVittorio_et_al/carbon_scaling_time_series.csv"]
+    files = ["./../2025_DiVittorio_et_al/control_time_series.csv", 
+             "./../2025_DiVittorio_et_al/full_feedback_time_series.csv", 
+             "./../2025_DiVittorio_et_al/ag_scaling_time_series.csv", 
+             "./../2025_DiVittorio_et_al/carbon_scaling_time_series.csv"]
+    files.extend(["./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn.dat", 
+        "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn.dat"])
     num_files_in_each_set = [5]*len(files)
     inputs = list(zip(files, num_files_in_each_set))
 

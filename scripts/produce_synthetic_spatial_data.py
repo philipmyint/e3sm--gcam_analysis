@@ -36,10 +36,12 @@ if __name__ == '__main__':
 
     # The ensemble will consist of a total of len(files)*num_files_in_each_set data sets.
     start_time = time.time()
-    files = ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc",
-        "./../2025_DiVittorio_et_al/carbon_scaling_spatial_data_elm.nc"]
-    files = ["./../2025_DiVittorio_et_al/control_spatial_data_eam.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_eam.nc",
-        "./../2025_DiVittorio_et_al/carbon_scaling_spatial_data_eam.nc"]
+    files = ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", 
+             "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc", 
+             "./../2025_DiVittorio_et_al/carbon_scaling_spatial_data_elm.nc"]
+    files.extend(["./../2025_DiVittorio_et_al/control_spatial_data_eam.nc", 
+                  "./../2025_DiVittorio_et_al/full_feedback_spatial_data_eam.nc", 
+                  "./../2025_DiVittorio_et_al/carbon_scaling_spatial_data_eam.nc"])
     num_files_in_each_set = [5]*len(files)
     inputs = list(zip(files, num_files_in_each_set))
 

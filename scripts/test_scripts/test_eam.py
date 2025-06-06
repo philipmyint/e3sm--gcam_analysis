@@ -7,7 +7,7 @@ import time
 import xarray as xr
 from utility_constants import *
 from utility_functions import check_substrings_in_list, get_all_files_in_path
-from utility_e3sm_netcdf import get_netcdf_files_between_start_and_end_years
+from utility_E3SM_netcdf import get_netcdf_files_between_start_and_end_years
 
 ###---------------Begin execution---------------###
 if __name__ == '__main__':

@@ -92,7 +92,8 @@ def process_inputs(inputs):
     if not variables or variables == 'all':
         variables = get_columns_without_units_in_dataframe(df)
         variables.remove('Year')
-        variables.remove('Month')
+        if 'Month' in variables:
+            variables.remove('Month')
         inputs['variables'] = variables
     # If the user entered a string indicating a single variable, put that string in a list.
     if isinstance(variables, str):
@@ -242,7 +243,10 @@ def read_file_into_single_variable_dataframe(file, variable, start_year, end_yea
     df = df[(df['Year'] >= start_year) & (df['Year'] <= end_year)]
     # Find the column label for the variable, reduce the DataFrame to that column (plus columns for Year and Month).
     column = get_matching_column_in_dataframe(df, variable)
-    df = df[['Year', 'Month', column]]
+    if 'Month' in df.columns:
+        df = df[['Year', 'Month', column]]
+    else:
+        df = df[['Year', column]]
     df[column] *= multiplier
     if return_column:
         return df, column
@@ -274,7 +278,10 @@ def read_file_set_into_single_variable_dataframe(output_files, file_set_index, v
         file = output_files[file_index][file_set_index]
         df_for_this_file = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier)
         df_for_this_file = df_for_this_file.rename(columns={column: column+f'_{file_index}_{file_set_index}'})
-        df = pd.merge(df, df_for_this_file, on=['Year', 'Month'], how='inner')
+        if 'Month' in df.columns:
+            df = pd.merge(df, df_for_this_file, on=['Year', 'Month'], how='inner')
+        else:
+            df = pd.merge(df, df_for_this_file, on=['Year'], how='inner')
     # After the join operation, there will be multiple columns for the variable. Return the list of all of these columns along with the DataFrame.
     columns = get_matching_column_in_dataframe(df, variable, all_matches=True)
     return df, columns

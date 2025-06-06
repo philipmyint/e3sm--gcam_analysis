@@ -5,7 +5,7 @@ import time
 import xarray as xr
 from utility_constants import *
 from utility_functions import check_substrings_in_list, get_all_files_in_path
-from utility_e3sm_netcdf import get_netcdf_files_between_start_and_end_years
+from utility_E3SM_netcdf import get_netcdf_files_between_start_and_end_years
 
 def process_inputs(inputs):    
     """ 
@@ -105,7 +105,7 @@ def extract_spatial_data_from_netcdf_files(inputs):
     netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
     
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.
-    ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal')[variables]
+    ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True)[variables]
     
     # Shift output back by one month to get rid of the extra month (January in the next year after end_year) that somehow gets added.
     ds['time'] = xr.CFTimeIndex(ds.get_index('time').shift(-1, 'ME'))

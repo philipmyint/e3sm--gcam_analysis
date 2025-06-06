@@ -21,7 +21,7 @@ def extract_year_and_month_from_name_of_netcdf_file(file):
 
 def find_gridcell_areas_in_netcdf_file(file):
     """ 
-    Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated (either EAM or ELM) NetCDF file.
+    Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated (EAM or ELM or EHC) NetCDF file.
 
     Parameters:
         file: NetCDF file.
@@ -32,9 +32,9 @@ def find_gridcell_areas_in_netcdf_file(file):
     """
     # Load the file into an xarray Dataset and put the grid cell areas into a NumPy array.
     ds = xr.open_dataset(file)
-    areas = create_numpy_array_from_ds(ds, ['area'], [0])
     if 'elm.h0' in file:
         # If the NetCDF file is produced by the ELM model, multiply the areas by the land fraction, plus additional land and pft masks.
+        areas = create_numpy_array_from_ds(ds, ['area'], [0])
         variables = ['landfrac', 'landmask', 'pftmask']
         landfrac, landmask, pftmask = create_numpy_array_from_ds(ds, variables, [0]*len(variables))
         areas *= landfrac*landmask*pftmask*km2_TO_m2
@@ -42,10 +42,19 @@ def find_gridcell_areas_in_netcdf_file(file):
         non_landfrac = 1 - landfrac
     elif 'eam.h0' in file:
         # If the NetCDF file is produced by the EAM model, multiply the areas by the Earth surface area so that the areas are in units of m^2.
+        areas = create_numpy_array_from_ds(ds, ['area'], [0])
         areas *= SURF_AREA
         # Find the land and ocean fractions.
         variables = ['LANDFRAC', 'OCNFRAC']
         landfrac, non_landfrac = create_numpy_array_from_ds(ds, variables, [0]*len(variables))
+    elif 'surfdata_iESM_dyn' in file:
+        # Case where the NetCDF file is the land surface data file produced dynamically by the E3SM human component (EHC) model during run time.
+        areas = create_numpy_array_from_ds(ds, ['AREA'], [0])
+        variables = ['LANDFRAC_PFT', 'PFTDATA_MASK']
+        landfrac, pftmask = create_numpy_array_from_ds(ds, variables, [0]*len(variables))
+        areas *= landfrac*pftmask
+        landfrac *= pftmask
+        non_landfrac = 1 - landfrac
     return areas, ds, landfrac, non_landfrac
 
 def get_netcdf_files_between_start_and_end_years(files, start_year, end_year):

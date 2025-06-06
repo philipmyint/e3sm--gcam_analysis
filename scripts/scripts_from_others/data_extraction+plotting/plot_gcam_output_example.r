@@ -14,7 +14,7 @@ qfile = "land_allocation_yieldscaler_cdensity_co2price_query.xml"
 
 # set working directory and include paths in names below as needed
 gcam_xml_path = "./"
-gcam_xml_out = "GCAMDBOutput_e3sm_gcam.xml"
+gcam_xml_out = "GCAMDBOutput_E3SM_gcam.xml"
 # you can name this whatever you want
 gcam_proj_file = "s2r4p5_e3sm.proj"
 outdir = "./"
