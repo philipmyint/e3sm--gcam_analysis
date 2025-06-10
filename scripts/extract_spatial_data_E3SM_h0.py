@@ -75,8 +75,8 @@ def process_dataset(ds):
     if check_substrings_in_list(pressure_variables, variables, all_or_any='all'):
         # See derivation of H2O partial pressure formula at https://cran.r-project.org/web/packages/humidity/vignettes/humidity-measures.html.
         partial_pressure_H2O = ds['PBOT']*ds['QBOT']/(0.622 + (0.378*ds['QBOT']))
-        ds['XCO2'] = mole_fraction_TO_ppm*ds['PCO2']/(ds['PBOT'] - partial_pressure_H2O)
-        ds['XCO2'].attrs = {'units':'ppm', 'description':'CO2 mole fraction in dry air'}
+        ds['ZCO2'] = mole_fraction_TO_ppm*ds['PCO2']/(ds['PBOT'] - partial_pressure_H2O)
+        ds['ZCO2'].attrs = {'units':'ppm', 'description':'CO2 mole fraction in dry air'}
     
     return ds
 

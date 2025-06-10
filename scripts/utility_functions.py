@@ -65,7 +65,7 @@ def check_substrings_in_string(substrings, string, all_or_any='all'):
         all_or_any: String whose value should be either 'all' or 'any'.
 
     Returns:
-        True if either all or any of the elements of substrings are substrings of the string, False otherwise.
+        True if either all or any of the elements of the substrings list are substrings of the string, False otherwise.
     """
     if all_or_any == 'all':
         return all(substring in string for substring in substrings)

@@ -41,8 +41,8 @@ def process_dataframe(df):
         columns_to_modify = [label for label in df.columns for substring in substrings if substring in label]
         # See derivation of H2O partial pressure formula at https://cran.r-project.org/web/packages/humidity/vignettes/humidity-measures.html.
         partial_pressure_H2O = df['PBOT (Pa)']*df['QBOT (kg/kg)']/(0.622 + (0.378*df['QBOT (kg/kg)']))
-        df['XCO2 (ppm)'] = mole_fraction_TO_ppm*df['PCO2 (Pa)']/(df['PBOT (Pa)'] - partial_pressure_H2O)
-        df = move_columns_next_to_each_other_in_dataframe(df, 'PCO2 (Pa)', 'XCO2 (ppm)')
+        df['ZCO2 (ppm)'] = mole_fraction_TO_ppm*df['PCO2 (Pa)']/(df['PBOT (Pa)'] - partial_pressure_H2O)
+        df = move_columns_next_to_each_other_in_dataframe(df, 'PCO2 (Pa)', 'ZCO2 (ppm)')
 
     # Convert fluxes and stocks that have units of g or kg to Pg.
     old_labels = ['(gC', '(g/', '(kg']
@@ -76,22 +76,23 @@ def process_dataframe(df):
 
     return df
 
-def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean'):
+def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type, region):
     """ 
-    Extracts the specified variables from an E3SM-generated NetCDF file into a Pandas DataFrame and performs the indicated operation on the variables.
+    Extracts the specified variables from an E3SM-generated NetCDF file into a Pandas DataFrame and performs the indicated lat/lon aggregation.
     Each NetCDF file contains simulation results for one month in a particular year from either EAM (atmosphere model) or ELM (land model). 
-    One type of operation could be to perform an area-weighted mean over the latitude/longitude coordinates for the given month.
+    One choice of aggregation type is to perform an area-weighted mean over the latitude/longitude coordinates for the given month.
 
     Parameters:
         file: Complete path and name of the NetCDF file.
         variables: List of variables that we want to extract from the NetCDF file.
-        calculation_type: String that indicates the operation type.
+        lat_lon_aggregation_type: String that indicates how we want to perform the aggregation over the lat/lon coordinates to form the time series.
+        region: String for the region of interest. If not specified or not recognized, then there will be no restrictions on the lat/lon coordinates.
 
     Returns:
         DataFrame containing one column for each of the variables, plus year and month columns.
     """
     # Extract the area as a function of lat/lon coordinate from the NetCDF file and forms an xarray Dataset for the variables.
-    areas, ds, landfrac, non_landfrac = find_gridcell_areas_in_netcdf_file(file)
+    areas, ds, landfrac, non_landfrac = find_gridcell_areas_in_netcdf_file(file, region=region)
 
     # Convert the Dataset to create an overall DataFrame that stores all variables except those for land units and plant-functional types (PFTs).
     # If land units and/or PFTs are also of interest, create a second DataFrame to store them.
@@ -111,56 +112,61 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
     if variables_landunits_and_pfts:
         df_landunits_and_pfts = ds[variables_landunits_and_pfts].to_dataframe()
     
-    # 9 land units in order: vegetation, crop, ice, multiple ice, lake, wetland, urban tbd, urban hd, urban md. We want only vegetation (index = 0).
+    # 9 land units: vegetation, crop, ice, multiple ice, lake, wetland, urban tbd, urban hd, urban md. Currently, we want only vegetation (index = 0).
     if 'PCT_LANDUNIT' in variables:
         df_landunits_and_pfts = df_landunits_and_pfts.reset_index(level='ltype')
         df_landunits_and_pfts = df_landunits_and_pfts[df_landunits_and_pfts['ltype'] == 0].drop(columns=['ltype'])
-        # Divide the vegetation percent by 100 to change it to a fraction and update the label accordingly.
+        # Divide the vegetation percent by 100 to change it to a fraction and update the label accordingly. For each lat/lon, there could be many 
+        # rows, corresponding to a different value of natpft (see below). The land unit fraction will be the same for all natpft values (same value 
+        # across all such rows), so just take the mean to extract this land unit fraction value at each lat/lon coordinate.
         if variables_except_landunits_and_pfts:
+            # Add the vegetation fraction to the overall DataFrame that will store all variables except land units and PFTs.
             df['FRAC_VEG'] = df_landunits_and_pfts['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
         else:
+            # If the overall DataFrame is empty (no variables other than land units and PFTs were specified in the JSON files), create the DataFrame.
             df = df_landunits_and_pfts['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
             df = df.to_frame()
             df = df.rename(columns={'PCT_LANDUNIT': 'FRAC_VEG'})
         # Add a column for the area at each lat/lon coordinate to the overall DataFrame.
         df['AREA (km^2)'] = areas/km2_TO_m2
 
-    # 17 PFTs in order: 1 bare, 8 tree, 3 shrub, 3 grass, 1 crop, 1 empty. These can be further subgrouped as follows:
+    # 17 PFTs in order: 1 bare, 8 tree, 3 shrub, 3 grass, 1 crop, 1 empty. These can be further aggregated into subgroups as follows:
     # Bare soil (index 0), forest (the 8 trees, indices 1--8); shrub (indices 9--11); grass (indices 12--14), crop (index 15). Ignore the empty PFT.
     if 'PCT_LANDUNIT' in variables and 'PCT_NAT_PFT' in variables:
         df_landunits_and_pfts = df_landunits_and_pfts.reset_index(level='natpft')
-        pft_labels = ['BARE_AREA (km^2)', 'FOREST_AREA (km^2)', 'SHRUB_AREA (km^2)', 'GRASS_AREA (km^2)', 'CROP_AREA (km^2)']
-        pft_min_max_indices = [(0, 0), (1, 8), (9, 11), (12, 14), (15, 15)]
-        # Select only the rows that pertain to this particular PFT subgroup and for each lat/lon coordinate, sum over all PFTS in the subgroup.
+        # Get data for the individual PFTs (again ignoring the empty one), as well as the aggregate subgroups.
+        pft_labels = [f'PFT_{i+1}_AREA (km^2)' for i in range(16)]
+        pft_labels.extend(['BARE_AREA (km^2)', 'FOREST_AREA (km^2)', 'SHRUB_AREA (km^2)', 'GRASS_AREA (km^2)', 'CROP_AREA (km^2)'])
+        pft_min_max_indices = [(i, i) for i in range(16)]
+        pft_min_max_indices.extend([(0, 0), (1, 8), (9, 11), (12, 14), (15, 15)])
+        # Select only the rows that pertain to this particular PFT category and for each lat/lon coordinate, sum over all PFTS if a subgroup.
         for index, pft_label in enumerate(pft_labels):
             pft_min_index, pft_max_index = pft_min_max_indices[index][0], pft_min_max_indices[index][1]
             df_this_pft = df_landunits_and_pfts[(df_landunits_and_pfts['natpft'] >= pft_min_index) & 
                                                 (df_landunits_and_pfts['natpft'] <= pft_max_index)]
             # Add up the percentages over all PFTs in the subgroup and divide that total percent by 100 to change it to a fraction.
             df_this_pft = df_this_pft['PCT_NAT_PFT'].groupby(['lat', 'lon']).sum().fillna(0)/100
-            # Add a column to the overall DataFrame to record the area of this PFT subgroup at each lat/lon coordinate.
+            # Add a column to the overall DataFrame to record the area of this PFT category (individual or subgroup) at each lat/lon coordinate.
             df[pft_label] = df['AREA (km^2)']*df['FRAC_VEG']*df_this_pft      
     
-    if calculation_type == 'area_weighted_mean_or_sum':
+    if lat_lon_aggregation_type == 'area_weighted_mean_or_sum':
         # Calculate an area-weighted mean or sum over all latitude/longitude coordinates for each variable.
 
-        # First, multiply all variables in the DataFrame except for the PFT area columns by the grid cell areas at each latitude/longitude coordinate.
-        all_columns_except_areas = [label for label in df.columns if '_AREA' not in label]
-        df[all_columns_except_areas] *= areas
+        # First, multiply all variables in the DataFrame except for the areas by the grid cell areas at each lat/lon coordinate.
+        columns_to_multipy_by_areas = [label for label in df.columns if 'AREA' not in label]
+        df[columns_to_multipy_by_areas] *= areas
         
-        # Like fluxes and stocks, the PFT subgroup area variables (ELM output) should also be sums rather than means.
         # For EAM variables that correspond specifically to land or non-land (ocean) quantities, multiply by the land or non-land fractions.
-        columns_for_means = [label for label in df.columns if '_LND' in label]
-        df[columns_for_means] *= landfrac
-        columns_for_means = [label for label in df.columns if '_OCN' in label]
-        df[columns_for_means] *= non_landfrac
+        df[[label for label in df.columns if '_LND' in label]] *= landfrac
+        df[[label for label in df.columns if '_OCN' in label]] *= non_landfrac
 
         # Sum over all latitude/longitude coordinates to get an area-weighted sum for each variable.
         df = df.sum().to_frame().T
 
         # Variables that are not fluxes and stocks (so that they are not per-area quantities), should be global area-weighted means
         # rather than area-weighted sums, and therefore we need to divide these sums (which were computed a few lines above) by the total area.
-        columns_for_means = [label for label in df.columns if not check_substrings_in_string(['/m^2', '/m2'], label, all_or_any='any')]
+        columns_for_means = [label for label in columns_to_multipy_by_areas 
+                             if not check_substrings_in_string(['/m^2', '/m2'], label, all_or_any='any')]
         # LND and OCN refer to certain types of EAM output for which we need to multiply the total grid cell areas by the land or non-land fractions.
         columns_for_means_LND = [label for label in columns_for_means if '_LND' in label]
         total_area = np.sum(areas*landfrac)
@@ -168,9 +174,8 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
         columns_for_means_OCN = [label for label in columns_for_means if '_OCN' in label]
         total_area = np.sum(areas*non_landfrac)
         df[columns_for_means_OCN]/= total_area
-        # Variables that are not LND or OCN refer to either ELM output or to EAM output where we need to work with the full area of each grid cell.
-        columns_for_means = [label for label in columns_for_means if 
-                             (label not in columns_for_means_LND and label not in columns_for_means_OCN and '_AREA' not in label)]
+        # Variables that are not LND or OCN refer to outputs where we need to work with the full area of each grid cell.
+        columns_for_means = [label for label in columns_for_means if (label not in columns_for_means_LND and label not in columns_for_means_OCN)]
         total_area = np.sum(areas)
         df[columns_for_means]/= total_area
 
@@ -180,10 +185,10 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
             new_column_label_function = lambda x: x.replace(old_label, '')
             df.columns = modify_list_based_on_condition(df.columns, condition, new_column_label_function)    
 
-    elif calculation_type == 'sum':
+    elif lat_lon_aggregation_type == 'sum':
         # Perform a sum over all latitude/longitude coordinates for each variable.
         df = df.sum().to_frame().T
-    elif calculation_type == 'mean':
+    elif lat_lon_aggregation_type == 'mean':
         # Calculate a mean over all latitude/longitude coordinates for each variable.
         df = df.mean().to_frame().T
 
@@ -195,8 +200,8 @@ def extract_netcdf_file_into_dataframe(file, variables, calculation_type='mean')
     df['Month'] = month
     return df[column_names_with_year_and_month_first]
 
-def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_substrings, 
-            variables, calculation_types, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False):
+def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_substrings, variables, 
+                lat_lon_aggregation_types=None, regions=None, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False):
     """ 
     Extracts time series data from E3SM-generated NetCDF files in a simulation directory into a Pandas DataFrame and writes it to an output file. 
     The NetCDF files can be of more than one type (e.g., one set generated from the ELM model and another set from the EAM model in E3SM).
@@ -209,8 +214,10 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
                            indicates the substrings that must be in the names of that NetCDF file type.
         variables: List where each element is itself a list of variables we want to extract for each type of NetCDF file. 
                    The aggregate of all variables contained in these lists will together form the columns of the DataFrame.
-        calculation_types: List of strings that indicate what type of calculation we want to perform to produce the time series data 
+        lat_lon_aggregation_types: List of strings that indicate what type of lat/lon aggregation we want to perform to produce the time series data 
                            for each type of NetCDF file. Current options include 'area_weighted_mean_or_sum', 'mean', and 'sum'.
+        regions: List of strings for the region of interest. If not specified or not recognized, then there will be no restrictions on the 
+                 lat/lon coordinates (the entire globe will be used). 
         process_variables: Boolean indicating if further processing is to be done on the outputs in the DataFrame. This includes adding new variables
                            not in the NetCDF files (e.g., total precipitation, mole fraction CO2) or changing the units (e.g., Pg instead of g).
         start_year: First year in the extracted time series data.
@@ -222,6 +229,12 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
     # This list will store a DataFrame for each type of NetCDF file, and all elements of this list will later be merged into a single DataFrame.
     dataframes = []
 
+    # If no lat_lon_aggregation_types or regions have been specified, set them as lists with default values for all NetCDF file types.
+    if not lat_lon_aggregation_types:
+        lat_lon_aggregation_types = ['area_weighted_mean_or_sum']*len(variables)
+    if not regions:
+        regions = [None]*len(variables)
+
     # Iterate over all NetCDF file types.
     for index in range(len(variables)):
 
@@ -230,7 +243,8 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
     
         # Use multiprocessing to extract data from all the files. Put the data from each file into DataFrame, store all such DataFrames in a list.
-        arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [calculation_types[index]]*len(netcdf_files)))
+        arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
+                             [regions[index]]*len(netcdf_files)))
         with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
             dataframes_for_each_nc_file = list(pool.starmap(extract_netcdf_file_into_dataframe, arguments))
         
