@@ -18,7 +18,7 @@ from utility_xarray import calculate_statistics_of_xarray, convert_xarray_to_uxa
 
 """ Dictionary of default input values for spatial plots. """
 default_inputs_spatial_data = {'plot_directory': './',
-                    'calculation_type': 'mean',
+                    'time_calculation': 'mean',
                     'plot_type_for_2_sets': 'absolute_difference',
                     'multiplier': 1,
                     'start_year': 2071,
@@ -162,7 +162,7 @@ def plot_spatial_data_eam(inputs, grid_file):
     cbar_limits = inputs['cbar_limits']
     cbar_x_offset = inputs['cbar_x_offset']
     statistics_panel_size = inputs['statistics_panel_size']
-    calculation_type = inputs['calculation_type']
+    time_calculation = inputs['time_calculation']
     plot_type_for_2_sets = inputs['plot_type_for_2_sets']
     use_latex = inputs['use_latex']
     start_year = inputs['start_year']
@@ -190,9 +190,9 @@ def plot_spatial_data_eam(inputs, grid_file):
             ds = xr.open_dataset(file).sel(year=slice(start_year, end_year))[variable]
             file = os.path.join(plot_directory, f'temp_{variable}.nc')
             ds.to_netcdf(file, 'w')
-            if calculation_type == 'mean':
+            if time_calculation == 'mean':
                 uxda = ux.open_dataset(grid_file, file).mean(dim='year')[variable]*multiplier
-            elif calculation_type == 'sum':
+            elif time_calculation == 'sum':
                 uxda = ux.open_dataset(grid_file, file).sum(dim='year')[variable]*multiplier
                 # If calculating the sum, change the per-time quantities and their units accordingly.
                 per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
@@ -358,7 +358,7 @@ def plot_spatial_data_elm(inputs):
     cbar_limits = inputs['cbar_limits']
     cbar_x_offset = inputs['cbar_x_offset']
     statistics_panel_size = inputs['statistics_panel_size']
-    calculation_type = inputs['calculation_type']
+    time_calculation = inputs['time_calculation']
     plot_type_for_2_sets = inputs['plot_type_for_2_sets']
     use_latex = inputs['use_latex']
     start_year = inputs['start_year']
@@ -379,9 +379,9 @@ def plot_spatial_data_elm(inputs):
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
-            if calculation_type == 'mean':
+            if time_calculation == 'mean':
                 da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).mean(dim='year')[variable]*multiplier
-            elif calculation_type == 'sum':
+            elif time_calculation == 'sum':
                 da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).sum(dim='year')[variable]*multiplier
                 # If calculating the sum, change the per-time quantities and their units accordingly.
                 per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
