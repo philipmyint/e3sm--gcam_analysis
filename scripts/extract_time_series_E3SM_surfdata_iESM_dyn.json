@@ -1,5 +1,27 @@
 [
     {
+        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
+        "output_file": "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240730.dat",
+        "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "start_year": 2015,
+        "end_year": 2100
+    },
+    {
+        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
+        "output_file": "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240730_amazon.dat",
+        "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "region": "amazon",
+        "start_year": 2015,
+        "end_year": 2100
+    },
+    {
+        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
+        "output_file": "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn_20240730.dat",
+        "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "start_year": 2015,
+        "end_year": 2100
+    },
+    {
         "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
         "output_file": "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240820.dat",
         "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
@@ -7,30 +29,8 @@
         "end_year": 2100
     },
     {
-        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
-        "output_file": "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240820_amazon.dat",
-        "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
-        "region": "amazon",
-        "start_year": 2015,
-        "end_year": 2100
-    },
-    {
         "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
         "output_file": "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn_20240820.dat",
-        "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
-        "start_year": 2015,
-        "end_year": 2100
-    },
-    {
-        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
-        "output_file": "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240730.dat",
-        "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
-        "start_year": 2015,
-        "end_year": 2100
-    },
-    {
-        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
-        "output_file": "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn_20240730.dat",
         "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
         "start_year": 2015,
         "end_year": 2100

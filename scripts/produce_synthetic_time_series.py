@@ -50,11 +50,11 @@ if __name__ == '__main__':
              "./../2025_DiVittorio_et_al/ag_scaling_time_series.dat", 
              "./../2025_DiVittorio_et_al/carbon_scaling_time_series.dat",
              "./../2025_DiVittorio_et_al/control_time_series_amazon.dat"]
-    files.extend(["./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240730.dat", 
+    files.extend(["./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240730.dat",
+        "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240730_amazon.dat", 
         "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn_20240730.dat",
         "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240820.dat", 
-        "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn_20240820.dat",
-        "./../2025_DiVittorio_et_al/control_time_series_surfdata_iESM_dyn_20240820_amazon.dat"])
+        "./../2025_DiVittorio_et_al/full_feedback_time_series_surfdata_iESM_dyn_20240820.dat"])
     num_files_in_each_set = [5]*len(files)
     inputs = list(zip(files, num_files_in_each_set))
 

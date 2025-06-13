@@ -1,6 +1,6 @@
 [
     {
-        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
+        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
         "output_files": ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/control_spatial_data_eam.nc"],
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [
@@ -12,7 +12,7 @@
         "end_years": 2090
     },
     {
-        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
+        "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3/run",
         "output_files": ["./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_eam.nc"],
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [

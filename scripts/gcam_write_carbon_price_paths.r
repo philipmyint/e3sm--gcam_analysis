@@ -52,7 +52,7 @@ NEARTERM = FALSE
 
 ######## set the gcam xml output file name and the desired project data file name
 
-gcam_xml_out="/Users/adivi/projects/e3sm/iesmv2/inputs/carbon_price_paths/ssp2rcp45/GCAMDBOutput_SSP2_4p5_for_E3SM.xml"
+gcam_xml_out="/lcrc/group/e3sm/ac.eva.sinha/20240820_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/GCAMDBOutput_gcam_test.xml"
 gcam_proj_file="s2r4p5_e3sm.proj"
 data_dir = "ssp2rcp45"
 
