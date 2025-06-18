@@ -1,0 +1,393 @@
+out_lu_code,land_unit,out_reg_code,out_basin_code,gcam_reg_name,Basin_name,basin_abr,gcam_reg_code,gcam_basin_code
+1,Africa_Eastern_AfrCstE,1,1,Africa_Eastern,Africa_East_Central_Coast,AfrCstE,2,171
+2,Africa_Eastern_AfrCstNE,1,2,Africa_Eastern,Africa_Red_Sea_Gulf_of_Aden_Coast,AfrCstNE,2,100
+3,Africa_Eastern_AfrIntN,1,3,Africa_Eastern,Africa_North_Interior,AfrIntN,2,144
+4,Africa_Eastern_CongoR,1,4,Africa_Eastern,Congo,CongoR,2,183
+5,Africa_Eastern_LChad,1,5,Africa_Eastern,Lake_Chad,LChad,2,151
+6,Africa_Eastern_Madagascar,1,6,Africa_Eastern,Madagascar,Madagascar,2,177
+7,Africa_Eastern_NileR,1,7,Africa_Eastern,Nile,NileR,2,87
+8,Africa_Eastern_RiftValley,1,8,Africa_Eastern,Rift_Valley,RiftValley,2,179
+9,Africa_Eastern_ShebJubR,1,9,Africa_Eastern,Shebelli_Juba,ShebJubR,2,170
+10,Africa_Northern_AfrCstNE,2,1,Africa_Northern,Africa_Red_Sea_Gulf_of_Aden_Coast,AfrCstNE,3,100
+11,Africa_Northern_AfrCstNW,2,2,Africa_Northern,Africa_North_West_Coast,AfrCstNW,3,86
+12,Africa_Northern_AfrIntN,2,3,Africa_Northern,Africa_North_Interior,AfrIntN,3,144
+13,Africa_Northern_DeadSea,2,4,Africa_Northern,Dead_Sea,DeadSea,3,95
+14,Africa_Northern_LChad,2,5,Africa_Northern,Lake_Chad,LChad,3,151
+15,Africa_Northern_MeditE,2,6,Africa_Northern,Mediterranean_Sea_East_Coast,MeditE,3,75
+16,Africa_Northern_MeditS,2,7,Africa_Northern,Mediterranean_South_Coast,MeditS,3,80
+17,Africa_Northern_NigerR,2,8,Africa_Northern,Niger,NigerR,3,149
+18,Africa_Northern_NileR,2,9,Africa_Northern,Nile,NileR,3,87
+19,Africa_Northern_SinaiP,2,10,Africa_Northern,Sinai_Peninsula,SinaiP,3,98
+20,Africa_Southern_AfrCstE,3,1,Africa_Southern,Africa_East_Central_Coast,AfrCstE,4,171
+21,Africa_Southern_AfrCstSE,3,2,Africa_Southern,Africa_Indian_Ocean_Coast,AfrCstSE,4,190
+22,Africa_Southern_AfrCstSW,3,3,Africa_Southern,Namibia_Coast,AfrCstSW,4,196
+23,Africa_Southern_AfrCstS,3,4,Africa_Southern,South_Africa_South_Coast,AfrCstS,4,198
+24,Africa_Southern_AfrIntS,3,5,Africa_Southern,Africa_South_Interior,AfrIntS,4,197
+25,Africa_Southern_AngolaCst,3,6,Africa_Southern,Angola_Coast,AngolaCst,4,182
+26,Africa_Southern_CongoR,3,7,Africa_Southern,Congo,CongoR,4,183
+27,Africa_Southern_GuineaGulf,3,8,Africa_Southern,Gulf_of_Guinea,GuineaGulf,4,162
+28,Africa_Southern_LimpopoR,3,9,Africa_Southern,Limpopo,LimpopoR,4,199
+29,Africa_Southern_NileR,3,10,Africa_Southern,Nile,NileR,4,87
+30,Africa_Southern_OrangeR,3,11,Africa_Southern,Orange,OrangeR,4,194
+31,Africa_Southern_RiftValley,3,12,Africa_Southern,Rift_Valley,RiftValley,4,179
+32,Africa_Southern_ZambeziR,3,13,Africa_Southern,Zambezi,ZambeziR,4,188
+33,Africa_Western_AfrCstNW,4,1,Africa_Western,Africa_North_West_Coast,AfrCstNW,5,86
+34,Africa_Western_AfrCstW,4,2,Africa_Western,Africa_West_Coast,AfrCstW,5,142
+35,Africa_Western_AfrIntN,4,3,Africa_Western,Africa_North_Interior,AfrIntN,5,144
+36,Africa_Western_CongoR,4,4,Africa_Western,Congo,CongoR,5,183
+37,Africa_Western_GuineaGulf,4,5,Africa_Western,Gulf_of_Guinea,GuineaGulf,5,162
+38,Africa_Western_LChad,4,6,Africa_Western,Lake_Chad,LChad,5,151
+39,Africa_Western_NigerR,4,7,Africa_Western,Niger,NigerR,5,149
+40,Africa_Western_NileR,4,8,Africa_Western,Nile,NileR,5,87
+41,Africa_Western_SenegalR,4,9,Africa_Western,Senegal,SenegalR,5,152
+42,Africa_Western_VoltaR,4,10,Africa_Western,Volta,VoltaR,5,160
+43,Africa_Western_ZambeziR,4,11,Africa_Western,Zambezi,ZambeziR,5,188
+44,Argentina_ArgColoR,5,1,Argentina,South_America_Colorado,ArgColoR,31,212
+45,Argentina_ArgCstN,5,2,Argentina,North_Argentina_South_Atlantic_Coast,ArgCstN,31,210
+46,Argentina_ArgCstS,5,3,Argentina,South_Argentina_South_Atlantic_Coast,ArgCstS,31,215
+47,Argentina_ChileCstN,5,4,Argentina,North_Chile_Pacific_Coast,ChileCstN,31,207
+48,Argentina_ChileCstS,5,5,Argentina,South_Chile_Pacific_Coast,ChileCstS,31,169
+49,Argentina_LaPuna,5,6,Argentina,La_Puna_Region,LaPuna,31,200
+50,Argentina_MarChiq,5,7,Argentina,Mar_Chiquita,MarChiq,31,203
+51,Argentina_NegroR,5,8,Argentina,Negro,NegroR,31,213
+52,Argentina_Pampas,5,9,Argentina,Pampas_Region,Pampas,31,209
+53,Argentina_Patagonia,5,10,Argentina,Central_Patagonia_Highlands,Patagonia,31,214
+54,Argentina_RioLaPlata,5,11,Argentina,La_Plata,RioLaPlata,31,206
+55,Argentina_Salinas,5,12,Argentina,Salinas_Grandes,Salinas,31,205
+56,Australia_NZ_AusCstE,6,1,Australia_NZ,Australia_East_Coast,AusCstE,6,189
+57,Australia_NZ_AusCstN,6,2,Australia_NZ,Australia_North_Coast,AusCstN,6,184
+58,Australia_NZ_AusCstS,6,3,Australia_NZ,Australia_South_Coast,AusCstS,6,202
+59,Australia_NZ_AusCstW,6,4,Australia_NZ,Australia_West_Coast,AusCstW,6,191
+60,Australia_NZ_AusInt,6,5,Australia_NZ,Australia_Interior,AusInt,6,193
+61,Australia_NZ_MurrayDrlg,6,6,Australia_NZ,Murray_Darling,MurrayDrlg,6,208
+62,Australia_NZ_NewZealand,6,7,Australia_NZ,New_Zealand,NewZealand,6,201
+63,Australia_NZ_Tasmania,6,8,Australia_NZ,Tasmania,Tasmania,6,211
+64,Brazil_AmazonR,7,1,Brazil,Amazon,AmazonR,7,168
+65,Brazil_BrzCstE,7,2,Brazil,East_Brazil_South_Atlantic_Coast,BrzCstE,7,186
+66,Brazil_BrzCstN,7,3,Brazil,North_Brazil_South_Atlantic_Coast,BrzCstN,7,172
+67,Brazil_BrzCstS,7,4,Brazil,Uruguay_Brazil_South_Atlantic_Coast,BrzCstS,7,195
+68,Brazil_OrinocoR,7,5,Brazil,Orinoco,OrinocoR,7,156
+69,Brazil_ParnaibaR,7,6,Brazil,Parnaiba,ParnaibaR,7,187
+70,Brazil_RioLaPlata,7,7,Brazil,La_Plata,RioLaPlata,7,206
+71,Brazil_SAmerCstNE,7,8,Brazil,Northeast_South_America_South_Atlantic_Coast,SAmerCstNE,7,161
+72,Brazil_SaoFrancR,7,9,Brazil,Sao_Francisco,SaoFrancR,7,192
+73,Brazil_TocantinsR,7,10,Brazil,Tocantins,TocantinsR,7,174
+74,Canada_CanAtl,8,1,Canada,Atlantic_Ocean_Seaboard,CanAtl,8,19
+75,Canada_ChurchillR,8,2,Canada,Churchill,ChurchillR,8,34
+76,Canada_FraserR,8,3,Canada,Fraser,FraserR,8,27
+77,Canada_GreatLakes,8,4,Canada,Great_Lakes_Basin,GreatLakes,8,227
+78,Canada_HudsonBay,8,5,Canada,Hudson_Bay_Coast,HudsonBay,8,15
+79,Canada_Mackenzie,8,6,Canada,Mackenzie,Mackenzie,8,10
+80,Canada_MissouriR,8,7,Canada,Missouri_River_Basin,MissouriR,8,223
+81,Canada_NWTerr,8,8,Canada,Northwest_Territories,NWTerr,8,2
+82,Canada_NelsonR,8,9,Canada,Saskatchewan_Nelson,NelsonR,8,23
+83,Canada_PacArctic,8,10,Canada,Pacific_and_Arctic_Coast,PacArctic,8,7
+84,Canada_StLwrncR,8,11,Canada,St_Lawrence,StLwrncR,8,40
+85,Canada_UsaCstNE,8,12,Canada,New_England_Basin,UsaCstNE,8,232
+86,Canada_UsaPacNW,8,13,Canada,Pacific_Northwest_Basin,UsaPacNW,8,229
+87,Central America and Caribbean_Caribbean,9,1,Central America and Caribbean,Caribbean,Caribbean,9,101
+88,Central America and Caribbean_CntAmer,9,2,Central America and Caribbean,Southern_Central_America,CntAmer,9,135
+89,Central America and Caribbean_ColEcuaCst,9,3,Central America and Caribbean,Colombia_Ecuador_Pacific_Coast,ColEcuaCst,9,157
+90,Central America and Caribbean_GrijUsuR,9,4,Central America and Caribbean,Grijalva_Usumacinta,GrijUsuR,9,133
+91,Central America and Caribbean_SAmerCstN,9,5,Central America and Caribbean,Caribbean_Coast,SAmerCstN,9,143
+92,Central America and Caribbean_YucatanP,9,6,Central America and Caribbean,Yucatan_Peninsula,YucatanP,9,111
+93,Central Asia_AmuDaryaR,10,1,Central Asia,Amu_Darya,AmuDaryaR,10,58
+94,Central Asia_AmurR,10,2,Central Asia,Amur,AmurR,10,43
+95,Central Asia_BlackSeaN,10,3,Central Asia,Black_Sea_North_Coast,BlackSeaN,10,47
+96,Central Asia_BlackSeaS,10,4,Central Asia,Black_Sea_South_Coast,BlackSeaS,10,70
+97,Central Asia_CaspianE,10,5,Central Asia,Caspian_Sea_East_Coast,CaspianE,10,52
+98,Central Asia_CaspianNE,10,6,Central Asia,Caspian_Sea_Coast,CaspianNE,10,45
+99,Central Asia_CaspianSW,10,7,Central Asia,Caspian_Sea_South_West_Coast,CaspianSW,10,72
+100,Central Asia_Gobi,10,8,Central Asia,Gobi_Interior,Gobi,10,42
+101,Central Asia_LBalkash,10,9,Central Asia,Lake_Balkash,LBalkash,10,68
+102,Central Asia_ObR,10,10,Central Asia,Ob,ObR,10,56
+103,Central Asia_SyrDaryaR,10,11,Central Asia,Syr_Darya,SyrDaryaR,10,76
+104,Central Asia_Tarim,10,12,Central Asia,Tarim_Interior,Tarim,10,85
+105,Central Asia_UralR,10,13,Central Asia,Ural,UralR,10,38
+106,Central Asia_VolgaR,10,14,Central Asia,Volga,VolgaR,10,18
+107,Central Asia_YeniseiR,10,15,Central Asia,Yenisei,YeniseiR,10,48
+108,China_AmurR,11,1,China,Amur,AmurR,11,43
+109,China_AmuDaryaR,11,2,China,Amu_Darya,AmuDaryaR,11,58
+110,China_BoHai,11,3,China,Bo_Hai_Korean_Bay_North_Coast,BoHai,11,66
+111,China_ChinaCst,11,4,China,China_Coast,ChinaCst,11,78
+112,China_GangesR,11,5,China,Ganges_Bramaputra,GangesR,11,110
+113,China_Gobi,11,6,China,Gobi_Interior,Gobi,11,42
+114,China_Hainan,11,7,China,Hainan,Hainan,11,124
+115,China_Hong,11,8,China,Hong_(Red_River),Hong,11,109
+116,China_HuangHeR,11,9,China,Huang_He,HuangHeR,11,79
+117,China_IndusR,11,10,China,Indus,IndusR,11,89
+118,China_IrrawaddyR,11,11,China,Irrawaddy,IrrawaddyR,11,137
+119,China_LBalkash,11,12,China,Lake_Balkash,LBalkash,11,68
+120,China_Mekong,11,13,China,Mekong,Mekong,11,125
+121,China_ObR,11,14,China,Ob,ObR,11,56
+122,China_RusCstSE,11,15,China,Russia_South_East_Coast,RusCstSE,11,37
+123,China_SChinaSea,11,16,China,South_China_Sea_Coast,SChinaSea,11,112
+124,China_SyrDaryaR,11,17,China,Syr_Darya,SyrDaryaR,11,76
+125,China_Salween,11,18,China,Salween,Salween,11,127
+126,China_Tarim,11,19,China,Tarim_Interior,Tarim,11,85
+127,China_Tibet,11,20,China,Plateau_of_Tibet_Interior,Tibet,11,92
+128,China_XunJiang,11,21,China,Xun_Jiang,XunJiang,11,108
+129,China_Yangtze,11,22,China,Yangtze,Yangtze,11,106
+130,China_ZiyaHe,11,23,China,Ziya_He_Interior,ZiyaHe,11,77
+131,Colombia_AmazonR,12,1,Colombia,Amazon,AmazonR,32,168
+132,Colombia_ColEcuaCst,12,2,Colombia,Colombia_Ecuador_Pacific_Coast,ColEcuaCst,32,157
+133,Colombia_MagdalenaR,12,3,Colombia,Magdalena,MagdalenaR,32,166
+134,Colombia_OrinocoR,12,4,Colombia,Orinoco,OrinocoR,32,156
+135,Colombia_SAmerCstN,12,5,Colombia,Caribbean_Coast,SAmerCstN,32,143
+136,EU-12_AdrBlkSea,13,1,EU-12,Adriatic_Sea_Greece_Black_Sea_Coast,AdrBlkSea,12,55
+137,EU-12_BalticSea,13,2,EU-12,Baltic_Sea_Coast,BalticSea,12,20
+138,EU-12_DanubeR,13,3,EU-12,Danube,DanubeR,12,54
+139,EU-12_DaugavaR,13,4,EU-12,Daugava,DaugavaR,12,25
+140,EU-12_DniesterR,13,5,EU-12,Dniester,DniesterR,12,49
+141,EU-12_DnkGrmCst,13,6,EU-12,Denmark_Germany_Coast,DnkGrmCst,12,21
+142,EU-12_ElbeR,13,7,EU-12,Elbe,ElbeR,12,31
+143,EU-12_MeditE,13,8,EU-12,Mediterranean_Sea_East_Coast,MeditE,12,75
+144,EU-12_NarvaR,13,9,EU-12,Narva,NarvaR,12,22
+145,EU-12_NemanR,13,10,EU-12,Neman,NemanR,12,35
+146,EU-12_OderR,13,11,EU-12,Oder,OderR,12,29
+147,EU-12_PolandCst,13,12,EU-12,Poland_Coast,PolandCst,12,33
+148,EU-12_WislaR,13,13,EU-12,Wisla,WislaR,12,30
+149,EU-15_AdrBlkSea,14,1,EU-15,Adriatic_Sea_Greece_Black_Sea_Coast,AdrBlkSea,13,55
+150,EU-15_AfrCstNW,14,2,EU-15,Africa_North_West_Coast,AfrCstNW,13,86
+151,EU-15_ArcticIsl,14,3,EU-15,Arctic_Ocean_Islands,ArcticIsl,13,1
+152,EU-15_ArgCstS,14,4,EU-15,South_Argentina_South_Atlantic_Coast,ArgCstS,13,215
+153,EU-15_DanubeR,14,5,EU-15,Danube,DanubeR,13,54
+154,EU-15_DnkGrmCst,14,6,EU-15,Denmark_Germany_Coast,DnkGrmCst,13,21
+155,EU-15_DouroR,14,7,EU-15,Douro,DouroR,13,74
+156,EU-15_EbroR,14,8,EU-15,Ebro,EbroR,13,73
+157,EU-15_ElbeR,14,9,EU-15,Elbe,ElbeR,13,31
+158,EU-15_EmsWeserR,14,10,EU-15,Ems_Weser,EmsWeserR,13,28
+159,EU-15_EngWales,14,11,EU-15,England_and_Wales,EngWales,13,26
+160,EU-15_Finland,14,12,EU-15,Finland,Finland,13,13
+161,EU-15_FranceCstS,14,13,EU-15,France_South_Coast,FranceCstS,13,61
+162,EU-15_FranceCstW,14,14,EU-15,France_West_Coast,FranceCstW,13,41
+163,EU-15_Gironde,14,15,EU-15,Gironde,Gironde,13,64
+164,EU-15_GuadalqR,14,16,EU-15,Guadalquivir,GuadalqR,13,83
+165,EU-15_GuadianaR,14,17,EU-15,Guadiana,GuadianaR,13,81
+166,EU-15_IberiaCst,14,18,EU-15,Spain_Portugal_Atlantic_Coast,IberiaCst,13,60
+167,EU-15_Ireland,14,19,EU-15,Ireland,Ireland,13,24
+168,EU-15_ItalyCstE,14,20,EU-15,Italy_East_Coast,ItalyCstE,13,50
+169,EU-15_ItalyCstW,14,21,EU-15,Italy_West_Coast,ItalyCstW,13,59
+170,EU-15_LoireR,14,22,EU-15,Loire,LoireR,13,44
+171,EU-15_MeditE,14,23,EU-15,Mediterranean_Sea_East_Coast,MeditE,13,75
+172,EU-15_MeditIsl,14,24,EU-15,Mediterranean_Sea_Islands,MeditIsl,13,63
+173,EU-15_NevaR,14,25,EU-15,Neva,NevaR,13,17
+174,EU-15_OderR,14,26,EU-15,Oder,OderR,13,29
+175,EU-15_PoR,14,27,EU-15,Po,PoR,13,57
+176,EU-15_RhineR,14,28,EU-15,Rhine,RhineR,13,32
+177,EU-15_RhoneR,14,29,EU-15,Rhone,RhoneR,13,62
+178,EU-15_ScheldtR,14,30,EU-15,Scheldt,ScheldtR,13,36
+179,EU-15_ScndnvN,14,31,EU-15,Scandinavia_North_Coast,ScndnvN,13,8
+180,EU-15_Scotland,14,32,EU-15,Scotland,Scotland,13,16
+181,EU-15_SeineR,14,33,EU-15,Seine,SeineR,13,46
+182,EU-15_SpainCstSE,14,34,EU-15,Spain_South_and_East_Coast,SpainCstSE,13,67
+183,EU-15_Sweden,14,35,EU-15,Sweden,Sweden,13,12
+184,EU-15_TagusR,14,36,EU-15,Tagus,TagusR,13,71
+185,EU-15_TiberR,14,37,EU-15,Tiber,TiberR,13,69
+186,Europe_Eastern_BlackSeaN,15,1,Europe_Eastern,Black_Sea_North_Coast,BlackSeaN,14,47
+187,Europe_Eastern_DanubeR,15,2,Europe_Eastern,Danube,DanubeR,14,54
+188,Europe_Eastern_DaugavaR,15,3,Europe_Eastern,Daugava,DaugavaR,14,25
+189,Europe_Eastern_DnieperR,15,4,Europe_Eastern,Dnieper,DnieperR,14,39
+190,Europe_Eastern_DniesterR,15,5,Europe_Eastern,Dniester,DniesterR,14,49
+191,Europe_Eastern_DonR,15,6,Europe_Eastern,Don,DonR,14,53
+192,Europe_Eastern_NemanR,15,7,Europe_Eastern,Neman,NemanR,14,35
+193,Europe_Eastern_NevaR,15,8,Europe_Eastern,Neva,NevaR,14,17
+194,Europe_Eastern_WislaR,15,9,Europe_Eastern,Wisla,WislaR,14,30
+195,Europe_Non_EU_AdrBlkSea,16,1,Europe_Non_EU,Adriatic_Sea_Greece_Black_Sea_Coast,AdrBlkSea,15,55
+196,Europe_Non_EU_BlackSeaS,16,2,Europe_Non_EU,Black_Sea_South_Coast,BlackSeaS,15,70
+197,Europe_Non_EU_CaspianSW,16,3,Europe_Non_EU,Caspian_Sea_South_West_Coast,CaspianSW,15,72
+198,Europe_Non_EU_DanubeR,16,4,Europe_Non_EU,Danube,DanubeR,15,54
+199,Europe_Non_EU_EJrdnSyr,16,5,Europe_Non_EU,Eastern_Jordan_Syria,EJrdnSyr,15,99
+200,Europe_Non_EU_MeditE,16,6,Europe_Non_EU,Mediterranean_Sea_East_Coast,MeditE,15,75
+201,Europe_Non_EU_TigrEuphR,16,7,Europe_Non_EU,Tigris_Euphrates,TigrEuphR,15,84
+202,European Free Trade Association_ArcticIsl,17,1,European Free Trade Association,Arctic_Ocean_Islands,ArcticIsl,16,1
+203,European Free Trade Association_DanubeR,17,2,European Free Trade Association,Danube,DanubeR,16,54
+204,European Free Trade Association_Iceland,17,3,European Free Trade Association,Iceland,Iceland,16,11
+205,European Free Trade Association_PoR,17,4,European Free Trade Association,Po,PoR,16,57
+206,European Free Trade Association_RhineR,17,5,European Free Trade Association,Rhine,RhineR,16,32
+207,European Free Trade Association_RhoneR,17,6,European Free Trade Association,Rhone,RhoneR,16,62
+208,European Free Trade Association_ScndnvN,17,7,European Free Trade Association,Scandinavia_North_Coast,ScndnvN,16,8
+209,European Free Trade Association_Sweden,17,8,European Free Trade Association,Sweden,Sweden,16,12
+210,India_AdnNicIsl,18,1,India,Andaman_Nicobar_Islands,AdnNicIsl,17,141
+211,India_BengalBay,18,2,India,Bay_of_Bengal_North_East_Coast,BengalBay,17,116
+212,India_BengalW,18,3,India,Yasai,BengalW,17,118
+213,India_BrahmaniR,18,4,India,Brahmani,BrahmaniR,17,120
+214,India_CauveryR,18,5,India,Cauvery,CauveryR,17,153
+215,India_GangesR,18,6,India,Ganges_Bramaputra,GangesR,17,110
+216,India_GodavariR,18,7,India,Godavari,GodavariR,17,123
+217,India_IndCstE,18,8,India,India_East_Coast,IndCstE,17,145
+218,India_IndCstNE,18,9,India,India_North_East_Coast,IndCstNE,17,128
+219,India_IndCstS,18,10,India,India_South_Coast,IndCstS,17,155
+220,India_IndCstW,18,11,India,India_West_Coast,IndCstW,17,129
+221,India_IndusR,18,12,India,Indus,IndusR,17,89
+222,India_IrrawaddyR,18,13,India,Irrawaddy,IrrawaddyR,17,137
+223,India_KrishnaR,18,14,India,Krishna,KrishnaR,17,140
+224,India_MahanadiR,18,15,India,Mahanadi,MahanadiR,17,122
+225,India_MahiR,18,16,India,Mahi,MahiR,17,113
+226,India_NarmadaR,18,17,India,Narmada,NarmadaR,17,235
+227,India_PennarR,18,18,India,Pennar,PennarR,17,147
+228,India_SabarmatiR,18,19,India,Sabarmati,SabarmatiR,17,107
+229,India_TaptiR,18,20,India,Tapti,TaptiR,17,117
+230,Indonesia_BorneoCstN,19,1,Indonesia,North_Borneo_Coast,BorneoCstN,18,159
+231,Indonesia_FlyR,19,2,Indonesia,Fly,FlyR,18,181
+232,Indonesia_IdnE,19,3,Indonesia,Palau_and_East_Indonesia,IdnE,18,158
+233,Indonesia_IrianJaya,19,4,Indonesia,Irian_Jaya_Coast,IrianJaya,18,167
+234,Indonesia_JavaTimor,19,5,Indonesia,Java_Timor,JavaTimor,18,175
+235,Indonesia_Kalimantan,19,6,Indonesia,Kalimantan,Kalimantan,18,165
+236,Indonesia_SepikR,19,7,Indonesia,Sepik,SepikR,18,178
+237,Indonesia_Sulawesi,19,8,Indonesia,Sulawesi,Sulawesi,18,164
+238,Indonesia_Sumatra,19,9,Indonesia,Sumatra,Sumatra,18,163
+239,Japan_Japan,20,1,Japan,Japan,Japan,19,51
+240,Japan_Taiwan,20,2,Japan,Taiwan,Taiwan,19,103
+241,Mexico_California,21,1,Mexico,California_River_Basin,California,20,217
+242,Mexico_CntAmer,21,2,Mexico,Southern_Central_America,CntAmer,20,135
+243,Mexico_GrijUsuR,21,3,Mexico,Grijalva_Usumacinta,GrijUsuR,20,133
+244,Mexico_MexBaja,21,4,Mexico,Baja_California,MexBaja,20,91
+245,Mexico_MexCstNW,21,5,Mexico,Mexico_Northwest_Coast,MexCstNW,20,96
+246,Mexico_MexCstW,21,6,Mexico,Pacific_Central_Coast,MexCstW,20,115
+247,Mexico_MexGulf,21,7,Mexico,North_Gulf,MexGulf,20,105
+248,Mexico_MexInt,21,8,Mexico,Mexico_Interior,MexInt,20,114
+249,Mexico_Papaloapan,21,9,Mexico,Papaloapan,Papaloapan,20,130
+250,Mexico_RioBalsas,21,10,Mexico,Rio_Balsas,RioBalsas,20,134
+251,Mexico_RioGrande,21,11,Mexico,Rio_Grande_River_Basin,RioGrande,20,231
+252,Mexico_RioLerma,21,12,Mexico,Rio_Lerma,RioLerma,20,131
+253,Mexico_RioVerde,21,13,Mexico,Rio_Verde,RioVerde,20,132
+254,Mexico_Tehuantpc,21,14,Mexico,Isthmus_of_Tehuantepec,Tehuantpc,20,136
+255,Mexico_UsaColoRS,21,15,Mexico,Lower_Colorado_River_Basin,UsaColoRS,20,221
+256,Mexico_YucatanP,21,16,Mexico,Yucatan_Peninsula,YucatanP,20,111
+257,Middle East_AfrCstNE,22,1,Middle East,Africa_Red_Sea_Gulf_of_Aden_Coast,AfrCstNE,21,100
+258,Middle East_ArabianP,22,2,Middle East,Arabian_Peninsula,ArabianP,21,94
+259,Middle East_ArabianSea,22,3,Middle East,Arabian_Sea_Coast,ArabianSea,21,104
+260,Middle East_CaspianE,22,4,Middle East,Caspian_Sea_East_Coast,CaspianE,21,52
+261,Middle East_CaspianSW,22,5,Middle East,Caspian_Sea_South_West_Coast,CaspianSW,21,72
+262,Middle East_DeadSea,22,6,Middle East,Dead_Sea,DeadSea,21,95
+263,Middle East_EJrdnSyr,22,7,Middle East,Eastern_Jordan_Syria,EJrdnSyr,21,99
+264,Middle East_FarahrudR,22,8,Middle East,Farahrud,FarahrudR,21,90
+265,Middle East_HamuMashR,22,9,Middle East,HamuniMashkel,HamuMashR,21,102
+266,Middle East_Helmand,22,10,Middle East,Helmand,Helmand,21,97
+267,Middle East_Iran,22,11,Middle East,Central_Iran,Iran,21,82
+268,Middle East_MeditE,22,12,Middle East,Mediterranean_Sea_East_Coast,MeditE,21,75
+269,Middle East_PersianGulf,22,13,Middle East,Persian_Gulf_Coast,PersianGulf,21,88
+270,Middle East_RedSeaE,22,14,Middle East,Red_Sea_East_Coast,RedSeaE,21,93
+271,Middle East_SinaiP,22,15,Middle East,Sinai_Peninsula,SinaiP,21,98
+272,Middle East_TigrEuphR,22,16,Middle East,Tigris_Euphrates,TigrEuphR,21,84
+273,Pakistan_AmuDaryaR,23,1,Pakistan,Amu_Darya,AmuDaryaR,22,58
+274,Pakistan_ArabianSea,23,2,Pakistan,Arabian_Sea_Coast,ArabianSea,22,104
+275,Pakistan_HamuMashR,23,3,Pakistan,HamuniMashkel,HamuMashR,22,102
+276,Pakistan_Helmand,23,4,Pakistan,Helmand,Helmand,22,97
+277,Pakistan_IndusR,23,5,Pakistan,Indus,IndusR,22,89
+278,Pakistan_SabarmatiR,23,6,Pakistan,Sabarmati,SabarmatiR,22,107
+279,Pakistan_Tarim,23,7,Pakistan,Tarim_Interior,Tarim,22,85
+280,Russia_AmurR,24,1,Russia,Amur,AmurR,23,43
+281,Russia_ArcticIsl,24,2,Russia,Arctic_Ocean_Islands,ArcticIsl,23,1
+282,Russia_BalticSea,24,3,Russia,Baltic_Sea_Coast,BalticSea,23,20
+283,Russia_BarentsSea,24,4,Russia,Russia_Barents_Sea_Coast,BarentsSea,23,9
+284,Russia_BlackSeaN,24,5,Russia,Black_Sea_North_Coast,BlackSeaN,23,47
+285,Russia_BlackSeaS,24,6,Russia,Black_Sea_South_Coast,BlackSeaS,23,70
+286,Russia_CaspianNE,24,7,Russia,Caspian_Sea_Coast,CaspianNE,23,45
+287,Russia_CaspianSW,24,8,Russia,Caspian_Sea_South_West_Coast,CaspianSW,23,72
+288,Russia_DaugavaR,24,9,Russia,Daugava,DaugavaR,23,25
+289,Russia_DnieperR,24,10,Russia,Dnieper,DnieperR,23,39
+290,Russia_DonR,24,11,Russia,Don,DonR,23,53
+291,Russia_DvinaRN,24,12,Russia,Northern_Dvina,DvinaRN,23,14
+292,Russia_Finland,24,13,Russia,Finland,Finland,23,13
+293,Russia_Gobi,24,14,Russia,Gobi_Interior,Gobi,23,42
+294,Russia_KaraSea,24,15,Russia,Kara_Sea_Coast,KaraSea,23,5
+295,Russia_LenaR,24,16,Russia,Lena,LenaR,23,6
+296,Russia_NarvaR,24,17,Russia,Narva,NarvaR,23,22
+297,Russia_NemanR,24,18,Russia,Neman,NemanR,23,35
+298,Russia_NevaR,24,19,Russia,Neva,NevaR,23,17
+299,Russia_ObR,24,20,Russia,Ob,ObR,23,56
+300,Russia_PolandCst,24,21,Russia,Poland_Coast,PolandCst,23,33
+301,Russia_RusCstSE,24,22,Russia,Russia_South_East_Coast,RusCstSE,23,37
+302,Russia_ScndnvN,24,23,Russia,Scandinavia_North_Coast,ScndnvN,23,8
+303,Russia_SiberiaN,24,24,Russia,Siberia_North_Coast,SiberiaN,23,3
+304,Russia_SiberiaW,24,25,Russia,Siberia_West_Coast,SiberiaW,23,4
+305,Russia_SyrDaryaR,24,26,Russia,Syr_Darya,SyrDaryaR,23,76
+306,Russia_UralR,24,27,Russia,Ural,UralR,23,38
+307,Russia_VolgaR,24,28,Russia,Volga,VolgaR,23,18
+308,Russia_YeniseiR,24,29,Russia,Yenisei,YeniseiR,23,48
+309,South Africa_AfrCstSSW,25,1,South Africa,South_Africa_West_Coast,AfrCstSSW,24,204
+310,South Africa_AfrCstSW,25,2,South Africa,Namibia_Coast,AfrCstSW,24,196
+311,South Africa_AfrCstS,25,3,South Africa,South_Africa_South_Coast,AfrCstS,24,198
+312,South Africa_LimpopoR,25,4,South Africa,Limpopo,LimpopoR,24,199
+313,South Africa_OrangeR,25,5,South Africa,Orange,OrangeR,24,194
+314,South America_Northern_AmazonR,26,1,South America_Northern,Amazon,AmazonR,25,168
+315,South America_Northern_MagdalenaR,26,2,South America_Northern,Magdalena,MagdalenaR,25,166
+316,South America_Northern_OrinocoR,26,3,South America_Northern,Orinoco,OrinocoR,25,156
+317,South America_Northern_SAmerCstNE,26,4,South America_Northern,Northeast_South_America_South_Atlantic_Coast,SAmerCstNE,25,161
+318,South America_Northern_SAmerCstN,26,5,South America_Northern,Caribbean_Coast,SAmerCstN,25,143
+319,South America_Southern_AmazonR,27,1,South America_Southern,Amazon,AmazonR,26,168
+320,South America_Southern_ArgColoR,27,2,South America_Southern,South_America_Colorado,ArgColoR,26,212
+321,South America_Southern_ArgCstS,27,3,South America_Southern,South_Argentina_South_Atlantic_Coast,ArgCstS,26,215
+322,South America_Southern_BrzCstS,27,4,South America_Southern,Uruguay_Brazil_South_Atlantic_Coast,BrzCstS,26,195
+323,South America_Southern_ChileCstN,27,5,South America_Southern,North_Chile_Pacific_Coast,ChileCstN,26,207
+324,South America_Southern_ChileCstS,27,6,South America_Southern,South_Chile_Pacific_Coast,ChileCstS,26,169
+325,South America_Southern_ColEcuaCst,27,7,South America_Southern,Colombia_Ecuador_Pacific_Coast,ColEcuaCst,26,157
+326,South America_Southern_LaPuna,27,8,South America_Southern,La_Puna_Region,LaPuna,26,200
+327,South America_Southern_NegroR,27,9,South America_Southern,Negro,NegroR,26,213
+328,South America_Southern_PeruCst,27,10,South America_Southern,Peru_Pacific_Coast,PeruCst,26,180
+329,South America_Southern_RioLaPlata,27,11,South America_Southern,La_Plata,RioLaPlata,26,206
+330,South America_Southern_Salinas,27,12,South America_Southern,Salinas_Grandes,Salinas,26,205
+331,South Asia_AmuDaryaR,28,1,South Asia,Amu_Darya,AmuDaryaR,27,58
+332,South Asia_BengalBay,28,2,South Asia,Bay_of_Bengal_North_East_Coast,BengalBay,27,116
+333,South Asia_CaspianE,28,3,South Asia,Caspian_Sea_East_Coast,CaspianE,27,52
+334,South Asia_FarahrudR,28,4,South Asia,Farahrud,FarahrudR,27,90
+335,South Asia_GangesR,28,5,South Asia,Ganges_Bramaputra,GangesR,27,110
+336,South Asia_HamuMashR,28,6,South Asia,HamuniMashkel,HamuMashR,27,102
+337,South Asia_Helmand,28,7,South Asia,Helmand,Helmand,27,97
+338,South Asia_IndusR,28,8,South Asia,Indus,IndusR,27,89
+339,South Asia_SriLanka,28,9,South Asia,Sri_Lanka,SriLanka,27,154
+340,South Korea_Korea,29,1,South Korea,North_and_South_Korea,Korea,28,65
+341,Southeast Asia_BengalBay,30,1,Southeast Asia,Bay_of_Bengal_North_East_Coast,BengalBay,29,116
+342,Southeast Asia_BoHai,30,2,Southeast Asia,Bo_Hai_Korean_Bay_North_Coast,BoHai,29,66
+343,Southeast Asia_BorneoCstN,30,3,Southeast Asia,North_Borneo_Coast,BorneoCstN,29,159
+344,Southeast Asia_ChaoPhrR,30,4,Southeast Asia,Chao_Phraya,ChaoPhrR,29,146
+345,Southeast Asia_FlyR,30,5,Southeast Asia,Fly,FlyR,29,181
+346,Southeast Asia_GangesR,30,6,Southeast Asia,Ganges_Bramaputra,GangesR,29,110
+347,Southeast Asia_Hong,30,7,Southeast Asia,Hong_(Red_River),Hong,29,109
+348,Southeast Asia_IdnE,30,8,Southeast Asia,Palau_and_East_Indonesia,IdnE,29,158
+349,Southeast Asia_IrianJaya,30,9,Southeast Asia,Irian_Jaya_Coast,IrianJaya,29,167
+350,Southeast Asia_IrrawaddyR,30,10,Southeast Asia,Irrawaddy,IrrawaddyR,29,137
+351,Southeast Asia_JavaTimor,30,11,Southeast Asia,Java_Timor,JavaTimor,29,175
+352,Southeast Asia_Kalimantan,30,12,Southeast Asia,Kalimantan,Kalimantan,29,165
+353,Southeast Asia_Korea,30,13,Southeast Asia,North_and_South_Korea,Korea,29,65
+354,Southeast Asia_MalaysiaP,30,14,Southeast Asia,Peninsula_Malaysia,MalaysiaP,29,139
+355,Southeast Asia_Mekong,30,15,Southeast Asia,Mekong,Mekong,29,125
+356,Southeast Asia_NewCaledn,30,16,Southeast Asia,South_Pacific_Islands,NewCaledn,29,185
+357,Southeast Asia_PapuaCst,30,17,Southeast Asia,Papua_New_Guinea_Coast,PapuaCst,29,173
+358,Southeast Asia_Phlppns,30,18,Southeast Asia,Philippines,Phlppns,29,119
+359,Southeast Asia_RusCstSE,30,19,Southeast Asia,Russia_South_East_Coast,RusCstSE,29,37
+360,Southeast Asia_SChinaSea,30,20,Southeast Asia,South_China_Sea_Coast,SChinaSea,29,112
+361,Southeast Asia_Salween,30,21,Southeast Asia,Salween,Salween,29,127
+362,Southeast Asia_SepikR,30,22,Southeast Asia,Sepik,SepikR,29,178
+363,Southeast Asia_SittaungR,30,23,Southeast Asia,Sittaung,SittaungR,29,138
+364,Southeast Asia_SolomonIsl,30,24,Southeast Asia,Solomon_Islands,SolomonIsl,29,176
+365,Southeast Asia_ThaiGulf,30,25,Southeast Asia,Gulf_of_Thailand_Coast,ThaiGulf,29,148
+366,Southeast Asia_VietnamCst,30,26,Southeast Asia,Viet_Nam_Coast,VietnamCst,29,126
+367,Southeast Asia_XunJiang,30,27,Southeast Asia,Xun_Jiang,XunJiang,29,108
+368,Taiwan_ChinaCst,31,1,Taiwan,China_Coast,ChinaCst,30,78
+369,Taiwan_Taiwan,31,2,Taiwan,Taiwan,Taiwan,30,103
+370,USA_ArkWhtRedR,32,1,USA,Arkansas_White_Red_Basin,ArkWhtRedR,1,224
+371,USA_California,32,2,USA,California_River_Basin,California,1,217
+372,USA_Caribbean,32,3,USA,Caribbean,Caribbean,1,101
+373,USA_FraserR,32,4,USA,Fraser,FraserR,1,27
+374,USA_GreatBasin,32,5,USA,Great_Basin,GreatBasin,1,222
+375,USA_GreatLakes,32,6,USA,Great_Lakes_Basin,GreatLakes,1,227
+376,USA_Hawaii,32,7,USA,Hawaii,Hawaii,1,234
+377,USA_MexCstNW,32,8,USA,Mexico_Northwest_Coast,MexCstNW,1,96
+378,USA_MissouriR,32,9,USA,Missouri_River_Basin,MissouriR,1,223
+379,USA_MissppRN,32,10,USA,Upper_Mississippi_Basin,MissppRN,1,218
+380,USA_MissppRS,32,11,USA,Lower_Mississippi_River_Basin,MissppRS,1,219
+381,USA_NelsonR,32,12,USA,Saskatchewan_Nelson,NelsonR,1,23
+382,USA_OhioR,32,13,USA,Ohio_River_Basin,OhioR,1,228
+383,USA_PacArctic,32,14,USA,Pacific_and_Arctic_Coast,PacArctic,1,7
+384,USA_RioGrande,32,15,USA,Rio_Grande_River_Basin,RioGrande,1,231
+385,USA_TennR,32,16,USA,Tennessee_River_Basin,TennR,1,230
+386,USA_TexasCst,32,17,USA,Texas_Gulf_Coast_Basin,TexasCst,1,225
+387,USA_UsaColoRN,32,18,USA,Upper_Colorado_River_Basin,UsaColoRN,1,220
+388,USA_UsaColoRS,32,19,USA,Lower_Colorado_River_Basin,UsaColoRS,1,221
+389,USA_UsaCstE,32,20,USA,Mid_Atlantic_Basin,UsaCstE,1,233
+390,USA_UsaCstNE,32,21,USA,New_England_Basin,UsaCstNE,1,232
+391,USA_UsaCstSE,32,22,USA,South_Atlantic_Gulf_Basin,UsaCstSE,1,226
+392,USA_UsaPacNW,32,23,USA,Pacific_Northwest_Basin,UsaPacNW,1,229

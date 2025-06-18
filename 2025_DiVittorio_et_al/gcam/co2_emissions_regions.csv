@@ -1,0 +1,1409 @@
+"","Units","scenario","region","year","value"
+"1","MTC","Control","Africa_Eastern",1975,2.877035859
+"2","MTC","Control","Africa_Eastern",1990,7.295419614
+"3","MTC","Control","Africa_Eastern",2005,13.0964611156
+"4","MTC","Control","Africa_Eastern",2010,18.3840202204
+"5","MTC","Control","Africa_Eastern",2015,22.3113387982
+"6","MTC","Control","Africa_Eastern",2020,32.48803491791
+"7","MTC","Control","Africa_Eastern",2025,36.4663243086
+"8","MTC","Control","Africa_Eastern",2030,41.46998782579
+"9","MTC","Control","Africa_Eastern",2035,46.4027372272
+"10","MTC","Control","Africa_Eastern",2040,51.88648715242
+"11","MTC","Control","Africa_Eastern",2045,57.11367172395
+"12","MTC","Control","Africa_Eastern",2050,63.69859469103
+"13","MTC","Control","Africa_Eastern",2055,74.59223689966
+"14","MTC","Control","Africa_Eastern",2060,87.716991031756
+"15","MTC","Control","Africa_Eastern",2065,101.443774389586
+"16","MTC","Control","Africa_Eastern",2070,113.58118716465
+"17","MTC","Control","Africa_Eastern",2075,124.14240867808
+"18","MTC","Control","Africa_Eastern",2080,133.435784548474
+"19","MTC","Control","Africa_Eastern",2085,140.889075507477
+"20","MTC","Control","Africa_Eastern",2090,149.678069725726
+"21","MTC","Control","Africa_Eastern",2095,161.911097730797
+"22","MTC","Control","Africa_Eastern",2100,173.597395802848
+"23","MTC","Control","Africa_Northern",1975,10.9975018
+"24","MTC","Control","Africa_Northern",1990,62.0541940838
+"25","MTC","Control","Africa_Northern",2005,104.91401049798
+"26","MTC","Control","Africa_Northern",2010,125.83799468382
+"27","MTC","Control","Africa_Northern",2015,142.69347672577
+"28","MTC","Control","Africa_Northern",2020,165.097222065714
+"29","MTC","Control","Africa_Northern",2025,179.184233710908
+"30","MTC","Control","Africa_Northern",2030,194.860906824735
+"31","MTC","Control","Africa_Northern",2035,205.540850463523
+"32","MTC","Control","Africa_Northern",2040,215.628842881831
+"33","MTC","Control","Africa_Northern",2045,226.691141486646
+"34","MTC","Control","Africa_Northern",2050,236.996393528151
+"35","MTC","Control","Africa_Northern",2055,247.663178022347
+"36","MTC","Control","Africa_Northern",2060,256.815141175825
+"37","MTC","Control","Africa_Northern",2065,257.559298824774
+"38","MTC","Control","Africa_Northern",2070,258.352562308034
+"39","MTC","Control","Africa_Northern",2075,254.262764154363
+"40","MTC","Control","Africa_Northern",2080,245.264472148291
+"41","MTC","Control","Africa_Northern",2085,232.553290941233
+"42","MTC","Control","Africa_Northern",2090,220.693455119404
+"43","MTC","Control","Africa_Northern",2095,211.225119399952
+"44","MTC","Control","Africa_Northern",2100,202.357545754658
+"45","MTC","Control","Africa_Southern",1975,4.264416494
+"46","MTC","Control","Africa_Southern",1990,10.153773092
+"47","MTC","Control","Africa_Southern",2005,11.1191573741
+"48","MTC","Control","Africa_Southern",2010,14.087995344
+"49","MTC","Control","Africa_Southern",2015,20.89281825634
+"50","MTC","Control","Africa_Southern",2020,29.2281528474793
+"51","MTC","Control","Africa_Southern",2025,32.5432639303389
+"52","MTC","Control","Africa_Southern",2030,36.3721807082448
+"53","MTC","Control","Africa_Southern",2035,40.3186810607381
+"54","MTC","Control","Africa_Southern",2040,45.4352340500896
+"55","MTC","Control","Africa_Southern",2045,52.4703910863312
+"56","MTC","Control","Africa_Southern",2050,62.6454117164575
+"57","MTC","Control","Africa_Southern",2055,77.178046405281
+"58","MTC","Control","Africa_Southern",2060,95.4809641581044
+"59","MTC","Control","Africa_Southern",2065,114.992885715498
+"60","MTC","Control","Africa_Southern",2070,135.564381239925
+"61","MTC","Control","Africa_Southern",2075,153.715295622735
+"62","MTC","Control","Africa_Southern",2080,166.177187211023
+"63","MTC","Control","Africa_Southern",2085,171.303450125759
+"64","MTC","Control","Africa_Southern",2090,171.402663149107
+"65","MTC","Control","Africa_Southern",2095,169.221740287079
+"66","MTC","Control","Africa_Southern",2100,169.97339783041
+"67","MTC","Control","Africa_Western",1975,5.65993855
+"68","MTC","Control","Africa_Western",1990,17.057191797
+"69","MTC","Control","Africa_Western",2005,31.69999450911
+"70","MTC","Control","Africa_Western",2010,36.04074216037
+"71","MTC","Control","Africa_Western",2015,48.87009503978
+"72","MTC","Control","Africa_Western",2020,66.4261243810534
+"73","MTC","Control","Africa_Western",2025,81.3204909583752
+"74","MTC","Control","Africa_Western",2030,99.6664977920682
+"75","MTC","Control","Africa_Western",2035,119.773741875947
+"76","MTC","Control","Africa_Western",2040,146.812514455421
+"77","MTC","Control","Africa_Western",2045,183.289904176684
+"78","MTC","Control","Africa_Western",2050,231.784827634958
+"79","MTC","Control","Africa_Western",2055,293.113873615838
+"80","MTC","Control","Africa_Western",2060,362.720919913597
+"81","MTC","Control","Africa_Western",2065,433.7242607226
+"82","MTC","Control","Africa_Western",2070,499.984820410073
+"83","MTC","Control","Africa_Western",2075,555.445588854673
+"84","MTC","Control","Africa_Western",2080,596.250370548921
+"85","MTC","Control","Africa_Western",2085,621.65059034668
+"86","MTC","Control","Africa_Western",2090,639.286230052069
+"87","MTC","Control","Africa_Western",2095,655.656518562542
+"88","MTC","Control","Africa_Western",2100,664.235967424775
+"89","MTC","Control","Argentina",1975,11.02997155
+"90","MTC","Control","Argentina",1990,28.6565529834
+"91","MTC","Control","Argentina",2005,42.393505793
+"92","MTC","Control","Argentina",2010,51.816521072
+"93","MTC","Control","Argentina",2015,55.842990557
+"94","MTC","Control","Argentina",2020,60.02612686449
+"95","MTC","Control","Argentina",2025,63.07529855514
+"96","MTC","Control","Argentina",2030,63.51693447827
+"97","MTC","Control","Argentina",2035,62.46776564386
+"98","MTC","Control","Argentina",2040,60.59910448104
+"99","MTC","Control","Argentina",2045,58.090118659348
+"100","MTC","Control","Argentina",2050,55.481310113094
+"101","MTC","Control","Argentina",2055,53.7756275074566
+"102","MTC","Control","Argentina",2060,52.216494042454
+"103","MTC","Control","Argentina",2065,49.1293428849222
+"104","MTC","Control","Argentina",2070,46.363077177834
+"105","MTC","Control","Argentina",2075,42.2871942152722
+"106","MTC","Control","Argentina",2080,36.6302871172882
+"107","MTC","Control","Argentina",2085,29.294886371901
+"108","MTC","Control","Argentina",2090,21.881926504173
+"109","MTC","Control","Argentina",2095,15.4806804683215
+"110","MTC","Control","Argentina",2100,9.31354631782815
+"111","MTC","Control","Australia_NZ",1975,29.21162435
+"112","MTC","Control","Australia_NZ",1990,81.52909447
+"113","MTC","Control","Australia_NZ",2005,115.05888491
+"114","MTC","Control","Australia_NZ",2010,120.55486018
+"115","MTC","Control","Australia_NZ",2015,118.93155669
+"116","MTC","Control","Australia_NZ",2020,125.25420310118
+"117","MTC","Control","Australia_NZ",2025,130.83474610607
+"118","MTC","Control","Australia_NZ",2030,129.654037775
+"119","MTC","Control","Australia_NZ",2035,123.7554747016
+"120","MTC","Control","Australia_NZ",2040,116.2435051713
+"121","MTC","Control","Australia_NZ",2045,108.76234031868
+"122","MTC","Control","Australia_NZ",2050,100.58716215013
+"123","MTC","Control","Australia_NZ",2055,94.730934558068
+"124","MTC","Control","Australia_NZ",2060,90.3407627863959
+"125","MTC","Control","Australia_NZ",2065,85.6522039548897
+"126","MTC","Control","Australia_NZ",2070,80.3327740275983
+"127","MTC","Control","Australia_NZ",2075,72.679286249529
+"128","MTC","Control","Australia_NZ",2080,62.8678144586182
+"129","MTC","Control","Australia_NZ",2085,51.5020944217835
+"130","MTC","Control","Australia_NZ",2090,41.4259482106802
+"131","MTC","Control","Australia_NZ",2095,33.4387891005784
+"132","MTC","Control","Australia_NZ",2100,25.5925414732904
+"133","MTC","Control","Brazil",1975,27.46544848
+"134","MTC","Control","Brazil",1990,59.05760217
+"135","MTC","Control","Brazil",2005,97.70810128
+"136","MTC","Control","Brazil",2010,116.477671836
+"137","MTC","Control","Brazil",2015,138.42111198
+"138","MTC","Control","Brazil",2020,150.9405995411
+"139","MTC","Control","Brazil",2025,159.3555019732
+"140","MTC","Control","Brazil",2030,158.4037140522
+"141","MTC","Control","Brazil",2035,152.526216006
+"142","MTC","Control","Brazil",2040,142.4045174156
+"143","MTC","Control","Brazil",2045,129.56361076627
+"144","MTC","Control","Brazil",2050,115.54401154911
+"145","MTC","Control","Brazil",2055,106.886173758299
+"146","MTC","Control","Brazil",2060,101.982152434534
+"147","MTC","Control","Brazil",2065,93.8457673882148
+"148","MTC","Control","Brazil",2070,86.2465343062081
+"149","MTC","Control","Brazil",2075,74.7195521308353
+"150","MTC","Control","Brazil",2080,57.2627756172397
+"151","MTC","Control","Brazil",2085,34.1526659600898
+"152","MTC","Control","Brazil",2090,11.0906187281092
+"153","MTC","Control","Brazil",2095,-8.65066174405199
+"154","MTC","Control","Brazil",2100,-28.1307993114427
+"155","MTC","Control","Canada",1975,54.05367988
+"156","MTC","Control","Canada",1990,116.879897011
+"157","MTC","Control","Canada",2005,148.406919634
+"158","MTC","Control","Canada",2010,141.468695594
+"159","MTC","Control","Canada",2015,149.780975884
+"160","MTC","Control","Canada",2020,153.1469950453
+"161","MTC","Control","Canada",2025,154.91637948984
+"162","MTC","Control","Canada",2030,150.6783917322
+"163","MTC","Control","Canada",2035,143.5826281308
+"164","MTC","Control","Canada",2040,135.1246731463
+"165","MTC","Control","Canada",2045,126.62423749807
+"166","MTC","Control","Canada",2050,118.16338283473
+"167","MTC","Control","Canada",2055,112.090571286173
+"168","MTC","Control","Canada",2060,106.651556545383
+"169","MTC","Control","Canada",2065,100.016614654706
+"170","MTC","Control","Canada",2070,92.8470837434578
+"171","MTC","Control","Canada",2075,83.0570178592283
+"172","MTC","Control","Canada",2080,69.2731522831843
+"173","MTC","Control","Canada",2085,51.9679137737703
+"174","MTC","Control","Canada",2090,35.5879312079497
+"175","MTC","Control","Canada",2095,23.360344168309
+"176","MTC","Control","Canada",2100,12.405429457287
+"177","MTC","Control","Central America and Caribbean",1975,10.958797688754
+"178","MTC","Control","Central America and Caribbean",1990,28.812851813283
+"179","MTC","Control","Central America and Caribbean",2005,46.9988728579
+"180","MTC","Control","Central America and Caribbean",2010,53.5028366574
+"181","MTC","Control","Central America and Caribbean",2015,56.73736112069
+"182","MTC","Control","Central America and Caribbean",2020,58.80447918775
+"183","MTC","Control","Central America and Caribbean",2025,61.3765340190511
+"184","MTC","Control","Central America and Caribbean",2030,62.4407194946964
+"185","MTC","Control","Central America and Caribbean",2035,61.9517328692457
+"186","MTC","Control","Central America and Caribbean",2040,60.0307467155701
+"187","MTC","Control","Central America and Caribbean",2045,56.7879747274617
+"188","MTC","Control","Central America and Caribbean",2050,53.1677438480274
+"189","MTC","Control","Central America and Caribbean",2055,51.1476032833335
+"190","MTC","Control","Central America and Caribbean",2060,49.3901072225293
+"191","MTC","Control","Central America and Caribbean",2065,46.5922459619703
+"192","MTC","Control","Central America and Caribbean",2070,43.7508181313332
+"193","MTC","Control","Central America and Caribbean",2075,39.0529466478242
+"194","MTC","Control","Central America and Caribbean",2080,31.9823185526965
+"195","MTC","Control","Central America and Caribbean",2085,22.9940082533313
+"196","MTC","Control","Central America and Caribbean",2090,14.0760877815563
+"197","MTC","Control","Central America and Caribbean",2095,7.01557870430626
+"198","MTC","Control","Central America and Caribbean",2100,0.377864446780865
+"199","MTC","Control","Central Asia",1975,65.41186863
+"200","MTC","Control","Central Asia",1990,155.64804526
+"201","MTC","Control","Central Asia",2005,107.28493356
+"202","MTC","Control","Central Asia",2010,127.81996801
+"203","MTC","Control","Central Asia",2015,140.433619676
+"204","MTC","Control","Central Asia",2020,154.37048678321
+"205","MTC","Control","Central Asia",2025,166.446158023428
+"206","MTC","Control","Central Asia",2030,167.18087850105
+"207","MTC","Control","Central Asia",2035,162.260094505073
+"208","MTC","Control","Central Asia",2040,156.138878275217
+"209","MTC","Control","Central Asia",2045,148.64017695543
+"210","MTC","Control","Central Asia",2050,140.580083216634
+"211","MTC","Control","Central Asia",2055,133.920303235602
+"212","MTC","Control","Central Asia",2060,127.560700921534
+"213","MTC","Control","Central Asia",2065,117.743158372835
+"214","MTC","Control","Central Asia",2070,108.911859183192
+"215","MTC","Control","Central Asia",2075,97.7909134717509
+"216","MTC","Control","Central Asia",2080,82.6936261101392
+"217","MTC","Control","Central Asia",2085,66.0058650887571
+"218","MTC","Control","Central Asia",2090,50.3020454255245
+"219","MTC","Control","Central Asia",2095,36.7819533331104
+"220","MTC","Control","Central Asia",2100,23.4461795948381
+"221","MTC","Control","China",1975,193.79699907
+"222","MTC","Control","China",1990,696.42724106874
+"223","MTC","Control","China",2005,1819.0502429693
+"224","MTC","Control","China",2010,2617.013955101
+"225","MTC","Control","China",2015,2989.493067532
+"226","MTC","Control","China",2020,3538.3063371737
+"227","MTC","Control","China",2025,3605.5560974659
+"228","MTC","Control","China",2030,3508.1041547773
+"229","MTC","Control","China",2035,3278.8990248607
+"230","MTC","Control","China",2040,3042.8028263888
+"231","MTC","Control","China",2045,2776.2436101825
+"232","MTC","Control","China",2050,2490.6968374639
+"233","MTC","Control","China",2055,2215.9300749676
+"234","MTC","Control","China",2060,1947.73723148513
+"235","MTC","Control","China",2065,1679.31945897314
+"236","MTC","Control","China",2070,1418.68232589359
+"237","MTC","Control","China",2075,1148.15674829539
+"238","MTC","Control","China",2080,833.293682773569
+"239","MTC","Control","China",2085,580.139525524526
+"240","MTC","Control","China",2090,398.426973956776
+"241","MTC","Control","China",2095,275.977579121844
+"242","MTC","Control","China",2100,178.731184492254
+"243","MTC","Control","Colombia",1975,5.534146939
+"244","MTC","Control","Colombia",1990,15.04465657
+"245","MTC","Control","Colombia",2005,17.603005922
+"246","MTC","Control","Colombia",2010,21.182717822
+"247","MTC","Control","Colombia",2015,25.52175598
+"248","MTC","Control","Colombia",2020,28.6433786953
+"249","MTC","Control","Colombia",2025,31.2607740321
+"250","MTC","Control","Colombia",2030,32.8424487389
+"251","MTC","Control","Colombia",2035,33.7316970213
+"252","MTC","Control","Colombia",2040,34.32730936487
+"253","MTC","Control","Colombia",2045,34.47418706503
+"254","MTC","Control","Colombia",2050,34.337117945418
+"255","MTC","Control","Colombia",2055,34.690529899907
+"256","MTC","Control","Colombia",2060,34.8526768469039
+"257","MTC","Control","Colombia",2065,33.8799478800955
+"258","MTC","Control","Colombia",2070,32.0233682078761
+"259","MTC","Control","Colombia",2075,28.5557474990984
+"260","MTC","Control","Colombia",2080,23.4842184043144
+"261","MTC","Control","Colombia",2085,17.0137367885558
+"262","MTC","Control","Colombia",2090,10.6471457061923
+"263","MTC","Control","Colombia",2095,5.2814570186932
+"264","MTC","Control","Colombia",2100,0.0266617846884661
+"265","MTC","Control","EU-12",1975,132.520753679
+"266","MTC","Control","EU-12",1990,276.5209111015
+"267","MTC","Control","EU-12",2005,207.6778713476
+"268","MTC","Control","EU-12",2010,202.8617428727
+"269","MTC","Control","EU-12",2015,185.3634163595
+"270","MTC","Control","EU-12",2020,194.65199454341
+"271","MTC","Control","EU-12",2025,201.0855685714
+"272","MTC","Control","EU-12",2030,194.158941983038
+"273","MTC","Control","EU-12",2035,182.797703206257
+"274","MTC","Control","EU-12",2040,170.400211268605
+"275","MTC","Control","EU-12",2045,157.698230692161
+"276","MTC","Control","EU-12",2050,144.885735762186
+"277","MTC","Control","EU-12",2055,134.420155912432
+"278","MTC","Control","EU-12",2060,124.471918037471
+"279","MTC","Control","EU-12",2065,114.164761516298
+"280","MTC","Control","EU-12",2070,103.448875196363
+"281","MTC","Control","EU-12",2075,90.7988711708361
+"282","MTC","Control","EU-12",2080,76.266426233688
+"283","MTC","Control","EU-12",2085,62.9715419184022
+"284","MTC","Control","EU-12",2090,53.6758869714743
+"285","MTC","Control","EU-12",2095,48.0979812184292
+"286","MTC","Control","EU-12",2100,44.0685445378714
+"287","MTC","Control","EU-15",1975,425.1296358494
+"288","MTC","Control","EU-15",1990,915.610580271
+"289","MTC","Control","EU-15",2005,971.893043202
+"290","MTC","Control","EU-15",2010,882.338322576
+"291","MTC","Control","EU-15",2015,790.239424229
+"292","MTC","Control","EU-15",2020,783.3571610441
+"293","MTC","Control","EU-15",2025,748.40039116493
+"294","MTC","Control","EU-15",2030,702.10113737864
+"295","MTC","Control","EU-15",2035,650.90240759155
+"296","MTC","Control","EU-15",2040,598.89616314086
+"297","MTC","Control","EU-15",2045,543.602975518785
+"298","MTC","Control","EU-15",2050,489.444799653609
+"299","MTC","Control","EU-15",2055,452.287969850426
+"300","MTC","Control","EU-15",2060,424.453804288712
+"301","MTC","Control","EU-15",2065,395.855488726302
+"302","MTC","Control","EU-15",2070,369.780890677366
+"303","MTC","Control","EU-15",2075,339.886648583263
+"304","MTC","Control","EU-15",2080,308.210523268305
+"305","MTC","Control","EU-15",2085,277.619452931943
+"306","MTC","Control","EU-15",2090,256.126352828857
+"307","MTC","Control","EU-15",2095,246.964967986062
+"308","MTC","Control","EU-15",2100,244.521374507326
+"309","MTC","Control","Europe_Eastern",1975,113.10867422
+"310","MTC","Control","Europe_Eastern",1990,237.357724519
+"311","MTC","Control","Europe_Eastern",2005,111.381206837
+"312","MTC","Control","Europe_Eastern",2010,101.92818811581
+"313","MTC","Control","Europe_Eastern",2015,77.092999815
+"314","MTC","Control","Europe_Eastern",2020,85.7230187347
+"315","MTC","Control","Europe_Eastern",2025,83.724992667188
+"316","MTC","Control","Europe_Eastern",2030,79.77408838856
+"317","MTC","Control","Europe_Eastern",2035,74.343006051535
+"318","MTC","Control","Europe_Eastern",2040,70.136419112981
+"319","MTC","Control","Europe_Eastern",2045,66.175564247246
+"320","MTC","Control","Europe_Eastern",2050,62.294014965416
+"321","MTC","Control","Europe_Eastern",2055,59.0997639674301
+"322","MTC","Control","Europe_Eastern",2060,56.0550172623426
+"323","MTC","Control","Europe_Eastern",2065,52.1414262651175
+"324","MTC","Control","Europe_Eastern",2070,48.4570882339018
+"325","MTC","Control","Europe_Eastern",2075,43.5535589884468
+"326","MTC","Control","Europe_Eastern",2080,37.2853892874624
+"327","MTC","Control","Europe_Eastern",2085,31.8691617097817
+"328","MTC","Control","Europe_Eastern",2090,27.3679474859643
+"329","MTC","Control","Europe_Eastern",2095,23.9809777436366
+"330","MTC","Control","Europe_Eastern",2100,21.0520715709308
+"331","MTC","Control","Europe_Non_EU",1975,18.25471665
+"332","MTC","Control","Europe_Non_EU",1990,74.957298385
+"333","MTC","Control","Europe_Non_EU",2005,98.457536391
+"334","MTC","Control","Europe_Non_EU",2010,114.463755243
+"335","MTC","Control","Europe_Non_EU",2015,129.445094811
+"336","MTC","Control","Europe_Non_EU",2020,146.297675075503
+"337","MTC","Control","Europe_Non_EU",2025,150.119930720884
+"338","MTC","Control","Europe_Non_EU",2030,151.119231698596
+"339","MTC","Control","Europe_Non_EU",2035,147.925085975431
+"340","MTC","Control","Europe_Non_EU",2040,144.234208724471
+"341","MTC","Control","Europe_Non_EU",2045,140.111800284575
+"342","MTC","Control","Europe_Non_EU",2050,135.207785259612
+"343","MTC","Control","Europe_Non_EU",2055,131.739511451457
+"344","MTC","Control","Europe_Non_EU",2060,128.5348278401
+"345","MTC","Control","Europe_Non_EU",2065,124.384403342059
+"346","MTC","Control","Europe_Non_EU",2070,119.652378430122
+"347","MTC","Control","Europe_Non_EU",2075,112.552444584935
+"348","MTC","Control","Europe_Non_EU",2080,101.716292693736
+"349","MTC","Control","Europe_Non_EU",2085,91.1744565866727
+"350","MTC","Control","Europe_Non_EU",2090,82.1528441636707
+"351","MTC","Control","Europe_Non_EU",2095,76.0749778540043
+"352","MTC","Control","Europe_Non_EU",2100,70.9877657306641
+"353","MTC","Control","European Free Trade Association",1975,11.34064293
+"354","MTC","Control","European Free Trade Association",1990,20.96993893737
+"355","MTC","Control","European Free Trade Association",2005,23.8729862001
+"356","MTC","Control","European Free Trade Association",2010,24.1530092803
+"357","MTC","Control","European Free Trade Association",2015,22.3099539318
+"358","MTC","Control","European Free Trade Association",2020,21.89725382704
+"359","MTC","Control","European Free Trade Association",2025,20.652066192743
+"360","MTC","Control","European Free Trade Association",2030,18.996773657477
+"361","MTC","Control","European Free Trade Association",2035,16.993878161195
+"362","MTC","Control","European Free Trade Association",2040,14.461565957829
+"363","MTC","Control","European Free Trade Association",2045,11.590794797518
+"364","MTC","Control","European Free Trade Association",2050,8.964036988289
+"365","MTC","Control","European Free Trade Association",2055,7.22791733675
+"366","MTC","Control","European Free Trade Association",2060,5.9977921313822
+"367","MTC","Control","European Free Trade Association",2065,4.68994813540707
+"368","MTC","Control","European Free Trade Association",2070,3.59214041625333
+"369","MTC","Control","European Free Trade Association",2075,2.20206059784396
+"370","MTC","Control","European Free Trade Association",2080,0.392627595865399
+"371","MTC","Control","European Free Trade Association",2085,-1.56538282414562
+"372","MTC","Control","European Free Trade Association",2090,-3.00376902856766
+"373","MTC","Control","European Free Trade Association",2095,-3.62108690022909
+"374","MTC","Control","European Free Trade Association",2100,-3.48754643282138
+"375","MTC","Control","India",1975,35.1929118
+"376","MTC","Control","India",1990,162.91283410716
+"377","MTC","Control","India",2005,336.1579527333
+"378","MTC","Control","India",2010,493.331514331
+"379","MTC","Control","India",2015,625.04786427
+"380","MTC","Control","India",2020,824.42045601744
+"381","MTC","Control","India",2025,948.14908922504
+"382","MTC","Control","India",2030,1041.6372206058
+"383","MTC","Control","India",2035,1109.46469591823
+"384","MTC","Control","India",2040,1174.47167516167
+"385","MTC","Control","India",2045,1228.53613590589
+"386","MTC","Control","India",2050,1280.19303873142
+"387","MTC","Control","India",2055,1340.61265878329
+"388","MTC","Control","India",2060,1394.93501823315
+"389","MTC","Control","India",2065,1422.98370671894
+"390","MTC","Control","India",2070,1414.7640548348
+"391","MTC","Control","India",2075,1355.63253764886
+"392","MTC","Control","India",2080,1224.84483711841
+"393","MTC","Control","India",2085,1076.97602751798
+"394","MTC","Control","India",2090,951.770588549028
+"395","MTC","Control","India",2095,867.059886988693
+"396","MTC","Control","India",2100,793.16331615835
+"397","MTC","Control","Indonesia",1975,5.630788558
+"398","MTC","Control","Indonesia",1990,42.3893561737
+"399","MTC","Control","Indonesia",2005,97.728268478
+"400","MTC","Control","Indonesia",2010,110.074891549
+"401","MTC","Control","Indonesia",2015,137.49429647
+"402","MTC","Control","Indonesia",2020,161.635715936066
+"403","MTC","Control","Indonesia",2025,193.106219043967
+"404","MTC","Control","Indonesia",2030,214.338102622039
+"405","MTC","Control","Indonesia",2035,227.506807272145
+"406","MTC","Control","Indonesia",2040,236.865309623163
+"407","MTC","Control","Indonesia",2045,241.351397315552
+"408","MTC","Control","Indonesia",2050,242.532161636876
+"409","MTC","Control","Indonesia",2055,244.638713406397
+"410","MTC","Control","Indonesia",2060,247.171672677622
+"411","MTC","Control","Indonesia",2065,245.363769066736
+"412","MTC","Control","Indonesia",2070,239.56236305326
+"413","MTC","Control","Indonesia",2075,225.88112578943
+"414","MTC","Control","Indonesia",2080,201.894317193753
+"415","MTC","Control","Indonesia",2085,171.701126623852
+"416","MTC","Control","Indonesia",2090,145.60537279007
+"417","MTC","Control","Indonesia",2095,125.819542550503
+"418","MTC","Control","Indonesia",2100,108.151820545032
+"419","MTC","Control","Japan",1975,142.9109899
+"420","MTC","Control","Japan",1990,311.69550466
+"421","MTC","Control","Japan",2005,347.4753730419
+"422","MTC","Control","Japan",2010,325.235101664
+"423","MTC","Control","Japan",2015,328.695623593
+"424","MTC","Control","Japan",2020,334.2696096038
+"425","MTC","Control","Japan",2025,318.8519656959
+"426","MTC","Control","Japan",2030,295.4823643475
+"427","MTC","Control","Japan",2035,268.0930372366
+"428","MTC","Control","Japan",2040,242.5444596384
+"429","MTC","Control","Japan",2045,213.7621336317
+"430","MTC","Control","Japan",2050,187.10043000466
+"431","MTC","Control","Japan",2055,165.561902484274
+"432","MTC","Control","Japan",2060,144.692417808511
+"433","MTC","Control","Japan",2065,123.050912783146
+"434","MTC","Control","Japan",2070,106.474754264836
+"435","MTC","Control","Japan",2075,85.9778124179406
+"436","MTC","Control","Japan",2080,62.0492735698608
+"437","MTC","Control","Japan",2085,41.8954324178055
+"438","MTC","Control","Japan",2090,26.2994494494333
+"439","MTC","Control","Japan",2095,16.8274210255926
+"440","MTC","Control","Japan",2100,10.2851900646325
+"441","MTC","Control","Mexico",1975,22.019720112
+"442","MTC","Control","Mexico",1990,81.38017945
+"443","MTC","Control","Mexico",2005,126.03831229
+"444","MTC","Control","Mexico",2010,132.980118123
+"445","MTC","Control","Mexico",2015,134.69508959
+"446","MTC","Control","Mexico",2020,142.5248267451
+"447","MTC","Control","Mexico",2025,152.4244053884
+"448","MTC","Control","Mexico",2030,156.8323991682
+"449","MTC","Control","Mexico",2035,157.3572013217
+"450","MTC","Control","Mexico",2040,155.97185818516
+"451","MTC","Control","Mexico",2045,153.50208047613
+"452","MTC","Control","Mexico",2050,149.90819833448
+"453","MTC","Control","Mexico",2055,149.670518633237
+"454","MTC","Control","Mexico",2060,148.539452845863
+"455","MTC","Control","Mexico",2065,145.045838443918
+"456","MTC","Control","Mexico",2070,137.938081206248
+"457","MTC","Control","Mexico",2075,125.753480437681
+"458","MTC","Control","Mexico",2080,107.576079879348
+"459","MTC","Control","Mexico",2085,83.7269249089884
+"460","MTC","Control","Mexico",2090,59.6531651164804
+"461","MTC","Control","Mexico",2095,40.2457546053055
+"462","MTC","Control","Mexico",2100,22.4536602080904
+"463","MTC","Control","Middle East",1975,35.6032382
+"464","MTC","Control","Middle East",1990,185.47899714
+"465","MTC","Control","Middle East",2005,369.095629206
+"466","MTC","Control","Middle East",2010,485.710913687
+"467","MTC","Control","Middle East",2015,567.566552511
+"468","MTC","Control","Middle East",2020,580.479343266
+"469","MTC","Control","Middle East",2025,611.0596967667
+"470","MTC","Control","Middle East",2030,624.2701606368
+"471","MTC","Control","Middle East",2035,628.8362705548
+"472","MTC","Control","Middle East",2040,627.71843128447
+"473","MTC","Control","Middle East",2045,623.17716842565
+"474","MTC","Control","Middle East",2050,618.3954513238
+"475","MTC","Control","Middle East",2055,621.118906893682
+"476","MTC","Control","Middle East",2060,620.898595207286
+"477","MTC","Control","Middle East",2065,613.794263673824
+"478","MTC","Control","Middle East",2070,605.44382672986
+"479","MTC","Control","Middle East",2075,581.176907300939
+"480","MTC","Control","Middle East",2080,541.873378113092
+"481","MTC","Control","Middle East",2085,487.837699389494
+"482","MTC","Control","Middle East",2090,434.796374113254
+"483","MTC","Control","Middle East",2095,390.626068843529
+"484","MTC","Control","Middle East",2100,351.209536349341
+"485","MTC","Control","Pakistan",1975,3.702408993
+"486","MTC","Control","Pakistan",1990,17.849544348
+"487","MTC","Control","Pakistan",2005,35.45604977
+"488","MTC","Control","Pakistan",2010,42.28607361
+"489","MTC","Control","Pakistan",2015,48.47652433532
+"490","MTC","Control","Pakistan",2020,54.977126112646
+"491","MTC","Control","Pakistan",2025,61.0563437727789
+"492","MTC","Control","Pakistan",2030,67.8586086437421
+"493","MTC","Control","Pakistan",2035,74.2944683713364
+"494","MTC","Control","Pakistan",2040,83.2959320480495
+"495","MTC","Control","Pakistan",2045,92.5926106637733
+"496","MTC","Control","Pakistan",2050,100.457673616895
+"497","MTC","Control","Pakistan",2055,108.980524971211
+"498","MTC","Control","Pakistan",2060,119.250405310437
+"499","MTC","Control","Pakistan",2065,127.641139367922
+"500","MTC","Control","Pakistan",2070,134.460704778608
+"501","MTC","Control","Pakistan",2075,138.268129687207
+"502","MTC","Control","Pakistan",2080,139.176072709062
+"503","MTC","Control","Pakistan",2085,136.586685107802
+"504","MTC","Control","Pakistan",2090,133.383614397263
+"505","MTC","Control","Pakistan",2095,131.802990024278
+"506","MTC","Control","Pakistan",2100,130.293179865662
+"507","MTC","Control","Russia",1975,267.05704057
+"508","MTC","Control","Russia",1990,673.7592319
+"509","MTC","Control","Russia",2005,451.820172113
+"510","MTC","Control","Russia",2010,467.704115444
+"511","MTC","Control","Russia",2015,471.21954969
+"512","MTC","Control","Russia",2020,535.299010799
+"513","MTC","Control","Russia",2025,519.2369080883
+"514","MTC","Control","Russia",2030,490.43455501724
+"515","MTC","Control","Russia",2035,450.45991616332
+"516","MTC","Control","Russia",2040,415.87412810929
+"517","MTC","Control","Russia",2045,383.12348517975
+"518","MTC","Control","Russia",2050,352.84875058282
+"519","MTC","Control","Russia",2055,327.19505040809
+"520","MTC","Control","Russia",2060,305.035757570857
+"521","MTC","Control","Russia",2065,274.812872794081
+"522","MTC","Control","Russia",2070,250.819168251102
+"523","MTC","Control","Russia",2075,222.407744181161
+"524","MTC","Control","Russia",2080,186.172470200883
+"525","MTC","Control","Russia",2085,146.832862715465
+"526","MTC","Control","Russia",2090,110.692667208745
+"527","MTC","Control","Russia",2095,80.6650641751428
+"528","MTC","Control","Russia",2100,51.463508619708
+"529","MTC","Control","South Africa",1975,27.771398
+"530","MTC","Control","South Africa",1990,94.92331996
+"531","MTC","Control","South Africa",2005,123.94225391
+"532","MTC","Control","South Africa",2010,136.33075788
+"533","MTC","Control","South Africa",2015,135.698134215
+"534","MTC","Control","South Africa",2020,141.702392442168
+"535","MTC","Control","South Africa",2025,153.935312725631
+"536","MTC","Control","South Africa",2030,156.608277505989
+"537","MTC","Control","South Africa",2035,153.137393158336
+"538","MTC","Control","South Africa",2040,147.820953480324
+"539","MTC","Control","South Africa",2045,141.081867719935
+"540","MTC","Control","South Africa",2050,134.276056457497
+"541","MTC","Control","South Africa",2055,128.947512460837
+"542","MTC","Control","South Africa",2060,124.623494858689
+"543","MTC","Control","South Africa",2065,120.051337895142
+"544","MTC","Control","South Africa",2070,113.935384060127
+"545","MTC","Control","South Africa",2075,104.673461106459
+"546","MTC","Control","South Africa",2080,91.0620047048638
+"547","MTC","Control","South Africa",2085,77.020555828912
+"548","MTC","Control","South Africa",2090,66.452974043853
+"549","MTC","Control","South Africa",2095,59.6710098541799
+"550","MTC","Control","South Africa",2100,53.9810104149176
+"551","MTC","Control","South America_Northern",1975,9.7481497731868
+"552","MTC","Control","South America_Northern",1990,28.8693404644
+"553","MTC","Control","South America_Northern",2005,39.47621895372
+"554","MTC","Control","South America_Northern",2010,51.7602612426
+"555","MTC","Control","South America_Northern",2015,41.4814003547
+"556","MTC","Control","South America_Northern",2020,42.84749866352
+"557","MTC","Control","South America_Northern",2025,45.748166070436
+"558","MTC","Control","South America_Northern",2030,46.993493024772
+"559","MTC","Control","South America_Northern",2035,47.51467129232
+"560","MTC","Control","South America_Northern",2040,48.099028355043
+"561","MTC","Control","South America_Northern",2045,48.967263493467
+"562","MTC","Control","South America_Northern",2050,49.725939315644
+"563","MTC","Control","South America_Northern",2055,50.9378859771623
+"564","MTC","Control","South America_Northern",2060,51.651612773742
+"565","MTC","Control","South America_Northern",2065,50.954309868179
+"566","MTC","Control","South America_Northern",2070,49.3253771142858
+"567","MTC","Control","South America_Northern",2075,46.0057509137542
+"568","MTC","Control","South America_Northern",2080,40.8272722266921
+"569","MTC","Control","South America_Northern",2085,33.7190736526753
+"570","MTC","Control","South America_Northern",2090,26.3749600209798
+"571","MTC","Control","South America_Northern",2095,20.1315539510098
+"572","MTC","Control","South America_Northern",2100,14.2893313402217
+"573","MTC","Control","South America_Southern",1975,8.50818418
+"574","MTC","Control","South America_Southern",1990,22.625942426
+"575","MTC","Control","South America_Southern",2005,39.51866137
+"576","MTC","Control","South America_Southern",2010,52.95040856
+"577","MTC","Control","South America_Southern",2015,60.850912912
+"578","MTC","Control","South America_Southern",2020,68.24940573601
+"579","MTC","Control","South America_Southern",2025,75.07980851645
+"580","MTC","Control","South America_Southern",2030,78.37164209285
+"581","MTC","Control","South America_Southern",2035,79.27000589561
+"582","MTC","Control","South America_Southern",2040,78.87284012407
+"583","MTC","Control","South America_Southern",2045,77.54566958546
+"584","MTC","Control","South America_Southern",2050,75.734812305147
+"585","MTC","Control","South America_Southern",2055,75.7107562981456
+"586","MTC","Control","South America_Southern",2060,75.0461683798943
+"587","MTC","Control","South America_Southern",2065,71.7120897109359
+"588","MTC","Control","South America_Southern",2070,66.5288071966071
+"589","MTC","Control","South America_Southern",2075,58.0077078240994
+"590","MTC","Control","South America_Southern",2080,46.156002897194
+"591","MTC","Control","South America_Southern",2085,31.9991057821329
+"592","MTC","Control","South America_Southern",2090,18.9627834308947
+"593","MTC","Control","South America_Southern",2095,8.56783647929956
+"594","MTC","Control","South America_Southern",2100,-0.770038050851093
+"595","MTC","Control","South Asia",1975,2.818297747
+"596","MTC","Control","South Asia",1990,7.2582170591
+"597","MTC","Control","South Asia",2005,18.83679277
+"598","MTC","Control","South Asia",2010,24.707623982
+"599","MTC","Control","South Asia",2015,36.469101552
+"600","MTC","Control","South Asia",2020,48.3772039036
+"601","MTC","Control","South Asia",2025,55.5829590723
+"602","MTC","Control","South Asia",2030,62.24205422748
+"603","MTC","Control","South Asia",2035,66.83036885288
+"604","MTC","Control","South Asia",2040,72.96255180464
+"605","MTC","Control","South Asia",2045,81.1612772305
+"606","MTC","Control","South Asia",2050,90.8462032174
+"607","MTC","Control","South Asia",2055,102.81520640549
+"608","MTC","Control","South Asia",2060,114.915960752716
+"609","MTC","Control","South Asia",2065,123.893171397687
+"610","MTC","Control","South Asia",2070,130.49117685882
+"611","MTC","Control","South Asia",2075,135.392233714067
+"612","MTC","Control","South Asia",2080,137.654465500199
+"613","MTC","Control","South Asia",2085,138.15342683304
+"614","MTC","Control","South Asia",2090,138.996282597785
+"615","MTC","Control","South Asia",2095,141.132808607936
+"616","MTC","Control","South Asia",2100,143.353359635221
+"617","MTC","Control","South Korea",1975,10.17538742
+"618","MTC","Control","South Korea",1990,72.648459781452
+"619","MTC","Control","South Korea",2005,144.6826681645
+"620","MTC","Control","South Korea",2010,169.797657005
+"621","MTC","Control","South Korea",2015,181.4748056803
+"622","MTC","Control","South Korea",2020,179.5032553615
+"623","MTC","Control","South Korea",2025,180.355823203187
+"624","MTC","Control","South Korea",2030,173.225692714074
+"625","MTC","Control","South Korea",2035,160.521145553226
+"626","MTC","Control","South Korea",2040,146.074629436002
+"627","MTC","Control","South Korea",2045,129.8237722764
+"628","MTC","Control","South Korea",2050,113.85743060329
+"629","MTC","Control","South Korea",2055,100.75406917618
+"630","MTC","Control","South Korea",2060,89.422256294942
+"631","MTC","Control","South Korea",2065,78.91834756985
+"632","MTC","Control","South Korea",2070,69.834843470987
+"633","MTC","Control","South Korea",2075,60.493836098142
+"634","MTC","Control","South Korea",2080,52.1746239559932
+"635","MTC","Control","South Korea",2085,44.444705414632
+"636","MTC","Control","South Korea",2090,39.0404240340375
+"637","MTC","Control","South Korea",2095,35.500352778653
+"638","MTC","Control","South Korea",2100,32.6384519459405
+"639","MTC","Control","Southeast Asia",1975,36.019167667
+"640","MTC","Control","Southeast Asia",1990,119.77503881152
+"641","MTC","Control","Southeast Asia",2005,231.68605613198
+"642","MTC","Control","Southeast Asia",2010,280.46508195
+"643","MTC","Control","Southeast Asia",2015,324.34506355301
+"644","MTC","Control","Southeast Asia",2020,383.294188193968
+"645","MTC","Control","Southeast Asia",2025,416.47323063386
+"646","MTC","Control","Southeast Asia",2030,441.150567040846
+"647","MTC","Control","Southeast Asia",2035,451.495122203479
+"648","MTC","Control","Southeast Asia",2040,455.938155728154
+"649","MTC","Control","Southeast Asia",2045,453.125173400568
+"650","MTC","Control","Southeast Asia",2050,446.526713236003
+"651","MTC","Control","Southeast Asia",2055,446.807582110904
+"652","MTC","Control","Southeast Asia",2060,445.555716340286
+"653","MTC","Control","Southeast Asia",2065,432.899218759639
+"654","MTC","Control","Southeast Asia",2070,411.996714708751
+"655","MTC","Control","Southeast Asia",2075,375.281391814811
+"656","MTC","Control","Southeast Asia",2080,322.840652382551
+"657","MTC","Control","Southeast Asia",2085,268.970836985869
+"658","MTC","Control","Southeast Asia",2090,225.260492304321
+"659","MTC","Control","Southeast Asia",2095,195.066585829985
+"660","MTC","Control","Southeast Asia",2100,170.410873924653
+"661","MTC","Control","Taiwan",1975,7.076291741
+"662","MTC","Control","Taiwan",1990,35.941409672
+"663","MTC","Control","Taiwan",2005,79.149506779
+"664","MTC","Control","Taiwan",2010,79.344858342
+"665","MTC","Control","Taiwan",2015,78.214655605
+"666","MTC","Control","Taiwan",2020,80.28804168517
+"667","MTC","Control","Taiwan",2025,81.42908606131
+"668","MTC","Control","Taiwan",2030,79.01206049595
+"669","MTC","Control","Taiwan",2035,74.9510408445
+"670","MTC","Control","Taiwan",2040,70.746958176249
+"671","MTC","Control","Taiwan",2045,65.793535755507
+"672","MTC","Control","Taiwan",2050,60.9363265856894
+"673","MTC","Control","Taiwan",2055,56.8901097006563
+"674","MTC","Control","Taiwan",2060,53.0852474804714
+"675","MTC","Control","Taiwan",2065,49.6873944860798
+"676","MTC","Control","Taiwan",2070,45.9827114296233
+"677","MTC","Control","Taiwan",2075,40.3502551556065
+"678","MTC","Control","Taiwan",2080,32.7602835757765
+"679","MTC","Control","Taiwan",2085,25.7544193463234
+"680","MTC","Control","Taiwan",2090,20.7156831745146
+"681","MTC","Control","Taiwan",2095,17.4826343369937
+"682","MTC","Control","Taiwan",2100,14.8798318370354
+"683","MTC","Control","USA",1975,502.8842925
+"684","MTC","Control","USA",1990,1382.2111041
+"685","MTC","Control","USA",2005,1623.641645
+"686","MTC","Control","USA",2010,1513.1264935
+"687","MTC","Control","USA",2015,1414.8955447
+"688","MTC","Control","USA",2020,1423.98098009483
+"689","MTC","Control","USA",2025,1427.44315013476
+"690","MTC","Control","USA",2030,1375.75769638075
+"691","MTC","Control","USA",2035,1307.18485743891
+"692","MTC","Control","USA",2040,1231.30384522886
+"693","MTC","Control","USA",2045,1138.32585617439
+"694","MTC","Control","USA",2050,1049.23820887867
+"695","MTC","Control","USA",2055,983.522211468941
+"696","MTC","Control","USA",2060,926.334147651403
+"697","MTC","Control","USA",2065,849.211007674933
+"698","MTC","Control","USA",2070,783.306704721602
+"699","MTC","Control","USA",2075,689.94502154846
+"700","MTC","Control","USA",2080,573.740992856683
+"701","MTC","Control","USA",2085,430.621576350616
+"702","MTC","Control","USA",2090,305.56350310224
+"703","MTC","Control","USA",2095,212.00415914783
+"704","MTC","Control","USA",2100,126.938259384413
+"705","MTC","Full feedback","Africa_Eastern",1975,2.877035859
+"706","MTC","Full feedback","Africa_Eastern",1990,7.295419614
+"707","MTC","Full feedback","Africa_Eastern",2005,13.0964611156
+"708","MTC","Full feedback","Africa_Eastern",2010,18.3840202204
+"709","MTC","Full feedback","Africa_Eastern",2015,22.3113387982
+"710","MTC","Full feedback","Africa_Eastern",2020,32.48803491791
+"711","MTC","Full feedback","Africa_Eastern",2025,36.40701205649
+"712","MTC","Full feedback","Africa_Eastern",2030,41.30423118796
+"713","MTC","Full feedback","Africa_Eastern",2035,46.07111093071
+"714","MTC","Full feedback","Africa_Eastern",2040,51.22853128846
+"715","MTC","Full feedback","Africa_Eastern",2045,55.92558950687
+"716","MTC","Full feedback","Africa_Eastern",2050,62.63610230546
+"717","MTC","Full feedback","Africa_Eastern",2055,73.2482875093
+"718","MTC","Full feedback","Africa_Eastern",2060,86.359404560513
+"719","MTC","Full feedback","Africa_Eastern",2065,99.462023783671
+"720","MTC","Full feedback","Africa_Eastern",2070,111.60558410476
+"721","MTC","Full feedback","Africa_Eastern",2075,122.38031251531
+"722","MTC","Full feedback","Africa_Eastern",2080,131.893102617437
+"723","MTC","Full feedback","Africa_Eastern",2085,140.14297015357
+"724","MTC","Full feedback","Africa_Eastern",2090,149.101563426146
+"725","MTC","Full feedback","Africa_Eastern",2095,162.66486783001
+"726","MTC","Full feedback","Africa_Eastern",2100,174.377529025907
+"727","MTC","Full feedback","Africa_Northern",1975,10.9975018
+"728","MTC","Full feedback","Africa_Northern",1990,62.0541940838
+"729","MTC","Full feedback","Africa_Northern",2005,104.91401049798
+"730","MTC","Full feedback","Africa_Northern",2010,125.83799468382
+"731","MTC","Full feedback","Africa_Northern",2015,142.69347672577
+"732","MTC","Full feedback","Africa_Northern",2020,165.097222065714
+"733","MTC","Full feedback","Africa_Northern",2025,179.242060867515
+"734","MTC","Full feedback","Africa_Northern",2030,194.820733224453
+"735","MTC","Full feedback","Africa_Northern",2035,205.079233905845
+"736","MTC","Full feedback","Africa_Northern",2040,215.326638886727
+"737","MTC","Full feedback","Africa_Northern",2045,226.188479212865
+"738","MTC","Full feedback","Africa_Northern",2050,236.422383928255
+"739","MTC","Full feedback","Africa_Northern",2055,246.734754314973
+"740","MTC","Full feedback","Africa_Northern",2060,255.901712225227
+"741","MTC","Full feedback","Africa_Northern",2065,256.293321320625
+"742","MTC","Full feedback","Africa_Northern",2070,257.849728614614
+"743","MTC","Full feedback","Africa_Northern",2075,253.555693241535
+"744","MTC","Full feedback","Africa_Northern",2080,245.327375000601
+"745","MTC","Full feedback","Africa_Northern",2085,232.720570002424
+"746","MTC","Full feedback","Africa_Northern",2090,220.630811205602
+"747","MTC","Full feedback","Africa_Northern",2095,212.587853655562
+"748","MTC","Full feedback","Africa_Northern",2100,203.216955101065
+"749","MTC","Full feedback","Africa_Southern",1975,4.264416494
+"750","MTC","Full feedback","Africa_Southern",1990,10.153773092
+"751","MTC","Full feedback","Africa_Southern",2005,11.1191573741
+"752","MTC","Full feedback","Africa_Southern",2010,14.087995344
+"753","MTC","Full feedback","Africa_Southern",2015,20.89281825634
+"754","MTC","Full feedback","Africa_Southern",2020,29.2281528474793
+"755","MTC","Full feedback","Africa_Southern",2025,32.4393945696289
+"756","MTC","Full feedback","Africa_Southern",2030,36.1525831168048
+"757","MTC","Full feedback","Africa_Southern",2035,39.9035788925781
+"758","MTC","Full feedback","Africa_Southern",2040,44.8957634468296
+"759","MTC","Full feedback","Africa_Southern",2045,51.5858643088812
+"760","MTC","Full feedback","Africa_Southern",2050,61.7384568433445
+"761","MTC","Full feedback","Africa_Southern",2055,76.190667433546
+"762","MTC","Full feedback","Africa_Southern",2060,94.5364769016372
+"763","MTC","Full feedback","Africa_Southern",2065,113.75550035088
+"764","MTC","Full feedback","Africa_Southern",2070,134.166521788972
+"765","MTC","Full feedback","Africa_Southern",2075,152.240130533467
+"766","MTC","Full feedback","Africa_Southern",2080,164.417289415508
+"767","MTC","Full feedback","Africa_Southern",2085,170.04007610524
+"768","MTC","Full feedback","Africa_Southern",2090,169.982085144734
+"769","MTC","Full feedback","Africa_Southern",2095,168.536621343306
+"770","MTC","Full feedback","Africa_Southern",2100,169.261773224946
+"771","MTC","Full feedback","Africa_Western",1975,5.65993855
+"772","MTC","Full feedback","Africa_Western",1990,17.057191797
+"773","MTC","Full feedback","Africa_Western",2005,31.69999450911
+"774","MTC","Full feedback","Africa_Western",2010,36.04074216037
+"775","MTC","Full feedback","Africa_Western",2015,48.87009503978
+"776","MTC","Full feedback","Africa_Western",2020,66.4261243810534
+"777","MTC","Full feedback","Africa_Western",2025,81.1680360828052
+"778","MTC","Full feedback","Africa_Western",2030,99.2757678683882
+"779","MTC","Full feedback","Africa_Western",2035,118.867690304525
+"780","MTC","Full feedback","Africa_Western",2040,145.244505134648
+"781","MTC","Full feedback","Africa_Western",2045,179.822031921096
+"782","MTC","Full feedback","Africa_Western",2050,229.645744120682
+"783","MTC","Full feedback","Africa_Western",2055,290.638374861048
+"784","MTC","Full feedback","Africa_Western",2060,359.819766452005
+"785","MTC","Full feedback","Africa_Western",2065,430.664424674287
+"786","MTC","Full feedback","Africa_Western",2070,496.918698634373
+"787","MTC","Full feedback","Africa_Western",2075,551.62336550837
+"788","MTC","Full feedback","Africa_Western",2080,593.4678536113
+"789","MTC","Full feedback","Africa_Western",2085,620.388749474556
+"790","MTC","Full feedback","Africa_Western",2090,638.312916740521
+"791","MTC","Full feedback","Africa_Western",2095,657.209723780316
+"792","MTC","Full feedback","Africa_Western",2100,664.718630631391
+"793","MTC","Full feedback","Argentina",1975,11.02997155
+"794","MTC","Full feedback","Argentina",1990,28.6565529834
+"795","MTC","Full feedback","Argentina",2005,42.393505793
+"796","MTC","Full feedback","Argentina",2010,51.816521072
+"797","MTC","Full feedback","Argentina",2015,55.842990557
+"798","MTC","Full feedback","Argentina",2020,60.02612686449
+"799","MTC","Full feedback","Argentina",2025,63.07380291146
+"800","MTC","Full feedback","Argentina",2030,63.46348598725
+"801","MTC","Full feedback","Argentina",2035,62.39157927813
+"802","MTC","Full feedback","Argentina",2040,60.42888213413
+"803","MTC","Full feedback","Argentina",2045,57.871427208099
+"804","MTC","Full feedback","Argentina",2050,55.455474878685
+"805","MTC","Full feedback","Argentina",2055,53.7951114926215
+"806","MTC","Full feedback","Argentina",2060,52.272343524361
+"807","MTC","Full feedback","Argentina",2065,49.1119380299516
+"808","MTC","Full feedback","Argentina",2070,46.4153178656085
+"809","MTC","Full feedback","Argentina",2075,42.1952776237968
+"810","MTC","Full feedback","Argentina",2080,36.7305062334227
+"811","MTC","Full feedback","Argentina",2085,29.0537536388759
+"812","MTC","Full feedback","Argentina",2090,21.883280603299
+"813","MTC","Full feedback","Argentina",2095,15.4233582049499
+"814","MTC","Full feedback","Argentina",2100,9.35514756798382
+"815","MTC","Full feedback","Australia_NZ",1975,29.21162435
+"816","MTC","Full feedback","Australia_NZ",1990,81.52909447
+"817","MTC","Full feedback","Australia_NZ",2005,115.05888491
+"818","MTC","Full feedback","Australia_NZ",2010,120.55486018
+"819","MTC","Full feedback","Australia_NZ",2015,118.93155669
+"820","MTC","Full feedback","Australia_NZ",2020,125.25420310118
+"821","MTC","Full feedback","Australia_NZ",2025,130.71313822326
+"822","MTC","Full feedback","Australia_NZ",2030,129.5013258424
+"823","MTC","Full feedback","Australia_NZ",2035,123.4876430311
+"824","MTC","Full feedback","Australia_NZ",2040,115.7489126991
+"825","MTC","Full feedback","Australia_NZ",2045,107.8812626369
+"826","MTC","Full feedback","Australia_NZ",2050,99.80821708517
+"827","MTC","Full feedback","Australia_NZ",2055,93.907368251883
+"828","MTC","Full feedback","Australia_NZ",2060,89.4577427485528
+"829","MTC","Full feedback","Australia_NZ",2065,84.7858225890721
+"830","MTC","Full feedback","Australia_NZ",2070,79.5687606863865
+"831","MTC","Full feedback","Australia_NZ",2075,72.1190403880886
+"832","MTC","Full feedback","Australia_NZ",2080,62.5935313883968
+"833","MTC","Full feedback","Australia_NZ",2085,51.0879660255621
+"834","MTC","Full feedback","Australia_NZ",2090,40.9702358155551
+"835","MTC","Full feedback","Australia_NZ",2095,32.9676963546748
+"836","MTC","Full feedback","Australia_NZ",2100,25.5259909376093
+"837","MTC","Full feedback","Brazil",1975,27.46544848
+"838","MTC","Full feedback","Brazil",1990,59.05760217
+"839","MTC","Full feedback","Brazil",2005,97.70810128
+"840","MTC","Full feedback","Brazil",2010,116.477671836
+"841","MTC","Full feedback","Brazil",2015,138.42111198
+"842","MTC","Full feedback","Brazil",2020,150.9405995411
+"843","MTC","Full feedback","Brazil",2025,159.6318482641
+"844","MTC","Full feedback","Brazil",2030,158.2380464934
+"845","MTC","Full feedback","Brazil",2035,152.6401526764
+"846","MTC","Full feedback","Brazil",2040,142.1661887838
+"847","MTC","Full feedback","Brazil",2045,129.88219501877
+"848","MTC","Full feedback","Brazil",2050,116.74782131251
+"849","MTC","Full feedback","Brazil",2055,108.909969324749
+"850","MTC","Full feedback","Brazil",2060,104.005580300118
+"851","MTC","Full feedback","Brazil",2065,95.8165165405458
+"852","MTC","Full feedback","Brazil",2070,88.5836078890147
+"853","MTC","Full feedback","Brazil",2075,77.650007337243
+"854","MTC","Full feedback","Brazil",2080,58.7732298670316
+"855","MTC","Full feedback","Brazil",2085,36.1203481928802
+"856","MTC","Full feedback","Brazil",2090,12.8155479040393
+"857","MTC","Full feedback","Brazil",2095,-8.79735006348673
+"858","MTC","Full feedback","Brazil",2100,-23.4469260797214
+"859","MTC","Full feedback","Canada",1975,54.05367988
+"860","MTC","Full feedback","Canada",1990,116.879897011
+"861","MTC","Full feedback","Canada",2005,148.406919634
+"862","MTC","Full feedback","Canada",2010,141.468695594
+"863","MTC","Full feedback","Canada",2015,149.780975884
+"864","MTC","Full feedback","Canada",2020,153.1469950453
+"865","MTC","Full feedback","Canada",2025,155.13874582264
+"866","MTC","Full feedback","Canada",2030,150.919143602
+"867","MTC","Full feedback","Canada",2035,143.6035656829
+"868","MTC","Full feedback","Canada",2040,134.6961969475
+"869","MTC","Full feedback","Canada",2045,125.3592435747
+"870","MTC","Full feedback","Canada",2050,116.7111008651
+"871","MTC","Full feedback","Canada",2055,110.407153691202
+"872","MTC","Full feedback","Canada",2060,104.838789636133
+"873","MTC","Full feedback","Canada",2065,98.225925209246
+"874","MTC","Full feedback","Canada",2070,91.1466103365629
+"875","MTC","Full feedback","Canada",2075,81.2898981091393
+"876","MTC","Full feedback","Canada",2080,67.4058229471598
+"877","MTC","Full feedback","Canada",2085,49.5698688330559
+"878","MTC","Full feedback","Canada",2090,33.1361083448639
+"879","MTC","Full feedback","Canada",2095,21.1270558097808
+"880","MTC","Full feedback","Canada",2100,9.7496772529167
+"881","MTC","Full feedback","Central America and Caribbean",1975,10.958797688754
+"882","MTC","Full feedback","Central America and Caribbean",1990,28.812851813283
+"883","MTC","Full feedback","Central America and Caribbean",2005,46.9988728579
+"884","MTC","Full feedback","Central America and Caribbean",2010,53.5028366574
+"885","MTC","Full feedback","Central America and Caribbean",2015,56.73736112069
+"886","MTC","Full feedback","Central America and Caribbean",2020,58.80447918775
+"887","MTC","Full feedback","Central America and Caribbean",2025,61.3580174752813
+"888","MTC","Full feedback","Central America and Caribbean",2030,62.4177553576545
+"889","MTC","Full feedback","Central America and Caribbean",2035,61.8456792180812
+"890","MTC","Full feedback","Central America and Caribbean",2040,59.9170520211775
+"891","MTC","Full feedback","Central America and Caribbean",2045,56.5544579801404
+"892","MTC","Full feedback","Central America and Caribbean",2050,52.9399755182183
+"893","MTC","Full feedback","Central America and Caribbean",2055,50.9113485559313
+"894","MTC","Full feedback","Central America and Caribbean",2060,49.1678618885289
+"895","MTC","Full feedback","Central America and Caribbean",2065,46.3115156068913
+"896","MTC","Full feedback","Central America and Caribbean",2070,43.4805153040153
+"897","MTC","Full feedback","Central America and Caribbean",2075,38.7652594661586
+"898","MTC","Full feedback","Central America and Caribbean",2080,31.6404385269147
+"899","MTC","Full feedback","Central America and Caribbean",2085,22.7105326292184
+"900","MTC","Full feedback","Central America and Caribbean",2090,13.7541496669571
+"901","MTC","Full feedback","Central America and Caribbean",2095,6.9419520738416
+"902","MTC","Full feedback","Central America and Caribbean",2100,0.301532375483302
+"903","MTC","Full feedback","Central Asia",1975,65.41186863
+"904","MTC","Full feedback","Central Asia",1990,155.64804526
+"905","MTC","Full feedback","Central Asia",2005,107.28493356
+"906","MTC","Full feedback","Central Asia",2010,127.81996801
+"907","MTC","Full feedback","Central Asia",2015,140.433619676
+"908","MTC","Full feedback","Central Asia",2020,154.37048678321
+"909","MTC","Full feedback","Central Asia",2025,166.456857129691
+"910","MTC","Full feedback","Central Asia",2030,167.23677086817
+"911","MTC","Full feedback","Central Asia",2035,162.087457852943
+"912","MTC","Full feedback","Central Asia",2040,155.901872345667
+"913","MTC","Full feedback","Central Asia",2045,148.18808435491
+"914","MTC","Full feedback","Central Asia",2050,140.640603335502
+"915","MTC","Full feedback","Central Asia",2055,134.244325765352
+"916","MTC","Full feedback","Central Asia",2060,127.737613446316
+"917","MTC","Full feedback","Central Asia",2065,117.998552854175
+"918","MTC","Full feedback","Central Asia",2070,108.81255509787
+"919","MTC","Full feedback","Central Asia",2075,97.2156447339149
+"920","MTC","Full feedback","Central Asia",2080,81.9121190929004
+"921","MTC","Full feedback","Central Asia",2085,65.1802737965869
+"922","MTC","Full feedback","Central Asia",2090,49.1256503450816
+"923","MTC","Full feedback","Central Asia",2095,35.4352277665384
+"924","MTC","Full feedback","Central Asia",2100,21.0577584521284
+"925","MTC","Full feedback","China",1975,193.79699907
+"926","MTC","Full feedback","China",1990,696.42724106874
+"927","MTC","Full feedback","China",2005,1819.0502429693
+"928","MTC","Full feedback","China",2010,2617.013955101
+"929","MTC","Full feedback","China",2015,2989.493067532
+"930","MTC","Full feedback","China",2020,3538.3063371737
+"931","MTC","Full feedback","China",2025,3604.7991312479
+"932","MTC","Full feedback","China",2030,3504.8877278836
+"933","MTC","Full feedback","China",2035,3272.8238704383
+"934","MTC","Full feedback","China",2040,3036.9588125857
+"935","MTC","Full feedback","China",2045,2767.4515210962
+"936","MTC","Full feedback","China",2050,2481.5106271996
+"937","MTC","Full feedback","China",2055,2207.3671859676
+"938","MTC","Full feedback","China",2060,1937.14799420918
+"939","MTC","Full feedback","China",2065,1666.77359111399
+"940","MTC","Full feedback","China",2070,1406.14540070913
+"941","MTC","Full feedback","China",2075,1139.05376465738
+"942","MTC","Full feedback","China",2080,815.210772441971
+"943","MTC","Full feedback","China",2085,563.693953810927
+"944","MTC","Full feedback","China",2090,377.3070235709
+"945","MTC","Full feedback","China",2095,256.755679168258
+"946","MTC","Full feedback","China",2100,154.871125379802
+"947","MTC","Full feedback","Colombia",1975,5.534146939
+"948","MTC","Full feedback","Colombia",1990,15.04465657
+"949","MTC","Full feedback","Colombia",2005,17.603005922
+"950","MTC","Full feedback","Colombia",2010,21.182717822
+"951","MTC","Full feedback","Colombia",2015,25.52175598
+"952","MTC","Full feedback","Colombia",2020,28.6433786953
+"953","MTC","Full feedback","Colombia",2025,31.2550992672
+"954","MTC","Full feedback","Colombia",2030,32.8234694966
+"955","MTC","Full feedback","Colombia",2035,34.22292382037
+"956","MTC","Full feedback","Colombia",2040,34.76141830829
+"957","MTC","Full feedback","Colombia",2045,34.94517879618
+"958","MTC","Full feedback","Colombia",2050,34.774782764358
+"959","MTC","Full feedback","Colombia",2055,35.278932788207
+"960","MTC","Full feedback","Colombia",2060,35.3765181847379
+"961","MTC","Full feedback","Colombia",2065,34.4068093575926
+"962","MTC","Full feedback","Colombia",2070,32.5312683646407
+"963","MTC","Full feedback","Colombia",2075,29.066782921199
+"964","MTC","Full feedback","Colombia",2080,23.7402258705993
+"965","MTC","Full feedback","Colombia",2085,17.3009768709977
+"966","MTC","Full feedback","Colombia",2090,10.8143090175852
+"967","MTC","Full feedback","Colombia",2095,5.52677765899879
+"968","MTC","Full feedback","Colombia",2100,0.231777894389754
+"969","MTC","Full feedback","EU-12",1975,132.520753679
+"970","MTC","Full feedback","EU-12",1990,276.5209111015
+"971","MTC","Full feedback","EU-12",2005,207.6778713476
+"972","MTC","Full feedback","EU-12",2010,202.8617428727
+"973","MTC","Full feedback","EU-12",2015,185.3634163595
+"974","MTC","Full feedback","EU-12",2020,194.65199454341
+"975","MTC","Full feedback","EU-12",2025,200.85576954519
+"976","MTC","Full feedback","EU-12",2030,193.763696646013
+"977","MTC","Full feedback","EU-12",2035,182.318612775062
+"978","MTC","Full feedback","EU-12",2040,169.59645869763
+"979","MTC","Full feedback","EU-12",2045,156.547816027078
+"980","MTC","Full feedback","EU-12",2050,144.39370599726
+"981","MTC","Full feedback","EU-12",2055,133.625052146731
+"982","MTC","Full feedback","EU-12",2060,124.153907994053
+"983","MTC","Full feedback","EU-12",2065,113.509333449277
+"984","MTC","Full feedback","EU-12",2070,102.886671032119
+"985","MTC","Full feedback","EU-12",2075,90.0494050003985
+"986","MTC","Full feedback","EU-12",2080,75.4555724007952
+"987","MTC","Full feedback","EU-12",2085,62.6260354906106
+"988","MTC","Full feedback","EU-12",2090,53.2174700404899
+"989","MTC","Full feedback","EU-12",2095,47.9622086967295
+"990","MTC","Full feedback","EU-12",2100,43.5750822306924
+"991","MTC","Full feedback","EU-15",1975,425.1296358494
+"992","MTC","Full feedback","EU-15",1990,915.610580271
+"993","MTC","Full feedback","EU-15",2005,971.893043202
+"994","MTC","Full feedback","EU-15",2010,882.338322576
+"995","MTC","Full feedback","EU-15",2015,790.239424229
+"996","MTC","Full feedback","EU-15",2020,783.3571610441
+"997","MTC","Full feedback","EU-15",2025,746.91579546701
+"998","MTC","Full feedback","EU-15",2030,700.12735963739
+"999","MTC","Full feedback","EU-15",2035,649.28705503587
+"1000","MTC","Full feedback","EU-15",2040,595.24082195995
+"1001","MTC","Full feedback","EU-15",2045,537.708704443905
+"1002","MTC","Full feedback","EU-15",2050,484.738875205852
+"1003","MTC","Full feedback","EU-15",2055,448.291366177194
+"1004","MTC","Full feedback","EU-15",2060,420.791911579981
+"1005","MTC","Full feedback","EU-15",2065,392.080577915131
+"1006","MTC","Full feedback","EU-15",2070,367.76341091745
+"1007","MTC","Full feedback","EU-15",2075,337.297212610917
+"1008","MTC","Full feedback","EU-15",2080,307.638263865133
+"1009","MTC","Full feedback","EU-15",2085,277.304727888412
+"1010","MTC","Full feedback","EU-15",2090,255.304495454706
+"1011","MTC","Full feedback","EU-15",2095,247.783532571934
+"1012","MTC","Full feedback","EU-15",2100,244.187058098225
+"1013","MTC","Full feedback","Europe_Eastern",1975,113.10867422
+"1014","MTC","Full feedback","Europe_Eastern",1990,237.357724519
+"1015","MTC","Full feedback","Europe_Eastern",2005,111.381206837
+"1016","MTC","Full feedback","Europe_Eastern",2010,101.92818811581
+"1017","MTC","Full feedback","Europe_Eastern",2015,77.092999815
+"1018","MTC","Full feedback","Europe_Eastern",2020,85.7230187347
+"1019","MTC","Full feedback","Europe_Eastern",2025,83.626112904272
+"1020","MTC","Full feedback","Europe_Eastern",2030,79.64984731251
+"1021","MTC","Full feedback","Europe_Eastern",2035,74.249072816453
+"1022","MTC","Full feedback","Europe_Eastern",2040,69.973461079132
+"1023","MTC","Full feedback","Europe_Eastern",2045,65.973917803303
+"1024","MTC","Full feedback","Europe_Eastern",2050,62.164882694336
+"1025","MTC","Full feedback","Europe_Eastern",2055,59.0339060795317
+"1026","MTC","Full feedback","Europe_Eastern",2060,56.0190985568318
+"1027","MTC","Full feedback","Europe_Eastern",2065,52.0978533162498
+"1028","MTC","Full feedback","Europe_Eastern",2070,48.448573803141
+"1029","MTC","Full feedback","Europe_Eastern",2075,43.5030387417973
+"1030","MTC","Full feedback","Europe_Eastern",2080,37.1637548476315
+"1031","MTC","Full feedback","Europe_Eastern",2085,31.7868050804367
+"1032","MTC","Full feedback","Europe_Eastern",2090,27.2537875862569
+"1033","MTC","Full feedback","Europe_Eastern",2095,23.9655742333354
+"1034","MTC","Full feedback","Europe_Eastern",2100,20.8905688172089
+"1035","MTC","Full feedback","Europe_Non_EU",1975,18.25471665
+"1036","MTC","Full feedback","Europe_Non_EU",1990,74.957298385
+"1037","MTC","Full feedback","Europe_Non_EU",2005,98.457536391
+"1038","MTC","Full feedback","Europe_Non_EU",2010,114.463755243
+"1039","MTC","Full feedback","Europe_Non_EU",2015,129.445094811
+"1040","MTC","Full feedback","Europe_Non_EU",2020,146.297675075503
+"1041","MTC","Full feedback","Europe_Non_EU",2025,150.0486245413
+"1042","MTC","Full feedback","Europe_Non_EU",2030,150.963334270704
+"1043","MTC","Full feedback","Europe_Non_EU",2035,147.870476769477
+"1044","MTC","Full feedback","Europe_Non_EU",2040,144.040577156374
+"1045","MTC","Full feedback","Europe_Non_EU",2045,139.688393178999
+"1046","MTC","Full feedback","Europe_Non_EU",2050,135.083646531639
+"1047","MTC","Full feedback","Europe_Non_EU",2055,131.468735575749
+"1048","MTC","Full feedback","Europe_Non_EU",2060,128.312962352891
+"1049","MTC","Full feedback","Europe_Non_EU",2065,123.96739418884
+"1050","MTC","Full feedback","Europe_Non_EU",2070,119.382130775703
+"1051","MTC","Full feedback","Europe_Non_EU",2075,112.304695787247
+"1052","MTC","Full feedback","Europe_Non_EU",2080,101.250233667545
+"1053","MTC","Full feedback","Europe_Non_EU",2085,90.90529308943
+"1054","MTC","Full feedback","Europe_Non_EU",2090,81.713359052613
+"1055","MTC","Full feedback","Europe_Non_EU",2095,75.8663203421309
+"1056","MTC","Full feedback","Europe_Non_EU",2100,70.6412793052737
+"1057","MTC","Full feedback","European Free Trade Association",1975,11.34064293
+"1058","MTC","Full feedback","European Free Trade Association",1990,20.96993893737
+"1059","MTC","Full feedback","European Free Trade Association",2005,23.8729862001
+"1060","MTC","Full feedback","European Free Trade Association",2010,24.1530092803
+"1061","MTC","Full feedback","European Free Trade Association",2015,22.3099539318
+"1062","MTC","Full feedback","European Free Trade Association",2020,21.89725382704
+"1063","MTC","Full feedback","European Free Trade Association",2025,20.644041535595
+"1064","MTC","Full feedback","European Free Trade Association",2030,19.003155745641
+"1065","MTC","Full feedback","European Free Trade Association",2035,17.043115304457
+"1066","MTC","Full feedback","European Free Trade Association",2040,14.416686898919
+"1067","MTC","Full feedback","European Free Trade Association",2045,11.473158122951
+"1068","MTC","Full feedback","European Free Trade Association",2050,8.699609692448
+"1069","MTC","Full feedback","European Free Trade Association",2055,6.970684111955
+"1070","MTC","Full feedback","European Free Trade Association",2060,5.7003623728991
+"1071","MTC","Full feedback","European Free Trade Association",2065,4.32733995356206
+"1072","MTC","Full feedback","European Free Trade Association",2070,3.22567454743143
+"1073","MTC","Full feedback","European Free Trade Association",2075,1.80088255649662
+"1074","MTC","Full feedback","European Free Trade Association",2080,0.181472728043337
+"1075","MTC","Full feedback","European Free Trade Association",2085,-1.65153355684191
+"1076","MTC","Full feedback","European Free Trade Association",2090,-3.17848032981371
+"1077","MTC","Full feedback","European Free Trade Association",2095,-3.72914261903487
+"1078","MTC","Full feedback","European Free Trade Association",2100,-3.55305019747285
+"1079","MTC","Full feedback","India",1975,35.1929118
+"1080","MTC","Full feedback","India",1990,162.91283410716
+"1081","MTC","Full feedback","India",2005,336.1579527333
+"1082","MTC","Full feedback","India",2010,493.331514331
+"1083","MTC","Full feedback","India",2015,625.04786427
+"1084","MTC","Full feedback","India",2020,824.42045601744
+"1085","MTC","Full feedback","India",2025,946.48782949504
+"1086","MTC","Full feedback","India",2030,1041.2559680878
+"1087","MTC","Full feedback","India",2035,1105.66970455123
+"1088","MTC","Full feedback","India",2040,1171.57975979097
+"1089","MTC","Full feedback","India",2045,1225.81844658609
+"1090","MTC","Full feedback","India",2050,1274.91696961761
+"1091","MTC","Full feedback","India",2055,1336.87214953169
+"1092","MTC","Full feedback","India",2060,1390.0533473886
+"1093","MTC","Full feedback","India",2065,1417.03880880005
+"1094","MTC","Full feedback","India",2070,1409.48564863946
+"1095","MTC","Full feedback","India",2075,1353.64900987253
+"1096","MTC","Full feedback","India",2080,1219.84685249498
+"1097","MTC","Full feedback","India",2085,1076.7402841599
+"1098","MTC","Full feedback","India",2090,949.659235531649
+"1099","MTC","Full feedback","India",2095,866.24589989781
+"1100","MTC","Full feedback","India",2100,791.327840773855
+"1101","MTC","Full feedback","Indonesia",1975,5.630788558
+"1102","MTC","Full feedback","Indonesia",1990,42.3893561737
+"1103","MTC","Full feedback","Indonesia",2005,97.728268478
+"1104","MTC","Full feedback","Indonesia",2010,110.074891549
+"1105","MTC","Full feedback","Indonesia",2015,137.49429647
+"1106","MTC","Full feedback","Indonesia",2020,161.635715936066
+"1107","MTC","Full feedback","Indonesia",2025,193.009431899277
+"1108","MTC","Full feedback","Indonesia",2030,214.000339090619
+"1109","MTC","Full feedback","Indonesia",2035,226.718022834995
+"1110","MTC","Full feedback","Indonesia",2040,235.877456632383
+"1111","MTC","Full feedback","Indonesia",2045,239.941528574962
+"1112","MTC","Full feedback","Indonesia",2050,240.513438851269
+"1113","MTC","Full feedback","Indonesia",2055,242.27824319515
+"1114","MTC","Full feedback","Indonesia",2060,244.419052343569
+"1115","MTC","Full feedback","Indonesia",2065,242.328507161362
+"1116","MTC","Full feedback","Indonesia",2070,236.194132869399
+"1117","MTC","Full feedback","Indonesia",2075,222.422219604396
+"1118","MTC","Full feedback","Indonesia",2080,197.574235706367
+"1119","MTC","Full feedback","Indonesia",2085,167.520275820109
+"1120","MTC","Full feedback","Indonesia",2090,141.122075130203
+"1121","MTC","Full feedback","Indonesia",2095,122.056036762764
+"1122","MTC","Full feedback","Indonesia",2100,104.300114790675
+"1123","MTC","Full feedback","Japan",1975,142.9109899
+"1124","MTC","Full feedback","Japan",1990,311.69550466
+"1125","MTC","Full feedback","Japan",2005,347.4753730419
+"1126","MTC","Full feedback","Japan",2010,325.235101664
+"1127","MTC","Full feedback","Japan",2015,328.695623593
+"1128","MTC","Full feedback","Japan",2020,334.2696096038
+"1129","MTC","Full feedback","Japan",2025,318.8330515148
+"1130","MTC","Full feedback","Japan",2030,295.5392440046
+"1131","MTC","Full feedback","Japan",2035,268.5481087471
+"1132","MTC","Full feedback","Japan",2040,242.3826938548
+"1133","MTC","Full feedback","Japan",2045,213.3969643903
+"1134","MTC","Full feedback","Japan",2050,187.17569414049
+"1135","MTC","Full feedback","Japan",2055,165.644774644584
+"1136","MTC","Full feedback","Japan",2060,144.833861043695
+"1137","MTC","Full feedback","Japan",2065,123.193151527851
+"1138","MTC","Full feedback","Japan",2070,106.635235655902
+"1139","MTC","Full feedback","Japan",2075,86.359112757848
+"1140","MTC","Full feedback","Japan",2080,62.412304642025
+"1141","MTC","Full feedback","Japan",2085,42.5951813727814
+"1142","MTC","Full feedback","Japan",2090,26.9721930618489
+"1143","MTC","Full feedback","Japan",2095,17.6852420631647
+"1144","MTC","Full feedback","Japan",2100,10.9216854289318
+"1145","MTC","Full feedback","Mexico",1975,22.019720112
+"1146","MTC","Full feedback","Mexico",1990,81.38017945
+"1147","MTC","Full feedback","Mexico",2005,126.03831229
+"1148","MTC","Full feedback","Mexico",2010,132.980118123
+"1149","MTC","Full feedback","Mexico",2015,134.69508959
+"1150","MTC","Full feedback","Mexico",2020,142.5248267451
+"1151","MTC","Full feedback","Mexico",2025,152.5494389843
+"1152","MTC","Full feedback","Mexico",2030,156.9785520159
+"1153","MTC","Full feedback","Mexico",2035,156.3433139446
+"1154","MTC","Full feedback","Mexico",2040,155.4000702461
+"1155","MTC","Full feedback","Mexico",2045,152.58964185955
+"1156","MTC","Full feedback","Mexico",2050,149.47847336662
+"1157","MTC","Full feedback","Mexico",2055,148.635081393608
+"1158","MTC","Full feedback","Mexico",2060,147.346994516156
+"1159","MTC","Full feedback","Mexico",2065,143.64010970226
+"1160","MTC","Full feedback","Mexico",2070,136.556550624977
+"1161","MTC","Full feedback","Mexico",2075,124.102367585646
+"1162","MTC","Full feedback","Mexico",2080,105.859377791057
+"1163","MTC","Full feedback","Mexico",2085,81.6786366501076
+"1164","MTC","Full feedback","Mexico",2090,57.5171284492332
+"1165","MTC","Full feedback","Mexico",2095,38.4838395593521
+"1166","MTC","Full feedback","Mexico",2100,20.6682312902823
+"1167","MTC","Full feedback","Middle East",1975,35.6032382
+"1168","MTC","Full feedback","Middle East",1990,185.47899714
+"1169","MTC","Full feedback","Middle East",2005,369.095629206
+"1170","MTC","Full feedback","Middle East",2010,485.710913687
+"1171","MTC","Full feedback","Middle East",2015,567.566552511
+"1172","MTC","Full feedback","Middle East",2020,580.479343266
+"1173","MTC","Full feedback","Middle East",2025,610.6822395962
+"1174","MTC","Full feedback","Middle East",2030,624.3350945979
+"1175","MTC","Full feedback","Middle East",2035,627.1811149415
+"1176","MTC","Full feedback","Middle East",2040,626.84712515412
+"1177","MTC","Full feedback","Middle East",2045,620.09962610636
+"1178","MTC","Full feedback","Middle East",2050,616.69564600106
+"1179","MTC","Full feedback","Middle East",2055,617.155995198312
+"1180","MTC","Full feedback","Middle East",2060,616.189576751485
+"1181","MTC","Full feedback","Middle East",2065,608.422136826444
+"1182","MTC","Full feedback","Middle East",2070,600.682652516813
+"1183","MTC","Full feedback","Middle East",2075,575.231304330053
+"1184","MTC","Full feedback","Middle East",2080,535.626197033846
+"1185","MTC","Full feedback","Middle East",2085,482.268732913583
+"1186","MTC","Full feedback","Middle East",2090,428.64556704882
+"1187","MTC","Full feedback","Middle East",2095,385.221573554391
+"1188","MTC","Full feedback","Middle East",2100,344.22510381471
+"1189","MTC","Full feedback","Pakistan",1975,3.702408993
+"1190","MTC","Full feedback","Pakistan",1990,17.849544348
+"1191","MTC","Full feedback","Pakistan",2005,35.45604977
+"1192","MTC","Full feedback","Pakistan",2010,42.28607361
+"1193","MTC","Full feedback","Pakistan",2015,48.47652433532
+"1194","MTC","Full feedback","Pakistan",2020,54.977126112646
+"1195","MTC","Full feedback","Pakistan",2025,61.4746798296423
+"1196","MTC","Full feedback","Pakistan",2030,67.6542609546379
+"1197","MTC","Full feedback","Pakistan",2035,73.6293746561835
+"1198","MTC","Full feedback","Pakistan",2040,81.5393771539772
+"1199","MTC","Full feedback","Pakistan",2045,90.5272635159307
+"1200","MTC","Full feedback","Pakistan",2050,100.989781439883
+"1201","MTC","Full feedback","Pakistan",2055,109.706718874154
+"1202","MTC","Full feedback","Pakistan",2060,118.453424261656
+"1203","MTC","Full feedback","Pakistan",2065,126.52328142558
+"1204","MTC","Full feedback","Pakistan",2070,132.556055019967
+"1205","MTC","Full feedback","Pakistan",2075,136.304297918546
+"1206","MTC","Full feedback","Pakistan",2080,136.50044436596
+"1207","MTC","Full feedback","Pakistan",2085,134.154907520374
+"1208","MTC","Full feedback","Pakistan",2090,131.489493267692
+"1209","MTC","Full feedback","Pakistan",2095,129.561928328777
+"1210","MTC","Full feedback","Pakistan",2100,127.421510711263
+"1211","MTC","Full feedback","Russia",1975,267.05704057
+"1212","MTC","Full feedback","Russia",1990,673.7592319
+"1213","MTC","Full feedback","Russia",2005,451.820172113
+"1214","MTC","Full feedback","Russia",2010,467.704115444
+"1215","MTC","Full feedback","Russia",2015,471.21954969
+"1216","MTC","Full feedback","Russia",2020,535.299010799
+"1217","MTC","Full feedback","Russia",2025,519.1343596392
+"1218","MTC","Full feedback","Russia",2030,490.24696823525
+"1219","MTC","Full feedback","Russia",2035,450.15205956383
+"1220","MTC","Full feedback","Russia",2040,415.00385854497
+"1221","MTC","Full feedback","Russia",2045,381.47727017747
+"1222","MTC","Full feedback","Russia",2050,351.89576459228
+"1223","MTC","Full feedback","Russia",2055,326.6450105516
+"1224","MTC","Full feedback","Russia",2060,304.831389064801
+"1225","MTC","Full feedback","Russia",2065,274.205574529283
+"1226","MTC","Full feedback","Russia",2070,250.390269721214
+"1227","MTC","Full feedback","Russia",2075,221.840613703141
+"1228","MTC","Full feedback","Russia",2080,185.048617428866
+"1229","MTC","Full feedback","Russia",2085,146.054384139099
+"1230","MTC","Full feedback","Russia",2090,109.58702257733
+"1231","MTC","Full feedback","Russia",2095,80.8551365734624
+"1232","MTC","Full feedback","Russia",2100,50.1389811779243
+"1233","MTC","Full feedback","South Africa",1975,27.771398
+"1234","MTC","Full feedback","South Africa",1990,94.92331996
+"1235","MTC","Full feedback","South Africa",2005,123.94225391
+"1236","MTC","Full feedback","South Africa",2010,136.33075788
+"1237","MTC","Full feedback","South Africa",2015,135.698134215
+"1238","MTC","Full feedback","South Africa",2020,141.702392442168
+"1239","MTC","Full feedback","South Africa",2025,153.914163440201
+"1240","MTC","Full feedback","South Africa",2030,156.529652621549
+"1241","MTC","Full feedback","South Africa",2035,152.917062771476
+"1242","MTC","Full feedback","South Africa",2040,147.598166790724
+"1243","MTC","Full feedback","South Africa",2045,140.644723666535
+"1244","MTC","Full feedback","South Africa",2050,133.976077029736
+"1245","MTC","Full feedback","South Africa",2055,128.464508619408
+"1246","MTC","Full feedback","South Africa",2060,124.015065553215
+"1247","MTC","Full feedback","South Africa",2065,119.49508250117
+"1248","MTC","Full feedback","South Africa",2070,113.385451637674
+"1249","MTC","Full feedback","South Africa",2075,104.508952987098
+"1250","MTC","Full feedback","South Africa",2080,90.2874767914173
+"1251","MTC","Full feedback","South Africa",2085,76.664119613752
+"1252","MTC","Full feedback","South Africa",2090,66.0543566170394
+"1253","MTC","Full feedback","South Africa",2095,59.3779977435551
+"1254","MTC","Full feedback","South Africa",2100,53.7766024210592
+"1255","MTC","Full feedback","South America_Northern",1975,9.7481497731868
+"1256","MTC","Full feedback","South America_Northern",1990,28.8693404644
+"1257","MTC","Full feedback","South America_Northern",2005,39.47621895372
+"1258","MTC","Full feedback","South America_Northern",2010,51.7602612426
+"1259","MTC","Full feedback","South America_Northern",2015,41.4814003547
+"1260","MTC","Full feedback","South America_Northern",2020,42.84749866352
+"1261","MTC","Full feedback","South America_Northern",2025,45.740143681456
+"1262","MTC","Full feedback","South America_Northern",2030,46.978434749129
+"1263","MTC","Full feedback","South America_Northern",2035,47.291843330988
+"1264","MTC","Full feedback","South America_Northern",2040,48.397731480234
+"1265","MTC","Full feedback","South America_Northern",2045,48.750750173187
+"1266","MTC","Full feedback","South America_Northern",2050,49.709695111108
+"1267","MTC","Full feedback","South America_Northern",2055,50.8450959789383
+"1268","MTC","Full feedback","South America_Northern",2060,51.592885387589
+"1269","MTC","Full feedback","South America_Northern",2065,50.926953131458
+"1270","MTC","Full feedback","South America_Northern",2070,49.4255439305385
+"1271","MTC","Full feedback","South America_Northern",2075,46.3377823255555
+"1272","MTC","Full feedback","South America_Northern",2080,41.4649148240555
+"1273","MTC","Full feedback","South America_Northern",2085,34.089111314622
+"1274","MTC","Full feedback","South America_Northern",2090,27.190903149506
+"1275","MTC","Full feedback","South America_Northern",2095,21.1034849101551
+"1276","MTC","Full feedback","South America_Northern",2100,15.3887729443717
+"1277","MTC","Full feedback","South America_Southern",1975,8.50818418
+"1278","MTC","Full feedback","South America_Southern",1990,22.625942426
+"1279","MTC","Full feedback","South America_Southern",2005,39.51866137
+"1280","MTC","Full feedback","South America_Southern",2010,52.95040856
+"1281","MTC","Full feedback","South America_Southern",2015,60.850912912
+"1282","MTC","Full feedback","South America_Southern",2020,68.24940573601
+"1283","MTC","Full feedback","South America_Southern",2025,75.04257070775
+"1284","MTC","Full feedback","South America_Southern",2030,78.24408424945
+"1285","MTC","Full feedback","South America_Southern",2035,79.02680800138
+"1286","MTC","Full feedback","South America_Southern",2040,78.5133412103
+"1287","MTC","Full feedback","South America_Southern",2045,76.878870050668
+"1288","MTC","Full feedback","South America_Southern",2050,75.174378272838
+"1289","MTC","Full feedback","South America_Southern",2055,75.0845705031895
+"1290","MTC","Full feedback","South America_Southern",2060,74.3671578109342
+"1291","MTC","Full feedback","South America_Southern",2065,70.9434427801977
+"1292","MTC","Full feedback","South America_Southern",2070,65.8705265217829
+"1293","MTC","Full feedback","South America_Southern",2075,57.3284174304988
+"1294","MTC","Full feedback","South America_Southern",2080,45.449585703905
+"1295","MTC","Full feedback","South America_Southern",2085,31.2421046844141
+"1296","MTC","Full feedback","South America_Southern",2090,18.2972221953855
+"1297","MTC","Full feedback","South America_Southern",2095,7.95232857633717
+"1298","MTC","Full feedback","South America_Southern",2100,-1.61172070830331
+"1299","MTC","Full feedback","South Asia",1975,2.818297747
+"1300","MTC","Full feedback","South Asia",1990,7.2582170591
+"1301","MTC","Full feedback","South Asia",2005,18.83679277
+"1302","MTC","Full feedback","South Asia",2010,24.707623982
+"1303","MTC","Full feedback","South Asia",2015,36.469101552
+"1304","MTC","Full feedback","South Asia",2020,48.3772039036
+"1305","MTC","Full feedback","South Asia",2025,55.7052403871
+"1306","MTC","Full feedback","South Asia",2030,62.11869104408
+"1307","MTC","Full feedback","South Asia",2035,66.69481462589
+"1308","MTC","Full feedback","South Asia",2040,72.76346479569
+"1309","MTC","Full feedback","South Asia",2045,80.52165425549
+"1310","MTC","Full feedback","South Asia",2050,90.26480492416
+"1311","MTC","Full feedback","South Asia",2055,101.9696047983
+"1312","MTC","Full feedback","South Asia",2060,114.62704842717
+"1313","MTC","Full feedback","South Asia",2065,123.084497775767
+"1314","MTC","Full feedback","South Asia",2070,129.677258771249
+"1315","MTC","Full feedback","South Asia",2075,134.379032754455
+"1316","MTC","Full feedback","South Asia",2080,136.757765838461
+"1317","MTC","Full feedback","South Asia",2085,137.647485889737
+"1318","MTC","Full feedback","South Asia",2090,137.879589127454
+"1319","MTC","Full feedback","South Asia",2095,140.478352632051
+"1320","MTC","Full feedback","South Asia",2100,142.214512217611
+"1321","MTC","Full feedback","South Korea",1975,10.17538742
+"1322","MTC","Full feedback","South Korea",1990,72.648459781452
+"1323","MTC","Full feedback","South Korea",2005,144.6826681645
+"1324","MTC","Full feedback","South Korea",2010,169.797657005
+"1325","MTC","Full feedback","South Korea",2015,181.4748056803
+"1326","MTC","Full feedback","South Korea",2020,179.5032553615
+"1327","MTC","Full feedback","South Korea",2025,180.310071873283
+"1328","MTC","Full feedback","South Korea",2030,173.1406216193
+"1329","MTC","Full feedback","South Korea",2035,160.293834064822
+"1330","MTC","Full feedback","South Korea",2040,145.8289812694
+"1331","MTC","Full feedback","South Korea",2045,129.4699930388
+"1332","MTC","Full feedback","South Korea",2050,113.6994476577
+"1333","MTC","Full feedback","South Korea",2055,100.62331453383
+"1334","MTC","Full feedback","South Korea",2060,89.286411990206
+"1335","MTC","Full feedback","South Korea",2065,78.80366123118
+"1336","MTC","Full feedback","South Korea",2070,69.738559943567
+"1337","MTC","Full feedback","South Korea",2075,60.4674833424631
+"1338","MTC","Full feedback","South Korea",2080,52.0314142552852
+"1339","MTC","Full feedback","South Korea",2085,44.3355762018847
+"1340","MTC","Full feedback","South Korea",2090,38.8579673860471
+"1341","MTC","Full feedback","South Korea",2095,35.3952614108611
+"1342","MTC","Full feedback","South Korea",2100,32.5476164070103
+"1343","MTC","Full feedback","Southeast Asia",1975,36.019167667
+"1344","MTC","Full feedback","Southeast Asia",1990,119.77503881152
+"1345","MTC","Full feedback","Southeast Asia",2005,231.68605613198
+"1346","MTC","Full feedback","Southeast Asia",2010,280.46508195
+"1347","MTC","Full feedback","Southeast Asia",2015,324.34506355301
+"1348","MTC","Full feedback","Southeast Asia",2020,383.294188193968
+"1349","MTC","Full feedback","Southeast Asia",2025,416.34536093047
+"1350","MTC","Full feedback","Southeast Asia",2030,440.699219535806
+"1351","MTC","Full feedback","Southeast Asia",2035,450.707452565249
+"1352","MTC","Full feedback","Southeast Asia",2040,454.666058899054
+"1353","MTC","Full feedback","Southeast Asia",2045,450.623479992138
+"1354","MTC","Full feedback","Southeast Asia",2050,444.059677509817
+"1355","MTC","Full feedback","Southeast Asia",2055,443.762085684113
+"1356","MTC","Full feedback","Southeast Asia",2060,442.305882817017
+"1357","MTC","Full feedback","Southeast Asia",2065,428.894621867488
+"1358","MTC","Full feedback","Southeast Asia",2070,407.417126286963
+"1359","MTC","Full feedback","Southeast Asia",2075,370.473338853665
+"1360","MTC","Full feedback","Southeast Asia",2080,317.294479097726
+"1361","MTC","Full feedback","Southeast Asia",2085,263.71081593348
+"1362","MTC","Full feedback","Southeast Asia",2090,219.15785566285
+"1363","MTC","Full feedback","Southeast Asia",2095,189.571156471549
+"1364","MTC","Full feedback","Southeast Asia",2100,164.253809117928
+"1365","MTC","Full feedback","Taiwan",1975,7.076291741
+"1366","MTC","Full feedback","Taiwan",1990,35.941409672
+"1367","MTC","Full feedback","Taiwan",2005,79.149506779
+"1368","MTC","Full feedback","Taiwan",2010,79.344858342
+"1369","MTC","Full feedback","Taiwan",2015,78.214655605
+"1370","MTC","Full feedback","Taiwan",2020,80.28804168517
+"1371","MTC","Full feedback","Taiwan",2025,81.41969970612
+"1372","MTC","Full feedback","Taiwan",2030,78.99314988241
+"1373","MTC","Full feedback","Taiwan",2035,74.8901102035
+"1374","MTC","Full feedback","Taiwan",2040,70.647802208911
+"1375","MTC","Full feedback","Taiwan",2045,65.557411786154
+"1376","MTC","Full feedback","Taiwan",2050,60.6697059247189
+"1377","MTC","Full feedback","Taiwan",2055,56.5436932234829
+"1378","MTC","Full feedback","Taiwan",2060,52.6792843262177
+"1379","MTC","Full feedback","Taiwan",2065,49.4356564749716
+"1380","MTC","Full feedback","Taiwan",2070,45.5653744573551
+"1381","MTC","Full feedback","Taiwan",2075,39.9981115134126
+"1382","MTC","Full feedback","Taiwan",2080,32.2415953476831
+"1383","MTC","Full feedback","Taiwan",2085,25.3153925168488
+"1384","MTC","Full feedback","Taiwan",2090,20.1852695634857
+"1385","MTC","Full feedback","Taiwan",2095,16.9874229454347
+"1386","MTC","Full feedback","Taiwan",2100,14.3384314827951
+"1387","MTC","Full feedback","USA",1975,502.8842925
+"1388","MTC","Full feedback","USA",1990,1382.2111041
+"1389","MTC","Full feedback","USA",2005,1623.641645
+"1390","MTC","Full feedback","USA",2010,1513.1264935
+"1391","MTC","Full feedback","USA",2015,1414.8955447
+"1392","MTC","Full feedback","USA",2020,1423.98098009483
+"1393","MTC","Full feedback","USA",2025,1427.49124229656
+"1394","MTC","Full feedback","USA",2030,1375.58303456655
+"1395","MTC","Full feedback","USA",2035,1339.54289164321
+"1396","MTC","Full feedback","USA",2040,1253.62054712046
+"1397","MTC","Full feedback","USA",2045,1160.61459699834
+"1398","MTC","Full feedback","USA",2050,1080.16418440485
+"1399","MTC","Full feedback","USA",2055,1015.21810211305
+"1400","MTC","Full feedback","USA",2060,950.715307681172
+"1401","MTC","Full feedback","USA",2065,870.471474252866
+"1402","MTC","Full feedback","USA",2070,803.782455314992
+"1403","MTC","Full feedback","USA",2075,708.591596779877
+"1404","MTC","Full feedback","USA",2080,591.689584703917
+"1405","MTC","Full feedback","USA",2085,436.66510762083
+"1406","MTC","Full feedback","USA",2090,305.173732146882
+"1407","MTC","Full feedback","USA",2095,216.87418769025
+"1408","MTC","Full feedback","USA",2100,131.06421165452

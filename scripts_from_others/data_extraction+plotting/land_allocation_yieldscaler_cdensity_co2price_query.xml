@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+
+   <aQuery>
+      <query title="land-allocation">
+         <axis1 name="LandLeaf">LandLeaf[@name]</axis1>
+         <axis2 name="Year">land-allocation[@year]</axis2>
+         <xPath buildList="true" dataName="LandLeaf" group="false" sumAll="false">/LandNode[@name='root' or @type='LandNode' (:collapse:)]//land-allocation/text()</xPath>
+      <comments/>
+      </query>
+   </aQuery>
+
+   <aQuery>
+      <query title="yield-scaler">
+         <axis1 name="technology">technology</axis1>
+         <axis2 name="Year">technology</axis2>
+         <xPath buildList="true" dataName="yield-scaler" group="false" sumAll="false">*[@type='sector' and (local-name()='AgSupplySector')]/
+            *[@type='subsector']/*[@type='technology']/yield-scaler/text()</xPath>
+         <comments/>
+      </query>
+   </aQuery>
+
+   <aQuery>
+      <query title="above-ground-carbon-density">
+         <axis1 name="LandLeaf">LandLeaf[@name]</axis1>
+         <axis2 name="Year">above-ground-carbon-density[@year]</axis2>
+         <xPath buildList="true" dataName="LandLeaf" group="false" sumAll="false">/LandNode[@name='root' or @type='LandNode' (:collapse:)]//
+            above-ground-carbon-density/text()</xPath>
+         <comments/>
+      </query>
+   </aQuery>
+
+   <aQuery>
+      <query title="below-ground-carbon-density">
+         <axis1 name="LandLeaf">LandLeaf[@name]</axis1>
+         <axis2 name="Year">below-ground-carbon-density[@year]</axis2>
+         <xPath buildList="true" dataName="LandLeaf" group="false" sumAll="false">/LandNode[@name='root' or @type='LandNode' (:collapse:)]//
+            below-ground-carbon-density/text()</xPath>
+         <comments/>
+      </query>
+   </aQuery>
+
+   <queryGroup name="policy">
+        <marketQuery title="CO2 prices">
+            <axis1 name="market">market</axis1>
+            <axis2 name="Year">market</axis2>
+            <xPath buildList="true" dataName="price" group="false" sumAll="false">Marketplace/market[true() and contains(@name,'CO2')]/price/node()</xPath>
+            <comments/>
+        </marketQuery>
+   </queryGroup>
+
+   <queryGroup name="CO2 emissions">
+            <emissionsQueryBuilder title="CO2 emissions by region">
+                <axis1 name="region">region</axis1>
+                <axis2 name="Year">emissions</axis2>
+                <xPath buildList="true" dataName="emissions" group="false" sumAll="false">*[@type = 'sector' (:collapse:) or @type = 'resource' (:collapse:)](: / *[@type = 'subresource' (: collapse :)] :)//*[((@name='CO2'))]/emissions/node()</xPath>
+                <comments/>
+            </emissionsQueryBuilder>
+    </queryGroup>        
+            
+    <queryGroup name="CO2 emissions more">        
+            <emissionsQueryBuilder title="CO2 emissions by sector">
+                <axis1 name="sector">sector</axis1>
+                <axis2 name="Year">emissions</axis2>
+                <xPath buildList="true" dataName="emissions" group="false" sumAll="false">*[@type='sector']//CO2/emissions/node()</xPath>
+                <comments/>
+            </emissionsQueryBuilder>
+   </queryGroup> 
+
+</queries>

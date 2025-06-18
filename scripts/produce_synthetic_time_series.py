@@ -6,7 +6,7 @@ from utility_dataframes import read_file_into_dataframe, write_dataframe_to_fwf
 def produce_synthetic_time_series(inputs):
     """ 
     Produces a synthetic set of time series using random numbers to introduce perturbations to the time series in a given file. Each new
-    synthetic time series is output as a .pdf or .csv file.
+    synthetic time series is output as a .dat or .csv file.
 
     Parameters:
         inputs: List with two items. The first item is the name of the file containing the base time series. 
@@ -27,13 +27,13 @@ def produce_synthetic_time_series(inputs):
         multipliers = base_multipliers[index] + random_multipliers
         df_new[columns] = df[columns].multiply(multipliers, axis='index')
         if file.endswith('.csv'):
-            new_file = file.replace('.csv', f'_{index+1}.csv')
+            new_file = file.replace('.csv', f'_{index+2}.csv')
             df_new.to_csv(new_file, index=False)
         else:
             if '.dat' in file:
-                new_file = file.replace('.dat', f'_{index+1}.dat')
+                new_file = file.replace('.dat', f'_{index+2}.dat')
             else:
-                new_file = file + f'_{index+1}'
+                new_file = file + f'_{index+2}'
             write_dataframe_to_fwf(new_file, df_new)
     end_time = time.time()
     elapsed_time = end_time - start_time

@@ -277,7 +277,7 @@ if __name__ == '__main__':
     # Run this script together with the input JSON file(s) on the command line.
     start_time_total = time.time()
     if len(sys.argv) < 2:
-        print('Usage: plot_spatial_data.py `path/to/json/input/file(s)\'')
+        print('Usage: python extract_time_series_E3SM_h0.py `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries. Each block in a JSON file represents one time series output file.

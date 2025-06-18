@@ -9,13 +9,19 @@ num_contour_levels_default = 20
 axis_label_size_default = 24
 tick_label_size_default = 20
 legend_label_size_default = 14
+legend_num_columns_default = 1
 legend_on_default = True
+legend_place_outside_default = False
 linewidth_default = 2
 produce_png_default = False
 use_latex_default = False
-bbox_inches_default = None
+bbox_inches_default = 'tight'
+
 """ Hex codes of Matplotlib Tableau color palette: blue, orange, green, red, purple, brown, pink, gray, olive, cyan. """
 plot_colors_default = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+""" XKCD colors (https://xkcd.com/color/rgb/): teal, magenta, sea green, bright pink, dark orange, goldenrod, forest, dirt, coral, baby blue, peach. """
+plot_colors_default.extend(['#029386', '#c20078', '#53fca1', '#fe01b1', '#c65102', '#fac205', '#0b5509', '#8a6e45', '#fc5a50', '#a2cffe', '#ffb07c'])
+
 """ Tuples for different line styles in plots. """
 linestyle_tuples_default = [
     ('solid',                 (0, ())),
@@ -30,6 +36,9 @@ linestyle_tuples_default = [
     ('dashdotdotted',         (0, (3, 5, 1, 5, 1, 5))),
     ('loosely dashdotdotted', (0, (3, 10, 1, 10, 1, 10))),
     ('densely dashdotdotted', (0, (3, 1, 1, 1, 1, 1)))]
+
+""" Markers (https://matplotlib.org/stable/gallery/lines_bars_and_markers/marker_reference.html). """
+markers_default = ['o', 'v', '^', '<', '>', '8', 's', 'p', '*', 'h', 'H', 'D', 'd', 'P', 'X', '1', '2', '3', '4', '+', 'x', '|']
 
 def create_contour_plot(x, y, z, options):
     """
@@ -99,7 +108,16 @@ def set_figure_options(fig, ax, options):
         plt.rc('font', family='serif', weight='bold')
     legend_on = options.get('legend_on', legend_on_default)
     if legend_on:
-        ax.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, frameon=False, loc='best')
+        legend_num_columns = options.get('legend_num_columns', legend_num_columns_default)
+        legend_place_outside = options.get('legend_place_outside', legend_place_outside_default)
+        if not legend_place_outside:
+            ax.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, frameon=False, loc='best', ncol=legend_num_columns)
+        else:
+            legend_bbox_x = options.get('legend_bbox_x', None)
+            if not legend_bbox_x:
+                legend_bbox_x = 1 + 0.25*legend_num_columns
+            plt.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, 
+                   frameon=False, loc='center right', bbox_to_anchor=(legend_bbox_x, 0.5), ncol=legend_num_columns)
     else:
         ax.legend().set_visible(False)
     ax.set_xlabel(options['x_label'], fontsize=options.get('x_label_size', axis_label_size_default))

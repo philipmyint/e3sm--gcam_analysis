@@ -2,67 +2,60 @@
     {
         "netcdf_files": "./../2025_DiVittorio_et_al/control_spatial_data_elm.nc",
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_control",
-        "use_latex": true,
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat"
+        "use_latex": true
     },
     {
         "netcdf_files": "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc",
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback",
-        "use_latex": true,
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat"
+        "use_latex": true
     },
     {
         "netcdf_files": ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc"],
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_single_absolute_difference",
-        "use_latex": true,
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat"
+        "use_latex": true
     },
     {
         "netcdf_files": ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc"],
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_single_percent_difference",
         "use_latex": true,
-        "plot_type_for_2_sets": "percent_difference",
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat"
+        "plot_type_for_2_sets": "percent_difference"
     },
     {
         "netcdf_files": [
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc"],
-            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_1.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_1.nc"],
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm_2.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_2.nc"],
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm_3.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_3.nc"],
-            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_4.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_4.nc"]
+            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_4.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_4.nc"],
+            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_5.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_5.nc"]
         ],
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_absolute_difference",
         "plot_type_for_2_sets": "absolute_difference",
-        "use_latex": true,
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat"
+        "use_latex": true
     },
     {
         "netcdf_files": [
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc"],
-            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_1.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_1.nc"],
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm_2.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_2.nc"],
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm_3.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_3.nc"],
-            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_4.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_4.nc"]
+            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_4.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_4.nc"],
+            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_5.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_5.nc"]
         ],
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_percent_difference",
         "plot_type_for_2_sets": "percent_difference",
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat",
         "use_latex": true,
         "stippling_on": true
     },
     {
         "netcdf_files": [
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm.nc"],
-            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_1.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_1.nc"],
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm_2.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_2.nc"],
             ["./../2025_DiVittorio_et_al/control_spatial_data_elm_3.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_3.nc"],
-            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_4.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_4.nc"]
+            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_4.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_4.nc"],
+            ["./../2025_DiVittorio_et_al/control_spatial_data_elm_5.nc", "./../2025_DiVittorio_et_al/full_feedback_spatial_data_elm_5.nc"]
         ],
         "plot_directory": "./../2025_DiVittorio_et_al/spatial_plots/elm_full_feedback_minus_control_ensemble_separate_plots",
         "plot_type_for_2_sets": "separate_plots",
         "use_latex": true,
-        "stippling_on": true,
-        "p_value_file": "./../2025_DiVittorio_et_al/spatial_plots/elm_p_values.dat"
+        "stippling_on": true
     }
 ]

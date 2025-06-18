@@ -148,21 +148,22 @@ def move_columns_next_to_each_other_in_dataframe(df, column1, column2):
     df = df.loc[:, ~df.columns.duplicated()]
     return df
 
-def perform_ttest(df, columns_set_1, columns_set_2):
+def perform_ttest(df, columns_set_1, columns_set_2, equal_var=False):
     """ 
     Performs a t-test for the means of two (presumed) independent data sets.
 
     Parameters:
         df: Pandas DataFrame containing the columns for both data sets.
         columns_set_1: List of columns in the DataFrame for the first data set.
-        columsn_set_2: List of columns in the DataFrame for the second data set.
+        columns_set_2: List of columns in the DataFrame for the second data set.
+        equal_var: Boolean that indicates if the two samples are characterized by the same variance.
         
     Returns:
         The p-value produced by the t-test.
     """
     set_1 = df[columns_set_1]
     set_2 = df[columns_set_2]
-    ttest = stats.ttest_ind(set_1, set_2)
+    ttest = stats.ttest_ind(set_1, set_2, equal_var)
     return ttest.pvalue
 
 def read_file_into_dataframe(file_name, clean_up_df=False):

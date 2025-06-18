@@ -110,7 +110,6 @@ def get_regional_bounds(region):
 
     Returns:
         NumPy array with four numbers, [-min_lon, max_lon, min_lat, max_lat]. If the selected region is not recognized, returns [0, 360, -90, 90].
-
     """
     if region == 'noam':  # North America
         bounds = [-170.25, -45.25, 9.75, 79.75]
@@ -120,7 +119,7 @@ def get_regional_bounds(region):
         bounds = [-125.25, -66.25, 30.25, 49.75]
     elif region == 'conus':  # Continental US (CONUS)
         bounds = [-125.25, -66.25, 23.25, 54.75]
-    elif region == 'columbia':   # Columbia river watershed
+    elif region == 'columbia':   # Columbia River watershed
         bounds = [-126, -108, 40.0, 55.0]
     elif region == 'ceam':  # Central America
         bounds = [-115.25, -80.25, 9.75, 30.25]

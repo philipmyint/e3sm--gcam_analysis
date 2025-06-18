@@ -37,7 +37,7 @@ default_inputs_spatial_data = {'plot_directory': './',
                     'bbox_inches': 'tight',
                     'statistics_panel_size': legend_label_size_default,
                     'p_value_threshold': 0.05,
-                    'p_value_file': None,
+                    'p_value_file': "p_values.dat",
                     'p_value_file_print_only_if_below_threshold': True,
                     'stippling_on': False,
                     'stippling_std_multiple': 2,
@@ -106,6 +106,8 @@ def process_inputs(inputs):
         # Default for the plot names is to call it 'spatial_[var_name]', where '[var_name]' is the name of the variable.
         if not any(key == variable for key in inputs['plot_name'].keys()):
             inputs['plot_name'][variable] = os.path.join(inputs['plot_directory'][variable], 'spatial_' + variable)
+        # Append the plot directory with the name of the p-value file.
+            inputs['p_value_file'][variable] = os.path.join(inputs['plot_directory'][variable], inputs['p_value_file'][variable])
         # Default for the title of a variable is to use the column header for that variable from the Dataset.
         if not any(key == variable for key in inputs['title'].keys()):
             # Replace ^2 with $^2$ in the units for the variable, so that the intended exponent (e.g., m^2) gets rendered correctly.
@@ -132,11 +134,12 @@ def process_inputs(inputs):
 
 def plot_spatial_data_eam(inputs, grid_file):
     """ 
-    Parses a dictionary of inputs (keys are options, values are choices for those options) to create spatial plots for a single variable from E3SM EAM
-    outputs. The data for these spatial plots are stored in NetCDF files specified by the inputs dictionary.
+    Creates spatial plots and perform statistical analysis for a single variable from E3SM EAM outputs. 
+    The data for these spatial plots are stored in NetCDF files specified by the inputs dictionary.
 
     Parameters:
-        input: Dictionary containing the user plotting choice inputs for different options. This dictionary is assumed to be complete (pre-processed).
+        input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
+               This dictionary is assumed to be complete (pre-processed).
         grid_file: Path and name of the grid file for the EAM unstructured mesh.
 
     Returns:
@@ -329,11 +332,12 @@ def plot_spatial_data_eam(inputs, grid_file):
 
 def plot_spatial_data_elm(inputs):
     """ 
-    Parses a dictionary of inputs (keys are options, values are choices for those options) to create spatial plots for a single variable from E3SM ELM
-    outputs. The data for these spatial plots are stored in NetCDF files specified by the inputs dictionary.
+    Creates spatial plots and perform statistical analysis for a single variable from E3SM ELM outputs. 
+    The data for these spatial plots are stored in NetCDF files specified by the inputs dictionary.
 
     Parameters:
-        input: Dictionary containing the user plotting choice inputs for different options. This dictionary is assumed to be complete (pre-processed).
+        input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
+               This dictionary is assumed to be complete (pre-processed).
 
     Returns:
         N/A.
@@ -524,7 +528,7 @@ if __name__ == '__main__':
     # Run this script together with the input JSON file(s) on the command line.
     start_time = time.time()
     if len(sys.argv) < 2:
-        print('Usage: plot_spatial_data.py `path/to/json/input/file(s)\'')
+        print('Usage: python plot_spatial_data.py `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries.

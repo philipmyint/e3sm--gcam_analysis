@@ -24,7 +24,7 @@ def produce_synthetic_spatial_data(inputs):
         variables = ds.data_vars
         for variable in variables:   
             ds[variable] *= random_multipliers[index]
-        new_file = file.replace('.nc', f'_{index+1}.nc')
+        new_file = file.replace('.nc', f'_{index+2}.nc')
         ds.to_netcdf(new_file, mode='w')
     end_time = time.time()
     elapsed_time = end_time - start_time

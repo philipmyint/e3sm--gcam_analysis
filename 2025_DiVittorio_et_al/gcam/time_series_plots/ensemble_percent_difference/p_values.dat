@@ -1,0 +1,7 @@
+set=1, category=Rice, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 2.5031e-09
+set=1, category=Soybean, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 2.1365e-10
+set=1, category=Wheat, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 1.5513e-09
+set=1, category=agricultural energy use, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 4.5561e-07
+set=1, category=construction energy use, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 1.0887e-04
+set=1, category=refining, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 2.8876e-06
+set=1, category=trn_aviation_intl, region=global in ./../2025_DiVittorio_et_al/gcam/time_series_plots/ensemble_percent_difference: 2.3480e-02

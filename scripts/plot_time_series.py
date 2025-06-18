@@ -14,51 +14,52 @@ from utility_functions import check_is_list_of_lists, check_substrings_in_list, 
 from utility_plots import *
 
 """ Dictionary of default input values for time series plots. """
-default_inputs_time_series = {'plot_directory': './',
-                    'calculation_type': 'mean',
-                    'plot_type': 'ensemble_averages',
-                    'plot_percent_difference': False,
-                    'multiplier': 1,
-                    'std_annual_multiplier': 1, 
-                    'std_seasons_multiplier': None,
-                    'std_monthly_multiplier': 1,
-                    'error_bars_alpha': 0.2,
-                    'areas_in_thousands_km2': True,
-                    'start_year': 2015,
-                    'end_year': 2100,
-                    'width': width_default,
-                    'height': height_default,
-                    'x_scale': scale_default,
-                    'y_scale': scale_default,
-                    'x_limits': axis_limits_default,
-                    'y_limits': axis_limits_default,
-                    'x_tick_label_size': tick_label_size_default,
-                    'y_tick_label_size': tick_label_size_default,
-                    'x_label_size': axis_label_size_default,
-                    'y_label_size': axis_label_size_default,
-                    'legend_label_size': legend_label_size_default,
-                    'legend_on': legend_on_default,
-                    'linewidth': linewidth_default,
-                    'plot_colors': plot_colors_default,
-                    'linestyle_tuples': linestyle_tuples_default,
-                    'use_latex': use_latex_default, 
-                    'produce_png': produce_png_default, 
-                    'include_annual_mean_across_all_sets': True,
-                    'include_monthly_mean_across_all_sets': True,
-                    'std_annual_mean_across_all_sets_multiplier': 1,
-                    'std_monthly_mean_across_all_sets_multiplier': 1,
-                    'p_value_file': None,
-                    'p_value_threshold': 0.05,
-                    'p_value_file_print_only_if_below_threshold': True,
-                    'p_value_marker': 'o',
-                    'p_value_marker_size': 6, 
-                    'include_seasons': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
-                    'seasons_to_plot_separately': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
-                    'monthly_time_series_plot': False,
-                    'monthly_time_series_start_year': 2071,
-                    'monthly_time_series_end_year': 2090,
-                    'monthly_time_series_x_limits': axis_limits_default,
-                    'monthly_time_series_y_limits': axis_limits_default
+default_inputs_time_series = {
+    'areas_in_thousands_km2': True,
+    'end_year': 2100,
+    'error_bars_alpha': 0.2,
+    'height': height_default,
+    'include_annual_mean_across_all_sets': True,
+    'include_monthly_mean_across_all_sets': True,
+    'include_seasons': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
+    'legend_label_size': legend_label_size_default,
+    'legend_on': legend_on_default,
+    'linestyle_tuples': linestyle_tuples_default,
+    'linewidth': linewidth_default,
+    'monthly_aggregation_type': 'mean',
+    'monthly_time_series_plot': False,
+    'monthly_time_series_start_year': 2071,
+    'monthly_time_series_end_year': 2090,
+    'monthly_time_series_x_limits': axis_limits_default,
+    'monthly_time_series_y_limits': axis_limits_default,
+    'multiplier': 1,
+    'p_value_file': 'p_values.dat',
+    'p_value_file_print_only_if_below_threshold': True,
+    'p_value_marker': 'o',
+    'p_value_marker_size': 6, 
+    'p_value_threshold': 0.05,
+    'plot_colors': plot_colors_default,
+    'plot_directory': './',
+    'plot_percent_difference': False,
+    'plot_type': 'ensemble_averages',
+    'produce_png': produce_png_default, 
+    'seasons_to_plot_separately': {'MAM': False, 'JJA': False, 'SON': False, 'DJF': False},
+    'start_year': 2015,
+    'std_annual_mean_across_all_sets_multiplier': 1,
+    'std_annual_multiplier': 1, 
+    'std_monthly_mean_across_all_sets_multiplier': 1,
+    'std_monthly_multiplier': 1,
+    'std_seasons_multiplier': None,
+    'use_latex': use_latex_default, 
+    'width': width_default,   
+    'x_label_size': axis_label_size_default,
+    'x_limits': axis_limits_default,             
+    'x_scale': scale_default,   
+    'x_tick_label_size': tick_label_size_default,   
+    'y_label_size': axis_label_size_default,
+    'y_limits': axis_limits_default,
+    'y_scale': scale_default,
+    'y_tick_label_size': tick_label_size_default            
 }
 
 def process_inputs(inputs):
@@ -139,6 +140,8 @@ def process_inputs(inputs):
         # Default for the plot names is to call it 'time_series_[var_name]', where '[var_name]' is the name of the variable.
         if not any(key == variable for key in inputs['plot_name'].keys()):
             inputs['plot_name'][variable] = os.path.join(inputs['plot_directory'][variable], 'time_series_' + variable)
+        # Append the plot directory with the name of the p-value file.
+        inputs['p_value_file'][variable] = os.path.join(inputs['plot_directory'][variable], inputs['p_value_file'][variable])
         # Default for the y_label of a variable is to use the column header for that variable from the DataFrame.
         if not any(key == variable for key in inputs['y_label'].keys()):
             inputs['y_label'][variable] = get_matching_column_in_dataframe(df, variable)
@@ -288,14 +291,15 @@ def read_file_set_into_single_variable_dataframe(output_files, file_set_index, v
 
 def plot_time_series(inputs):
     """ 
-    Parses a dictionary of inputs (keys are options, values are choices for those options) to create time series plots for a single variable. 
+    Create time series plots and performs statistical analysis for a single variable. 
     Time series plots can be annual, with time presented in years (including seasonal variants that can be plotted separately), or 
     monthly, in which the values that are plotted indicate averages between specified start and end years for each month. 
     Types of plots: 1) Direct plots in which each output file is treated as an individual curve in the time series collection. 2) Ensemble plots in 
     which the files are grouped into sets and averages of each set are plotted. Output files must be specified as a list of lists for ensemble plots.
 
     Parameters:
-        input: Dictionary containing the user plotting choice inputs for different options. This dictionary is assumed to be complete (pre-processed).
+        input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
+               This dictionary is assumed to be complete (pre-processed).
 
     Returns:
         N/A.
@@ -305,50 +309,55 @@ def plot_time_series(inputs):
     variable = inputs['variable']
 
     # Extract all plotting options for both annual and monthly time series plots.
+    areas_in_thousands_km2 = inputs['areas_in_thousands_km2']
+    end_year = inputs['end_year']
+    error_bars_alpha = inputs['error_bars_alpha']
+    height = inputs['height']
+    include_annual_mean_across_all_sets = inputs['include_annual_mean_across_all_sets']
+    include_monthly_mean_across_all_sets = inputs['include_monthly_mean_across_all_sets']
+    include_seasons = inputs['include_seasons']
+    legend_label_size = inputs['legend_label_size']
+    legend_on = inputs['legend_on']
+    linestyle_tuples = inputs['linestyle_tuples']
+    linewidth = inputs['linewidth']
+    monthly_aggregation_type = inputs['monthly_aggregation_type']
+    monthly_time_series_end_year = inputs['monthly_time_series_end_year']
+    monthly_time_series_plot = inputs['monthly_time_series_plot']
+    monthly_time_series_start_year = inputs['monthly_time_series_start_year']
+    monthly_time_series_x_limits = inputs['monthly_time_series_x_limits']
+    monthly_time_series_y_limits = inputs['monthly_time_series_y_limits']
+    multiplier = inputs['multiplier']
     output_files = inputs['output_files']
     output_labels = inputs['output_labels']
-    plot_directory = inputs['plot_directory']
-    plot_name = inputs['plot_name']
-    y_label = inputs['y_label']
-    calculation_type = inputs['calculation_type']
-    plot_type = inputs['plot_type']
-    plot_percent_difference = inputs['plot_percent_difference']
-    multiplier = inputs['multiplier']
-    std_annual_multiplier = inputs['std_annual_multiplier']
-    std_seasons_multiplier = inputs['std_seasons_multiplier']
-    std_monthly_multiplier = inputs['std_monthly_multiplier']
-    error_bars_alpha = inputs['error_bars_alpha']
-    areas_in_thousands_km2 = inputs['areas_in_thousands_km2']
-    start_year = inputs['start_year']
-    end_year = inputs['end_year']
-    width = inputs['width']
-    height = inputs['height']
-    x_scale = inputs['x_scale']
-    y_scale = inputs['y_scale']
-    x_limits = inputs['x_limits']
-    y_limits = inputs['y_limits']
-    x_tick_label_size = inputs['x_tick_label_size']
-    y_tick_label_size = inputs['y_tick_label_size']
-    x_label_size = inputs['x_label_size']
-    y_label_size = inputs['y_label_size']
-    legend_on = inputs['legend_on']
-    legend_label_size = inputs['legend_label_size']
-    linewidth = inputs['linewidth']
-    plot_colors = inputs['plot_colors']
-    linestyle_tuples = inputs['linestyle_tuples']
-    use_latex = inputs['use_latex']
-    produce_png = inputs['produce_png']
-    include_seasons = inputs['include_seasons']
-    seasons_to_plot_separately = inputs['seasons_to_plot_separately']
-    include_annual_mean_across_all_sets = inputs['include_annual_mean_across_all_sets']
-    std_annual_mean_across_all_sets_multiplier = inputs['std_annual_mean_across_all_sets_multiplier']
-    include_monthly_mean_across_all_sets = inputs['include_monthly_mean_across_all_sets']
-    std_monthly_mean_across_all_sets_multiplier = inputs['std_monthly_mean_across_all_sets_multiplier']
-    p_value_threshold = inputs['p_value_threshold']
     p_value_file = inputs['p_value_file']
+    p_value_threshold = inputs['p_value_threshold']
     p_value_file_print_only_if_below_threshold = inputs['p_value_file_print_only_if_below_threshold']
     p_value_marker = inputs['p_value_marker']
     p_value_marker_size = inputs['p_value_marker_size']
+    plot_colors = inputs['plot_colors']
+    plot_directory = inputs['plot_directory']
+    plot_name = inputs['plot_name']
+    plot_percent_difference = inputs['plot_percent_difference']
+    plot_type = inputs['plot_type']
+    produce_png = inputs['produce_png']
+    seasons_to_plot_separately = inputs['seasons_to_plot_separately']
+    start_year = inputs['start_year']
+    std_annual_mean_across_all_sets_multiplier = inputs['std_annual_mean_across_all_sets_multiplier']
+    std_annual_multiplier = inputs['std_annual_multiplier']
+    std_monthly_mean_across_all_sets_multiplier = inputs['std_monthly_mean_across_all_sets_multiplier']
+    std_monthly_multiplier = inputs['std_monthly_multiplier']
+    std_seasons_multiplier = inputs['std_seasons_multiplier']
+    use_latex = inputs['use_latex']
+    width = inputs['width']
+    x_label_size = inputs['x_label_size']
+    x_limits = inputs['x_limits']
+    x_scale = inputs['x_scale']
+    x_tick_label_size = inputs['x_tick_label_size']
+    y_label = inputs['y_label']
+    y_label_size = inputs['y_label_size']
+    y_limits = inputs['y_limits']
+    y_scale = inputs['y_scale']
+    y_tick_label_size = inputs['y_tick_label_size']
 
     # For area variables that are in units of km^2, plot them in units of thousands of km^2 if specified to do so.
     if areas_in_thousands_km2 and 'AREA' in variable and 'km^2' in y_label:
@@ -365,19 +374,12 @@ def plot_time_series(inputs):
     if plot_percent_difference:
         y_label = replace_inside_parentheses(y_label, rf'($\%$ difference)')
 
-    # Set the plotting options
+    # Set the plotting options.
     plot_options = dict(width=width, height=height, name=plot_name, x_label='Year', y_label=fr'{y_label}')
     plot_options.update(zip(['x_scale', 'y_scale', 'x_limits', 'y_limits', 'use_latex'], [x_scale, y_scale, x_limits, y_limits, use_latex]))
     plot_options.update(zip(['x_tick_label_size', 'y_tick_label_size', 'legend_on'], [x_tick_label_size, y_tick_label_size, legend_on]))
     plot_options.update(zip(['x_label_size', 'y_label_size', 'legend_label_size'], [x_label_size, y_label_size, legend_label_size]))
     plot_options.update(zip(['produce_png'], [produce_png]))
-
-    # Get plotting options relevant only to the monthly time series.
-    monthly_time_series_plot = inputs['monthly_time_series_plot']
-    monthly_time_series_start_year = inputs['monthly_time_series_start_year']
-    monthly_time_series_end_year = inputs['monthly_time_series_end_year']
-    monthly_time_series_x_limits = inputs['monthly_time_series_x_limits']
-    monthly_time_series_y_limits = inputs['monthly_time_series_y_limits']
 
     # Use LaTeX fonts for figures and set font size of tick labels.
     if use_latex:
@@ -418,9 +420,9 @@ def plot_time_series(inputs):
 
             # Time series data can be either averaged or summed over each month of the year.
             df, column = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=True)
-            if calculation_type == 'mean':
+            if monthly_aggregation_type == 'mean':
                 y = df.groupby('Year', as_index=False).mean()[column]
-            elif calculation_type == 'sum':
+            elif monthly_aggregation_type == 'sum':
                 # Update the labels accordingly if a sum.
                 y = df.groupby('Year', as_index=False).sum()[column]
                 plot_options['y_label'] = y_label.replace('/month', '/year')
@@ -444,12 +446,12 @@ def plot_time_series(inputs):
             df_all_annual_time_series = pd.concat([df_all_annual_time_series, y_series], axis=1)
 
             # Add time series for one or more seasonal averages if specified to do so.
-            if calculation_type == 'mean' and any(include_seasons.values()):
+            if monthly_aggregation_type == 'mean' and any(include_seasons.values()):
                 reference_data = plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=column, 
                                               reference_data=reference_data, file_or_file_set_index=file_index)
 
             # Create a separate time series plot for the seasonal averages if specified to do so. Set name of this seasons-only plot accordingly.
-            if calculation_type == 'mean' and any(seasons_to_plot_separately.values()):
+            if monthly_aggregation_type == 'mean' and any(seasons_to_plot_separately.values()):
                 reference_data = plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth,
                                                columns=column, reference_data=reference_data, file_or_file_set_index=file_index)
                 plot_options['name'] = plot_name + '_seasons'   
@@ -521,12 +523,12 @@ def plot_time_series(inputs):
 
             # Calculate the mean over all files in this set. Time series data can be either averaged or summed over each month of the year.
             df, columns = read_file_set_into_single_variable_dataframe(output_files, file_set_index, variable, start_year, end_year, multiplier)
-            if calculation_type == 'mean':
+            if monthly_aggregation_type == 'mean':
                 y = df.groupby('Year', as_index=False).mean()[columns].mean(axis=1)
                 y_std = df.groupby('Year', as_index=False).mean()[columns].std(axis=1)
                 # Join the annual time series data from the current set into the larger DataFrame.
                 df_all_annual_time_series = pd.concat([df_all_annual_time_series, df.groupby('Year', as_index=False).mean()], axis=1)
-            elif calculation_type == 'sum':
+            elif monthly_aggregation_type == 'sum':
                 y = df.groupby('Year', as_index=False).sum()[columns].mean(axis=1)
                 y_std = df.groupby('Year', as_index=False).sum()[columns].std(axis=1)
                 # Update the labels accordingly if a sum.
@@ -552,13 +554,13 @@ def plot_time_series(inputs):
                     ax.fill_between(x, y-error, y+error, color=plot_colors[file_set_index], alpha=error_bars_alpha)
             
             # Add time series for one or more seasonal averages if specified to do so.
-            if calculation_type == 'mean' and any(include_seasons.values()):
+            if monthly_aggregation_type == 'mean' and any(include_seasons.values()):
                 plot_seasons(include_seasons, ax, df, x, output_label, line_color, linestyle_tuples, linewidth, columns=columns, 
                              reference_data=reference_data, file_or_file_set_index=file_set_index, std_multiplier=std_seasons_multiplier, 
                              error_bars_alpha=error_bars_alpha)
 
             # Create a separate time series plot for the seasonal averages if specified to do so. Set name of this seasons-only plot accordingly.
-            if calculation_type == 'mean' and any(seasons_to_plot_separately.values()):
+            if monthly_aggregation_type == 'mean' and any(seasons_to_plot_separately.values()):
                 plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, 
                             columns=columns, reference_data=reference_data, file_or_file_set_index=file_set_index, 
                             std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
@@ -672,7 +674,7 @@ if __name__ == '__main__':
     # Run this script together with the input JSON file(s) on the command line.
     start_time = time.time()
     if len(sys.argv) < 2:
-        print('Usage: plot_spatial_data.py `path/to/json/input/file(s)\'')
+        print('Usage: python plot_time_series.py `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries.
