@@ -78,7 +78,7 @@ def process_dataframe(df):
 
 def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type, region):
     """ 
-    Extracts the specified variables from an E3SM-generated NetCDF file into a Pandas DataFrame and performs the indicated lat/lon aggregation.
+    Extracts the specified variables from an E3SM-generated NetCDF h0 file into a Pandas DataFrame and performs the indicated lat/lon aggregation.
     Each NetCDF file contains simulation results for one month in a particular year from either EAM (atmosphere model) or ELM (land model). 
     One choice of aggregation type is to perform an area-weighted mean over the latitude/longitude coordinates for the given month.
 
@@ -203,7 +203,7 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
 def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_substrings, variables, 
                 lat_lon_aggregation_types=None, regions=None, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False):
     """ 
-    Extracts time series data from E3SM-generated h0 NetCDF files in a simulation directory into a Pandas DataFrame and writes it to an output file. 
+    Extracts time series data from E3SM-generated NetCDF h0 files in a simulation directory into a Pandas DataFrame and writes it to an output file. 
     The NetCDF files can be of more than one type (e.g., one set generated from the ELM model and another set from the EAM model in E3SM).
     Each NetCDF file contains simulation results for one month in a particular year.
 

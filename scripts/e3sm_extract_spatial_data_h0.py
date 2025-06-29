@@ -153,4 +153,4 @@ if __name__ == '__main__':
     # Print the total execution time needed to complete all data extraction operations.
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Elapsed time to extract all spatial data outputs specified in {sys.argv[1]}: {elapsed_time:.2f} seconds")
+    print(f"Elapsed time to extract all spatial data outputs: {elapsed_time:.2f} seconds")
