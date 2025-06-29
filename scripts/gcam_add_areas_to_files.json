@@ -1,0 +1,34 @@
+[
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "key_columns": ["scenario", "region", "sector", "year"],
+        "geographical_label": "region",
+        "category_label": "sector",
+        "land_allocation_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed.csv"
+    },
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv",
+        "key_columns": ["scenario", "region", "sector", "year"],
+        "geographical_label": "region",
+        "category_label": "sector",
+        "land_allocation_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed_ensemble.csv"
+    },
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "key_columns": ["scenario", "region", "basin", "landtype", "year"],
+        "geographical_label": "basin",
+        "category_label": "landtype",
+        "land_allocation_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed.csv"
+    },
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "key_columns": ["scenario", "region", "basin", "landtype", "year"],
+        "geographical_label": "basin",
+        "category_label": "landtype",
+        "land_allocation_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed_ensemble.csv"
+    }
+]

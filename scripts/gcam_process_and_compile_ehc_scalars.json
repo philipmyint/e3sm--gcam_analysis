@@ -1,0 +1,22 @@
+[
+    {
+        "input_directories": [
+            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control",
+            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback",
+            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/ag_scaling",
+            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/carbon_scaling"
+        ],
+        "scenarios": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_all_scenarios.csv",
+        "call_standardize_crop_names": true
+    },
+    {
+        "input_directories": [
+            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control",
+            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback"
+        ],
+        "scenarios": ["Control", "Full feedback"],
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "call_standardize_crop_names": true
+    }
+]

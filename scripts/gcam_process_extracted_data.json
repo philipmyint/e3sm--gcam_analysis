@@ -1,0 +1,31 @@
+[
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed.csv",
+        "columns_to_drop": ["Unnamed: 0", "Units"],
+        "columns_to_split": {"landleaf": ["landtype", "basin"]},
+        "key_columns": ["scenario", "region", "basin", "landtype", "year"],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_standardize_crop_names": true
+    },
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "columns_to_drop": ["Unnamed: 0", "Units"],
+        "key_columns": ["scenario", "region", "sector", "year"],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
+        "call_standardize_crop_names": true
+    },
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors_processed.csv",
+        "columns_to_drop": ["Unnamed: 0", "Units"],
+        "key_columns": ["scenario", "region", "sector", "year"]
+    },
+    {
+        "input_file": "./../2025_DiVittorio_et_al_gcam/co2_emissions_regions.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/co2_emissions_regions_processed.csv",
+        "columns_to_drop": ["Unnamed: 0", "Units"],
+        "key_columns": ["scenario", "region", "year"]
+    }
+]

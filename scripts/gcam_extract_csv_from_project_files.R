@@ -10,7 +10,7 @@ args = commandArgs(trailingOnly=TRUE)
 num_json_files = length(args)
 if(num_json_files == 0)
 {
-    stop("Usage: Rscript gcam_extract_csv_from_project_files.r `path/to/json/input/file(s)'")
+    stop("Usage: Rscript gcam_extract_csv_from_project_files.R `path/to/json/input/file(s)'")
     geterrmessage()
 }
 

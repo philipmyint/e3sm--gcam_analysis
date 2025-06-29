@@ -1,3 +1,4 @@
+import geopandas as gpd
 import itertools
 import json
 from matplotlib import pyplot as plt
@@ -559,7 +560,21 @@ def plot_time_series(inputs):
 ###---------------Begin execution---------------###
 if __name__ == '__main__':
 
-    # Run this script together with the input JSON file(s) on the command line.
+    shape_file = './../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp'
+    shape_file = './../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/region_boundaries_moirai_combined_3p1_0p5arcmin.shp'
+    data = gpd.read_file(shape_file)
+    print(data.columns.tolist())
+    #print(data['reg_nm'].head(10), data['glu_nm'].head(10), data['reg_id'].head(10))
+    print(data.loc[:, data.columns != 'geometry'])
+
+    code_file = './../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/iac_region_glu_codes.csv'
+    df = read_file_into_dataframe(code_file)
+    basins = df['Basin_name'].unique().tolist()
+    basin_abbreviations = df['basin_abr'].unique().tolist()
+    dictionary = dict(zip(basins, basin_abbreviations))
+    print(dictionary)
+
+    '''# Run this script together with the input JSON file(s) on the command line.
     start_time = time.time()
     if len(sys.argv) < 2:
         print('Usage: python gcam_plot_time_series.py `path/to/json/input/file(s)\'')
@@ -598,4 +613,4 @@ if __name__ == '__main__':
     # Print the total execution time to produce all the plots.
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Elapsed time for producing all plots: {elapsed_time:.2f} seconds")
+    print(f"Elapsed time for producing all plots: {elapsed_time:.2f} seconds")'''

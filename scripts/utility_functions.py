@@ -110,6 +110,26 @@ def create_numpy_array_from_ds(ds, variables, fill_nan_values):
         return array
     else:
         return np_arrays
+    
+def find_between_chars(text, start_char, end_char):
+    """
+    Finds and returns the substring located between the first occurrence of start_char and the first occurrence of end_char after start_char.
+
+    Parameters:
+        text: The string to search within.
+        start_char: The character marking the beginning of the desired substring.
+        end_char: The character marking the end of the desired substring.
+
+    Returns:
+        str or None: The extracted substring if both characters are found in order, otherwise None.
+    """
+    start_index = text.find(start_char)
+    if start_index == -1:
+        return None  # Start character not found
+    end_index = text.find(end_char, start_index + 1)
+    if end_index == -1:
+        return None  # End character not found after start character
+    return text[start_index + 1:end_index]
 
 def get_all_files_in_path(path, file_name_substrings=None, file_extension=None):
     """
