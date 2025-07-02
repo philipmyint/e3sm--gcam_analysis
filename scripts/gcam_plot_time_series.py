@@ -178,7 +178,6 @@ def plot_time_series(inputs):
     p_value_marker_size = inputs['p_value_marker_size']
     p_value_threshold = inputs['p_value_threshold']
     plot_colors = inputs['plot_colors']
-    plot_directory = inputs['plot_directory']
     plot_name = inputs['plot_name']
     plot_percent_difference = inputs['plot_percent_difference']
     plot_type = inputs['plot_type']
@@ -307,7 +306,6 @@ def plot_time_series(inputs):
                             label = f'{category}'
                         if (num_scenarios > 2 and plot_percent_difference) or (num_scenarios > 1 and not plot_percent_difference):
                             label += f' ({scenario})'
-                            print(label)
                     elif num_regions > 1:
                         label = region
                         if (num_scenarios > 2 and plot_percent_difference) or (num_scenarios > 1 and not plot_percent_difference):
@@ -357,7 +355,7 @@ def plot_time_series(inputs):
                         test_data = df[f'scen={scenario_index}_cat={category_index}_reg={region_index}']
                         ttest = stats.ttest_ind(control_data, test_data)
                         label = f'scenario={scenario}, category={category}, region={region}'
-                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
+                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
         elif num_scenarios == 1 and num_regions > 1:
             # If there is only one scenario, but multiple regions for that scenario, perform inter-regional t-tests for each category.
             for category_index, category in enumerate(categories):
@@ -366,7 +364,7 @@ def plot_time_series(inputs):
                     test_data = df[f'scen=0_cat={category_index}_reg={region_index}']
                     ttest = stats.ttest_ind(control_data, test_data)
                     label = f'scenario={scenario}, category={category}, region={region}'
-                    print_p_values(ttest, label, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
+                    print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
     
     # Ensemble plots, in which the ensemble is further subdivided into groups of curves, where each group represents a set of scenarios.
     elif check_is_list_of_lists(scenarios) and plot_type == 'ensemble_averages':
@@ -501,14 +499,14 @@ def plot_time_series(inputs):
                         test_data = df_all_set_means[f'set={scenario_set_index}_cat={category_index}_reg={region_index}']
                         ttest = stats.ttest_ind(control_data, test_data)
                         label = f'set={scenario_set_index}, category={category}, region={region}'
-                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
+                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
                     elif num_scenario_sets == 1 and num_regions > 1:
                         # If there is only one scenario set, but multiple regions for that set, perform inter-regional t-tests for each category.
                         control_data = df_all_set_means[f'set=0_cat={category_index}_reg=0']
                         test_data = df_all_set_means[f'set=0_cat={category_index}_reg={region_index}']
                         ttest = stats.ttest_ind(control_data, test_data)
                         label = f'category={category}, region={region}'
-                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
+                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
 
                     # Perform a t-test to compare the control against the current data set at each time period (each year).
                     if num_scenario_sets > 1 and scenario_set_index > 0:
@@ -545,7 +543,7 @@ def plot_time_series(inputs):
                         error = df_all_set_means[columns].std(axis=1)*std_mean_across_all_data_multiplier
                         ax.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
 
-    # Finalize the time series plot now that all curves for the output file have been processed.
+    # Finalize the time series plot now that all curves have been processed.
     plot_options['name'] = plot_name
     set_figure_options(fig, ax, plot_options)
 
@@ -572,11 +570,10 @@ if __name__ == '__main__':
         with open(input_file) as f:
             inputs.extend(json.load(f))
 
-    # Process each dictionary to produce a list of smaller dictionaries, where each smaller dictionary specifies options for a single plot.
+    # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
     start_time = time.time()
     list_of_inputs = []
     for index in range(len(inputs)):
-        # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
         list_of_inputs.append(process_inputs(inputs[index]))
 
     # Delete all the p-value files before we do any calculations to start a fresh run.

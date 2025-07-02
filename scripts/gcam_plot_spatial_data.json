@@ -1,0 +1,237 @@
+[
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "scenarios": ["Control"],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_ag_commodity_control_only.pdf",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "scenarios": ["Control"],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_vegetation_scalars_control_only.pdf",
+        "category_label": "landtype",
+        "value_label": "vegetation",
+        "title": "vegetation scalars",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed.csv",
+        "scenarios": ["Control"],
+        "categories": ["forest"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_land_allocation_forest_control_only.pdf",
+        "category_label": "landtype",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "title": "Forest area (thousands km$^2$)",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed.csv",
+        "scenarios": ["Control"],
+        "categories": ["crop"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_land_allocation_crop_control_only.pdf",
+        "category_label": "landtype",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "title": "Crop area (thousands km$^2$)",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed_ensemble.csv",
+        "scenarios": ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+        "categories": ["forest"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_land_allocation_forest_mean.pdf",
+        "plot_type": "mean", 
+        "category_label": "landtype",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "title": "Forest area (thousands km$^2$)",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed_ensemble.csv",
+        "scenarios": ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+        "categories": ["forest"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_land_allocation_forest_absolute_difference.pdf",
+        "category_label": "landtype",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "title": "Forest area (thousands km$^2$)",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed_ensemble.csv",
+        "scenarios": ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+        "categories": ["forest"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_land_allocation_forest_percent_difference.pdf",
+        "plot_type": "percent_difference", 
+        "category_label": "landtype",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "title": "Forest area",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_ag_commodity_ensemble_absolute_difference.pdf",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_type": "percent_difference", 
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_ag_commodity_ensemble_percent_difference.pdf",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_vegetation_scalars_ensemble_mean.pdf",
+        "plot_type": "mean", 
+        "category_label": "landtype",
+        "value_label": "vegetation",
+        "title": "vegetation scalars",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_vegetation_scalars_ensemble_absolute_difference.pdf",
+        "category_label": "landtype",
+        "value_label": "vegetation",
+        "title": "vegetation scalars",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_vegetation_scalars_ensemble_percent_difference.pdf",
+        "plot_type": "percent_difference", 
+        "cbar_limits": [-20, 60],
+        "category_label": "landtype",
+        "value_label": "vegetation",
+        "title": "vegetation scalars",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_vegetation_scalars_ensemble_absolute_difference_no_stippling.pdf",
+        "category_label": "landtype",
+        "value_label": "vegetation",
+        "title": "vegetation scalars",
+        "stippling_on": false,
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_vegetation_scalars_ensemble_percent_difference_no_stippling.pdf",
+        "plot_type": "percent_difference", 
+        "cbar_limits": [-20, 60],
+        "category_label": "landtype",
+        "value_label": "vegetation",
+        "title": "vegetation scalars",
+        "stippling_on": false,
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed_processed_ensemble.csv",
+        "scenarios": [
+            ["Control", "Full feedback"],
+            ["Control_2", "Full feedback_2"],
+            ["Control_3", "Full feedback_3"],
+            ["Control_4", "Full feedback_4"],
+            ["Control_5", "Full feedback_5"]
+        ],
+        "categories": ["forest"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
+        "plot_name": "./../2025_DiVittorio_et_al_gcam/spatial_plots/spatial_land_allocation_forest_ensemble_absolute_difference.pdf",
+        "category_label": "landtype",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "title": "Forest area (thousands km$^2$)",
+        "use_latex": true
+    }
+]

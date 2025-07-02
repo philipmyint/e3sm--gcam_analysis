@@ -121,21 +121,27 @@ def set_figure_options(fig, ax, options):
                     legend_x_offset = 1 + 0.45*legend_num_columns
             plt.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, 
                    frameon=False, loc='center right', bbox_to_anchor=(legend_x_offset, 0.5), ncol=legend_num_columns)
-    ax.set_xlabel(options['x_label'], fontsize=options.get('x_label_size', axis_label_size_default))
-    plt.rcParams['xtick.labelsize'] = options.get('x_tick_label_size', tick_label_size_default)
-    ax.set_ylabel(options['y_label'], fontsize=options.get('y_label_size', axis_label_size_default))
-    plt.rcParams['ytick.labelsize'] = options.get('y_tick_label_size', tick_label_size_default)
+            
+    if options.get('x_label', None):
+        ax.set_xlabel(options['x_label'], fontsize=options.get('x_label_size', axis_label_size_default))
+        plt.rcParams['xtick.labelsize'] = options.get('x_tick_label_size', tick_label_size_default)
+    if options.get('y_label', None):
+        ax.set_ylabel(options['y_label'], fontsize=options.get('y_label_size', axis_label_size_default))
+        plt.rcParams['ytick.labelsize'] = options.get('y_tick_label_size', tick_label_size_default)
+
     x_scale = options.get('x_scale', scale_default)
     if x_scale:
         ax.set_xscale(x_scale)
     y_scale = options.get('y_scale', scale_default)
-    ax.set_yscale(y_scale)
+    if y_scale:
+        ax.set_yscale(y_scale)
     x_limits = options.get('x_limits', axis_limits_default)
     if x_limits:
         ax.set_xlim(x_limits)
     y_limits = options.get('y_limits', axis_limits_default)
     if y_limits:
         ax.set_ylim(y_limits)
+
     width = options.get('width', width_default)
     height = options.get('height', height_default)
     fig.set_size_inches(width, height)

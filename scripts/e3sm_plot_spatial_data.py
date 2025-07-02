@@ -17,32 +17,32 @@ from utility_plots import *
 from utility_xarray import calculate_statistics_of_xarray, convert_xarray_to_uxarray
 
 """ Dictionary of default input values for spatial plots. """
-default_inputs_spatial_data = {'plot_directory': './',
-                    'time_calculation': 'mean',
-                    'plot_type_for_2_sets': 'absolute_difference',
-                    'multiplier': 1,
-                    'start_year': 2071,
-                    'end_year': 2090,
-                    'projection': ccrs.Robinson,
-                    'cmap': 'bwr',
-                    'width': width_default,
-                    'height': height_default,
-                    'cbar_on': True,
+default_inputs_spatial_data = {
                     'cbar_label_size': tick_label_size_default,
                     'cbar_limits': None,
+                    'cbar_on': True,
                     'cbar_x_offset': 0.06,
-                    'title_size': axis_label_size_default, 
-                    'use_latex': False,
-                    'produce_png': False,
-                    'bbox_inches': 'tight',
-                    'statistics_panel_size': legend_label_size_default,
-                    'p_value_threshold': 0.05,
+                    'cmap': 'bwr',
+                    'end_year': 2090,
+                    'grid_file': None,
+                    'height': height_default,
+                    'multiplier': 1,
                     'p_value_file': "p_values.dat",
                     'p_value_file_print_only_if_below_threshold': True,
+                    'p_value_threshold': 0.05,
+                    'plot_directory': './',
+                    'plot_type': 'absolute_difference',
+                    'produce_png': False,
+                    'projection': ccrs.Robinson,
+                    'start_year': 2071,
+                    'statistics_panel_size': legend_label_size_default,
+                    'stippling_hatches': 'xxxx',
                     'stippling_on': False,
                     'stippling_std_multiple': 2,
-                    'stippling_hatches': 'xxxx',
-                    'grid_file': None
+                    'time_calculation': 'mean',
+                    'title_size': axis_label_size_default, 
+                    'use_latex': False,
+                    'width': width_default               
 }
 
 def process_inputs(inputs):
@@ -150,33 +150,33 @@ def plot_spatial_data_eam(inputs, grid_file):
     variable = inputs['variable']
 
     # Extract all other plotting options.
-    plot_directory = inputs['plot_directory']
-    multiplier = inputs['multiplier']
-    netcdf_files = inputs['netcdf_files']
-    cmap_color = inputs['cmap']
-    projection = inputs['projection']
-    title = inputs['title'] 
-    title_size = inputs['title_size']
-    width = inputs['width'] 
-    height = inputs['height']
-    plot_name = inputs['plot_name']
-    cbar_on = inputs['cbar_on']
     cbar_label_size = inputs['cbar_label_size']
     cbar_limits = inputs['cbar_limits']
+    cbar_on = inputs['cbar_on']
     cbar_x_offset = inputs['cbar_x_offset']
-    statistics_panel_size = inputs['statistics_panel_size']
-    time_calculation = inputs['time_calculation']
-    plot_type_for_2_sets = inputs['plot_type_for_2_sets']
-    use_latex = inputs['use_latex']
-    start_year = inputs['start_year']
+    cmap_color = inputs['cmap']
     end_year = inputs['end_year']
-    p_value_threshold = inputs['p_value_threshold']
+    height = inputs['height']
+    multiplier = inputs['multiplier']
+    netcdf_files = inputs['netcdf_files']
     p_value_file = inputs['p_value_file']
     p_value_file_print_only_if_below_threshold = inputs['p_value_file_print_only_if_below_threshold']
+    p_value_threshold = inputs['p_value_threshold']
+    plot_directory = inputs['plot_directory']
+    plot_name = inputs['plot_name']
+    plot_type = inputs['plot_type']
+    projection = inputs['projection']
+    statistics_panel_size = inputs['statistics_panel_size']
+    start_year = inputs['start_year']
+    stippling_hatches = inputs['stippling_hatches']
     stippling_on = inputs['stippling_on']
     stippling_std_multiple = inputs['stippling_std_multiple']
-    stippling_hatches = inputs['stippling_hatches']
-
+    time_calculation = inputs['time_calculation']
+    title = inputs['title'] 
+    title_size = inputs['title_size']
+    use_latex = inputs['use_latex']
+    width = inputs['width'] 
+ 
     # Store the grid file in an uxarray Dataset.
     grid = ux.open_grid(grid_file)
 
@@ -223,18 +223,18 @@ def plot_spatial_data_eam(inputs, grid_file):
         df_control_set = df[columns_control_set].mean(axis=1)
         df_test_set = df[columns_test_set].mean(axis=1)
         ttest = stats.ttest_ind(df_control_set, df_test_set)
-        print_p_values(ttest, variable, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
-        if plot_type_for_2_sets == 'absolute_difference':
+        print_p_values(ttest, variable, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+        if plot_type == 'absolute_difference':
             # Plot absolute differences between the two data sets. 
             df = df_test_set - df_control_set
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
-        elif plot_type_for_2_sets == 'percent_difference':
+        elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
             df = ((df_test_set - df_control_set)/(df_control_set.abs() + EPSILON))*100
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
             title = replace_inside_parentheses(title, rf'($\%$ difference)')
-        elif plot_type_for_2_sets == 'separate_plots':
+        elif plot_type == 'separate_plots':
             # Plot the two data sets individually in their own separate plots. 
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_control_set.to_xarray(), grid, variable=variable))
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_test_set.to_xarray(), grid, variable=variable))
@@ -248,7 +248,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         uxds['lat'] = grid.face_lat
         uxds['lon'] = grid.face_lon
         # If there is more than one file per data set and we do not want separate plots, perform a t-test at each individual lat/lon coordinate.
-        if num_files_in_each_set >= 2 and plot_type_for_2_sets != 'separate_plots':
+        if num_files_in_each_set >= 2 and plot_type != 'separate_plots':
             df = uxds.to_dataframe()
             df = df.groupby(['lat', 'lon']).mean()
             da_pvalues = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_test_set, axis=1).fillna(1).to_xarray().fillna(1)
@@ -266,7 +266,7 @@ def plot_spatial_data_eam(inputs, grid_file):
             plt.rc('font', family='serif', weight='bold') 
         
         # If plotting a percent difference and no colorbar limits are specified, set them to be -100 and 100 percent if the max exceeds 100 percent.
-        if plot_type_for_2_sets == 'percent_difference' and not cbar_limits and max > 100:
+        if plot_type == 'percent_difference' and not cbar_limits and max > 100:
             cbar_limits = [-100, 100]
 
         # Plot the uxDataArray and optionally add the title and colorbar.
@@ -296,7 +296,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         if stippling_on:
             plt.rcParams['hatch.linewidth'] = 0.5
             plt.rcParams['hatch.color'] = 'gray'
-            if num_file_sets == 2 and num_files_in_each_set >= 2 and plot_type_for_2_sets != 'separate_plots':
+            if num_file_sets == 2 and num_files_in_each_set >= 2 and plot_type != 'separate_plots':
                 # If there are two data sets and at least two files in each data set so that we will have previously calculated p-values at each
                 # lat/lon coordinate, the stippling will indicate regions where the p-value is less than the designated threshold.
                 mask = da_pvalues <= p_value_threshold
@@ -347,32 +347,32 @@ def plot_spatial_data_elm(inputs):
     variable = inputs['variable']
 
     # Extract all other plotting options.
-    plot_directory = inputs['plot_directory']
-    multiplier = inputs['multiplier']
-    netcdf_files = inputs['netcdf_files']
-    cmap_color = inputs['cmap']
-    projection = inputs['projection']
-    title = inputs['title'] 
-    title_size = inputs['title_size']
-    width = inputs['width'] 
-    height = inputs['height']
-    plot_name = inputs['plot_name']
-    cbar_on = inputs['cbar_on']
     cbar_label_size = inputs['cbar_label_size']
     cbar_limits = inputs['cbar_limits']
+    cbar_on = inputs['cbar_on']
     cbar_x_offset = inputs['cbar_x_offset']
-    statistics_panel_size = inputs['statistics_panel_size']
-    time_calculation = inputs['time_calculation']
-    plot_type_for_2_sets = inputs['plot_type_for_2_sets']
-    use_latex = inputs['use_latex']
-    start_year = inputs['start_year']
+    cmap_color = inputs['cmap']
     end_year = inputs['end_year']
-    p_value_threshold = inputs['p_value_threshold']
+    height = inputs['height']
+    multiplier = inputs['multiplier']
+    netcdf_files = inputs['netcdf_files']
     p_value_file = inputs['p_value_file']
     p_value_file_print_only_if_below_threshold = inputs['p_value_file_print_only_if_below_threshold']
+    p_value_threshold = inputs['p_value_threshold']
+    plot_directory = inputs['plot_directory']
+    plot_name = inputs['plot_name']
+    plot_type = inputs['plot_type']
+    projection = inputs['projection']
+    statistics_panel_size = inputs['statistics_panel_size']
+    start_year = inputs['start_year']
+    stippling_hatches = inputs['stippling_hatches']
     stippling_on = inputs['stippling_on']
     stippling_std_multiple = inputs['stippling_std_multiple']
-    stippling_hatches = inputs['stippling_hatches']
+    time_calculation = inputs['time_calculation']
+    title = inputs['title'] 
+    title_size = inputs['title_size']
+    use_latex = inputs['use_latex']
+    width = inputs['width'] 
 
     # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an xarray DataArray and then add each of these 
     # DataArrays to a single Pandas DataFrame that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
@@ -407,20 +407,20 @@ def plot_spatial_data_elm(inputs):
         columns_control_set = [column for column in df.columns if column.endswith(f'_0')]
         columns_test_set = [column for column in df.columns if column.endswith(f'_1')]
         # If there is more than one file per data set, we can compare the two data sets by performing a t-test at each individual lat/lon coordinate.
-        if num_files_in_each_set >= 2 and stippling_on and plot_type_for_2_sets != 'separate_plots':
+        if num_files_in_each_set >= 2 and stippling_on and plot_type != 'separate_plots':
             # Perform this per-pixel t-test only if we do not want separate plots and if stippling_on is True (want to add p-value markers on plot).
             da_pvalues = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_test_set, axis=1).fillna(1).to_xarray()
         # Perform a t-test to compare the two spatial data sets as whole over all coordinates. Print the results to the console and to an output file.
         df_control_set = df[columns_control_set].mean(axis=1)
         df_test_set = df[columns_test_set].mean(axis=1)
         ttest = stats.ttest_ind(df_control_set, df_test_set)
-        print_p_values(ttest, variable, p_value_threshold, p_value_file, plot_directory, p_value_file_print_only_if_below_threshold)
-        if plot_type_for_2_sets == 'absolute_difference':
+        print_p_values(ttest, variable, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+        if plot_type == 'absolute_difference':
             # Plot absolute differences between the two data sets. 
             df = df_test_set - df_control_set
             da = df.to_xarray()
             dataArrays_to_plot.append(da)
-        elif plot_type_for_2_sets == 'percent_difference':
+        elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
             df = ((df_test_set - df_control_set)/(df_control_set.abs() + EPSILON))*100
@@ -430,7 +430,7 @@ def plot_spatial_data_elm(inputs):
             da = df.to_xarray()
             dataArrays_to_plot.append(da)
             title = replace_inside_parentheses(title, rf'($\%$ difference)')
-        elif plot_type_for_2_sets == 'separate_plots':
+        elif plot_type == 'separate_plots':
             # Plot the two data sets individually in their own separate plots. 
             dataArrays_to_plot.append(df_control_set.to_xarray())
             dataArrays_to_plot.append(df_test_set.to_xarray())
@@ -452,7 +452,7 @@ def plot_spatial_data_elm(inputs):
             plt.rc('font', family='serif', weight='bold') 
         
         # If plotting a percent difference and no colorbar limits are specified, set them to be -100 and 100 percent if the max exceeds 100 percent.
-        if plot_type_for_2_sets == 'percent_difference' and not cbar_limits and max > 100:
+        if plot_type == 'percent_difference' and not cbar_limits and max > 100:
             cbar_limits = [-100, 100]
 
         # Plot the DataArray and optionally add the title and colorbar.
@@ -473,7 +473,7 @@ def plot_spatial_data_elm(inputs):
         if stippling_on:
             plt.rcParams['hatch.linewidth'] = 0.5
             plt.rcParams['hatch.color'] = 'gray'
-            if num_file_sets == 2 and num_files_in_each_set >= 2 and plot_type_for_2_sets != 'separate_plots':
+            if num_file_sets == 2 and num_files_in_each_set >= 2 and plot_type != 'separate_plots':
                 # If there are two data sets and at least two files in each data set so that we will have previously calculated p-values at each
                 # lat/lon coordinate, the stippling will indicate regions where the p-value is less than the designated threshold.
                 mask = da_pvalues <= p_value_threshold

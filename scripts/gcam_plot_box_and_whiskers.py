@@ -13,7 +13,7 @@ from utility_functions import check_is_list_of_lists
 from utility_gcam import gcam_landtype_groups, gcam_landtype_groups_nonstandard, produce_dataframe_for_landtype_group
 from utility_plots import *
 
-""" Dictionary of default input values for box plots. """
+""" Dictionary of default input values for box plots (i.e., box-and-whisker plots). """
 default_inputs_time_series = {
     'basin_label': 'basin',
     'basins': None,
@@ -59,7 +59,7 @@ default_inputs_time_series = {
 
 def process_inputs(inputs):
     """ 
-    Processes a dictionary of inputs (keys are options, values are choices for those options) for creating box plots.
+    Processes a dictionary of inputs (keys are options, values are choices for those options) for creating box (or box-and-whisker) plots.
 
     Parameters:
         inputs: Dictionary containing the user plotting choice inputs for different options. This dictionary may be incomplete or have invalid values.
@@ -223,10 +223,10 @@ def plot_box_and_whiskers(inputs):
         dataframes.append(df_these_basins) 
     df = pd.concat(dataframes)
 
-    # Direct plots, in which each such box plot can include one or more sets of individual (not grouped) curves.
+    # Direct plots, in which each such box plot can include one or more individual (not grouped) data sets.
     if not check_is_list_of_lists(scenarios) or plot_type == 'direct':
         
-        # If scenarios is a list of lists, but we want a direct plot, unpack scenarios into a list of strings, one string for each output file.
+        # If scenarios is a list of lists, but we want a direct plot, unpack scenarios into a list of strings, with one string for each output file.
         if check_is_list_of_lists(scenarios) and plot_type == 'direct':
             scenarios = list(itertools.chain.from_iterable(scenarios))
             # Turn the corresponding plot_colors to list of lists with enough rows to match, then unpack them.
@@ -302,7 +302,7 @@ def plot_box_and_whiskers(inputs):
         plot_options['legend_on'] = False
         sns.boxplot(df, x=x_variable, y=value_label, legend=None, linewidth=linewidth, fliersize=marker_size, fill=fill_boxes)
 
-    # Finalize the box plot now that all curves for the output file have been processed.
+    # Finalize the box plot now that all x-axis variables have been processed.
     plot_options['name'] = plot_name
     set_figure_options(fig, ax, plot_options)
 
@@ -329,11 +329,10 @@ if __name__ == '__main__':
         with open(input_file) as f:
             inputs.extend(json.load(f))
 
-    # Process each dictionary to produce a list of smaller dictionaries, where each smaller dictionary specifies options for a single plot.
+    # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
     start_time = time.time()
     list_of_inputs = []
     for index in range(len(inputs)):
-        # Process the inputs to fill in missing plotting input choices with default values, etc., and add to the list of dictionaries.
         list_of_inputs.append(process_inputs(inputs[index]))
 
     # Create all of the bpx plots in parallel.

@@ -191,7 +191,7 @@ def print_p_values(ttest, variable, p_value_threshold, p_value_file, output_file
         print(f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}')
         if p_value_file and not p_value_file_print_only_if_below_threshold:
             with open(p_value_file, 'a+') as f:
-                f.write(f'{variable} in {output_file_or_label}: {ttest.pvalue:.4e})\n')
+                f.write(f'{variable} in {output_file_or_label}: {ttest.pvalue:.4e}\n')
 
 def replace_inside_parentheses(text, replacement):
     """

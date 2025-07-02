@@ -108,9 +108,9 @@ def produce_dataframe_for_landtype_group(df, category, category_label, value_lab
     df = df[df[category_label].isin(landtypes)]
 
     if mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'mean':
-        df = df.groupby(key_columns).sum()
         landtypes_in_df = [x for x in landtypes if x in df[category_label].unique()]
         num_landtypes_in_df = len(landtypes_in_df)
+        df = df.groupby(key_columns).sum()
         df.loc[:, df.columns != category_label] /= num_landtypes_in_df
         df = df.reset_index()
     elif mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'sum':

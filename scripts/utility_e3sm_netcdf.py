@@ -135,7 +135,7 @@ def get_regional_bounds(region):
         bounds = [-10.25, 30.25, 35.25, 70.25]
     elif region == 'mide':  # Middle East
         bounds = [-10.25, 60.25, 20.24, 40.25]
-    elif region == 'afrc':    # Africa, note can't span prime meridian
+    elif region == 'afrc':    # Africa, note can't span the Prime Meridian
      	bounds = [0.25, 45.25, -34.75, 20.25] 
     elif region == 'nhaf':  # Northern hemisphere Africa
         bounds = [-20.25, 45.25, 0.25, 20.25]
