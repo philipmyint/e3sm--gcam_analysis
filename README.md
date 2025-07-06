@@ -1,7 +1,7 @@
 # e3sm--gcam_analysis
 Scripts for plotting and analyzing outputs from coupled Energy Exascale Earth System Model ([E3SM](https://github.com/E3SM-Project/E3SM)) and Global Change Analysis Model ([GCAM](https://gcims.pnnl.gov/modeling/gcam-global-change-analysis-model)) simulations. The scripts can be run on a local machine (i.e., a personal laptop) as well as on DOE high-performance computing clusters like Chrysalis. The scripts are motivated by the desire to handle ensembles of E3SM--GCAM simulations generating many terabytes of data, and towards this purpose, they utilize vectorization and multiprocessing to enhance their computational efficiency. 
 
-Author: Philip Myint, [myint1@llnl.gov](myint1@llnl.gov)
+Author: Philip Myint ([myint1@llnl.gov](myint1@llnl.gov)), with feedback and guidance from Alan Divittorio (LBNL), Sha Feng (PNNL), and Eva Sinha (PNNL).
 
 ## Getting Started
 ### Overview of directories
