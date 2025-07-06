@@ -24,7 +24,7 @@ gcam_landtype_groups_nonstandard = gcam_landtype_groups
 gcam_landtype_groups_nonstandard['crop'] = crop_names_nonstandard
 
 """ Dictionary of GCAM crop name mappings (keys = old names, values = new names) to create a standardized set of crop names across all files. """
-gcam_crop_names = {'biomass': 'BioenergyCrop', 'biomassGrass': 'BioenergyCrop', 'biomassTree': 'BioenergyCrop', 'CornC4': 'Corn', 
+gcam_crop_mappings = {'biomass': 'BioenergyCrop', 'biomassGrass': 'BioenergyCrop', 'biomassTree': 'BioenergyCrop', 'CornC4': 'Corn', 
         'FodderHerbC4': 'FodderHerb', 'FruitsTree': 'Fruits', 'MiscCropTree': 'MiscCrop', 'MiscCropC4': 'MiscCrop', 'NutsSeedsTree': 'NutsSeeds',
         'OilCropTree': 'OilCrop', 'OilPalmTree': 'OilPalm', 'OtherGrainC4': 'OtherGrain', 'SugarCropC4': 'SugarCrop'}
 
@@ -129,7 +129,7 @@ def produce_dataframe_for_landtype_group(df, category, category_label, value_lab
 
 def standardize_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_crop_name='mean'):
     """
-    Applies the mappings in gcam_crop_names to produce a common set of crop names in the given Pandas DataFrame.
+    Applies the mappings in gcam_crop_mappings dictionary to produce a common set of crop names in the given Pandas DataFrame.
     An aggregation followed by a mean or sum is performed if there happens to be more than one row that matches a value for the given set of columns.
 
     Parameters:
@@ -140,7 +140,7 @@ def standardize_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_cro
     Returns:
         DataFrame with the crop names modified so that they belong to the standard common set.
     """
-    df = df.replace(gcam_crop_names)
+    df = df.replace(gcam_crop_mappings)
     if mean_or_sum_if_more_than_one_row_for_crop_name == 'mean':
         return df.groupby(columns).mean().reset_index()
     elif mean_or_sum_if_more_than_one_row_for_crop_name == 'sum':

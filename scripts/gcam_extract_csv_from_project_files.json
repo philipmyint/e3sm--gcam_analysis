@@ -1,30 +1,30 @@
 [
     {
         "variable": "ag commodity prices",
-        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv",
         "scenarios": ["Control", "Full feedback"],
-        "project_files": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
         "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
     },
     {
         "variable": "CO2 emissions by sector",
-        "output_file": "./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors.csv",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors.csv",
         "scenarios": ["Control", "Full feedback"],
-        "project_files": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
         "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
     },
     {
         "variable": "CO2 emissions by region",
-        "output_file": "./../2025_DiVittorio_et_al_gcam/co2_emissions_regions.csv",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/co2_emissions_regions.csv",
         "scenarios": ["Control", "Full feedback"],
-        "project_files": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
         "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
     },
     {
         "variable": "detailed land allocation",
-        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed.csv",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/land_allocation_detailed.csv",
         "scenarios": ["Control", "Full feedback"],
-        "project_files": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
         "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
     }
 ]
