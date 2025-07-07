@@ -1,7 +1,7 @@
 # e3sm--gcam_analysis
 Scripts for plotting and analyzing outputs from coupled Energy Exascale Earth System Model ([E3SM](https://github.com/E3SM-Project/E3SM)) and Global Change Analysis Model ([GCAM](https://gcims.pnnl.gov/modeling/gcam-global-change-analysis-model)) simulations. The scripts can be run on a local machine (i.e., a personal laptop) as well as on DOE high-performance computing clusters like Chrysalis. The scripts are motivated by the desire to handle ensembles of E3SM--GCAM simulations generating many terabytes of data, and towards this purpose, they utilize vectorization and multiprocessing to enhance their computational efficiency. 
 
-Author: Philip Myint ([myint1@llnl.gov](myint1@llnl.gov)), with feedback and guidance from Alan DiVittorio (LBNL), Sha Feng (PNNL), and Eva Sinha (PNNL).
+Author: Philip Myint ([myint1@llnl.gov](mailto:myint1@llnl.gov)), with feedback and guidance from Alan DiVittorio (LBNL), Sha Feng (PNNL), and Eva Sinha (PNNL).
 
 ## Getting Started
 ### Overview of directories
@@ -81,7 +81,7 @@ Produces synthetic spatial data and time series sets by applying random numbers 
 The following is a brief description of the scripts for plotting and analyzing GCAM output. To test out these scripts, run them on the command line with the JSON file(s). The JSON examples provided in the repo share the same name with their corresponding scripts.
 
 ### `gcam_extract_csv_from_project_files.R`
-Extracts data from project files and writes the extracted data to .csv files. The project files are obtained by applying the tools in the `rgcam` R package to large XML files that are produced by GCAM during a simulation. This script assumes that this earlier step of obtaining the project files from the XML files has already been performed.
+Extracts data from project files and writes the extracted data to .csv files. The project files are obtained by applying the query tools in the `rgcam` R package to large XML files that are produced by GCAM during a simulation. This script assumes that this earlier step of obtaining the project files from the XML files has already been performed.
 
 ### `gcam_process_and_compile_ehc_scalars.py`
 During the course of a coupled E3SM--GCAM simulation, the E3SM human component (EHC) dynamically generates .csv files on soil and vegetation multipliers, referred to as scalars in the [DiVittorio et al. paper](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806), and it then passes these scalars to GCAM. This script combines all those .csv files into a single .csv file. It does some additional processing to split one of the columns in the .csv file into separate landtype and basin (i.e., watershed or catchment) columns. By setting `call_standardize_crop_names: true` in the corresponding JSON file, crop names under the landtype column will be converted to a standard set of names defined in the `gcam_crop_mappings` dictionary located in `utility_gcam.py`. For example, by applying this standardization, all `biomass`, `biomassGrass`, and `biomassTree` entries in the landtype column of the .csv file will be converted to `BioenergyCrop`.

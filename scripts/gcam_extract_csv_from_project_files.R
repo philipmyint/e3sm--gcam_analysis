@@ -19,9 +19,9 @@ for (indexJSON in 1:numJSON)
 {
     # Read the current JSON file and put the inputs specified in each block of the file into a list.
     listOfInputs = fromJSON(file=args[indexJSON])
-    for (inputs_index in 1:length(listOfInputs))
+    for (inputsIndex in 1:length(listOfInputs))
     {
-        inputs = listOfInputs[[inputs_index]]
+        inputs = listOfInputs[[inputsIndex]]
         # Here, variable refers to the specific quantity we want to extract from the project files produced from the GCAM-generated XML output files.
         variable = inputs$variable
 
@@ -33,8 +33,8 @@ for (indexJSON in 1:numJSON)
             scenario = inputs$scenarios[indexScenario]
             projectFile = inputs$projectFiles[indexScenario]
 
-            prj = loadProject(projectFile)
-            data = getQuery(prj, query=variable)
+            project = loadProject(projectFile)
+            data = getQuery(project, query=variable)
             df = as.data.frame(data)
             df$scenario = scenario
             listOfDataframes[[indexScenario]] = df
