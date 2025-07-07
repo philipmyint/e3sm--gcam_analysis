@@ -19,9 +19,9 @@ for (indexJSON in 1:numJSON)
 {
     # Read the current JSON file and put the inputs specified in each block of the file into a list.
     listOfInputs = fromJSON(file=args[indexJSON])
-    for (inputsIndex in 1:length(listOfInputs))
+    for (indexInputs in 1:length(listOfInputs))
     {
-        inputs = listOfInputs[[inputsIndex]]
+        inputs = listOfInputs[[indexInputs]]
         # Here, variable refers to the specific quantity we want to extract from the project files produced from the GCAM-generated XML output files.
         variable = inputs$variable
 
