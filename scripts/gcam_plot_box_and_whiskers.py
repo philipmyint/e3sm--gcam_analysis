@@ -335,7 +335,7 @@ if __name__ == '__main__':
     for index in range(len(inputs)):
         list_of_inputs.append(process_inputs(inputs[index]))
 
-    # Create all of the bpx plots in parallel.
+    # Create all of the box plots in parallel.
     with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
         pool.map(plot_box_and_whiskers, list_of_inputs)
     
