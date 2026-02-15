@@ -256,7 +256,19 @@ def write_dataframe_to_fwf(file_name, df, keep_index_column=False):
     Returns:
         N/A.
     """
-    df_str = df.to_string(index=keep_index_column)
+    # Calculate column widths dictionary to ensure minimum widths.
+    col_space = {}
+    for col in df.columns:
+        if 'Year' in str(col):  
+            # Ensure Year column is wide enough for both header and data.
+            if len(df) > 0:
+                max_data_width = max(len(str(val)) for val in df[col])
+                col_space[col] = max(4, len(str(col)), max_data_width)
+            else:
+                col_space[col] = max(4, len(str(col)))
+    
+    # Pass col_space to the to_string() function.
+    df_str = df.to_string(index=keep_index_column, col_space=col_space if col_space else None)
     
     # Write the contents to the file.
     with open(file_name, 'w', encoding='utf-8') as file:
