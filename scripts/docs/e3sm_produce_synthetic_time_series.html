@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Synthetic Time Series Generation Documentation</title>
+    <title>E3SM Synthetic Time Series Generation Script Documentation</title>
     <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
@@ -471,15 +471,18 @@ footer {
 </style>
 </head>
 <body>
-    <div class="container"><h1>E3SM Synthetic Time Series Generation Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="e3sm-synthetic-time-series-generation-script-documentation">E3SM Synthetic Time Series Generation Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
+<h2 id="overview">Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_produce_synthetic_time_series.py</code></p>
 <p><strong>Purpose:</strong> Generates synthetic ensemble members from existing E3SM time series data files by applying systematic and random perturbations. This creates multiple realizations for statistical testing and uncertainty quantification when only single simulation outputs are available.</p>
 <p><strong>Key Difference from Spatial Script:</strong> Uses both systematic (progressive base multipliers) and random (varying across time) perturbations, whereas the spatial script uses only uniform random multipliers.</p>
-<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -495,17 +498,17 @@ footer {
 <li><a href="#comparison-with-spatial-script">Comparison with Spatial Script</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>pandas<span class="w"> </span>multiprocessing
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports:<br />
 - <code>utility_dataframes</code> - <strong>Required</strong> for reading/writing data files<br />
   - <code>read_file_into_dataframe()</code><br />
   - <code>write_dataframe_to_fwf()</code></p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
@@ -513,13 +516,13 @@ footer {
 <li>Sufficient disk space for synthetic ensemble files</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Direct Execution (Hardcoded Configuration)</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="direct-execution-hardcoded-configuration">Direct Execution (Hardcoded Configuration)</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_produce_synthetic_time_series.py
 </code></pre></div>
 
 <p><strong>Note:</strong> This script does NOT use JSON configuration files. All parameters are hardcoded and must be edited directly in the script.</p>
-<h3>Editing the Script</h3>
+<h3 id="editing-the-script">Editing the Script</h3>
 <p>Open the script and modify the configuration section:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Edit these lists in the script:</span>
 <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
@@ -529,7 +532,7 @@ footer {
 <span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># Total ensemble members per base file</span>
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <ol>
 <li><strong>Reads</strong> base time series file(s) (.dat or .csv)</li>
 <li><strong>Generates</strong> systematic base multipliers (linearly spaced)</li>
@@ -540,8 +543,8 @@ footer {
 <li><strong>Processes</strong> multiple base files in parallel</li>
 </ol>
 <hr />
-<h2>How It Works</h2>
-<h3>Dual Perturbation Method</h3>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="dual-perturbation-method">Dual Perturbation Method</h3>
 <p>Unlike the spatial script, this uses <strong>two types of perturbations</strong>:</p>
 <p><strong>1. Systematic Base Multipliers (Progressive)</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">base_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">,</span> <span class="n">num_synthetic_members</span><span class="p">)</span>
@@ -564,7 +567,7 @@ footer {
 <span class="n">timestep</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">1.02</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.003</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.017</span> <span class="err">→</span> <span class="mf">1.7</span><span class="o">%</span> <span class="n">increase</span>
 </code></pre></div>
 
-<h3>Example Calculation</h3>
+<h3 id="example-calculation">Example Calculation</h3>
 <p><strong>Base time series:</strong></p>
 <div class="codehilite"><pre><span></span><code>Year  Month  GPP (PgC/month)
 2015    1         10.0
@@ -588,9 +591,9 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Configuration Parameters</h2>
-<h3>Hardcoded Parameters (Edit in Script)</h3>
-<h4>1. <code>files</code></h4>
+<h2 id="configuration-parameters">Configuration Parameters</h2>
+<h3 id="hardcoded-parameters-edit-in-script">Hardcoded Parameters (Edit in Script)</h3>
+<h4 id="1-files">1. <code>files</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Description:</strong> Paths to base time series files (.dat or .csv).</p>
 <p><strong>Location in Script:</strong></p>
@@ -624,7 +627,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4>2. <code>num_files_in_each_set</code></h4>
+<h4 id="2-num_files_in_each_set">2. <code>num_files_in_each_set</code></h4>
 <p><strong>Type:</strong> List of integers<br />
 <strong>Description:</strong> Total number of ensemble members (including base file) for each base file.</p>
 <p><strong>Location in Script:</strong></p>
@@ -648,7 +651,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4>3. Base Multiplier Range (Inside Function)</h4>
+<h4 id="3-base-multiplier-range-inside-function">3. Base Multiplier Range (Inside Function)</h4>
 <p><strong>Type:</strong> Float range<br />
 <strong>Description:</strong> Range for systematic base multipliers.</p>
 <p><strong>Location in Script:</strong></p>
@@ -672,7 +675,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4>4. Random Multiplier Range (Inside Function)</h4>
+<h4 id="4-random-multiplier-range-inside-function">4. Random Multiplier Range (Inside Function)</h4>
 <p><strong>Type:</strong> Float range<br />
 <strong>Description:</strong> Range for random temporal perturbations.</p>
 <p><strong>Location in Script:</strong></p>
@@ -696,8 +699,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Perturbation Method</h2>
-<h3>Step-by-Step Process</h3>
+<h2 id="perturbation-method">Perturbation Method</h2>
+<h3 id="step-by-step-process">Step-by-Step Process</h3>
 <p><strong>For each base file:</strong></p>
 <ol>
 <li><strong>Read base time series</strong></li>
@@ -749,7 +752,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h3>Mathematical Details</h3>
+<h3 id="mathematical-details">Mathematical Details</h3>
 <p><strong>Full Formula:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">synthetic_value</span><span class="o">[</span><span class="n">t</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base_value</span><span class="o">[</span><span class="n">t</span><span class="o">]</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="p">(</span><span class="n">base_multiplier</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">random_multiplier</span><span class="o">[</span><span class="n">t</span><span class="o">]</span><span class="p">)</span>
 
@@ -772,8 +775,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Usage Examples</h2>
-<h3>Example 1: Default Configuration</h3>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-default-configuration">Example 1: Default Configuration</h3>
 <p><strong>As provided in script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series.dat&quot;</span><span class="p">,</span>
@@ -803,7 +806,7 @@ Total: 10 base + 40 synthetic = 50 files
 </code></pre></div>
 
 <hr />
-<h3>Example 2: Single File, Large Ensemble</h3>
+<h3 id="example-2-single-file-large-ensemble">Example 2: Single File, Large Ensemble</h3>
 <p><strong>Edit script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./my_time_series.dat&quot;</span><span class="p">]</span>
 <span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>  <span class="c1"># 20 total members</span>
@@ -828,7 +831,7 @@ Member 20: 1.05
 </code></pre></div>
 
 <hr />
-<h3>Example 3: CSV Output</h3>
+<h3 id="example-3-csv-output">Example 3: CSV Output</h3>
 <p><strong>Edit script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./time_series.csv&quot;</span><span class="p">]</span>  <span class="c1"># Note: .csv extension</span>
 <span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>
@@ -844,7 +847,7 @@ time_series_5.csv     (synthetic)
 </code></pre></div>
 
 <hr />
-<h3>Example 4: Conservative Perturbations</h3>
+<h3 id="example-4-conservative-perturbations">Example 4: Conservative Perturbations</h3>
 <p><strong>Edit script function:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_time_series</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -863,7 +866,7 @@ time_series_5.csv     (synthetic)
 
 <p><strong>Use case:</strong> More conservative uncertainty estimates</p>
 <hr />
-<h3>Example 5: Symmetric Perturbations</h3>
+<h3 id="example-5-symmetric-perturbations">Example 5: Symmetric Perturbations</h3>
 <p><strong>Edit script function:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Symmetric around 1.0 (some decrease, some increase)</span>
 <span class="n">base_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.98</span><span class="p">,</span> <span class="mf">1.02</span><span class="p">,</span> <span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>  <span class="c1"># -2% to +2%</span>
@@ -872,8 +875,8 @@ time_series_5.csv     (synthetic)
 
 <p><strong>Result:</strong> Some synthetic members have lower values than base</p>
 <hr />
-<h2>Output Files</h2>
-<h3>File Naming Convention</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="file-naming-convention">File Naming Convention</h3>
 <p><strong>Pattern:</strong></p>
 <div class="codehilite"><pre><span></span><code>base_filename.dat           → Original (untouched)
 base_filename_2.dat         → First synthetic member
@@ -899,7 +902,7 @@ base_filename_2.csv         → First synthetic member
 </code></pre></div>
 
 <hr />
-<h3>File Structure</h3>
+<h3 id="file-structure">File Structure</h3>
 <p>Each synthetic file has identical structure to base file:</p>
 <p><strong>Fixed-Width Format (.dat):</strong></p>
 <div class="codehilite"><pre><span></span><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)  NBP (PgC/month)
@@ -924,7 +927,7 @@ base_filename_2.csv         → First synthetic member
 <p><strong>Modified:</strong><br />
 - All data columns (perturbed by combined multipliers)</p>
 <hr />
-<h3>File Sizes</h3>
+<h3 id="file-sizes">File Sizes</h3>
 <p><strong>Typical sizes:</strong><br />
 - Base file: 100 KB (86 years × 12 months × 10 variables)<br />
 - Each synthetic file: 100 KB<br />
@@ -941,9 +944,9 @@ base_filename_2.csv         → First synthetic member
 </code></pre></div>
 
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical Workflow</h3>
-<h4>1. Extract Time Series from E3SM</h4>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-workflow">Typical Workflow</h3>
+<h4 id="1-extract-time-series-from-e3sm">1. Extract Time Series from E3SM</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Extract h0 time series</span>
 python<span class="w"> </span>e3sm_extract_time_series_h0.py<span class="w"> </span>config.json
 <span class="c1"># Output: control_time_series.dat</span>
@@ -953,7 +956,7 @@ python<span class="w"> </span>e3sm_extract_time_series_surfdata_iesm_dyn.py<span
 <span class="c1"># Output: control_time_series_surfdata.dat</span>
 </code></pre></div>
 
-<h4>2. Create Synthetic Ensemble</h4>
+<h4 id="2-create-synthetic-ensemble">2. Create Synthetic Ensemble</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Generate synthetic members</span>
 python<span class="w"> </span>e3sm_produce_synthetic_time_series.py
 
@@ -964,7 +967,7 @@ python<span class="w"> </span>e3sm_produce_synthetic_time_series.py
 <span class="c1">#   ...</span>
 </code></pre></div>
 
-<h4>3. Plot with Statistical Analysis</h4>
+<h4 id="3-plot-with-statistical-analysis">3. Plot with Statistical Analysis</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Use ensemble for statistical testing</span>
 python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>plot_config.json
 
@@ -972,7 +975,7 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 </code></pre></div>
 
 <hr />
-<h3>Use with Time Series Plotting Script</h3>
+<h3 id="use-with-time-series-plotting-script">Use with Time Series Plotting Script</h3>
 <p><strong>Enable ensemble mean and spread:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -990,8 +993,8 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 
 <p><strong>Result:</strong> Plot shows ensemble mean with shaded spread (min-max or std deviation)</p>
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Ensemble Size Selection</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-ensemble-size-selection">1. Ensemble Size Selection</h3>
 <p><strong>Small ensembles (n=3-5):</strong><br />
 - <strong>Pros:</strong> Fast, low storage, good for initial exploration<br />
 - <strong>Cons:</strong> Limited statistical power<br />
@@ -1006,7 +1009,7 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 - <strong>Use:</strong> Publication-quality analysis</p>
 <p><strong>Recommendation:</strong> Start with n=5</p>
 <hr />
-<h3>2. Perturbation Range Selection</h3>
+<h3 id="2-perturbation-range-selection">2. Perturbation Range Selection</h3>
 <p><strong>Base Multiplier Range:</strong></p>
 <p><strong>Conservative (0.5% to 1.5%):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">base_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.005</span><span class="p">,</span> <span class="mf">1.015</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
@@ -1046,7 +1049,7 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 </code></pre></div>
 
 <hr />
-<h3>3. File Organization</h3>
+<h3 id="3-file-organization">3. File Organization</h3>
 <p><strong>Recommended structure:</strong></p>
 <div class="codehilite"><pre><span></span><code>project/
 ├── base_time_series/
@@ -1069,7 +1072,7 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 </code></pre></div>
 
 <hr />
-<h3>4. Reproducibility</h3>
+<h3 id="4-reproducibility">4. Reproducibility</h3>
 <p><strong>Set random seed:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_time_series</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
     <span class="c1"># Add at beginning:</span>
@@ -1087,7 +1090,7 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 </code></pre></div>
 
 <hr />
-<h3>5. Validation</h3>
+<h3 id="5-validation">5. Validation</h3>
 <p><strong>After generation, verify:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -1111,8 +1114,8 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Issue 1: Memory Error</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-memory-error">Issue 1: Memory Error</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">MemoryError</span><span class="o">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">allocate</span><span class="w"> </span><span class="n">array</span>
 </code></pre></div>
@@ -1144,7 +1147,7 @@ python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>pl
 </code></pre></div>
 
 <hr />
-<h3>Issue 2: File Not Found</h3>
+<h3 id="issue-2-file-not-found">Issue 2: File Not Found</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code>FileNotFoundError: [Errno 2] No such file or directory
 </code></pre></div>
@@ -1164,7 +1167,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h3>Issue 3: Year/Month Column Issues</h3>
+<h3 id="issue-3-yearmonth-column-issues">Issue 3: Year/Month Column Issues</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code>KeyError: &#39;Year&#39; or KeyError: &#39;Month&#39;
 </code></pre></div>
@@ -1185,7 +1188,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h3>Issue 4: All Values Same</h3>
+<h3 id="issue-4-all-values-same">Issue 4: All Values Same</h3>
 <p><strong>Symptom:</strong> All synthetic files identical</p>
 <p><strong>Cause:</strong><br />
 - Random seed set elsewhere in code<br />
@@ -1198,7 +1201,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h3>Issue 5: Negative Values</h3>
+<h3 id="issue-5-negative-values">Issue 5: Negative Values</h3>
 <p><strong>Symptom:</strong> Some values become negative</p>
 <p><strong>Cause:</strong><br />
 - Original values close to zero<br />
@@ -1239,8 +1242,8 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h2>Comparison with Spatial Script</h2>
-<h3>Key Differences</h3>
+<h2 id="comparison-with-spatial-script">Comparison with Spatial Script</h2>
+<h3 id="key-differences">Key Differences</h3>
 <table>
 <thead>
 <tr>
@@ -1287,7 +1290,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </tr>
 </tbody>
 </table>
-<h3>Perturbation Comparison</h3>
+<h3 id="perturbation-comparison">Perturbation Comparison</h3>
 <p><strong>Time Series Script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Progressive + temporal variability</span>
 <span class="n">base_multipliers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.02</span><span class="p">,</span> <span class="mf">1.03</span><span class="p">,</span> <span class="mf">1.04</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]</span>  <span class="c1"># Systematic</span>
@@ -1306,7 +1309,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h3>When to Use Each Script</h3>
+<h3 id="when-to-use-each-script">When to Use Each Script</h3>
 <p><strong>Use Time Series Script when:</strong><br />
 - Working with time series data (.dat, .csv files)<br />
 - Need temporal variability in synthetic members<br />
@@ -1320,8 +1323,8 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 - Analyzing spatial patterns, maps<br />
 - Input from spatial data extraction script</p>
 <hr />
-<h2>Scientific Considerations</h2>
-<h3>Interpretation of Perturbations</h3>
+<h2 id="scientific-considerations">Scientific Considerations</h2>
+<h3 id="interpretation-of-perturbations">Interpretation of Perturbations</h3>
 <p><strong>Systematic Component (Base Multipliers):</strong><br />
 - Represents progressive uncertainty levels<br />
 - Member #2 (1.02) = conservative estimate<br />
@@ -1337,7 +1340,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 - Useful for statistical testing<br />
 - Not substitute for true model ensemble</p>
 <hr />
-<h3>Limitations</h3>
+<h3 id="limitations">Limitations</h3>
 <p><strong>1. Not True Ensemble Members:</strong><br />
 - Don't represent different initial conditions<br />
 - Don't capture true model physics uncertainty<br />
@@ -1351,7 +1354,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 - P-values approximate<br />
 - Ensemble spread artificial</p>
 <hr />
-<h3>Appropriate Use Cases</h3>
+<h3 id="appropriate-use-cases">Appropriate Use Cases</h3>
 <p><strong>Good for:</strong><br />
 - Exploratory statistical testing<br />
 - Method development<br />
@@ -1363,8 +1366,8 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 - Quantifying model uncertainty (use true ensemble)<br />
 - Attribution studies</p>
 <hr />
-<h2>Advanced Modifications</h2>
-<h3>Normal Distribution Random Perturbations</h3>
+<h2 id="advanced-modifications">Advanced Modifications</h2>
+<h3 id="normal-distribution-random-perturbations">Normal Distribution Random Perturbations</h3>
 <p><strong>Current:</strong> Uniform distribution<br />
 <strong>Modification:</strong> Normal (Gaussian) distribution</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># In function, replace:</span>
@@ -1377,7 +1380,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h3>Variable-Specific Perturbations</h3>
+<h3 id="variable-specific-perturbations">Variable-Specific Perturbations</h3>
 <p><strong>Current:</strong> Same perturbation for all variables<br />
 <strong>Modification:</strong> Different perturbation per variable</p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_time_series</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
@@ -1401,7 +1404,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h3>Autocorrelated Random Perturbations</h3>
+<h3 id="autocorrelated-random-perturbations">Autocorrelated Random Perturbations</h3>
 <p><strong>Current:</strong> Independent random at each timestep<br />
 <strong>Modification:</strong> Temporally correlated (more realistic)</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Add autocorrelation:</span>
@@ -1418,8 +1421,8 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h2>Appendix: Complete Modified Example</h2>
-<h3>Custom Script for 3 Files, Different Settings</h3>
+<h2 id="appendix-complete-modified-example">Appendix: Complete Modified Example</h2>
+<h3 id="custom-script-for-3-files-different-settings">Custom Script for 3 Files, Different Settings</h3>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -1465,7 +1468,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 
     <span class="n">inputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">num_files_in_each_set</span><span class="p">))</span>
 
-    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
         <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_time_series</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
 
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -1474,7 +1477,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 </code></pre></div>
 
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>NumPy Documentation: <a href="https://numpy.org/doc/stable/">https://numpy.org/doc/stable/</a></li>
@@ -1482,12 +1485,12 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
 - <strong>Philip Myint</strong>: myint1@llnl.gov<br />
 - <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> e3sm_produce_synthetic_time_series.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
 <strong>Last Updated:</strong> January 2026<br />
@@ -1498,8 +1501,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series.dat
         <footer>
             <p>E3SM Synthetic Time Series Generation Script Documentation<br>
             <strong>Script:</strong> e3sm_produce_synthetic_time_series.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao<br>
-            <strong>Version:</strong> 1.0 | January 2026</p>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

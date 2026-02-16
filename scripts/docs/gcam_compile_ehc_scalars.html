@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCAM EHC Scalar Compilation Script Documentation</title>
-    <style>
-/* 
+    <title>GCAM EHC Scalars Compilation Script Documentation</title>
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,84 +468,55 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1 id="gcam-ehc-scalar-compilation-script-documentation">GCAM EHC
-Scalar Compilation Script Documentation</h1>
+    <div class="container"><h1 id="gcam-ehc-scalar-compilation-script-documentation">GCAM EHC Scalar Compilation Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
 <h2 id="overview">Overview</h2>
-<p>The <code>gcam_compile_ehc_scalars.py</code> script is a Python tool
-for compiling and processing E3SM Human Component (EHC) scalar files
-generated during coupled E3SM–GCAM simulations. During runtime, the EHC
-dynamically generates CSV files containing soil and vegetation
-multipliers (referred to as “scalars”) that are passed to GCAM. This
-script aggregates multiple scalar files from different directories
-(representing different scenarios) into a single consolidated CSV file
-for analysis and visualization.</p>
-<p><strong>Related Publication:</strong> The scalars compiled by this
-script are described in detail in <a
-href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DiVittorio
-et al. (2025)</a>, published in the Journal of Advances in Modeling
-Earth Systems.</p>
+<p>The <code>gcam_compile_ehc_scalars.py</code> script is a Python tool for compiling and processing E3SM Human Component (EHC) scalar files generated during coupled E3SM–GCAM simulations. During runtime, the EHC dynamically generates CSV files containing soil and vegetation multipliers (referred to as "scalars") that are passed to GCAM. This script aggregates multiple scalar files from different directories (representing different scenarios) into a single consolidated CSV file for analysis and visualization.</p>
+<p><strong>Related Publication:</strong> The scalars compiled by this script are described in detail in <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DiVittorio et al. (2025)</a>, published in the Journal of Advances in Modeling Earth Systems.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
-<ol type="1">
-<li><a href="#installation--requirements">Installation &amp;
-Requirements</a></li>
-<li><a href="#background-what-are-ehc-scalars">Background: What are EHC
-Scalars?</a></li>
+<ol>
+<li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
+<li><a href="#background-what-are-ehc-scalars">Background: What are EHC Scalars?</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
-<li><a href="#configuration-file-structure">Configuration File
-Structure</a></li>
-<li><a href="#configuration-parameters">Configuration
-Parameters</a></li>
-<li><a href="#data-processing-operations">Data Processing
-Operations</a></li>
+<li><a href="#configuration-file-structure">Configuration File Structure</a></li>
+<li><a href="#configuration-parameters">Configuration Parameters</a></li>
+<li><a href="#data-processing-operations">Data Processing Operations</a></li>
 <li><a href="#examples">Examples</a></li>
-<li><a href="#understanding-ehc-scalar-files">Understanding EHC Scalar
-Files</a></li>
-<li><a href="#integration-with-e3smgcam-workflow">Integration with
-E3SM–GCAM Workflow</a></li>
+<li><a href="#understanding-ehc-scalar-files">Understanding EHC Scalar Files</a></li>
+<li><a href="#integration-with-e3smgcam-workflow">Integration with E3SM–GCAM Workflow</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 </ol>
 <hr />
 <h2 id="installation-requirements">Installation &amp; Requirements</h2>
 <h3 id="required-python-libraries">Required Python Libraries</h3>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pandas</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas
+</code></pre></div>
+
 <h3 id="required-utility-modules">Required Utility Modules</h3>
-<p>The script imports several utility modules that must be in the same
-directory or Python path: - <code>utility_dataframes</code> - Functions
-for reading/writing data files - <code>utility_functions</code> -
-General utility functions including file path operations -
-<code>utility_gcam</code> - GCAM-specific functions for crop name
-standardization</p>
+<p>The script imports several utility modules that must be in the same directory or Python path:<br />
+- <code>utility_dataframes</code> - Functions for reading/writing data files<br />
+- <code>utility_functions</code> - General utility functions including file path operations<br />
+- <code>utility_gcam</code> - GCAM-specific functions for crop name standardization</p>
 <h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
-<li>Multi-core processor (script uses all available CPU cores for
-parallel processing)</li>
+<li>Multi-core processor (script uses parallel processing with limited cores to reduce memory pressure for parallel processing)</li>
 <li>Sufficient memory to handle multiple CSV files simultaneously</li>
 </ul>
 <hr />
-<h2 id="background-what-are-ehc-scalars">Background: What are EHC
-Scalars?</h2>
+<h2 id="background-what-are-ehc-scalars">Background: What are EHC Scalars?</h2>
 <h3 id="e3sm-human-component-ehc">E3SM Human Component (EHC)</h3>
-<p>In coupled E3SM–GCAM simulations, the E3SM Human Component (EHC)
-serves as the intermediary between: - <strong>E3SM</strong> (Energy
-Exascale Earth System Model) - Earth system model -
-<strong>GCAM</strong> (Global Change Analysis Model) - Human-Earth
-system model</p>
+<p>In coupled E3SM–GCAM simulations, the E3SM Human Component (EHC) serves as the intermediary between:<br />
+- <strong>E3SM</strong> (Energy Exascale Earth System Model) - Earth system model<br />
+- <strong>GCAM</strong> (Global Change Analysis Model) - Human-Earth system model</p>
 <h3 id="scalars-explained">Scalars Explained</h3>
-<p><strong>Scalars</strong> are multipliers that represent environmental
-conditions affecting agricultural productivity:</p>
+<p><strong>Scalars</strong> are multipliers that represent environmental conditions affecting agricultural productivity:</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Scalar Type</th>
@@ -568,72 +538,61 @@ conditions affecting agricultural productivity:</p>
 </tbody>
 </table>
 <h3 id="runtime-generation">Runtime Generation</h3>
-<p>During a coupled simulation: 1. E3SM calculates land surface
-conditions (temperature, precipitation, soil moisture, etc.) 2. EHC
-translates these conditions into vegetation and soil scalars 3. EHC
-outputs these scalars to CSV files for each time step 4. These scalars
-are passed to GCAM to inform land use decisions 5. GCAM makes land
-allocation decisions based on these productivity signals</p>
+<p>During a coupled simulation:<br />
+1. E3SM calculates land surface conditions (temperature, precipitation, soil moisture, etc.)<br />
+2. EHC translates these conditions into vegetation and soil scalars<br />
+3. EHC outputs these scalars to CSV files for each time step<br />
+4. These scalars are passed to GCAM to inform land use decisions<br />
+5. GCAM makes land allocation decisions based on these productivity signals</p>
 <h3 id="file-organization">File Organization</h3>
-<p>EHC generates scalar files organized by: - <strong>Scenario</strong>
-- Different simulation scenarios (e.g., Control, Full feedback) -
-<strong>Time step</strong> - Typically annual or 5-year intervals -
-<strong>Region</strong> - GCAM geographic regions -
-<strong>Basin</strong> - Water basins/catchments within regions -
-<strong>Land type</strong> - Different land cover types (crop types,
-forest, grassland, etc.)</p>
+<p>EHC generates scalar files organized by:<br />
+- <strong>Scenario</strong> - Different simulation scenarios (e.g., Control, Full feedback)<br />
+- <strong>Time step</strong> - Typically annual or 5-year intervals<br />
+- <strong>Region</strong> - GCAM geographic regions<br />
+- <strong>Basin</strong> - Water basins/catchments within regions<br />
+- <strong>Land type</strong> - Different land cover types (crop types, forest, grassland, etc.)</p>
 <hr />
 <h2 id="basic-usage">Basic Usage</h2>
 <h3 id="command-line-execution">Command Line Execution</h3>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> gcam_compile_ehc_scalars.py path/to/config.json</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_compile_ehc_scalars.py<span class="w"> </span>path/to/config.json
+</code></pre></div>
+
 <p>You can specify multiple JSON configuration files:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> gcam_compile_ehc_scalars.py config1.json config2.json config3.json</span></code></pre></div>
-<p>The script processes all configurations in parallel using all
-available CPU cores.</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_compile_ehc_scalars.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
+</code></pre></div>
+
+<p>The script processes all configurations in parallel using parallel processing with limited cores to reduce memory pressure.</p>
 <h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration in the JSON file, the script:</p>
-<ol type="1">
-<li><strong>Locates</strong> all CSV files in the specified input
-directories</li>
+<ol>
+<li><strong>Locates</strong> all CSV files in the specified input directories</li>
 <li><strong>Reads</strong> all scalar files from each directory</li>
 <li><strong>Concatenates</strong> files within each scenario</li>
-<li><strong>Splits</strong> the <code>landtype_basin</code> column into
-separate <code>landtype</code> and <code>basin</code> columns</li>
-<li><strong>Assigns</strong> scenario labels to distinguish different
-simulation runs</li>
-<li><strong>Sorts</strong> data by key columns (scenario, region, basin,
-landtype, year)</li>
-<li><strong>Optionally standardizes</strong> crop names to a common
-naming convention</li>
-<li><strong>Writes</strong> the compiled data to a single output CSV
-file</li>
+<li><strong>Splits</strong> the <code>landtype_basin</code> column into separate <code>landtype</code> and <code>basin</code> columns</li>
+<li><strong>Assigns</strong> scenario labels to distinguish different simulation runs</li>
+<li><strong>Sorts</strong> data by key columns (scenario, region, basin, landtype, year)</li>
+<li><strong>Optionally standardizes</strong> crop names to a common naming convention</li>
+<li><strong>Writes</strong> the compiled data to a single output CSV file</li>
 </ol>
 <hr />
 <h2 id="configuration-file-structure">Configuration File Structure</h2>
-<p>The configuration file is a JSON array where each object specifies
-one compilation task. Here’s a minimal example:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars_output/control&quot;</span><span class="ot">,</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars_output/full_feedback&quot;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./compiled_scalars.csv&quot;</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
+<p>The configuration file is a JSON array where each object specifies one compilation task. Here's a minimal example:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./scalars_output/control&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars_output/full_feedback&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./compiled_scalars.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
 <hr />
 <h2 id="configuration-parameters">Configuration Parameters</h2>
 <h3 id="required-parameters">Required Parameters</h3>
 <table>
-<colgroup>
-<col style="width: 36%" />
-<col style="width: 20%" />
-<col style="width: 43%" />
-</colgroup>
 <thead>
 <tr>
 <th>Parameter</th>
@@ -650,8 +609,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="
 <tr>
 <td><code>scenarios</code></td>
 <td>list of strings</td>
-<td>Names to assign to each scenario (must match order of
-<code>input_directories</code>)</td>
+<td>Names to assign to each scenario (must match order of <code>input_directories</code>)</td>
 </tr>
 <tr>
 <td><code>output_file</code></td>
@@ -660,17 +618,9 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="
 </tr>
 </tbody>
 </table>
-<p><strong>Critical Requirement:</strong> The number of entries in
-<code>scenarios</code> must exactly match the number of entries in
-<code>input_directories</code>, and they must be in the same order.</p>
+<p><strong>Critical Requirement:</strong> The number of entries in <code>scenarios</code> must exactly match the number of entries in <code>input_directories</code>, and they must be in the same order.</p>
 <h3 id="optional-parameters">Optional Parameters</h3>
 <table>
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 15%" />
-<col style="width: 23%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Parameter</th>
@@ -690,201 +640,197 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="
 </table>
 <hr />
 <h2 id="data-processing-operations">Data Processing Operations</h2>
-<h3 id="directory-scanning-and-file-reading">1. Directory Scanning and
-File Reading</h3>
-<p>The script automatically finds all files in each specified
-directory:</p>
-<pre><code>./scalars_output/control/
+<h3 id="1-directory-scanning-and-file-reading">1. Directory Scanning and File Reading</h3>
+<p>The script automatically finds all files in each specified directory:</p>
+<div class="codehilite"><pre><span></span><code>./scalars_output/control/
 ├── scalars_2015.csv
 ├── scalars_2020.csv
 ├── scalars_2025.csv
-└── scalars_2030.csv</code></pre>
-<p>All CSV files are read and concatenated together for each
-scenario.</p>
-<h3 id="column-name-normalization">2. Column Name Normalization</h3>
-<p>All column names are automatically converted to lowercase for
-consistency:</p>
-<p><strong>Before:</strong> <code>Landtype_Basin</code>,
-<code>Region</code>, <code>YEAR</code>, <code>Vegetation</code>,
-<code>Soil</code><br />
-<strong>After:</strong> <code>landtype_basin</code>,
-<code>region</code>, <code>year</code>, <code>vegetation</code>,
-<code>soil</code></p>
-<h3 id="column-splitting">3. Column Splitting</h3>
-<p>The <code>landtype_basin</code> column contains composite information
-that gets split:</p>
+└── scalars_2030.csv
+</code></pre></div>
+
+<p>All CSV files are read and concatenated together for each scenario.</p>
+<h3 id="2-column-name-normalization">2. Column Name Normalization</h3>
+<p>All column names are automatically converted to lowercase for consistency:</p>
+<p><strong>Before:</strong> <code>Landtype_Basin</code>, <code>Region</code>, <code>YEAR</code>, <code>Vegetation</code>, <code>Soil</code><br />
+<strong>After:</strong> <code>landtype_basin</code>, <code>region</code>, <code>year</code>, <code>vegetation</code>, <code>soil</code></p>
+<h3 id="3-column-splitting">3. Column Splitting</h3>
+<p>The <code>landtype_basin</code> column contains composite information that gets split:</p>
 <p><strong>Input format:</strong></p>
-<pre><code>landtype_basin
---------------
+<div class="codehilite"><pre><span></span><code><span class="gh">landtype_basin</span>
+<span class="gh">--------------</span>
 Corn_Amazon
 Wheat_Mississippi
-Forest_Nile</code></pre>
+Forest_Nile
+</code></pre></div>
+
 <p><strong>Output format:</strong></p>
-<pre><code>landtype    basin
+<div class="codehilite"><pre><span></span><code>landtype    basin
 --------    -----
 Corn        Amazon
 Wheat       Mississippi
-Forest      Nile</code></pre>
-<p>The original <code>landtype_basin</code> column is removed after
-splitting.</p>
-<h3 id="scenario-labeling">4. Scenario Labeling</h3>
+Forest      Nile
+</code></pre></div>
+
+<p>The original <code>landtype_basin</code> column is removed after splitting.</p>
+<h3 id="4-scenario-labeling">4. Scenario Labeling</h3>
 <p>Each row is tagged with its corresponding scenario name:</p>
-<pre><code>scenario        region  basin   landtype  year  vegetation  soil
+<div class="codehilite"><pre><span></span><code>scenario        region  basin   landtype  year  vegetation  soil
 -----------     ------  -----   --------  ----  ----------  ----
 Control         USA     Amazon  Corn      2020  1.05        0.98
-Full feedback   USA     Amazon  Corn      2020  1.08        0.95</code></pre>
-<h3 id="data-sorting">5. Data Sorting</h3>
-<p>Data is sorted by key columns in this order: 1. scenario 2. region 3.
-basin 4. landtype 5. year</p>
+Full feedback   USA     Amazon  Corn      2020  1.08        0.95
+</code></pre></div>
+
+<h3 id="5-data-sorting">5. Data Sorting</h3>
+<p>Data is sorted by key columns in this order:<br />
+1. scenario<br />
+2. region<br />
+3. basin<br />
+4. landtype<br />
+5. year</p>
 <p>This ensures consistent organization across all output files.</p>
-<h3 id="crop-name-standardization-optional">6. Crop Name Standardization
-(Optional)</h3>
-<p>When <code>call_modify_crop_names</code> is <code>true</code>, crop
-names are standardized to match a common naming convention:</p>
-<p><strong>Example transformations:</strong> - <code>biomass</code>,
-<code>biomassGrass</code>, <code>biomassTree</code> →
-<code>BioenergyCrop</code> - <code>CornC4</code> → <code>Corn</code> -
-<code>OilPalmTree</code> → <code>OilPalm</code> -
-<code>SugarCropC4</code> → <code>SugarCrop</code></p>
-<p>See the <code>utility_gcam.py</code> module for the complete crop
-name mapping.</p>
-<p><strong>Why standardize?</strong> Different GCAM output files use
-different crop naming conventions. Standardization ensures consistency
-when combining data from multiple sources.</p>
+<h3 id="6-crop-name-standardization-optional">6. Crop Name Standardization (Optional)</h3>
+<p>When <code>call_modify_crop_names</code> is <code>true</code>, crop names are standardized to match a common naming convention:</p>
+<p><strong>Example transformations:</strong><br />
+- <code>biomass</code>, <code>biomassGrass</code>, <code>biomassTree</code> → <code>BioenergyCrop</code><br />
+- <code>CornC4</code> → <code>Corn</code><br />
+- <code>OilPalmTree</code> → <code>OilPalm</code><br />
+- <code>SugarCropC4</code> → <code>SugarCrop</code></p>
+<p>See the <code>utility_gcam.py</code> module for the complete crop name mapping.</p>
+<p><strong>Why standardize?</strong> Different GCAM output files use different crop naming conventions. Standardization ensures consistency when combining data from multiple sources.</p>
 <hr />
 <h2 id="examples">Examples</h2>
-<h3 id="example-1-compiling-four-scenarios">Example 1: Compiling Four
-Scenarios</h3>
-<p><strong>Purpose:</strong> Compile scalars from four different
-simulation scenarios into a single file.</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control&quot;</span><span class="ot">,</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback&quot;</span><span class="ot">,</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/ag_scaling&quot;</span><span class="ot">,</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/carbon_scaling&quot;</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">,</span> <span class="st">&quot;Ag scaling&quot;</span><span class="ot">,</span> <span class="st">&quot;Carbon scaling&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_all_scenarios.csv&quot;</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p><strong>What happens:</strong> 1. Reads all CSV files from each of
-the four directories 2. Labels each dataset with its scenario name 3.
-Combines all four scenarios into one file 4. Splits
-<code>landtype_basin</code> column 5. Sorts by scenario, region, basin,
-landtype, and year 6. Outputs to
-<code>scalars_all_scenarios.csv</code></p>
-<p><strong>Input structure (files in each directory):</strong></p>
-<pre><code>control/
-├── scalars_2015_region1.csv
-├── scalars_2015_region2.csv
-├── scalars_2020_region1.csv
-└── scalars_2020_region2.csv
+<h3 id="example-1-compiling-four-scenarios">Example 1: Compiling Four Scenarios</h3>
+<p><strong>Purpose:</strong> Compile scalars from four different simulation scenarios into a single file.</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/ag_scaling&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/carbon_scaling&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_all_scenarios.csv&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
 
-full_feedback/
-├── scalars_2015_region1.csv
-├── scalars_2015_region2.csv
-├── scalars_2020_region1.csv
-└── scalars_2020_region2.csv
-...</code></pre>
+<p><strong>What happens:</strong><br />
+1. Reads all CSV files from each of the four directories<br />
+2. Labels each dataset with its scenario name<br />
+3. Combines all four scenarios into one file<br />
+4. Splits <code>landtype_basin</code> column<br />
+5. Sorts by scenario, region, basin, landtype, and year<br />
+6. Outputs to <code>scalars_all_scenarios.csv</code></p>
+<p><strong>Input structure (files in each directory):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">control</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scalars_2015_region1</span><span class="p">.</span><span class="n">csv</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scalars_2015_region2</span><span class="p">.</span><span class="n">csv</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scalars_2020_region1</span><span class="p">.</span><span class="n">csv</span>
+<span class="err">└──</span><span class="w"> </span><span class="n">scalars_2020_region2</span><span class="p">.</span><span class="n">csv</span>
+
+<span class="n">full_feedback</span><span class="o">/</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scalars_2015_region1</span><span class="p">.</span><span class="n">csv</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scalars_2015_region2</span><span class="p">.</span><span class="n">csv</span>
+<span class="err">├──</span><span class="w"> </span><span class="n">scalars_2020_region1</span><span class="p">.</span><span class="n">csv</span>
+<span class="err">└──</span><span class="w"> </span><span class="n">scalars_2020_region2</span><span class="p">.</span><span class="n">csv</span>
+<span class="p">...</span>
+</code></pre></div>
+
 <p><strong>Output structure:</strong></p>
-<pre class="csv"><code>scenario,region,basin,landtype,year,vegetation,soil
-Control,USA,Amazon,BioenergyCrop,2015,1.05,0.98
-Control,USA,Amazon,BioenergyCrop,2020,1.08,0.97
-Control,USA,Amazon,Corn,2015,1.02,1.01
-Full feedback,USA,Amazon,BioenergyCrop,2015,1.12,0.95
-Full feedback,USA,Amazon,BioenergyCrop,2020,1.15,0.93
-...</code></pre>
-<h3 id="example-2-compiling-two-scenarios-for-comparison">Example 2:
-Compiling Two Scenarios for Comparison</h3>
-<p><strong>Purpose:</strong> Compile only Control and Full feedback
-scenarios for focused analysis.</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control&quot;</span><span class="ot">,</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback&quot;</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv&quot;</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p><strong>Use case:</strong> When you only need to compare a baseline
-scenario against one alternative scenario.</p>
-<h3 id="example-3-with-crop-name-standardization">Example 3: With Crop
-Name Standardization</h3>
-<p><strong>Purpose:</strong> Compile scenarios while ensuring consistent
-crop naming.</p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./scalars_output/scenario_a&quot;</span><span class="ot">,</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;./scalars_output/scenario_b&quot;</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Scenario A&quot;</span><span class="ot">,</span> <span class="st">&quot;Scenario B&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./scalars_standardized.csv&quot;</span><span class="fu">,</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;call_modify_crop_names&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="nx">scenario</span><span class="p">,</span><span class="nx">region</span><span class="p">,</span><span class="nx">basin</span><span class="p">,</span><span class="nx">landtype</span><span class="p">,</span><span class="nx">year</span><span class="p">,</span><span class="nx">vegetation</span><span class="p">,</span><span class="nx">soil</span>
+<span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.05</span><span class="p">,</span><span class="m m-Double">0.98</span>
+<span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2020</span><span class="p">,</span><span class="m m-Double">1.08</span><span class="p">,</span><span class="m m-Double">0.97</span>
+<span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">Corn</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.02</span><span class="p">,</span><span class="m m-Double">1.01</span>
+<span class="nx">Full</span><span class="w"> </span><span class="nx">feedback</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.12</span><span class="p">,</span><span class="m m-Double">0.95</span>
+<span class="nx">Full</span><span class="w"> </span><span class="nx">feedback</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2020</span><span class="p">,</span><span class="m m-Double">1.15</span><span class="p">,</span><span class="m m-Double">0.93</span>
+<span class="o">...</span>
+</code></pre></div>
+
+<h3 id="example-2-compiling-two-scenarios-for-comparison">Example 2: Compiling Two Scenarios for Comparison</h3>
+<p><strong>Purpose:</strong> Compile only Control and Full feedback scenarios for focused analysis.</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>Use case:</strong> When you only need to compare a baseline scenario against one alternative scenario.</p>
+<h3 id="example-3-with-crop-name-standardization">Example 3: With Crop Name Standardization</h3>
+<p><strong>Purpose:</strong> Compile scenarios while ensuring consistent crop naming.</p>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;./scalars_output/scenario_a&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;./scalars_output/scenario_b&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Scenario A&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario B&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./scalars_standardized.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;call_modify_crop_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</code></pre></div>
+
 <p><strong>Effect of standardization:</strong></p>
 <p><strong>Before:</strong></p>
-<pre><code>landtype
------------
-biomass
-biomassGrass
-biomassTree
-CornC4
-Corn</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nx">landtype</span>
+<span class="o">-----------</span>
+<span class="nx">biomass</span>
+<span class="nx">biomassGrass</span>
+<span class="nx">biomassTree</span>
+<span class="nx">CornC4</span>
+<span class="nx">Corn</span>
+</code></pre></div>
+
 <p><strong>After:</strong></p>
-<pre><code>landtype
------------
-BioenergyCrop
-BioenergyCrop
-BioenergyCrop
-Corn
-Corn</code></pre>
-<h3 id="example-4-multiple-compilations-in-one-run">Example 4: Multiple
-Compilations in One Run</h3>
-<p><strong>Purpose:</strong> Create both a comprehensive file (all
-scenarios) and a focused file (two scenarios only).</p>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control&quot;</span><span class="ot">,</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/full_feedback&quot;</span><span class="ot">,</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/ag_scaling&quot;</span><span class="ot">,</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/carbon_scaling&quot;</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">,</span> <span class="st">&quot;Ag scaling&quot;</span><span class="ot">,</span> <span class="st">&quot;Carbon scaling&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./scalars_all.csv&quot;</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control&quot;</span><span class="ot">,</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/full_feedback&quot;</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./scalars_baseline_comparison.csv&quot;</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="nx">landtype</span>
+<span class="o">-----------</span>
+<span class="nx">BioenergyCrop</span>
+<span class="nx">BioenergyCrop</span>
+<span class="nx">BioenergyCrop</span>
+<span class="nx">Corn</span>
+<span class="nx">Corn</span>
+</code></pre></div>
+
+<h3 id="example-4-multiple-compilations-in-one-run">Example 4: Multiple Compilations in One Run</h3>
+<p><strong>Purpose:</strong> Create both a comprehensive file (all scenarios) and a focused file (two scenarios only).</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/full_feedback&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/ag_scaling&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/carbon_scaling&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./scalars_all.csv&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/full_feedback&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./scalars_baseline_comparison.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
 <p>Both compilations are processed in parallel for efficiency.</p>
 <hr />
-<h2 id="understanding-ehc-scalar-files">Understanding EHC Scalar
-Files</h2>
+<h2 id="understanding-ehc-scalar-files">Understanding EHC Scalar Files</h2>
 <h3 id="typical-file-structure">Typical File Structure</h3>
-<p>Individual scalar files generated by EHC typically have this
-structure:</p>
-<pre class="csv"><code>Region,Landtype_Basin,Year,Vegetation,Soil
-USA,Corn_Mississippi,2015,1.05,0.98
-USA,Corn_Mississippi,2020,1.08,0.97
-USA,Wheat_Amazon,2015,1.02,1.01
-Brazil,Soybean_Amazon,2015,1.15,0.95</code></pre>
+<p>Individual scalar files generated by EHC typically have this structure:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">Region</span><span class="p">,</span><span class="nx">Landtype_Basin</span><span class="p">,</span><span class="nx">Year</span><span class="p">,</span><span class="nx">Vegetation</span><span class="p">,</span><span class="nx">Soil</span>
+<span class="nx">USA</span><span class="p">,</span><span class="nx">Corn_Mississippi</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.05</span><span class="p">,</span><span class="m m-Double">0.98</span>
+<span class="nx">USA</span><span class="p">,</span><span class="nx">Corn_Mississippi</span><span class="p">,</span><span class="mi">2020</span><span class="p">,</span><span class="m m-Double">1.08</span><span class="p">,</span><span class="m m-Double">0.97</span>
+<span class="nx">USA</span><span class="p">,</span><span class="nx">Wheat_Amazon</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.02</span><span class="p">,</span><span class="m m-Double">1.01</span>
+<span class="nx">Brazil</span><span class="p">,</span><span class="nx">Soybean_Amazon</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.15</span><span class="p">,</span><span class="m m-Double">0.95</span>
+</code></pre></div>
+
 <h3 id="column-descriptions">Column Descriptions</h3>
 <table>
-<colgroup>
-<col style="width: 21%" />
-<col style="width: 35%" />
-<col style="width: 43%" />
-</colgroup>
 <thead>
 <tr>
 <th>Column</th>
@@ -921,55 +867,51 @@ Brazil,Soybean_Amazon,2015,1.15,0.95</code></pre>
 </tbody>
 </table>
 <h3 id="scalar-value-interpretation">Scalar Value Interpretation</h3>
-<p><strong>Vegetation and Soil Scalars:</strong> - <strong>=
-1.0</strong> - Normal/baseline productivity - <strong>&gt; 1.0</strong>
-- Enhanced productivity (favorable conditions) - <strong>&lt;
-1.0</strong> - Reduced productivity (unfavorable conditions)</p>
-<p><strong>Example:</strong> - Vegetation scalar of 1.15 = 15% increase
-in above-ground productivity - Soil scalar of 0.85 = 15% decrease in
-soil-related productivity</p>
+<p><strong>Vegetation and Soil Scalars:</strong><br />
+- <strong>= 1.0</strong> - Normal/baseline productivity<br />
+- <strong>&gt; 1.0</strong> - Enhanced productivity (favorable conditions)<br />
+- <strong>&lt; 1.0</strong> - Reduced productivity (unfavorable conditions)</p>
+<p><strong>Example:</strong><br />
+- Vegetation scalar of 1.15 = 15% increase in above-ground productivity<br />
+- Soil scalar of 0.85 = 15% decrease in soil-related productivity</p>
 <h3 id="file-naming-conventions">File Naming Conventions</h3>
-<p>EHC scalar files may follow various naming patterns: -
-<code>scalars_YYYY.csv</code> (by year) -
-<code>scalars_YYYY_regionX.csv</code> (by year and region) -
-<code>vegetation_soil_scalars_YYYY.csv</code></p>
-<p>The script handles all files in the directory regardless of naming
-convention.</p>
+<p>EHC scalar files may follow various naming patterns:<br />
+- <code>scalars_YYYY.csv</code> (by year)<br />
+- <code>scalars_YYYY_regionX.csv</code> (by year and region)<br />
+- <code>vegetation_soil_scalars_YYYY.csv</code></p>
+<p>The script handles all files in the directory regardless of naming convention.</p>
 <hr />
-<h2 id="integration-with-e3smgcam-workflow">Integration with E3SM–GCAM
-Workflow</h2>
+<h2 id="integration-with-e3smgcam-workflow">Integration with E3SM–GCAM Workflow</h2>
 <h3 id="complete-workflow">Complete Workflow</h3>
-<pre><code>1. E3SM Simulation Run
-   ↓
-2. EHC generates scalar files
-   ├── control/scalars_*.csv
-   ├── full_feedback/scalars_*.csv
-   └── other_scenarios/scalars_*.csv
-   ↓
-3. gcam_compile_ehc_scalars.py ← YOU ARE HERE
-   ↓
-4. Compiled scalars CSV
-   ↓
-5. Analysis &amp; Visualization
-   ├── gcam_plot_time_series.py
-   ├── gcam_plot_box_and_whiskers.py
-   └── gcam_plot_spatial_data.py</code></pre>
-<h3 id="relationship-to-other-scripts">Relationship to Other
-Scripts</h3>
-<p><strong>Preceding Steps:</strong> - E3SM–GCAM coupled simulation
-generates EHC scalar files - Files are organized by scenario in separate
-directories</p>
-<p><strong>Following Steps:</strong> 1.
-<strong>gcam_plot_time_series.py</strong> - Create time series plots of
-vegetation/soil scalars 2.
-<strong>gcam_plot_box_and_whiskers.py</strong> - Create box plots
-showing scalar distributions 3.
-<strong>gcam_plot_spatial_data.py</strong> - Create spatial maps of
-scalar values 4. <strong>Statistical analysis</strong> - Compare
-scenarios, perform hypothesis tests</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">E3SM</span><span class="w"> </span><span class="n">Simulation</span><span class="w"> </span><span class="kr">Run</span>
+<span class="w">   </span><span class="err">↓</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">EHC</span><span class="w"> </span><span class="n">generates</span><span class="w"> </span><span class="n">scalar</span><span class="w"> </span><span class="n">files</span>
+<span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="kr">cont</span><span class="n">rol</span><span class="o">/</span><span class="n">scalars_</span><span class="o">*</span><span class="mf">.</span><span class="n">csv</span>
+<span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">full_feedback</span><span class="o">/</span><span class="n">scalars_</span><span class="o">*</span><span class="mf">.</span><span class="n">csv</span>
+<span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">other_scenarios</span><span class="o">/</span><span class="n">scalars_</span><span class="o">*</span><span class="mf">.</span><span class="n">csv</span>
+<span class="w">   </span><span class="err">↓</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">gcam_compile_ehc_scalars</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="err">←</span><span class="w"> </span><span class="n">YOU</span><span class="w"> </span><span class="n">ARE</span><span class="w"> </span><span class="n">HERE</span>
+<span class="w">   </span><span class="err">↓</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">Compiled</span><span class="w"> </span><span class="n">scalars</span><span class="w"> </span><span class="n">CSV</span>
+<span class="w">   </span><span class="err">↓</span>
+<span class="mf">5.</span><span class="w"> </span><span class="n">Analysis</span><span class="w"> </span><span class="err">&amp;</span><span class="w"> </span><span class="n">Visualization</span>
+<span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">gcam_plot_time_series</span><span class="mf">.</span><span class="n">py</span>
+<span class="w">   </span><span class="err">├──</span><span class="w"> </span><span class="n">gcam_plot_box_and_whiskers</span><span class="mf">.</span><span class="n">py</span>
+<span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="n">gcam_plot_spatial_data</span><span class="mf">.</span><span class="n">py</span>
+</code></pre></div>
+
+<h3 id="relationship-to-other-scripts">Relationship to Other Scripts</h3>
+<p><strong>Preceding Steps:</strong><br />
+- E3SM–GCAM coupled simulation generates EHC scalar files<br />
+- Files are organized by scenario in separate directories</p>
+<p><strong>Following Steps:</strong><br />
+1. <strong>gcam_plot_time_series.py</strong> - Create time series plots of vegetation/soil scalars<br />
+2. <strong>gcam_plot_box_and_whiskers.py</strong> - Create box plots showing scalar distributions<br />
+3. <strong>gcam_plot_spatial_data.py</strong> - Create spatial maps of scalar values<br />
+4. <strong>Statistical analysis</strong> - Compare scenarios, perform hypothesis tests</p>
 <h3 id="data-flow-example">Data Flow Example</h3>
 <p><strong>Input directories:</strong></p>
-<pre><code>scalars_ehc_output/
+<div class="codehilite"><pre><span></span><code>scalars_ehc_output/
 ├── control/
 │   ├── scalars_2015.csv (500 KB)
 │   ├── scalars_2020.csv (500 KB)
@@ -977,256 +919,278 @@ scenarios, perform hypothesis tests</p>
 └── full_feedback/
     ├── scalars_2015.csv (500 KB)
     ├── scalars_2020.csv (500 KB)
-    └── scalars_2025.csv (500 KB)</code></pre>
+    └── scalars_2025.csv (500 KB)
+</code></pre></div>
+
 <p><strong>Output file:</strong></p>
-<pre><code>scalars_control+full_feedback.csv (3 MB)</code></pre>
-<p>All six input files compiled into one organized dataset ready for
-analysis.</p>
+<div class="codehilite"><pre><span></span><code>scalars_control+full_feedback.csv (3 MB)
+</code></pre></div>
+
+<p>All six input files compiled into one organized dataset ready for analysis.</p>
 <hr />
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="common-issues">Common Issues</h3>
-<p><strong>Problem:</strong> <code>FileNotFoundError</code> - Cannot
-find input directory</p>
-<pre><code>Error: [Errno 2] No such file or directory: &#39;./scalars/control&#39;
+<p><strong>Problem:</strong> <code>FileNotFoundError</code> - Cannot find input directory</p>
+<div class="codehilite"><pre><span></span><code>Error: [Errno 2] No such file or directory: &#39;./scalars/control&#39;
 
 Solution: Verify that input_directories paths are correct. Use absolute 
 paths if running from a different directory. Check for typos in directory 
-names.</code></pre>
+names.
+</code></pre></div>
+
 <p><strong>Problem:</strong> Scenario/directory count mismatch</p>
-<pre><code>Error: Length of scenarios does not match length of input_directories
+<div class="codehilite"><pre><span></span><code><span class="n">Error</span><span class="o">:</span><span class="w"> </span><span class="n">Length</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">scenarios</span><span class="w"> </span><span class="n">does</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="n">length</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">input_directories</span>
 
-Solution: Ensure the scenarios list has exactly the same number of entries 
-as input_directories, and they are in matching order.</code></pre>
+<span class="n">Solution</span><span class="o">:</span><span class="w"> </span><span class="n">Ensure</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">scenarios</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">exactly</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="n">number</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">entries</span><span class="w"> </span>
+<span class="k">as</span><span class="w"> </span><span class="n">input_directories</span><span class="o">,</span><span class="w"> </span><span class="n">and</span><span class="w"> </span><span class="n">they</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">matching</span><span class="w"> </span><span class="n">order</span><span class="o">.</span>
+</code></pre></div>
+
 <p><strong>Problem:</strong> Empty output file</p>
-<pre><code>Solution: Check that the input directories actually contain CSV files. 
-Verify file permissions allow reading. Ensure CSV files have the expected 
-structure with required columns.</code></pre>
-<p><strong>Problem:</strong> Missing columns after processing</p>
-<pre><code>Error: KeyError: &#39;landtype_basin&#39;
+<div class="codehilite"><pre><span></span><code><span class="n">Solution</span><span class="o">:</span><span class="w"> </span><span class="n">Check</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="n">directories</span><span class="w"> </span><span class="n">actually</span><span class="w"> </span><span class="n">contain</span><span class="w"> </span><span class="n">CSV</span><span class="w"> </span><span class="n">files</span><span class="o">.</span><span class="w"> </span>
+<span class="n">Verify</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="n">permissions</span><span class="w"> </span><span class="n">allow</span><span class="w"> </span><span class="n">reading</span><span class="o">.</span><span class="w"> </span><span class="n">Ensure</span><span class="w"> </span><span class="n">CSV</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">have</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">expected</span><span class="w"> </span>
+<span class="n">structure</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">required</span><span class="w"> </span><span class="n">columns</span><span class="o">.</span>
+</code></pre></div>
 
-Solution: Verify that input CSV files contain a &#39;landtype_basin&#39; column 
-(case-insensitive). If EHC output has changed format, you may need to 
-modify the column splitting logic.</code></pre>
+<p><strong>Problem:</strong> Missing columns after processing</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Error</span><span class="o">:</span><span class="w"> </span><span class="n">KeyError</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;landtype_basin&#39;</span>
+
+<span class="n">Solution</span><span class="o">:</span><span class="w"> </span><span class="n">Verify</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="n">CSV</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">contain</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="s1">&#39;landtype_basin&#39;</span><span class="w"> </span><span class="n">column</span><span class="w"> </span>
+<span class="o">(</span><span class="k">case</span><span class="o">-</span><span class="n">insensitive</span><span class="o">).</span><span class="w"> </span><span class="n">If</span><span class="w"> </span><span class="n">EHC</span><span class="w"> </span><span class="n">output</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">changed</span><span class="w"> </span><span class="n">format</span><span class="o">,</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">may</span><span class="w"> </span><span class="n">need</span><span class="w"> </span><span class="n">to</span><span class="w"> </span>
+<span class="n">modify</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="n">splitting</span><span class="w"> </span><span class="n">logic</span><span class="o">.</span>
+</code></pre></div>
+
 <p><strong>Problem:</strong> Crop name standardization not working</p>
-<pre><code>Solution: Ensure call_modify_crop_names is set to true (boolean, not 
-string &quot;true&quot;). Verify that crop names in your files match those defined 
-in utility_gcam.py&#39;s gcam_crop_mappings dictionary.</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">Solution</span><span class="o">:</span><span class="w"> </span><span class="n">Ensure</span><span class="w"> </span><span class="n">call_modify_crop_names</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="kd">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="o">(</span><span class="n">boolean</span><span class="o">,</span><span class="w"> </span><span class="n">not</span><span class="w"> </span>
+<span class="n">string</span><span class="w"> </span><span class="s2">&quot;true&quot;</span><span class="o">).</span><span class="w"> </span><span class="n">Verify</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">crop</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="n">match</span><span class="w"> </span><span class="n">those</span><span class="w"> </span><span class="n">defined</span><span class="w"> </span>
+<span class="k">in</span><span class="w"> </span><span class="n">utility_gcam</span><span class="o">.</span><span class="na">py</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">gcam_crop_mappings</span><span class="w"> </span><span class="n">dictionary</span><span class="o">.</span>
+</code></pre></div>
+
 <h3 id="input-file-requirements">Input File Requirements</h3>
-<p>Individual EHC scalar files must contain: - <strong>Region</strong>
-column - GCAM geographic regions - <strong>Landtype_Basin</strong>
-column - Combined land type and basin information -
-<strong>Year</strong> column - Simulation year -
-<strong>Vegetation</strong> column - Vegetation scalar values -
-<strong>Soil</strong> column - Soil scalar values</p>
-<p><strong>Column names are case-insensitive</strong> (they’re converted
-to lowercase during processing).</p>
+<p>Individual EHC scalar files must contain:<br />
+- <strong>Region</strong> column - GCAM geographic regions<br />
+- <strong>Landtype_Basin</strong> column - Combined land type and basin information<br />
+- <strong>Year</strong> column - Simulation year<br />
+- <strong>Vegetation</strong> column - Vegetation scalar values<br />
+- <strong>Soil</strong> column - Soil scalar values</p>
+<p><strong>Column names are case-insensitive</strong> (they're converted to lowercase during processing).</p>
 <h3 id="data-validation-tips">Data Validation Tips</h3>
 <p>After running the script, verify the output:</p>
-<div class="sourceCode" id="cb26"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the compiled file</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">&#39;scalars_all_scenarios.csv&#39;</span>)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check structure</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.columns)</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Total rows: </span><span class="sc">{</span><span class="bu">len</span>(df)<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Scenarios: </span><span class="sc">{</span>df[<span class="st">&#39;scenario&#39;</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Years: </span><span class="sc">{</span><span class="bu">sorted</span>(df[<span class="st">&#39;year&#39;</span>].unique())<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Land types: </span><span class="sc">{</span>df[<span class="st">&#39;landtype&#39;</span>]<span class="sc">.</span>unique()<span class="sc">}</span><span class="ss">&quot;</span>)</span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for missing values</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.isnull().<span class="bu">sum</span>())</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Check value ranges</span></span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df[[<span class="st">&#39;vegetation&#39;</span>, <span class="st">&#39;soil&#39;</span>]].describe())</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Load the compiled file</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;scalars_all_scenarios.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># Check structure</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total rows: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scenarios: </span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;scenario&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Years: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Land types: </span><span class="si">{</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;landtype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check for missing values</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+<span class="c1"># Check value ranges</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;vegetation&#39;</span><span class="p">,</span> <span class="s1">&#39;soil&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+</code></pre></div>
+
 <h3 id="performance-considerations">Performance Considerations</h3>
-<p><strong>Processing Speed:</strong> - Small datasets (&lt; 100 files,
-&lt; 10 MB total): &lt; 5 seconds - Medium datasets (100-500 files,
-10-100 MB): 10-30 seconds - Large datasets (&gt; 500 files, &gt; 100
-MB): 1-5 minutes</p>
-<p><strong>Memory Usage:</strong> - Scales with total size of input
-files - Multiple configurations processed in parallel - Peak memory ≈
-2-3× total input file size</p>
-<p><strong>Optimization Tips:</strong> 1. <strong>Fewer scenarios per
-run</strong> - Process subsets if memory is limited 2.
-<strong>Pre-filter data</strong> - Remove unnecessary regions/years from
-source files before compilation 3. <strong>Use SSD storage</strong> -
-Significantly faster file I/O for large datasets</p>
+<p><strong>Processing Speed:</strong><br />
+- Small datasets (&lt; 100 files, &lt; 10 MB total): &lt; 5 seconds<br />
+- Medium datasets (100-500 files, 10-100 MB): 10-30 seconds<br />
+- Large datasets (&gt; 500 files, &gt; 100 MB): 1-5 minutes</p>
+<p><strong>Memory Usage:</strong><br />
+- Scales with total size of input files<br />
+- Multiple configurations processed in parallel<br />
+- Peak memory ≈ 2-3× total input file size</p>
+<p><strong>Optimization Tips:</strong><br />
+1. <strong>Fewer scenarios per run</strong> - Process subsets if memory is limited<br />
+2. <strong>Pre-filter data</strong> - Remove unnecessary regions/years from source files before compilation<br />
+3. <strong>Use SSD storage</strong> - Significantly faster file I/O for large datasets</p>
 <hr />
 <h2 id="best-practices">Best Practices</h2>
-<h3 id="organize-source-files">1. Organize Source Files</h3>
+<h3 id="1-organize-source-files">1. Organize Source Files</h3>
 <p>Keep EHC scalar files organized by scenario:</p>
-<pre><code>scalars_ehc_output/
+<div class="codehilite"><pre><span></span><code>scalars_ehc_output/
 ├── control/
 ├── full_feedback/
 ├── ag_scaling/
-└── carbon_scaling/</code></pre>
-<h3 id="use-descriptive-scenario-names">2. Use Descriptive Scenario
-Names</h3>
+└── carbon_scaling/
+</code></pre></div>
+
+<h3 id="2-use-descriptive-scenario-names">2. Use Descriptive Scenario Names</h3>
 <p>Choose clear, meaningful names:</p>
-<div class="sourceCode" id="cb28"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="er">&quot;scenarios&quot;:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">,</span> <span class="st">&quot;Ag scaling&quot;</span><span class="ot">,</span> <span class="st">&quot;Carbon scaling&quot;</span><span class="ot">]</span></span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">]</span>
+</code></pre></div>
+
 <p>Not:</p>
-<div class="sourceCode" id="cb29"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="er">&quot;scenarios&quot;:</span> <span class="ot">[</span><span class="st">&quot;S1&quot;</span><span class="ot">,</span> <span class="st">&quot;S2&quot;</span><span class="ot">,</span> <span class="st">&quot;S3&quot;</span><span class="ot">,</span> <span class="st">&quot;S4&quot;</span><span class="ot">]</span></span></code></pre></div>
-<h3 id="document-your-configuration">3. Document Your Configuration</h3>
-<p>Add comments to your JSON (though note that standard JSON doesn’t
-support comments, you can maintain a separate documentation file):</p>
-<pre><code>scalars_compilation_notes.txt:
-- control: Baseline simulation with no feedbacks
-- full_feedback: Complete two-way coupling between E3SM and GCAM
-- ag_scaling: Agricultural scaling scenario
-- carbon_scaling: Carbon scaling scenario</code></pre>
-<h3 id="version-your-output-files">4. Version Your Output Files</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;S1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;S2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;S3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;S4&quot;</span><span class="p">]</span>
+</code></pre></div>
+
+<h3 id="3-document-your-configuration">3. Document Your Configuration</h3>
+<p>Add comments to your JSON (though note that standard JSON doesn't support comments, you can maintain a separate documentation file):</p>
+<div class="codehilite"><pre><span></span><code>scalars_compilation_notes.txt:
+<span class="k">-</span> control: Baseline simulation with no feedbacks
+<span class="k">-</span> full_feedback: Complete two-way coupling between E3SM and GCAM
+<span class="k">-</span> ag_scaling: Agricultural scaling scenario
+<span class="k">-</span> carbon_scaling: Carbon scaling scenario
+</code></pre></div>
+
+<h3 id="4-version-your-output-files">4. Version Your Output Files</h3>
 <p>Include dates or version numbers in output filenames:</p>
-<div class="sourceCode" id="cb31"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="er">&quot;output_file&quot;:</span> <span class="er">&quot;./scalars_all_scenarios_2025-01-15.csv&quot;</span></span></code></pre></div>
-<h3 id="verify-before-downstream-analysis">5. Verify Before Downstream
-Analysis</h3>
-<p>Always check compiled files before using them for plotting or
-analysis: - Row counts match expectations - All scenarios present - Year
-coverage is complete - No unexpected missing values - Scalar values are
-in reasonable ranges</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./scalars_all_scenarios_2025-01-15.csv&quot;</span>
+</code></pre></div>
+
+<h3 id="5-verify-before-downstream-analysis">5. Verify Before Downstream Analysis</h3>
+<p>Always check compiled files before using them for plotting or analysis:<br />
+- Row counts match expectations<br />
+- All scenarios present<br />
+- Year coverage is complete<br />
+- No unexpected missing values<br />
+- Scalar values are in reasonable ranges</p>
 <hr />
 <h2 id="advanced-usage">Advanced Usage</h2>
 <h3 id="compiling-ensemble-members">Compiling Ensemble Members</h3>
-<p>For ensemble simulations (same scenario with different initial
-conditions):</p>
-<div class="sourceCode" id="cb32"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control_member1&quot;</span><span class="ot">,</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control_member2&quot;</span><span class="ot">,</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control_member3&quot;</span><span class="ot">,</span></span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control_member4&quot;</span><span class="ot">,</span></span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./scalars/control_member5&quot;</span></span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Control_1&quot;</span><span class="ot">,</span> <span class="st">&quot;Control_2&quot;</span><span class="ot">,</span> <span class="st">&quot;Control_3&quot;</span><span class="ot">,</span> </span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Control_4&quot;</span><span class="ot">,</span> <span class="st">&quot;Control_5&quot;</span></span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./scalars_control_ensemble.csv&quot;</span></span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
-<p>This creates individual identifiers for each ensemble member while
-grouping them under the same base scenario name.</p>
+<p>For ensemble simulations (same scenario with different initial conditions):</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control_member1&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control_member2&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control_member3&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control_member4&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./scalars/control_member5&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;Control_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span>
+<span class="w">            </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./scalars_control_ensemble.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>This creates individual identifiers for each ensemble member while grouping them under the same base scenario name.</p>
 <h3 id="processing-time-slices">Processing Time Slices</h3>
 <p>Compile only specific time periods from a long simulation:</p>
-<p><strong>Approach:</strong> Pre-filter files in input directories to
-include only desired years before running the script.</p>
-<div class="sourceCode" id="cb33"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: Move only 2020-2050 files to a temporary directory</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> temp_2020_2050</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> scalars/<span class="pp">*</span>_202<span class="pp">[</span><span class="ss">0</span><span class="pp">-</span><span class="ss">9</span><span class="pp">]</span>.csv temp_2020_2050/</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> scalars/<span class="pp">*</span>_203<span class="pp">[</span><span class="ss">0</span><span class="pp">-</span><span class="ss">9</span><span class="pp">]</span>.csv temp_2020_2050/</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> scalars/<span class="pp">*</span>_204<span class="pp">[</span><span class="ss">0</span><span class="pp">-</span><span class="ss">9</span><span class="pp">]</span>.csv temp_2020_2050/</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> scalars/<span class="pp">*</span>_2050.csv temp_2020_2050/</span></code></pre></div>
-<p>Then reference <code>temp_2020_2050</code> in your JSON
-configuration.</p>
-<h3 id="parallel-processing-of-multiple-compilations">Parallel
-Processing of Multiple Compilations</h3>
-<p>The script automatically processes multiple JSON configuration blocks
-in parallel:</p>
-<div class="sourceCode" id="cb34"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./output1.csv&quot;</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./output2.csv&quot;</span></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="er">...</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./output3.csv&quot;</span></span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
+<p><strong>Approach:</strong> Pre-filter files in input directories to include only desired years before running the script.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Example: Move only 2020-2050 files to a temporary directory</span>
+mkdir<span class="w"> </span>temp_2020_2050
+cp<span class="w"> </span>scalars/*_202<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>.csv<span class="w"> </span>temp_2020_2050/
+cp<span class="w"> </span>scalars/*_203<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>.csv<span class="w"> </span>temp_2020_2050/
+cp<span class="w"> </span>scalars/*_204<span class="o">[</span><span class="m">0</span>-9<span class="o">]</span>.csv<span class="w"> </span>temp_2020_2050/
+cp<span class="w"> </span>scalars/*_2050.csv<span class="w"> </span>temp_2020_2050/
+</code></pre></div>
+
+<p>Then reference <code>temp_2020_2050</code> in your JSON configuration.</p>
+<h3 id="parallel-processing-of-multiple-compilations">Parallel Processing of Multiple Compilations</h3>
+<p>The script automatically processes multiple JSON configuration blocks in parallel:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output1.csv&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output2.csv&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output3.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
 <p>All three compilations run simultaneously on different CPU cores.</p>
 <hr />
 <h2 id="output-file-characteristics">Output File Characteristics</h2>
 <h3 id="structure">Structure</h3>
 <p>Compiled files have a consistent structure:</p>
-<pre class="csv"><code>scenario,region,basin,landtype,year,vegetation,soil
-Control,USA,Amazon,BioenergyCrop,2015,1.05,0.98
-Control,USA,Amazon,BioenergyCrop,2020,1.08,0.97
-...</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nx">scenario</span><span class="p">,</span><span class="nx">region</span><span class="p">,</span><span class="nx">basin</span><span class="p">,</span><span class="nx">landtype</span><span class="p">,</span><span class="nx">year</span><span class="p">,</span><span class="nx">vegetation</span><span class="p">,</span><span class="nx">soil</span>
+<span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">1.05</span><span class="p">,</span><span class="m m-Double">0.98</span>
+<span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2020</span><span class="p">,</span><span class="m m-Double">1.08</span><span class="p">,</span><span class="m m-Double">0.97</span>
+<span class="o">...</span>
+</code></pre></div>
+
 <h3 id="column-order">Column Order</h3>
-<p>Fixed column order (left to right): 1. scenario 2. region 3. basin 4.
-landtype 5. year 6. vegetation 7. soil</p>
+<p>Fixed column order (left to right):<br />
+1. scenario<br />
+2. region<br />
+3. basin<br />
+4. landtype<br />
+5. year<br />
+6. vegetation<br />
+7. soil</p>
 <h3 id="sorting">Sorting</h3>
-<p>Data is sorted hierarchically: 1. Primary sort: scenario
-(alphabetical) 2. Secondary sort: region (alphabetical) 3. Tertiary
-sort: basin (alphabetical) 4. Quaternary sort: landtype (alphabetical)
+<p>Data is sorted hierarchically:<br />
+1. Primary sort: scenario (alphabetical)<br />
+2. Secondary sort: region (alphabetical)<br />
+3. Tertiary sort: basin (alphabetical)<br />
+4. Quaternary sort: landtype (alphabetical)<br />
 5. Quinary sort: year (numerical, ascending)</p>
 <h3 id="file-format">File Format</h3>
 <ul>
 <li><strong>Format:</strong> CSV (Comma-Separated Values)</li>
 <li><strong>Encoding:</strong> UTF-8</li>
-<li><strong>Line endings:</strong> Platform-dependent
-(Unix/Windows)</li>
+<li><strong>Line endings:</strong> Platform-dependent (Unix/Windows)</li>
 <li><strong>Header:</strong> Always included as first row</li>
 </ul>
 <hr />
 <h2 id="execution-time-examples">Execution Time Examples</h2>
 <p>Typical execution times based on dataset size:</p>
 <p><strong>Small dataset:</strong></p>
-<pre><code>Input: 4 scenarios × 10 files × 50 KB each = 2 MB total
-Output: 1 file × 1.5 MB
-Elapsed time: 1.23 seconds</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">Input</span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">scenarios</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="n">KB</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="n">total</span>
+<span class="n">Output</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mf">1.5</span><span class="w"> </span><span class="n">MB</span>
+<span class="n">Elapsed</span><span class="w"> </span><span class="n">time</span><span class="o">:</span><span class="w"> </span><span class="mf">1.23</span><span class="w"> </span><span class="n">seconds</span>
+</code></pre></div>
+
 <p><strong>Medium dataset:</strong></p>
-<pre><code>Input: 4 scenarios × 50 files × 200 KB each = 40 MB total
-Output: 1 file × 30 MB
-Elapsed time: 8.45 seconds</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">Input</span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">scenarios</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="n">KB</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">40</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="n">total</span>
+<span class="n">Output</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="n">MB</span>
+<span class="n">Elapsed</span><span class="w"> </span><span class="n">time</span><span class="o">:</span><span class="w"> </span><span class="mf">8.45</span><span class="w"> </span><span class="n">seconds</span>
+</code></pre></div>
+
 <p><strong>Large dataset:</strong></p>
-<pre><code>Input: 4 scenarios × 200 files × 500 KB each = 400 MB total
-Output: 1 file × 300 MB
-Elapsed time: 45.67 seconds</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">Input</span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">scenarios</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">500</span><span class="w"> </span><span class="n">KB</span><span class="w"> </span><span class="k">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">400</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="n">total</span>
+<span class="n">Output</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">300</span><span class="w"> </span><span class="n">MB</span>
+<span class="n">Elapsed</span><span class="w"> </span><span class="n">time</span><span class="o">:</span><span class="w"> </span><span class="mf">45.67</span><span class="w"> </span><span class="n">seconds</span>
+</code></pre></div>
+
 <p>Console output example:</p>
-<pre><code>Elapsed time processing/compiling the data for scalars_all_scenarios.csv: 8.45 seconds
+<div class="codehilite"><pre><span></span><code>Elapsed time processing/compiling the data for scalars_all_scenarios.csv: 8.45 seconds
 Elapsed time processing/compiling the data for scalars_control+full_feedback.csv: 3.21 seconds
-Elapsed time processing/compiling the data for all files: 8.89 seconds</code></pre>
+Elapsed time processing/compiling the data for all files: 8.89 seconds
+</code></pre></div>
+
 <hr />
 <h2 id="related-documentation">Related Documentation</h2>
-<p>For comprehensive understanding of the E3SM–GCAM analysis workflow,
-refer to:</p>
-<ol type="1">
-<li><strong>GCAM Data Processing Script</strong>
-(<code>gcam_process_extracted_data.py</code>)
-<ul>
-<li>Processes other GCAM CSV outputs</li>
-<li>Similar workflow but for different data types</li>
-</ul></li>
-<li><strong>GCAM Plotting Scripts</strong>
-<ul>
-<li><code>gcam_plot_time_series.py</code> - Visualize scalar changes
-over time</li>
-<li><code>gcam_plot_box_and_whiskers.py</code> - Show scalar
-distributions</li>
-<li><code>gcam_plot_spatial_data.py</code> - Map scalars
-geographically</li>
-</ul></li>
-<li><strong>GitHub Repository</strong>
-<ul>
-<li><a
-href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM–GCAM
-Analysis Scripts</a></li>
-<li>Additional context, examples, and updates</li>
-</ul></li>
-<li><strong>Scientific Background</strong>
-<ul>
-<li><a
-href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DiVittorio
-et al. (2025)</a></li>
-<li>Detailed explanation of EHC scalars and their role in coupled
-modeling</li>
-</ul></li>
+<p>For comprehensive understanding of the E3SM–GCAM analysis workflow, refer to:</p>
+<ol>
+<li>
+<p><strong>GCAM Data Processing Script</strong> (<code>gcam_process_extracted_data.py</code>)<br />
+   - Processes other GCAM CSV outputs<br />
+   - Similar workflow but for different data types</p>
+</li>
+<li>
+<p><strong>GCAM Plotting Scripts</strong><br />
+   - <code>gcam_plot_time_series.py</code> - Visualize scalar changes over time<br />
+   - <code>gcam_plot_box_and_whiskers.py</code> - Show scalar distributions<br />
+   - <code>gcam_plot_spatial_data.py</code> - Map scalars geographically</p>
+</li>
+<li>
+<p><strong>GitHub Repository</strong><br />
+   - <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM–GCAM Analysis Scripts</a><br />
+   - Additional context, examples, and updates</p>
+</li>
+<li>
+<p><strong>Scientific Background</strong><br />
+   - <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DiVittorio et al. (2025)</a><br />
+   - Detailed explanation of EHC scalars and their role in coupled modeling</p>
+</li>
 </ol>
 <hr />
 <h2 id="version-information">Version Information</h2>
@@ -1234,41 +1198,29 @@ modeling</li>
 <strong>Documentation Version:</strong> 1.0<br />
 <strong>Last Updated:</strong> January 2026<br />
 <strong>Python Version:</strong> 3.7+<br />
-<strong>Related Project:</strong> E3SM–GCAM Coupled Modeling
-Framework</p>
+<strong>Related Project:</strong> E3SM–GCAM Coupled Modeling Framework</p>
 <hr />
 <h2 id="support-and-feedback">Support and Feedback</h2>
 <p>For issues, questions, or feedback:</p>
-<ol type="1">
-<li><strong>Check this documentation</strong> for configuration examples
-and troubleshooting</li>
-<li><strong>Verify input file formats</strong> match expected EHC scalar
-structure</li>
-<li><strong>Review console output</strong> for specific error
-messages</li>
-<li><strong>Test with small dataset</strong> before processing large
-compilations</li>
-<li><strong>Consult utility modules</strong>
-(<code>utility_gcam.py</code>) for crop name mappings and other
-details</li>
+<ol>
+<li><strong>Check this documentation</strong> for configuration examples and troubleshooting</li>
+<li><strong>Verify input file formats</strong> match expected EHC scalar structure</li>
+<li><strong>Review console output</strong> for specific error messages</li>
+<li><strong>Test with small dataset</strong> before processing large compilations</li>
+<li><strong>Consult utility modules</strong> (<code>utility_gcam.py</code>) for crop name mappings and other details</li>
 </ol>
 <h3 id="contact-information">Contact Information</h3>
-<p><strong>Authors:</strong> - Philip Myint (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8d5c1d1d6cc89f8d4d4d6d496dfd7ce">[email&#160;protected]</a>) - Lead
-developer - Dalei Hao (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc8cdc0c9c582c4cdc3ecdcc2c2c082cbc3da">[email&#160;protected]</a>) - Co-developer</p>
-<p><strong>Contributors:</strong> - Alan DiVittorio (LBNL) - Sha Feng
-(PNNL) - Eva Sinha (PNNL)</p>
+<p><strong>Authors:</strong><br />
+- Philip Myint (myint1@llnl.gov) - Lead developer<br />
+- Dalei Hao (dalei.hao@pnnl.gov) - Co-developer</p>
+<p><strong>Contributors:</strong><br />
+- Alan DiVittorio (LBNL)<br />
+- Sha Feng (PNNL)<br />
+- Eva Sinha (PNNL)</p>
 <hr />
-<h2 id="appendix-complete-parameter-reference">Appendix: Complete
-Parameter Reference</h2>
+<h2 id="appendix-complete-parameter-reference">Appendix: Complete Parameter Reference</h2>
 <h3 id="quick-reference-table">Quick Reference Table</h3>
 <table>
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 12%" />
-<col style="width: 20%" />
-<col style="width: 18%" />
-<col style="width: 26%" />
-</colgroup>
 <thead>
 <tr>
 <th>Parameter</th>
@@ -1310,31 +1262,30 @@ Parameter Reference</h2>
 </tbody>
 </table>
 <h3 id="template-configuration">Template Configuration</h3>
-<div class="sourceCode" id="cb40"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;input_directories&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./path/to/scenario1/scalars&quot;</span><span class="ot">,</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./path/to/scenario2/scalars&quot;</span><span class="ot">,</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./path/to/scenario3/scalars&quot;</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Scenario 1 Name&quot;</span><span class="ot">,</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Scenario 2 Name&quot;</span><span class="ot">,</span></span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Scenario 3 Name&quot;</span></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;output_file&quot;</span><span class="fu">:</span> <span class="st">&quot;./output/compiled_scalars.csv&quot;</span><span class="fu">,</span></span>
-<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;call_modify_crop_names&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
-<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></s
-        
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_directories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./path/to/scenario1/scalars&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./path/to/scenario2/scalars&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./path/to/scenario3/scalars&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;Scenario 1 Name&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;Scenario 2 Name&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;Scenario 3 Name&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/compiled_scalars.csv&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;call_modify_crop_names&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<hr />
+<p>This documentation provides comprehensive guidance for using the GCAM EHC scalar compilation script to aggregate and prepare EHC-generated scalar files for analysis in coupled E3SM–GCAM simulations.</p>
         <footer>
-            <p>
-                Documentation generated for the E3SM-GCAM Analysis Scripts<br>
-                <strong>Script:</strong> gcam_compile_ehc_scalars.py<br>
-                <strong>Documentation Version:</strong> 1.0<br>
-                <strong>Last Updated:</strong> January 2026
-            </p>
+            <p>GCAM EHC Scalars Compilation Script Documentation<br>
+            <strong>Script:</strong> gcam_compile_ehc_scalars.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

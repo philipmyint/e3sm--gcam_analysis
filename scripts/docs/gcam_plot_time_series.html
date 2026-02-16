@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GCAM Time Series Plotting Script Documentation</title>
-    <style>
-/* 
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,19 +468,20 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1>GCAM Time Series Plotting Script Documentation</h1>
-<h2>Overview</h2>
-<p><strong>Script Name:</strong> <code>gcam_plot_time_series.py</code></p>
-<p><strong>Purpose:</strong> Creates time series plots from GCAM (Global Change Analysis Model) output files with years on the x-axis and user-specified quantities on the y-axis. The script supports both individual scenario plots and ensemble plots (where scenarios are grouped), performs statistical analyses including t-tests, and provides extensive customization options for publication-quality figures.</p>
-<p><strong>Author:</strong> Philip Myint (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e637767607a3f4e6262606220696178">[email&#160;protected]</a>) and Dalei Hao (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5c1c4c9c0cc8bcdc4cae5d5cbcbc98bc2cad3">[email&#160;protected]</a>)</p>
+    <div class="container"><h1 id="gcam-time-series-plotting-script-documentation">GCAM Time Series Plotting Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="overview">Overview</h2>
+<p><strong>Script Name:</strong> <code>gcam_plot_time_series.py</code></p>
+<p><strong>Purpose:</strong> Creates time series plots from GCAM (Global Change Analysis Model) output files with years on the x-axis and user-specified quantities on the y-axis. The script supports both individual scenario plots and ensemble plots (where scenarios are grouped), performs statistical analyses including t-tests, and provides extensive customization options for publication-quality figures.</p>
+<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -500,28 +500,28 @@ footer {
 <li><a href="#best-practices">Best Practices</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>scipy<span class="w"> </span>matplotlib
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports several utility modules that must be in the same directory or Python path:<br />
 - <code>utility_constants</code> - Default constants for plotting<br />
 - <code>utility_dataframes</code> - Functions for reading files and performing t-tests<br />
 - <code>utility_functions</code> - General utility functions<br />
 - <code>utility_gcam</code> - GCAM-specific functions for landtype grouping<br />
 - <strong><code>utility_plots</code></strong> - <strong>Critical plotting utility functions and default values</strong></p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing for multiple plots)</li>
 <li>LaTeX installation (optional, for publication-quality typography)</li>
 </ul>
 <hr />
-<h2>Default Values from utility_plots.py</h2>
+<h2 id="default-values-from-utility_plotspy">Default Values from utility_plots.py</h2>
 <p>The <code>utility_plots.py</code> module defines all default plotting parameters. Understanding these defaults helps you know what happens when you don't specify certain parameters.</p>
-<h3>Figure Dimensions (from utility_plots.py)</h3>
+<h3 id="figure-dimensions-from-utility_plotspy">Figure Dimensions (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -547,7 +547,7 @@ footer {
 </tbody>
 </table>
 <p><strong>Usage:</strong> Figures are 10" × 8" by default, suitable for presentations and papers.</p>
-<h3>Scale and Limits (from utility_plots.py)</h3>
+<h3 id="scale-and-limits-from-utility_plotspy">Scale and Limits (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -572,7 +572,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Font Sizes (from utility_plots.py)</h3>
+<h3 id="font-sizes-from-utility_plotspy">Font Sizes (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -604,7 +604,7 @@ footer {
 </tbody>
 </table>
 <p><strong>Note:</strong> These are publication-quality sizes. For presentations, consider increasing these values.</p>
-<h3>Legend Configuration (from utility_plots.py)</h3>
+<h3 id="legend-configuration-from-utility_plotspy">Legend Configuration (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -634,7 +634,7 @@ footer {
 <p><strong>Auto-calculated Legend Offset:</strong><br />
 - If <code>legend_place_outside = True</code> and <code>legend_num_columns = 1</code>: <code>x_offset = 1.3</code><br />
 - If <code>legend_place_outside = True</code> and <code>legend_num_columns &gt; 1</code>: <code>x_offset = 1 + 0.45 * num_columns</code></p>
-<h3>Line and Marker Styles (from utility_plots.py)</h3>
+<h3 id="line-and-marker-styles-from-utility_plotspy">Line and Marker Styles (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -717,7 +717,7 @@ footer {
  <span class="s1">&#39;|&#39;</span><span class="p">]</span>   <span class="c1"># Vertical line</span>
 </code></pre></div>
 
-<h3>Output Options (from utility_plots.py)</h3>
+<h3 id="output-options-from-utility_plotspy">Output Options (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -745,8 +745,8 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
@@ -754,7 +754,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration block in the JSON file, the script:<br />
 1. <strong>Reads</strong> processed GCAM output CSV files<br />
 2. <strong>Filters</strong> data by scenarios, categories, regions, and years<br />
@@ -764,9 +764,9 @@ footer {
 6. <strong>Generates</strong> publication-quality PDF (and optionally PNG) figures<br />
 7. <strong>Outputs</strong> p-value statistics to text files</p>
 <hr />
-<h2>Plot Types</h2>
+<h2 id="plot-types">Plot Types</h2>
 <p>The script supports two main plot types:</p>
-<h3>1. Individual Plots</h3>
+<h3 id="1-individual-plots">1. Individual Plots</h3>
 <p>Each scenario is plotted as a separate line. Best for:<br />
 - Comparing a small number of scenarios directly<br />
 - Showing all individual simulation runs<br />
@@ -784,7 +784,7 @@ footer {
 <span class="w">  </span><span class="mi">2015</span><span class="w">            </span><span class="mi">2100</span>
 </code></pre></div>
 
-<h3>2. Ensemble Plots</h3>
+<h3 id="2-ensemble-plots">2. Ensemble Plots</h3>
 <p>Scenarios are grouped into sets, and the mean of each set is plotted with error bars representing ±N standard deviations. Best for:<br />
 - Analyzing uncertainty across multiple ensemble members<br />
 - Comparing groups of scenarios with different conditions<br />
@@ -806,8 +806,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Configuration Parameters</h2>
-<h3>Required Parameters</h3>
+<h2 id="configuration-parameters">Configuration Parameters</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -829,7 +829,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Commonly Used Optional Parameters</h3>
+<h3 id="commonly-used-optional-parameters">Commonly Used Optional Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -891,8 +891,8 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Complete Parameter Reference Table</h2>
-<h3>Data Selection Parameters</h3>
+<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
+<h3 id="data-selection-parameters">Data Selection Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1027,7 +1027,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Aggregation &amp; Processing Parameters</h3>
+<h3 id="aggregation-processing-parameters">Aggregation &amp; Processing Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1082,7 +1082,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Figure Dimension Parameters (from utility_plots.py)</h3>
+<h3 id="figure-dimension-parameters-from-utility_plotspy">Figure Dimension Parameters (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -1113,7 +1113,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Plot Styling Parameters</h3>
+<h3 id="plot-styling-parameters">Plot Styling Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1216,7 +1216,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Legend Parameters</h3>
+<h3 id="legend-parameters">Legend Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1274,7 +1274,7 @@ footer {
 <p><strong>Auto-calculated legend_x_offset (from utility_plots.py):</strong><br />
 - If <code>legend_num_columns = 1</code>: Default offset = <code>1.3</code><br />
 - If <code>legend_num_columns &gt; 1</code>: Default offset = <code>1 + 0.45 * legend_num_columns</code></p>
-<h3>Line &amp; Marker Styling Parameters</h3>
+<h3 id="line-marker-styling-parameters">Line &amp; Marker Styling Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1329,7 +1329,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Font Size Parameters (from utility_plots.py)</h3>
+<h3 id="font-size-parameters-from-utility_plotspy">Font Size Parameters (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -1380,7 +1380,7 @@ footer {
 - <strong>Publications:</strong> Use defaults (24pt labels, 20pt ticks, 14pt legend)<br />
 - <strong>Presentations:</strong> Increase by 20-30% (30-32pt labels, 24-26pt ticks, 16-18pt legend)<br />
 - <strong>Posters:</strong> Increase by 50-70% (36-40pt labels, 30-34pt ticks, 20-24pt legend)</p>
-<h3>Statistical Analysis Parameters</h3>
+<h3 id="statistical-analysis-parameters">Statistical Analysis Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1451,7 +1451,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Error Bar Parameters</h3>
+<h3 id="error-bar-parameters">Error Bar Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1475,9 +1475,9 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Detailed Parameter Descriptions</h2>
-<h3>Core Data Parameters</h3>
-<h4><code>output_file</code></h4>
+<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
+<h3 id="core-data-parameters">Core Data Parameters</h3>
+<h4 id="output_file"><code>output_file</code></h4>
 <p><strong>Type:</strong> String (file path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Path to the processed CSV file containing GCAM output data.</p>
@@ -1491,7 +1491,7 @@ footer {
 - Must be CSV format with headers<br />
 - Should have been processed using <code>gcam_process_extracted_data.py</code></p>
 <hr />
-<h4><code>scenarios</code></h4>
+<h4 id="scenarios"><code>scenarios</code></h4>
 <p><strong>Type:</strong> List of strings OR nested list (list of lists)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Specifies which scenarios to plot.</p>
@@ -1530,15 +1530,15 @@ footer {
 - The <code>scenario_sets</code> parameter helps the script detect which format you're using<br />
 - Scenario names do not need to follow any specific naming convention (e.g., they don't need <code>_2</code>, <code>_3</code> suffixes)</p>
 <hr />
-<h4><code>scenario_sets</code></h4>
+<h4 id="scenario_sets"><code>scenario_sets</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No (required for ensemble plots)<br />
 <strong>Default:</strong> <code>None</code><br />
 <strong>Description:</strong> Names for each ensemble group when using nested scenarios.</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">]</span>
 <span class="p">],</span>
 <span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">]</span>
 </code></pre></div>
@@ -1548,7 +1548,7 @@ footer {
 - Second inner list → labeled "Full feedback"<br />
 - Used in legend labels and statistical output</p>
 <hr />
-<h4><code>categories</code></h4>
+<h4 id="categories"><code>categories</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> All categories in the data (minus excluded ones)<br />
@@ -1563,7 +1563,7 @@ footer {
 - If not specified, uses all unique values from the <code>category_label</code> column<br />
 - Can specify landtype groups like "crop", "forest" which will aggregate multiple landtypes</p>
 <hr />
-<h4><code>categories_to_exclude</code></h4>
+<h4 id="categories_to_exclude"><code>categories_to_exclude</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>None</code><br />
@@ -1576,7 +1576,7 @@ footer {
 - Only applies when <code>categories</code> is not explicitly specified<br />
 - Useful for excluding irrelevant or problematic categories</p>
 <hr />
-<h4><code>regions</code></h4>
+<h4 id="regions"><code>regions</code></h4>
 <p><strong>Type:</strong> List of strings OR dictionary<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>["Global"]</code><br />
@@ -1596,8 +1596,8 @@ footer {
 <p><strong>Special Value:</strong><br />
 - <code>"Global"</code> - Aggregates data across all regions</p>
 <hr />
-<h3>Aggregation Parameters</h3>
-<h4><code>aggregation_type_in_each_year</code></h4>
+<h3 id="aggregation-parameters">Aggregation Parameters</h3>
+<h4 id="aggregation_type_in_each_year"><code>aggregation_type_in_each_year</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"area_weighted_mean"</code><br />
@@ -1616,7 +1616,7 @@ footer {
 - Use <code>sum</code> for extensive quantities (totals)<br />
 - Use <code>mean</code> or <code>area_weighted_mean</code> for intensive quantities (rates, prices, scalars)</p>
 <hr />
-<h4><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
+<h4 id="mean_or_sum_if_more_than_one_row_in_same_landtype_group"><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"area_weighted_mean"</code><br />
@@ -1630,22 +1630,22 @@ footer {
 - Only applies when using landtype groups like "crop", "forest", "shrub", etc.<br />
 - Choose based on whether the quantity is intensive (use mean/area_weighted_mean) or extensive (use sum)</p>
 <hr />
-<h3>Plot Styling Parameters</h3>
-<h4><code>plot_directory</code></h4>
+<h3 id="plot-styling-parameters_1">Plot Styling Parameters</h3>
+<h4 id="plot_directory"><code>plot_directory</code></h4>
 <p><strong>Type:</strong> String (directory path)<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"./"</code><br />
 <strong>Description:</strong> Directory where output plots will be saved.</p>
 <p><strong>Examples:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;./../2025_DiVittorio_et_al_gcam/time_series_plots/individual&quot;</span>
-<span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/ensemble_plots&quot;</span>
+<span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/ensemble&quot;</span>
 </code></pre></div>
 
 <p><strong>Behavior:</strong><br />
 - Directory is created automatically if it doesn't exist<br />
 - Can use relative or absolute paths</p>
 <hr />
-<h4><code>plot_name</code></h4>
+<h4 id="plot_name"><code>plot_name</code></h4>
 <p><strong>Type:</strong> String (filename)<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> Auto-generated from output_file name<br />
@@ -1660,7 +1660,7 @@ footer {
 - If full path provided, saved to that location<br />
 - Typically <code>.pdf</code> extension (PNG also generated if <code>produce_png</code> is true)</p>
 <hr />
-<h4><code>plot_percent_difference</code></h4>
+<h4 id="plot_percent_difference"><code>plot_percent_difference</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code><br />
@@ -1679,7 +1679,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>y_scale</code> and <code>x_scale</code></h4>
+<h4 id="y_scale-and-x_scale"><code>y_scale</code> and <code>x_scale</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"linear"</code> (from utility_plots.py)<br />
@@ -1693,7 +1693,7 @@ footer {
 - <code>"log"</code> - For data spanning multiple orders of magnitude<br />
 - <code>"linear"</code> - For most standard plots</p>
 <hr />
-<h4><code>width</code> and <code>height</code></h4>
+<h4 id="width-and-height"><code>width</code> and <code>height</code></h4>
 <p><strong>Type:</strong> Number<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>width = 10</code> inches, <code>height = 8</code> inches (from utility_plots.py)</p>
@@ -1712,7 +1712,7 @@ footer {
 - PDF output is vector (infinite resolution)<br />
 - PNG output (if <code>produce_png: true</code>): Resolution determined by DPI (typically 300 DPI for publications)</p>
 <hr />
-<h4><code>linewidth</code></h4>
+<h4 id="linewidth"><code>linewidth</code></h4>
 <p><strong>Type:</strong> Number<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>2</code> points (from utility_plots.py)</p>
@@ -1727,7 +1727,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>use_latex</code></h4>
+<h4 id="use_latex"><code>use_latex</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code> (from utility_plots.py)</p>
@@ -1751,7 +1751,7 @@ footer {
 
 <p>Result: "Global land area (thousands km²)"</p>
 <hr />
-<h4><code>produce_png</code></h4>
+<h4 id="produce_png"><code>produce_png</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code> (from utility_plots.py)</p>
@@ -1772,8 +1772,8 @@ footer {
 - <code>plot_name.pdf</code> (always)<br />
 - <code>plot_name.png</code> (only if <code>produce_png: true</code>)</p>
 <hr />
-<h3>Legend Configuration</h3>
-<h4><code>legend_place_outside</code></h4>
+<h3 id="legend-configuration">Legend Configuration</h3>
+<h4 id="legend_place_outside"><code>legend_place_outside</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code> (from utility_plots.py), but script changes to <code>true</code></p>
@@ -1792,7 +1792,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>legend_x_offset</code></h4>
+<h4 id="legend_x_offset"><code>legend_x_offset</code></h4>
 <p><strong>Type:</strong> Number<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> Auto-calculated (from utility_plots.py)<br />
@@ -1814,9 +1814,9 @@ footer {
 - Short legend labels: Use default (1.3)<br />
 - Multiple columns: Auto-calculation usually sufficient</p>
 <hr />
-<h3>Font Size Configuration</h3>
+<h3 id="font-size-configuration">Font Size Configuration</h3>
 <p>All font sizes specified in <strong>points</strong> (from utility_plots.py).</p>
-<h4>Default Font Sizes</h4>
+<h4 id="default-font-sizes">Default Font Sizes</h4>
 <table>
 <thead>
 <tr>
@@ -1843,7 +1843,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h4>Font Size Scaling Guidelines</h4>
+<h4 id="font-size-scaling-guidelines">Font Size Scaling Guidelines</h4>
 <p><strong>Rule of Thumb:</strong> All text should be readable at the figure's final display size.</p>
 <p><strong>For Different Media:</strong></p>
 <p><strong>Academic Papers:</strong><br />
@@ -1877,8 +1877,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>JSON Configuration Examples</h2>
-<h3>Example 1: Simple Individual Plot</h3>
+<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
+<h3 id="example-1-simple-individual-plot">Example 1: Simple Individual Plot</h3>
 <p><strong>Purpose:</strong> Compare two scenarios for agricultural commodity prices</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1897,7 +1897,7 @@ footer {
 - Saves to <code>./plots/</code> directory<br />
 - Uses LaTeX for text rendering</p>
 <hr />
-<h3>Example 2: Excluding Specific Categories</h3>
+<h3 id="example-2-excluding-specific-categories">Example 2: Excluding Specific Categories</h3>
 <p><strong>Purpose:</strong> Plot all categories except unwanted ones</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1914,7 +1914,7 @@ footer {
 - Excludes "UnmanagedLand" and "Forest"<br />
 - Useful when you want most categories but need to remove a few</p>
 <hr />
-<h3>Example 3: Percent Difference Plot</h3>
+<h3 id="example-3-percent-difference-plot">Example 3: Percent Difference Plot</h3>
 <p><strong>Purpose:</strong> Show relative changes from baseline scenario</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1932,7 +1932,7 @@ footer {
 - Y-axis automatically labeled with "% difference"<br />
 - Useful for highlighting relative changes</p>
 <hr />
-<h3>Example 4: Regional Comparison</h3>
+<h3 id="example-4-regional-comparison">Example 4: Regional Comparison</h3>
 <p><strong>Purpose:</strong> Compare specific regions for selected categories</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1953,7 +1953,7 @@ footer {
 - Each category gets its own marker shape<br />
 - Legend positioned outside plot area</p>
 <hr />
-<h3>Example 5: Ensemble Plot with Error Bars</h3>
+<h3 id="example-5-ensemble-plot-with-error-bars">Example 5: Ensemble Plot with Error Bars</h3>
 <p><strong>Purpose:</strong> Compare ensemble sets with uncertainty quantification</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv&quot;</span><span class="p">,</span>
@@ -1977,7 +1977,7 @@ footer {
 - Shows uncertainty across ensemble members<br />
 - Custom legend positioning</p>
 <hr />
-<h3>Example 6: Ensemble Percent Difference</h3>
+<h3 id="example-6-ensemble-percent-difference">Example 6: Ensemble Percent Difference</h3>
 <p><strong>Purpose:</strong> Show ensemble uncertainty in relative changes</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv&quot;</span><span class="p">,</span>
@@ -2000,7 +2000,7 @@ footer {
 - Shows Full feedback ensemble as % change from Control ensemble<br />
 - Error bars represent uncertainty in the percent difference</p>
 <hr />
-<h3>Example 7: CO2 Emissions (Sum Aggregation)</h3>
+<h3 id="example-7-co2-emissions-sum-aggregation">Example 7: CO2 Emissions (Sum Aggregation)</h3>
 <p><strong>Purpose:</strong> Plot total CO2 emissions by region</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/co2_emissions_regions_processed.csv&quot;</span><span class="p">,</span>
@@ -2017,7 +2017,7 @@ footer {
 - Plots all regions in the file<br />
 - Compares two scenarios</p>
 <hr />
-<h3>Example 8: Sectoral Emissions with Regional Detail</h3>
+<h3 id="example-8-sectoral-emissions-with-regional-detail">Example 8: Sectoral Emissions with Regional Detail</h3>
 <p><strong>Purpose:</strong> Compare specific sectors across multiple regions</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors_processed.csv&quot;</span><span class="p">,</span>
@@ -2037,7 +2037,7 @@ footer {
 - Sum aggregation for emissions<br />
 - Different combinations of line colors/styles/markers for visual distinction</p>
 <hr />
-<h3>Example 9: Vegetation Scalars</h3>
+<h3 id="example-9-vegetation-scalars">Example 9: Vegetation Scalars</h3>
 <p><strong>Purpose:</strong> Plot EHC vegetation scalars for landtype groups</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
@@ -2061,7 +2061,7 @@ footer {
 - Custom y-axis label<br />
 - Specific plot filename</p>
 <hr />
-<h3>Example 10: Soil Scalars</h3>
+<h3 id="example-10-soil-scalars">Example 10: Soil Scalars</h3>
 <p><strong>Purpose:</strong> Plot EHC soil scalars for landtype groups</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
@@ -2084,16 +2084,12 @@ footer {
 - Different value column ("soil" instead of "vegetation")<br />
 - Different y-axis label</p>
 <hr />
-<h3>Example 11: Single Ensemble Set (Control Only)</h3>
+<h3 id="example-11-single-ensemble-set-control-only">Example 11: Single Ensemble Set (Control Only)</h3>
 <p><strong>Purpose:</strong> Show uncertainty within Control scenario ensemble</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_4&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_5&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble_control_only&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;plot_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;time_series_vegetation_scalars.pdf&quot;</span><span class="p">,</span>
@@ -2114,16 +2110,13 @@ footer {
 - Shows internal ensemble variability<br />
 - Useful for understanding baseline uncertainty</p>
 <hr />
-<h3>Example 12: Land Allocation with Area Aggregation</h3>
+<h3 id="example-12-land-allocation-with-area-aggregation">Example 12: Land Allocation with Area Aggregation</h3>
 <p><strong>Purpose:</strong> Show global land area changes over time with original crop names</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/land_allocation_processed_original_crop_names_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
@@ -2147,7 +2140,7 @@ footer {
 - Sums across all regions for global total<br />
 - LaTeX formatting in y-axis label ($^2$ for superscript)</p>
 <hr />
-<h3>Example 13: Land Allocation with Modified Crop Names</h3>
+<h3 id="example-13-land-allocation-with-modified-crop-names">Example 13: Land Allocation with Modified Crop Names</h3>
 <p><strong>Purpose:</strong> Same as Example 12 but with modified (standardized) crop names</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/land_allocation_processed_ensemble.csv&quot;</span><span class="p">,</span>
@@ -2177,10 +2170,10 @@ footer {
 - Standardized crop names for consistency<br />
 - Otherwise identical to Example 12</p>
 <hr />
-<h2>Statistical Analysis</h2>
-<h3>T-Tests Performed</h3>
+<h2 id="statistical-analysis">Statistical Analysis</h2>
+<h3 id="t-tests-performed">T-Tests Performed</h3>
 <p>The script automatically performs t-tests to compare:</p>
-<h4>1. Scenario Comparisons (Individual Plots)</h4>
+<h4 id="1-scenario-comparisons-individual-plots">1. Scenario Comparisons (Individual Plots)</h4>
 <ul>
 <li>Compares first scenario vs. each other scenario</li>
 <li>Performed for each category and region combination</li>
@@ -2193,7 +2186,7 @@ footer {
 <span class="n">Test</span><span class="o">:</span><span class="w"> </span><span class="n">Independent</span><span class="w"> </span><span class="n">samples</span><span class="w"> </span><span class="n">t</span><span class="o">-</span><span class="n">test</span>
 </code></pre></div>
 
-<h4>2. Ensemble Comparisons (Ensemble Plots)</h4>
+<h4 id="2-ensemble-comparisons-ensemble-plots">2. Ensemble Comparisons (Ensemble Plots)</h4>
 <ul>
 <li>Compares first ensemble set vs. each other set</li>
 <li>Year-by-year t-tests</li>
@@ -2206,7 +2199,7 @@ footer {
 <span class="n">Overall</span><span class="o">:</span><span class="w"> </span><span class="n">t</span><span class="o">-</span><span class="n">test</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">Control</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="n">vs</span><span class="o">.</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">Full</span><span class="w"> </span><span class="n">feedback</span><span class="w"> </span><span class="n">data</span>
 </code></pre></div>
 
-<h4>3. Regional Comparisons</h4>
+<h4 id="3-regional-comparisons">3. Regional Comparisons</h4>
 <ul>
 <li>When single scenario with multiple regions</li>
 <li>Compares first region vs. each other region</li>
@@ -2217,7 +2210,7 @@ footer {
 <span class="n">Test</span><span class="o">:</span><span class="w"> </span><span class="n">Independent</span><span class="w"> </span><span class="n">samples</span><span class="w"> </span><span class="n">t</span><span class="o">-</span><span class="n">test</span>
 </code></pre></div>
 
-<h3>Interpretation of Results</h3>
+<h3 id="interpretation-of-results">Interpretation of Results</h3>
 <p><strong>P-Value Output File:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="o">============================================================</span>
 <span class="nl">Plot:</span><span class="w"> </span><span class="p">.</span><span class="o">/</span><span class="n">plots</span><span class="o">/</span><span class="n">time_series_emissions</span><span class="p">.</span><span class="n">pdf</span>
@@ -2236,7 +2229,7 @@ footer {
 - Markers appear on plot lines at years where difference is significant<br />
 - Size controlled by <code>p_value_marker_size</code> (default 10)<br />
 - Color typically matches the line color</p>
-<h3>Controlling Statistical Analysis</h3>
+<h3 id="controlling-statistical-analysis">Controlling Statistical Analysis</h3>
 <p><strong>P-Value Threshold:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;p_value_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span><span class="w">  </span><span class="c1">// Standard significance level</span>
@@ -2258,7 +2251,7 @@ footer {
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Statistical Considerations</h3>
+<h3 id="statistical-considerations">Statistical Considerations</h3>
 <p><strong>Multiple Testing:</strong><br />
 - Be aware of multiple comparison problem<br />
 - With many categories/regions/scenarios, some significant results expected by chance<br />
@@ -2277,8 +2270,8 @@ footer {
 - Non-significant: Cannot conclude there is a difference (doesn't prove no difference)<br />
 - Consider effect size along with statistical significance</p>
 <hr />
-<h2>Plotting Customization Details</h2>
-<h3>Understanding Color Assignment</h3>
+<h2 id="plotting-customization-details">Plotting Customization Details</h2>
+<h3 id="understanding-color-assignment">Understanding Color Assignment</h3>
 <p><strong>For Individual Plots:</strong><br />
 - If 1-2 scenarios: Colors assigned by <strong>category</strong><br />
 - If 3+ scenarios: Colors assigned by <strong>scenario</strong></p>
@@ -2302,7 +2295,7 @@ Individual plot with 5 scenarios:
 ...
 </code></pre></div>
 
-<h3>Understanding Line Styles</h3>
+<h3 id="understanding-line-styles">Understanding Line Styles</h3>
 <p><strong>Assignment:</strong><br />
 - Line styles (solid, dashed, dotted, etc.) are assigned by <strong>region</strong><br />
 - First region: Solid line<br />
@@ -2318,7 +2311,7 @@ Individual plot with 5 scenarios:
 <span class="o">-</span><span class="w"> </span><span class="nl">China:</span><span class="w"> </span><span class="n">Dotted</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="p">(</span><span class="err">·</span><span class="w"> </span><span class="err">·</span><span class="w"> </span><span class="err">·</span><span class="w"> </span><span class="err">·</span><span class="p">)</span>
 </code></pre></div>
 
-<h3>Understanding Markers</h3>
+<h3 id="understanding-markers">Understanding Markers</h3>
 <p><strong>Assignment:</strong><br />
 - Markers (shapes) are assigned by <strong>category</strong><br />
 - First category: Circle (o)<br />
@@ -2334,7 +2327,7 @@ Individual plot with 5 scenarios:
 - Corn: Triangle up markers (△)
 </code></pre></div>
 
-<h3>3-Dimensional Visual Encoding</h3>
+<h3 id="3-dimensional-visual-encoding">3-Dimensional Visual Encoding</h3>
 <p>The script uses a sophisticated system to ensure visual distinction:</p>
 <p><strong>3-Dimensional Visual Encoding:</strong><br />
 1. <strong>Color</strong> → Assigned by scenario (or category if few scenarios)<br />
@@ -2353,7 +2346,7 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 = Orange dashed line with triangle markers
 </code></pre></div>
 
-<h3>Customizing for Different Media</h3>
+<h3 id="customizing-for-different-media">Customizing for Different Media</h3>
 <p><strong>For Papers (7" × 5" typical journal figure):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;width&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
@@ -2402,8 +2395,8 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 </code></pre></div>
 
 <hr />
-<h2>Output Files</h2>
-<h3>Plot Files</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="plot-files">Plot Files</h3>
 <p><strong>PDF Format (default from utility_plots.py):</strong><br />
 - Vector graphics (scalable without quality loss)<br />
 - Small file size<br />
@@ -2419,7 +2412,7 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 <p><strong>File Naming:</strong><br />
 - PDF: <code>plot_name.pdf</code> or auto-generated name<br />
 - PNG: <code>plot_name.png</code> (same base name as PDF)</p>
-<h3>P-Value Files</h3>
+<h3 id="p-value-files">P-Value Files</h3>
 <p><strong>Location:</strong> <code>plot_directory/p_values.dat</code> (or custom location)</p>
 <p><strong>Content:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="o">============================================================</span>
@@ -2438,8 +2431,8 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 - Asterisk (<em>) marks significant results (p &lt; threshold)<br />
 - Double asterisk (</em>*) for highly significant (p &lt; 0.01, if used)</p>
 <hr />
-<h2>Advanced Features</h2>
-<h3>Landtype Grouping</h3>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="landtype-grouping">Landtype Grouping</h3>
 <p>The script supports two levels of landtype aggregation:</p>
 <p><strong>Modified Groups (default):</strong><br />
 - Aggregates GCAM landtypes into major categories<br />
@@ -2457,7 +2450,7 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 </code></pre></div>
 
 <hr />
-<h3>Area-Weighted Calculations</h3>
+<h3 id="area-weighted-calculations">Area-Weighted Calculations</h3>
 <p>When data includes an <code>area</code> column:</p>
 <p><strong>Area-Weighted Mean:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">weighted_mean</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">value</span> <span class="err">×</span> <span class="n">area</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
@@ -2480,7 +2473,7 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 </code></pre></div>
 
 <hr />
-<h3>Parallel Processing</h3>
+<h3 id="parallel-processing">Parallel Processing</h3>
 <p>The script processes multiple plot configurations in parallel:</p>
 <p><strong>Command:</strong></p>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_time_series.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
@@ -2489,10 +2482,10 @@ Scenario B (Orange) + Region China (Dashed) + Category Wheat (Triangle)
 <p><strong>Behavior:</strong><br />
 - Each JSON configuration file processed independently<br />
 - All plots within a file created sequentially<br />
-- Utilizes all available CPU cores<br />
+- Utilizes parallel processing with limited cores to reduce memory pressure<br />
 - Significantly faster for many plots</p>
 <hr />
-<h3>Error Handling</h3>
+<h3 id="error-handling">Error Handling</h3>
 <p><strong>NaN Values in Area-Weighted Means:</strong></p>
 <p>When total area is zero, area-weighted mean becomes NaN.</p>
 <p><strong>Option 1 - Set to Zero:</strong></p>
@@ -2511,9 +2504,9 @@ Years with NaN values will not appear on the plot.
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Common Issues</h3>
-<h4>Issue 1: File Not Found Error</h4>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="issue-1-file-not-found-error">Issue 1: File Not Found Error</h4>
 <p><strong>Error:</strong> <code>FileNotFoundError: output_file not found</code></p>
 <p><strong>Solutions:</strong><br />
 - Verify file path is correct<br />
@@ -2521,7 +2514,7 @@ Years with NaN values will not appear on the plot.
 - Check file has been processed by <code>gcam_process_extracted_data.py</code><br />
 - Ensure CSV extension is included in filename</p>
 <hr />
-<h4>Issue 2: Column Not Found</h4>
+<h4 id="issue-2-column-not-found">Issue 2: Column Not Found</h4>
 <p><strong>Error:</strong> <code>KeyError: 'landtype'</code></p>
 <p><strong>Causes:</strong><br />
 - <code>category_label</code> doesn't match actual column name<br />
@@ -2538,7 +2531,7 @@ Years with NaN values will not appear on the plot.
 <li>Ensure file was processed correctly</li>
 </ul>
 <hr />
-<h4>Issue 3: LaTeX Errors</h4>
+<h4 id="issue-3-latex-errors">Issue 3: LaTeX Errors</h4>
 <p><strong>Error:</strong> <code>RuntimeError: Failed to process string with tex</code></p>
 <p><strong>Causes:</strong><br />
 - LaTeX not installed<br />
@@ -2557,7 +2550,7 @@ Years with NaN values will not appear on the plot.
 </code></pre></div>
 
 <hr />
-<h4>Issue 4: Empty or Missing Categories</h4>
+<h4 id="issue-4-empty-or-missing-categories">Issue 4: Empty or Missing Categories</h4>
 <p><strong>Error:</strong> No data appears on plot</p>
 <p><strong>Causes:</strong><br />
 - Category names don't match CSV file<br />
@@ -2576,7 +2569,7 @@ Years with NaN values will not appear on the plot.
 <li>Ensure <code>categories_to_exclude</code> isn't too broad</li>
 </ul>
 <hr />
-<h4>Issue 5: Legend Overlap</h4>
+<h4 id="issue-5-legend-overlap">Issue 5: Legend Overlap</h4>
 <p><strong>Symptom:</strong> Legend covers plot data</p>
 <p><strong>Solutions:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;legend_place_outside&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
@@ -2594,7 +2587,7 @@ Years with NaN values will not appear on the plot.
 </code></pre></div>
 
 <hr />
-<h4>Issue 6: Ensemble Structure Mismatch</h4>
+<h4 id="issue-6-ensemble-structure-mismatch">Issue 6: Ensemble Structure Mismatch</h4>
 <p><strong>Error:</strong> <code>ValueError: All inner lists must have same length</code></p>
 <p><strong>Cause:</strong> Nested scenario lists have different lengths</p>
 <p><strong>Solution:</strong></p>
@@ -2612,7 +2605,7 @@ Years with NaN values will not appear on the plot.
 </code></pre></div>
 
 <hr />
-<h4>Issue 7: Plot Text Too Small/Large</h4>
+<h4 id="issue-7-plot-text-too-smalllarge">Issue 7: Plot Text Too Small/Large</h4>
 <p><strong>Symptom:</strong> Text unreadable or overwhelming</p>
 <p><strong>Solution - Increase all font sizes proportionally:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -2629,7 +2622,7 @@ Years with NaN values will not appear on the plot.
 - Presentation × 1.3-1.4<br />
 - Poster × 1.5-2.0</p>
 <hr />
-<h4>Issue 8: Colors Look Similar</h4>
+<h4 id="issue-8-colors-look-similar">Issue 8: Colors Look Similar</h4>
 <p><strong>Cause:</strong> Using more than 21 scenarios/categories (exceeds color palette from utility_plots.py)</p>
 <p><strong>Solutions:</strong><br />
 1. Reduce number of scenarios on single plot<br />
@@ -2648,7 +2641,7 @@ Years with NaN values will not appear on the plot.
 - <a href="https://colororacle.org">Color Oracle</a> - Test for color blindness<br />
 - <a href="https://colorbrewer2.org">ColorBrewer</a> - Scientific color schemes</p>
 <hr />
-<h4>Issue 9: Lines Too Thin/Thick</h4>
+<h4 id="issue-9-lines-too-thinthick">Issue 9: Lines Too Thin/Thick</h4>
 <p><strong>Solution:</strong><br />
 Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;linewidth&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.5</span><span class="w">  </span><span class="c1">// Thinner</span>
@@ -2661,7 +2654,7 @@ Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 - Presentations: 3-4<br />
 - Posters: 4-5</p>
 <hr />
-<h4>Issue 10: Area-Weighted Mean Gives NaN</h4>
+<h4 id="issue-10-area-weighted-mean-gives-nan">Issue 10: Area-Weighted Mean Gives NaN</h4>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nv">Area</span><span class="o">-</span><span class="nv">weighted</span><span class="w"> </span><span class="nv">mean</span><span class="w"> </span><span class="nv">resulted</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">NaN</span><span class="w"> </span><span class="nv">because</span><span class="w"> </span><span class="nv">total</span><span class="w"> </span><span class="nv">area</span><span class="w"> </span><span class="nv">is</span><span class="w"> </span><span class="nv">zero</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">some</span><span class="w"> </span><span class="nv">years</span>.
 </code></pre></div>
@@ -2681,8 +2674,8 @@ Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 </code></pre></div>
 
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Organization</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-organization">1. Organization</h3>
 <p><strong>Directory Structure:</strong></p>
 <div class="codehilite"><pre><span></span><code>project/
 ├── data/
@@ -2702,7 +2695,7 @@ Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 </code></pre></div>
 
 <hr />
-<h3>2. Naming Conventions</h3>
+<h3 id="2-naming-conventions">2. Naming Conventions</h3>
 <p><strong>Scenario Names:</strong><br />
 - Use descriptive names: "Control", "Full feedback", not "S1", "S2"<br />
 - Be consistent across ensemble members: "Control", "Control_2", not "Control", "Control_v2"</p>
@@ -2711,7 +2704,7 @@ Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 - Include date for versions: <code>emissions_2026-01-20.pdf</code><br />
 - Use underscores not spaces: <code>time_series_vegetation_scalars.pdf</code></p>
 <hr />
-<h3>3. Configuration Management</h3>
+<h3 id="3-configuration-management">3. Configuration Management</h3>
 <p><strong>Separate Configurations:</strong><br />
 - One config per analysis type<br />
 - Individual plots vs. ensemble plots<br />
@@ -2735,7 +2728,7 @@ Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 </code></pre></div>
 
 <hr />
-<h3>4. Choosing Figure Dimensions</h3>
+<h3 id="4-choosing-figure-dimensions">4. Choosing Figure Dimensions</h3>
 <p><strong>Start with defaults (from utility_plots.py):</strong><br />
 - Width: 10 inches<br />
 - Height: 8 inches<br />
@@ -2763,7 +2756,7 @@ Adjust <code>linewidth</code> (default 2 from utility_plots.py):</p>
 </code></pre></div>
 
 <hr />
-<h3>5. Color Scheme Best Practices</h3>
+<h3 id="5-color-scheme-best-practices">5. Color Scheme Best Practices</h3>
 <p><strong>Use Default Palette (from utility_plots.py):</strong><br />
 The 21-color palette is carefully chosen for:<br />
 - Distinction (colors easily told apart)<br />
@@ -2789,7 +2782,7 @@ The 21-color palette is carefully chosen for:<br />
 </code></pre></div>
 
 <hr />
-<h3>6. Statistical Rigor</h3>
+<h3 id="6-statistical-rigor">6. Statistical Rigor</h3>
 <p><strong>Multiple Testing:</strong><br />
 - Be aware of multiple comparison problem<br />
 - With many categories/regions/scenarios, some significant results expected by chance (5% with p=0.05)<br />
@@ -2813,7 +2806,7 @@ The 21-color palette is carefully chosen for:<br />
 - Individual plots: n = number of years<br />
 - Ensemble plots: n = number of members × number of years</p>
 <hr />
-<h3>7. Data Preparation</h3>
+<h3 id="7-data-preparation">7. Data Preparation</h3>
 <p><strong>Before Plotting:</strong><br />
 1. Process with <code>gcam_process_extracted_data.py</code><br />
 2. Add areas with <code>gcam_add_areas_to_files.py</code> (if needed for area-weighted means)<br />
@@ -2843,7 +2836,7 @@ The 21-color palette is carefully chosen for:<br />
 </code></pre></div>
 
 <hr />
-<h3>8. Iterative Workflow</h3>
+<h3 id="8-iterative-workflow">8. Iterative Workflow</h3>
 <p><strong>Recommended Process:</strong><br />
 1. <strong>Start simple:</strong> One scenario, one category, short time range<br />
 2. <strong>Verify plot:</strong> Check it looks reasonable<br />
@@ -2883,7 +2876,7 @@ The 21-color palette is carefully chosen for:<br />
 </code></pre></div>
 
 <hr />
-<h3>9. Performance Optimization</h3>
+<h3 id="9-performance-optimization">9. Performance Optimization</h3>
 <p><strong>For Faster Execution:</strong><br />
 1. Disable LaTeX for drafts: <code>"use_latex": false</code><br />
 2. Use PDF only (no PNG): <code>"produce_png": false</code><br />
@@ -2896,7 +2889,7 @@ The 21-color palette is carefully chosen for:<br />
 - Large ensemble plots (many members, categories, regions) use more memory<br />
 - If memory issues occur, reduce number of elements or split into multiple plots</p>
 <hr />
-<h3>10. Quality Control Checklist</h3>
+<h3 id="10-quality-control-checklist">10. Quality Control Checklist</h3>
 <p>Before finalizing plots:</p>
 <p><strong>Visual:</strong><br />
 - [ ] All text legible at final size<br />
@@ -2918,8 +2911,8 @@ The 21-color palette is carefully chosen for:<br />
 - [ ] PNG format for presentations (if needed)<br />
 - [ ] Configuration file saved for reproducibility</p>
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical Workflow</h3>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-workflow">Typical Workflow</h3>
 <div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">gcam_extract_csv_from_project_files</span><span class="mf">.</span><span class="n">R</span>
 <span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
 
@@ -2938,7 +2931,7 @@ The 21-color palette is carefully chosen for:<br />
 <span class="mf">6.</span><span class="w"> </span><span class="n">Analysis</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">publication</span>
 </code></pre></div>
 
-<h3>Related Scripts</h3>
+<h3 id="related-scripts">Related Scripts</h3>
 <p><strong><code>gcam_plot_box_and_whiskers.py</code></strong><br />
 - Complementary visualization<br />
 - Shows distributions instead of time series<br />
@@ -2953,8 +2946,8 @@ The 21-color palette is carefully chosen for:<br />
 - Box plots: Statistical distribution<br />
 - Spatial plots: Geographic patterns</p>
 <hr />
-<h2>Performance Considerations</h2>
-<h3>Execution Time</h3>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="execution-time">Execution Time</h3>
 <p><strong>Factors:</strong><br />
 - Number of configurations<br />
 - Number of scenarios/ensemble members<br />
@@ -2978,8 +2971,8 @@ The 21-color palette is carefully chosen for:<br />
 - Large ensemble plots: Up to 500 MB RAM<br />
 - Python process overhead: ~100 MB</p>
 <hr />
-<h2>Appendix: Complete Default Values</h2>
-<h3>From gcam_plot_time_series.py</h3>
+<h2 id="appendix-complete-default-values">Appendix: Complete Default Values</h2>
+<h3 id="from-gcam_plot_time_seriespy">From gcam_plot_time_series.py</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="s1">&#39;aggregation_type_in_each_year&#39;</span><span class="p">:</span> <span class="s1">&#39;area_weighted_mean&#39;</span><span class="p">,</span>
     <span class="s1">&#39;category_label&#39;</span><span class="p">:</span> <span class="s1">&#39;sector&#39;</span><span class="p">,</span>
@@ -3014,7 +3007,7 @@ The 21-color palette is carefully chosen for:<br />
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>From utility_plots.py</h3>
+<h3 id="from-utility_plotspy">From utility_plots.py</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1"># inches</span>
     <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>  <span class="c1"># inches</span>
@@ -3064,15 +3057,15 @@ The 21-color palette is carefully chosen for:<br />
 </code></pre></div>
 
 <hr />
-<h2>Quick Reference: Common Configurations</h2>
-<h3>Minimal Configuration</h3>
+<h2 id="quick-reference-common-configurations">Quick Reference: Common Configurations</h2>
+<h3 id="minimal-configuration">Minimal Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Standard Configuration</h3>
+<h3 id="standard-configuration">Standard Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
@@ -3083,7 +3076,7 @@ The 21-color palette is carefully chosen for:<br />
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Publication Configuration</h3>
+<h3 id="publication-configuration">Publication Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
@@ -3103,7 +3096,7 @@ The 21-color palette is carefully chosen for:<br />
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Presentation Configuration</h3>
+<h3 id="presentation-configuration">Presentation Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
@@ -3123,7 +3116,7 @@ The 21-color palette is carefully chosen for:<br />
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Full Ensemble Configuration</h3>
+<h3 id="full-ensemble-configuration">Full Ensemble Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -3150,7 +3143,7 @@ The 21-color palette is carefully chosen for:<br />
 </code></pre></div>
 
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>DiVittorio et al. (2025). "E3SM-GCAM coupling methodology and applications." <em>Journal of Advances in Modeling Earth Systems</em>. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
@@ -3160,12 +3153,12 @@ The 21-color palette is carefully chosen for:<br />
 <li>Matplotlib Line Styles: <a href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="96fbeffff8e2a7d6fafaf8fab8f1f9e0">[email&#160;protected]</a><br />
-- <strong>Dalei Hao</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="593d38353c30773138361929373735773e362f">[email&#160;protected]</a></p>
+- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
+- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> gcam_plot_time_series.py<br />
 <strong>Utility Module:</strong> utility_plots.py<br />
 <strong>Documentation Version:</strong> 2.0<br />
@@ -3173,7 +3166,11 @@ The 21-color palette is carefully chosen for:<br />
 <strong>Python Version:</strong> 3.7+</p>
 <hr />
 <p><em>This documentation provides comprehensive guidance for using the <code>gcam_plot_time_series.py</code> script, including detailed default values from <code>utility_plots.py</code> for precise control over plot appearance.</em></p>
-        
         <footer>
-            <p>
-                Comprehensive documentation with detai
+            <p>GCAM Time Series Plotting Script Documentation<br>
+            <strong>Script:</strong> gcam_plot_time_series.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
+        </footer>
+    </div>
+</body>
+</html>

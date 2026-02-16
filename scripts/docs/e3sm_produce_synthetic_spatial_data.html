@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Synthetic Spatial Data Generation Documentation</title>
+    <title>E3SM Synthetic Spatial Data Generation Script Documentation</title>
     <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
@@ -471,15 +471,18 @@ footer {
 </style>
 </head>
 <body>
-    <div class="container"><h1>E3SM Synthetic Spatial Data Generation Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="e3sm-synthetic-spatial-data-generation-script-documentation">E3SM Synthetic Spatial Data Generation Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
+<h2 id="overview">Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_produce_synthetic_spatial_data.py</code></p>
 <p><strong>Purpose:</strong> Generates synthetic ensemble members from existing E3SM spatial NetCDF files by applying random perturbations to create multiple realizations for uncertainty quantification and ensemble analysis. This is particularly useful for statistical significance testing, sensitivity analysis, and creating pseudo-ensembles when limited simulation data is available.</p>
 <p><strong>Key Use Case:</strong> Creating synthetic ensemble members to enable statistical testing (e.g., t-tests, ensemble means) when only single simulation outputs exist. Common in climate model analysis for assessing spatial variability and statistical significance of differences between scenarios.</p>
-<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -495,19 +498,19 @@ footer {
 <li><a href="#scientific-considerations">Scientific Considerations</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>xarray<span class="w"> </span>netCDF4<span class="w"> </span>multiprocessing
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports utility modules (though none are strictly required for this script):<br />
 - <code>utility_e3sm_netcdf</code> (not used in current implementation)<br />
 - <code>utility_functions</code> (not used in current implementation)<br />
 - <code>utility_dataframes</code> (not used in current implementation)<br />
 - <code>utility_xarray</code> (not used in current implementation)</p>
 <p><strong>Note:</strong> These imports can be removed if not needed.</p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
@@ -515,13 +518,13 @@ footer {
 <li>Sufficient disk space for synthetic ensemble files</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Direct Execution (Hardcoded Configuration)</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="direct-execution-hardcoded-configuration">Direct Execution (Hardcoded Configuration)</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_produce_synthetic_spatial_data.py
 </code></pre></div>
 
 <p><strong>Note:</strong> This script does NOT use JSON configuration files. All parameters are hardcoded in the script and must be edited directly.</p>
-<h3>Editing the Script</h3>
+<h3 id="editing-the-script">Editing the Script</h3>
 <p>Open the script and modify the configuration section:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Edit these lists in the script:</span>
 <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
@@ -531,7 +534,7 @@ footer {
 <span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># Total ensemble members per base file</span>
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <ol>
 <li><strong>Reads</strong> base spatial NetCDF file(s)</li>
 <li><strong>Generates</strong> random multipliers (default: uniform 0.99-1.02)</li>
@@ -540,8 +543,8 @@ footer {
 <li><strong>Processes</strong> multiple base files in parallel</li>
 </ol>
 <hr />
-<h2>How It Works</h2>
-<h3>Perturbation Method</h3>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="perturbation-method">Perturbation Method</h3>
 <p>The script creates synthetic ensemble members by applying random multiplicative perturbations:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># For each base file:</span>
 <span class="n">base_file</span><span class="o">.</span><span class="n">nc</span> <span class="err">→</span> <span class="n">Read</span> <span class="n">original</span> <span class="n">data</span>
@@ -559,7 +562,7 @@ footer {
 <span class="o">...</span>
 </code></pre></div>
 
-<h3>Random Multiplier Generation</h3>
+<h3 id="random-multiplier-generation">Random Multiplier Generation</h3>
 <p><strong>Distribution:</strong> Uniform random distribution</p>
 <p><strong>Range:</strong> 0.99 to 1.02 (default)</p>
 <p><strong>Interpretation:</strong><br />
@@ -572,10 +575,10 @@ footer {
 <span class="n">synthetic_GPP</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="err">×</span> <span class="mf">1.015</span> <span class="o">=</span> <span class="mf">10.15</span> <span class="n">gC</span><span class="o">/</span><span class="n">m</span><span class="err">²</span><span class="o">/</span><span class="n">s</span>
 </code></pre></div>
 
-<h3>Parallel Processing</h3>
+<h3 id="parallel-processing">Parallel Processing</h3>
 <p>The script uses Python's multiprocessing to create synthetic ensembles in parallel:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Process multiple base files simultaneously</span>
-<span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+<span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
     <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_spatial_data</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
 </code></pre></div>
 
@@ -584,9 +587,9 @@ footer {
 - On 8-core machine: Processes ~8 files simultaneously<br />
 - Typical speedup: 5-8x compared to sequential</p>
 <hr />
-<h2>Configuration Parameters</h2>
-<h3>Hardcoded Parameters (Edit in Script)</h3>
-<h4>1. <code>files</code></h4>
+<h2 id="configuration-parameters">Configuration Parameters</h2>
+<h3 id="hardcoded-parameters-edit-in-script">Hardcoded Parameters (Edit in Script)</h3>
+<h4 id="1-files">1. <code>files</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Description:</strong> Paths to base spatial NetCDF files from which to generate synthetic ensembles.</p>
 <p><strong>Location in Script:</strong></p>
@@ -616,7 +619,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4>2. <code>num_files_in_each_set</code></h4>
+<h4 id="2-num_files_in_each_set">2. <code>num_files_in_each_set</code></h4>
 <p><strong>Type:</strong> List of integers<br />
 <strong>Description:</strong> Total number of ensemble members (including base file) for each base file.</p>
 <p><strong>Location in Script:</strong></p>
@@ -640,7 +643,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4>3. Random Multiplier Range (Inside Function)</h4>
+<h4 id="3-random-multiplier-range-inside-function">3. Random Multiplier Range (Inside Function)</h4>
 <p><strong>Type:</strong> Float range<br />
 <strong>Description:</strong> Range for random perturbations.</p>
 <p><strong>Location in Script:</strong></p>
@@ -664,8 +667,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Synthetic Data Generation Method</h2>
-<h3>Step-by-Step Process</h3>
+<h2 id="synthetic-data-generation-method">Synthetic Data Generation Method</h2>
+<h3 id="step-by-step-process">Step-by-Step Process</h3>
 <p><strong>For each base file:</strong></p>
 <ol>
 <li><strong>Generate random multipliers</strong></li>
@@ -701,7 +704,7 @@ footer {
 <li><strong>Repeat</strong> for all ensemble members</li>
 </ol>
 <hr />
-<h3>Mathematical Details</h3>
+<h3 id="mathematical-details">Mathematical Details</h3>
 <p><strong>Perturbation Formula:</strong></p>
 <div class="codehilite"><pre><span></span><code>synthetic_value(lat, lon, year) = base_value(lat, lon, year) × multiplier
 
@@ -725,8 +728,8 @@ Synthetic GPP = 8.3 × 1.015 = 8.4245 gC/m²/s
 </code></pre></div>
 
 <hr />
-<h2>Usage Examples</h2>
-<h3>Example 1: Default Configuration</h3>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-default-configuration">Example 1: Default Configuration</h3>
 <p><strong>As provided in script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_elm.nc&quot;</span><span class="p">,</span>
@@ -756,7 +759,7 @@ full_feedback_spatial_data_elm_3.nc
 </code></pre></div>
 
 <hr />
-<h3>Example 2: Single File, Large Ensemble</h3>
+<h3 id="example-2-single-file-large-ensemble">Example 2: Single File, Large Ensemble</h3>
 <p><strong>Edit script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./my_spatial_data.nc&quot;</span><span class="p">]</span>
 <span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>  <span class="c1"># 20 total members</span>
@@ -774,7 +777,7 @@ Total ensemble: 1 base + 19 synthetic = 20 members
 
 <p><strong>Use case:</strong> Large ensemble for robust statistical testing</p>
 <hr />
-<h3>Example 3: Different Ensemble Sizes</h3>
+<h3 id="example-3-different-ensemble-sizes">Example 3: Different Ensemble Sizes</h3>
 <p><strong>Edit script:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;./control_elm.nc&quot;</span><span class="p">,</span>
@@ -795,7 +798,7 @@ Total ensemble: 1 base + 19 synthetic = 20 members
 </code></pre></div>
 
 <hr />
-<h3>Example 4: Conservative Perturbations</h3>
+<h3 id="example-4-conservative-perturbations">Example 4: Conservative Perturbations</h3>
 <p><strong>Edit script function:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -812,8 +815,8 @@ Total ensemble: 1 base + 19 synthetic = 20 members
 
 <p><strong>Use case:</strong> More conservative uncertainty estimates</p>
 <hr />
-<h2>Output Files</h2>
-<h3>File Naming Convention</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="file-naming-convention">File Naming Convention</h3>
 <p><strong>Pattern:</strong></p>
 <div class="codehilite"><pre><span></span><code>base_filename.nc           → Original (untouched)
 base_filename_2.nc         → First synthetic member
@@ -833,7 +836,7 @@ base_filename_N.nc         → (N-1)th synthetic member
 </code></pre></div>
 
 <hr />
-<h3>File Structure</h3>
+<h3 id="file-structure">File Structure</h3>
 <p>Each synthetic file is identical in structure to the base file, only values differ:</p>
 <p><strong>Dimensions:</strong> Same as base file</p>
 <div class="codehilite"><pre><span></span><code><span class="n">year</span><span class="o">:</span><span class="w"> </span><span class="mi">6</span>
@@ -855,7 +858,7 @@ NBP(year, lat, lon)
 <p><strong>Metadata:</strong> Copied from base file</p>
 <p><strong>Data Values:</strong> Multiplied by random factor</p>
 <hr />
-<h3>File Sizes</h3>
+<h3 id="file-sizes">File Sizes</h3>
 <p><strong>Typical sizes:</strong><br />
 - Base file: 100 MB<br />
 - Each synthetic file: 100 MB<br />
@@ -872,16 +875,16 @@ NBP(year, lat, lon)
 </code></pre></div>
 
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical Workflow</h3>
-<h4>1. Generate Base Spatial Data</h4>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-workflow">Typical Workflow</h3>
+<h4 id="1-generate-base-spatial-data">1. Generate Base Spatial Data</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Extract spatial data from E3SM simulation</span>
 python<span class="w"> </span>e3sm_extract_spatial_data_h0.py<span class="w"> </span>config.json
 
 <span class="c1"># Output: control_spatial_data_elm.nc</span>
 </code></pre></div>
 
-<h4>2. Create Synthetic Ensemble</h4>
+<h4 id="2-create-synthetic-ensemble">2. Create Synthetic Ensemble</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Generate synthetic members</span>
 python<span class="w"> </span>e3sm_produce_synthetic_spatial_data.py
 
@@ -892,7 +895,7 @@ python<span class="w"> </span>e3sm_produce_synthetic_spatial_data.py
 <span class="c1">#   ...</span>
 </code></pre></div>
 
-<h4>3. Plot with Statistical Significance</h4>
+<h4 id="3-plot-with-statistical-significance">3. Plot with Statistical Significance</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Use ensemble for t-tests in spatial plotting</span>
 python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>plot_config.json
 
@@ -909,7 +912,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </code></pre></div>
 
 <hr />
-<h3>Use with Spatial Plotting Script</h3>
+<h3 id="use-with-spatial-plotting-script">Use with Spatial Plotting Script</h3>
 <p><strong>Enable statistical significance testing:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -926,8 +929,8 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 
 <p><strong>Result:</strong> Spatial map showing difference with stippling where statistically significant (p &lt; 0.05)</p>
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Ensemble Size Selection</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-ensemble-size-selection">1. Ensemble Size Selection</h3>
 <p><strong>Small ensembles (n=3-5):</strong><br />
 - <strong>Pros:</strong> Fast, low storage<br />
 - <strong>Cons:</strong> Limited statistical power<br />
@@ -942,7 +945,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 - <strong>Use:</strong> Publication-quality statistical testing</p>
 <p><strong>Recommendation:</strong> Start with n=5, increase if needed</p>
 <hr />
-<h3>2. Perturbation Range Selection</h3>
+<h3 id="2-perturbation-range-selection">2. Perturbation Range Selection</h3>
 <p><strong>Conservative (±0.5%):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.995</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.005</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </code></pre></div>
@@ -969,7 +972,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </ul>
 <p><strong>Guidance:</strong> Match to expected model uncertainty</p>
 <hr />
-<h3>3. File Organization</h3>
+<h3 id="3-file-organization">3. File Organization</h3>
 <p><strong>Recommended structure:</strong></p>
 <div class="codehilite"><pre><span></span><code>project/
 ├── base_spatial_data/
@@ -994,7 +997,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </code></pre></div>
 
 <hr />
-<h3>4. Version Control</h3>
+<h3 id="4-version-control">4. Version Control</h3>
 <p><strong>Document your configuration:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Create README.txt</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -1008,7 +1011,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </code></pre></div>
 
 <hr />
-<h3>5. Reproducibility</h3>
+<h3 id="5-reproducibility">5. Reproducibility</h3>
 <p><strong>Set random seed for reproducibility:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
     <span class="c1"># Add this at the beginning:</span>
@@ -1029,7 +1032,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </code></pre></div>
 
 <hr />
-<h3>6. Validation</h3>
+<h3 id="6-validation">6. Validation</h3>
 <p><strong>After generation, verify:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -1052,8 +1055,8 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Issue 1: Memory Error</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-memory-error">Issue 1: Memory Error</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">MemoryError</span><span class="o">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">allocate</span><span class="w"> </span><span class="n">array</span>
 </code></pre></div>
@@ -1086,7 +1089,7 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 </code></pre></div>
 
 <hr />
-<h3>Issue 2: File Not Found</h3>
+<h3 id="issue-2-file-not-found">Issue 2: File Not Found</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code>FileNotFoundError: [Errno 2] No such file or directory: &#39;control_spatial_data_elm.nc&#39;
 </code></pre></div>
@@ -1106,7 +1109,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_spatial_data_elm.nc
 </code></pre></div>
 
 <hr />
-<h3>Issue 3: Disk Space</h3>
+<h3 id="issue-3-disk-space">Issue 3: Disk Space</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code>OSError: [Errno 28] No space left on device
 </code></pre></div>
@@ -1142,7 +1145,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_spatial_data_elm.nc
 </code></pre></div>
 
 <hr />
-<h3>Issue 4: Overwriting Files</h3>
+<h3 id="issue-4-overwriting-files">Issue 4: Overwriting Files</h3>
 <p><strong>Symptom:</strong> Script reruns create same files again</p>
 <p><strong>Behavior:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">new_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>  <span class="c1"># mode=&#39;w&#39; overwrites</span>
@@ -1177,7 +1180,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 </code></pre></div>
 
 <hr />
-<h3>Issue 5: Variable-Specific Perturbations</h3>
+<h3 id="issue-5-variable-specific-perturbations">Issue 5: Variable-Specific Perturbations</h3>
 <p><strong>Current behavior:</strong> All variables perturbed by same multiplier</p>
 <p><strong>If you want different perturbations per variable:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
@@ -1199,8 +1202,8 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 </code></pre></div>
 
 <hr />
-<h2>Scientific Considerations</h2>
-<h3>When to Use Synthetic Ensembles</h3>
+<h2 id="scientific-considerations">Scientific Considerations</h2>
+<h3 id="when-to-use-synthetic-ensembles">When to Use Synthetic Ensembles</h3>
 <p><strong>Appropriate uses:</strong><br />
 1. <strong>Statistical significance testing</strong> when single simulations available<br />
 2. <strong>Sensitivity analysis</strong> to perturbations<br />
@@ -1211,7 +1214,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 2. <strong>Representing true climate variability</strong><br />
 3. <strong>Publishing as actual ensemble members</strong></p>
 <hr />
-<h3>Limitations</h3>
+<h3 id="limitations">Limitations</h3>
 <p><strong>1. Not True Ensemble Members:</strong><br />
 - Synthetic members don't represent true model uncertainty<br />
 - Don't capture different initial conditions<br />
@@ -1225,7 +1228,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 - P-values may not reflect true statistical significance<br />
 - Conservative for exploratory analysis only</p>
 <hr />
-<h3>Best Practices for Publication</h3>
+<h3 id="best-practices-for-publication">Best Practices for Publication</h3>
 <p><strong>If using synthetic ensembles in publications:</strong></p>
 <ol>
 <li>
@@ -1251,7 +1254,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 </li>
 </ol>
 <hr />
-<h3>Alternative Approaches</h3>
+<h3 id="alternative-approaches">Alternative Approaches</h3>
 <p><strong>Instead of synthetic ensembles, consider:</strong></p>
 <ol>
 <li><strong>Bootstrap resampling</strong> of time dimension</li>
@@ -1260,8 +1263,8 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 <li><strong>Multi-model ensembles</strong> from different E3SM configurations</li>
 </ol>
 <hr />
-<h2>Advanced Modifications</h2>
-<h3>Spatially-Varying Perturbations</h3>
+<h2 id="advanced-modifications">Advanced Modifications</h2>
+<h3 id="spatially-varying-perturbations">Spatially-Varying Perturbations</h3>
 <p><strong>Current:</strong> Same multiplier for all gridcells<br />
 <strong>Modification:</strong> Different multiplier per gridcell</p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
@@ -1285,7 +1288,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 </code></pre></div>
 
 <hr />
-<h3>Normal Distribution Perturbations</h3>
+<h3 id="normal-distribution-perturbations">Normal Distribution Perturbations</h3>
 <p><strong>Current:</strong> Uniform distribution<br />
 <strong>Modification:</strong> Normal (Gaussian) distribution</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># In function:</span>
@@ -1299,8 +1302,8 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 </code></pre></div>
 
 <hr />
-<h2>Appendix: Complete Modified Examples</h2>
-<h3>Example A: Custom Script for 3 Files, 10 Members Each</h3>
+<h2 id="appendix-complete-modified-examples">Appendix: Complete Modified Examples</h2>
+<h3 id="example-a-custom-script-for-3-files-10-members-each">Example A: Custom Script for 3 Files, 10 Members Each</h3>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -1337,7 +1340,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 
     <span class="n">inputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">num_files_in_each_set</span><span class="p">))</span>
 
-    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
         <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_spatial_data</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
 
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -1346,7 +1349,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 </code></pre></div>
 
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>NumPy Random Documentation: <a href="https://numpy.org/doc/stable/reference/random/">https://numpy.org/doc/stable/reference/random/</a></li>
@@ -1354,12 +1357,12 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
 - <strong>Philip Myint</strong>: myint1@llnl.gov<br />
 - <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> e3sm_produce_synthetic_spatial_data.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
 <strong>Last Updated:</strong> January 2026<br />
@@ -1370,8 +1373,7 @@ mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> <
         <footer>
             <p>E3SM Synthetic Spatial Data Generation Script Documentation<br>
             <strong>Script:</strong> e3sm_produce_synthetic_spatial_data.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao<br>
-            <strong>Version:</strong> 1.0 | January 2026</p>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

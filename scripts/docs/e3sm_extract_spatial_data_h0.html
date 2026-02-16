@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Spatial Data Extraction Documentation</title>
+    <title>E3SM Spatial Data Extraction Script Documentation (h0 files)</title>
     <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
@@ -471,15 +471,15 @@ footer {
 </style>
 </head>
 <body>
-    <div class="container"><h1>E3SM Spatial Data Extraction Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="e3sm-spatial-data-extraction-script-documentation">E3SM Spatial Data Extraction Script Documentation</h1>
+<h2 id="overview">Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_extract_spatial_data_h0.py</code></p>
 <p><strong>Purpose:</strong> Extracts spatially-gridded annual-mean data from E3SM monthly NetCDF h0 output files (ELM and/or EAM) and creates smaller, focused NetCDF files containing only user-specified variables for a specific time period. Unlike time series extraction which aggregates spatially, this script preserves full latitude/longitude resolution while aggregating temporally (annual means from monthly data).</p>
 <p><strong>Key Use Case:</strong> Creating manageable NetCDF files for spatial analysis, mapping, and visualization of E3SM output variables over specific time periods without the overhead of processing entire simulation archives.</p>
-<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -495,17 +495,17 @@ footer {
 <li><a href="#comparison-with-time-series-extraction">Comparison with Time Series Extraction</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>xarray<span class="w"> </span>netCDF4<span class="w"> </span>dask<span class="w"> </span>multiprocessing
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports several utility modules that must be in the same directory or Python path:<br />
 - <code>utility_constants</code> - Physical constants (conversion factors)<br />
 - <code>utility_functions</code> - General utility functions<br />
 - <code>utility_e3sm_netcdf</code> - E3SM-specific NetCDF handling functions</p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
@@ -514,8 +514,8 @@ footer {
 <li>Access to E3SM simulation output directories</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_spatial_data_h0.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
@@ -523,7 +523,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_spatial_data_h0.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration block in the JSON file, the script:<br />
 1. <strong>Locates</strong> monthly E3SM NetCDF h0 files (elm.h0.<em>, eam.h0.</em>)<br />
 2. <strong>Filters</strong> files by year range (start_years to end_years)<br />
@@ -534,8 +534,8 @@ footer {
 7. <strong>Writes</strong> compact NetCDF file with spatial data<br />
 8. <strong>Uses</strong> parallel processing for multiple output files</p>
 <hr />
-<h2>Key Concepts</h2>
-<h3>Spatial vs Time Series Extraction</h3>
+<h2 id="key-concepts">Key Concepts</h2>
+<h3 id="spatial-vs-time-series-extraction">Spatial vs Time Series Extraction</h3>
 <p><strong>This Script (Spatial Extraction):</strong><br />
 - <strong>Preserves:</strong> Full latitude/longitude resolution<br />
 - <strong>Aggregates:</strong> Temporal (monthly → annual mean)<br />
@@ -546,7 +546,7 @@ footer {
 - <strong>Aggregates:</strong> Spatial (lat/lon → global or regional mean/sum)<br />
 - <strong>Output:</strong> Text file with time series<br />
 - <strong>Use:</strong> Trend analysis, statistical analysis</p>
-<h3>Annual Mean Calculation</h3>
+<h3 id="annual-mean-calculation">Annual Mean Calculation</h3>
 <p>The script converts monthly E3SM output to annual means:</p>
 <div class="codehilite"><pre><span></span><code><span class="nv">Monthly</span><span class="w"> </span><span class="nv">files</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="mi">2085</span>:
 <span class="nv">elm</span>.<span class="nv">h0</span>.<span class="mi">2085</span><span class="o">-</span><span class="mi">01</span>.<span class="nv">nc</span>,<span class="w"> </span><span class="nv">elm</span>.<span class="nv">h0</span>.<span class="mi">2085</span><span class="o">-</span><span class="mi">02</span>.<span class="nv">nc</span>,<span class="w"> </span>...,<span class="w"> </span><span class="nv">elm</span>.<span class="nv">h0</span>.<span class="mi">2085</span><span class="o">-</span><span class="mi">12</span>.<span class="nv">nc</span>
@@ -560,7 +560,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>Annual_mean(lat, lon) = mean(Jan, Feb, Mar, ..., Dec)
 </code></pre></div>
 
-<h3>Multi-File Processing</h3>
+<h3 id="multi-file-processing">Multi-File Processing</h3>
 <p>The script efficiently handles multiple monthly files using xarray's <code>open_mfdataset</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Opens all monthly files in parallel</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
@@ -572,8 +572,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Complete Parameter Reference Table</h2>
-<h3>Required Parameters</h3>
+<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -622,12 +622,12 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>No Optional Parameters</h3>
+<h3 id="no-optional-parameters">No Optional Parameters</h3>
 <p>This script requires all parameters to be specified. Unlike other scripts in the suite, there are no default values for optional parameters.</p>
 <hr />
-<h2>Detailed Parameter Descriptions</h2>
-<h3>Core Required Parameters</h3>
-<h4><code>simulation_path</code></h4>
+<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
+<h3 id="core-required-parameters">Core Required Parameters</h3>
+<h4 id="simulation_path"><code>simulation_path</code></h4>
 <p><strong>Type:</strong> String (directory path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Complete path to directory containing E3SM NetCDF h0 output files.</p>
@@ -650,7 +650,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>output_files</code></h4>
+<h4 id="output_files"><code>output_files</code></h4>
 <p><strong>Type:</strong> String OR List of strings<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Path(s) to output NetCDF file(s). Can be a single file or list of files.</p>
@@ -679,7 +679,7 @@ If you provide a single string, the script converts it to a list:</p>
 - Creates standard NetCDF4 file<br />
 - Contains spatial gridded data</p>
 <hr />
-<h4><code>netcdf_substrings</code></h4>
+<h4 id="netcdf_substrings"><code>netcdf_substrings</code></h4>
 <p><strong>Type:</strong> Nested list of strings OR list of strings<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Identifies different types of NetCDF files by substrings in filenames.</p>
@@ -706,7 +706,7 @@ If you provide a single string, the script converts it to a list:</p>
 - Files must contain ALL substrings in their corresponding list<br />
 - Each file type creates separate output file</p>
 <hr />
-<h4><code>variables</code></h4>
+<h4 id="variables"><code>variables</code></h4>
 <p><strong>Type:</strong> Nested list of strings OR list of strings<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Variables to extract from each NetCDF file type.</p>
@@ -754,7 +754,7 @@ If you provide a single string, the script converts it to a list:</p>
 </code></pre></div>
 
 <hr />
-<h4><code>start_years</code></h4>
+<h4 id="start_years"><code>start_years</code></h4>
 <p><strong>Type:</strong> Integer OR List of integers<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> First year(s) for time period to extract.</p>
@@ -780,7 +780,7 @@ If you provide a single string, the script converts it to a list:</p>
 - Script extracts monthly files from start_years to end_years<br />
 - Computes annual means for each year in range</p>
 <hr />
-<h4><code>end_years</code></h4>
+<h4 id="end_years"><code>end_years</code></h4>
 <p><strong>Type:</strong> Integer OR List of integers<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Last year(s) for time period to extract.</p>
@@ -810,9 +810,9 @@ If you provide a single string, the script converts it to a list:</p>
 </code></pre></div>
 
 <hr />
-<h2>Variable Processing</h2>
+<h2 id="variable-processing">Variable Processing</h2>
 <p>The script automatically processes certain variables when they are present:</p>
-<h3>1. Total Precipitation Calculation</h3>
+<h3 id="1-total-precipitation-calculation">1. Total Precipitation Calculation</h3>
 <p><strong>Requires:</strong> <code>PRECC</code>, <code>PRECL</code>, <code>PRECSC</code>, <code>PRECSL</code> (all must be present)</p>
 <p><strong>Processing:</strong><br />
 1. Convert units: m/s → mm/year<br />
@@ -841,7 +841,7 @@ If you provide a single string, the script converts it to a list:</p>
 </code></pre></div>
 
 <hr />
-<h3>2. CO₂ Mole Fraction Calculation</h3>
+<h3 id="2-co2-mole-fraction-calculation">2. CO₂ Mole Fraction Calculation</h3>
 <p><strong>Requires:</strong> <code>PBOT</code>, <code>PCO2</code>, <code>QBOT</code> (all must be present)</p>
 <p><strong>Processing:</strong><br />
 Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
@@ -867,8 +867,8 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 - Must remove water vapor contribution<br />
 - Uses standard psychrometric formula</p>
 <hr />
-<h2>JSON Configuration Examples</h2>
-<h3>Example 1: Basic Configuration (ELM + EAM)</h3>
+<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
+<h3 id="example-1-basic-configuration-elm-eam">Example 1: Basic Configuration (ELM + EAM)</h3>
 <p><strong>Purpose:</strong> Extract land and atmosphere variables for 2085-2090</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run&quot;</span><span class="p">,</span>
@@ -898,7 +898,7 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 - Time period: 2085-2090 (6 years)<br />
 - Output includes ZCO2 (derived from PBOT, PCO2, QBOT)</p>
 <hr />
-<h3>Example 2: Single File Type</h3>
+<h3 id="example-2-single-file-type">Example 2: Single File Type</h3>
 <p><strong>Purpose:</strong> Extract only land model outputs</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
@@ -911,7 +911,7 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 </code></pre></div>
 
 <hr />
-<h3>Example 3: Multiple Simulations</h3>
+<h3 id="example-3-multiple-simulations">Example 3: Multiple Simulations</h3>
 <p><strong>Purpose:</strong> Process multiple simulations in batch</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -934,8 +934,8 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 </code></pre></div>
 
 <hr />
-<h2>Output Files</h2>
-<h3>NetCDF File Structure</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="netcdf-file-structure">NetCDF File Structure</h3>
 <p><strong>Format:</strong> NetCDF4</p>
 <p><strong>Typical Dimensions:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">Dimensions</span><span class="o">:</span>
@@ -951,7 +951,7 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 <span class="p">[</span><span class="n">User</span><span class="w"> </span><span class="n">variables</span><span class="p">](</span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">lat</span><span class="p">,</span><span class="w"> </span><span class="n">lon</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="n">Data</span><span class="w"> </span><span class="n">arrays</span>
 </code></pre></div>
 
-<h3>Using Output Files</h3>
+<h3 id="using-output-files">Using Output Files</h3>
 <p><strong>Load in Python:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;spatial_elm.nc&#39;</span><span class="p">)</span>
@@ -962,25 +962,25 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Issue 1: Memory Error</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-memory-error">Issue 1: Memory Error</h3>
 <p><strong>Solutions:</strong><br />
 - Reduce variables<br />
 - Shorten time period<br />
 - Process in batches<br />
 - Use HPC with more RAM</p>
-<h3>Issue 2: File Not Found</h3>
+<h3 id="issue-2-file-not-found">Issue 2: File Not Found</h3>
 <p><strong>Solutions:</strong><br />
 - Verify simulation_path<br />
 - Check netcdf_substrings match files<br />
 - Verify year range has files</p>
-<h3>Issue 3: Variable Not Found</h3>
+<h3 id="issue-3-variable-not-found">Issue 3: Variable Not Found</h3>
 <p><strong>Solutions:</strong><br />
 - Check variable exists in files<br />
 - Verify correct file type (ELM vs EAM)<br />
 - Check for typos (case-sensitive)</p>
 <hr />
-<h2>Best Practices</h2>
+<h2 id="best-practices">Best Practices</h2>
 <ol>
 <li><strong>Test first</strong> with short periods and few variables</li>
 <li><strong>Name files descriptively</strong> (include simulation, years, component)</li>
@@ -989,7 +989,7 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 <li><strong>Verify outputs</strong> after extraction</li>
 </ol>
 <hr />
-<h2>Comparison with Time Series Extraction</h2>
+<h2 id="comparison-with-time-series-extraction">Comparison with Time Series Extraction</h2>
 <table>
 <thead>
 <tr>
@@ -1022,7 +1022,7 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 </tbody>
 </table>
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>xarray Documentation: <a href="https://xarray.pydata.org/">https://xarray.pydata.org/</a></li>
@@ -1030,7 +1030,7 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <ul>
 <li><strong>Philip Myint</strong>: myint1@llnl.gov</li>
 <li><strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</li>
@@ -1038,10 +1038,9 @@ Calculate atmospheric CO₂ mole fraction in dry air (ppm)</p>
 <hr />
 <p><em>Documentation for <code>e3sm_extract_spatial_data_h0.py</code> - Last Updated: January 2026</em></p>
         <footer>
-            <p>E3SM Spatial Data Extraction Script Documentation<br>
+            <p>E3SM Spatial Data Extraction Script Documentation (h0 files)<br>
             <strong>Script:</strong> e3sm_extract_spatial_data_h0.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao<br>
-            <strong>Version:</strong> 1.0 | January 2026</p>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

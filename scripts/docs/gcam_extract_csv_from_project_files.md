@@ -1,5 +1,12 @@
 # GCAM CSV Extraction Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 The `gcam_extract_csv_from_project_files.R` script is designed to extract specific variables from GCAM (Global Change Analysis Model) project files and export them as CSV files. This script processes multiple scenarios simultaneously and combines their data into unified CSV outputs for analysis and visualization.

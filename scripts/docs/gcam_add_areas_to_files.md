@@ -1,12 +1,19 @@
 # GCAM Add Areas to Files Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 **Script Name:** `gcam_add_areas_to_files.py`
 
 **Purpose:** Adds land allocation area data as an additional column to GCAM (Global Change Analysis Model) output files. This script matches area information from detailed land allocation files with other GCAM datasets (such as agricultural commodity prices, CO2 emissions, or vegetation/soil scalars) based on scenario, geographical unit, category, and year.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 
@@ -592,9 +599,9 @@ BioenergyCrop: area=100, emissions=250 (120+85+45)
 
 ### Multiprocessing
 
-The script uses all available CPU cores for parallel processing:
+The script uses parallel processing with limited cores to reduce memory pressure for parallel processing:
 ```python
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
     dataframes_for_each_subset = list(pool.starmap(add_areas_to_subset_of_file, cartesian_product))
 ```
 

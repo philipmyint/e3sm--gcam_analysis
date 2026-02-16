@@ -1,5 +1,12 @@
 # E3SM Synthetic Time Series Generation Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 **Script Name:** `e3sm_produce_synthetic_time_series.py`
@@ -8,7 +15,7 @@
 
 **Key Difference from Spatial Script:** Uses both systematic (progressive base multipliers) and random (varying across time) perturbations, whereas the spatial script uses only uniform random multipliers.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 
@@ -1164,7 +1171,7 @@ if __name__ == '__main__':
     
     inputs = list(zip(files, num_files_in_each_set))
     
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
         pool.map(produce_synthetic_time_series, inputs)
     
     end_time = time.time()

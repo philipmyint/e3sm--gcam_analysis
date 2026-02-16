@@ -478,7 +478,7 @@ footer {
 <h2>Overview</h2>
 <p><strong>Script Name:</strong> <code>gcam_produce_synthetic_data.py</code></p>
 <p><strong>Purpose:</strong> Generates synthetic ensemble sets of time series data by applying random perturbations to base GCAM (Global Change Analysis Model) simulation outputs. This script is designed for testing and validation purposes, allowing users to create multiple variations of existing time series data to simulate ensemble runs.</p>
-<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
 <h2>Script Description</h2>
@@ -597,8 +597,8 @@ footer {
 </tr>
 <tr>
 <td><code>processes</code></td>
-<td><code>multiprocessing.cpu_count()</code></td>
-<td>Any positive integer ≤ CPU count</td>
+<td><code>MAX_PROCESSES</code></td>
+<td>Any positive integer</td>
 <td>No</td>
 <td>Number of parallel processes to use</td>
 </tr>
@@ -742,8 +742,8 @@ footer {
 <hr />
 <h2>Performance Considerations</h2>
 <h3>Multiprocessing</h3>
-<p>The script uses all available CPU cores by default:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+<p>The script uses parallel processing with limited cores to reduce memory pressure:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
     <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_time_series</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
 </code></pre></div>
 
@@ -857,7 +857,7 @@ The script prints execution time for each file and total execution time:</p>
 - <strong>Cause:</strong> Too many variations or files too large<br />
 - <strong>Solution:</strong> Reduce number of variations or process fewer files at once</p>
 <p><strong>Issue:</strong> Slow execution<br />
-- <strong>Cause:</strong> Large files or insufficient CPU cores<br />
+- <strong>Cause:</strong> Large files or limited available cores<br />
 - <strong>Solution:</strong> Reduce number of variations or process files sequentially</p>
 <hr />
 <h2>Related Scripts</h2>
@@ -878,8 +878,8 @@ The script prints execution time for each file and total execution time:</p>
 <hr />
 <h2>Contact</h2>
 <p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
-- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
+- <strong>Philip Myint</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="523f2b3b3c2663123e3e3c3e7c353d24">[email&#160;protected]</a><br />
+- <strong>Dalei Hao</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b2f2a272e2265232a240b3b252527652c243d">[email&#160;protected]</a></p>
 <hr />
 <h2>Version History</h2>
 <ul>
@@ -887,15 +887,4 @@ The script prints execution time for each file and total execution time:</p>
 <li><strong>Last Updated:</strong> January 2026</li>
 </ul>
 <hr />
-<p><em>This documentation is intended to help users understand and modify the <code>gcam_produce_synthetic_data.py</code> script for creating synthetic GCAM ensemble datasets for testing purposes.</em></p>
-        
-        <footer>
-            <p>
-                Documentation generated for the E3SM-GCAM Analysis Scripts<br>
-                <strong>Authors:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)<br>
-                <strong>Last Updated:</strong> January 2026
-            </p>
-        </footer>
-    </div>
-</body>
-</html>
+<p><em>This documentation is intended to help users understand and modify the <code

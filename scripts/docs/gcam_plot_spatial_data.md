@@ -1,5 +1,12 @@
 # GCAM Spatial Data Plotting Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 **Script Name:** `gcam_plot_spatial_data.py`

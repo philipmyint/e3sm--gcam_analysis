@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GCAM Data Processing Script Documentation</title>
-    <style>
-/* 
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,15 +468,16 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1>GCAM Data Processing Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="gcam-data-processing-script-documentation">GCAM Data Processing Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
+<h2 id="overview">Overview</h2>
 <p>The <code>gcam_process_extracted_data.py</code> script is a Python tool for processing raw data extracted from GCAM (Global Change Analysis Model) project files. It transforms, cleans, aggregates, and standardizes GCAM output data, preparing it for analysis and visualization. The script is particularly useful for handling land allocation data, commodity prices, emissions data, and other GCAM outputs.</p>
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
@@ -490,18 +490,18 @@ footer {
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports several utility modules that must be in the same directory or Python path:<br />
 - <code>utility_dataframes</code> - Functions for reading/writing data files<br />
 - <code>utility_gcam</code> - GCAM-specific functions for crop name standardization and land type grouping</p>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
@@ -510,7 +510,7 @@ footer {
 </code></pre></div>
 
 <p>The script will process all files in parallel using all available CPU cores for maximum efficiency.</p>
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <p>The script performs the following operations on each input file:</p>
 <ol>
 <li><strong>Reads</strong> the raw CSV data extracted from GCAM</li>
@@ -522,7 +522,7 @@ footer {
 <li><strong>Writes</strong> the processed data to an output file</li>
 </ol>
 <hr />
-<h2>Configuration File Structure</h2>
+<h2 id="configuration-file-structure">Configuration File Structure</h2>
 <p>The configuration file is a JSON array where each object specifies the processing parameters for one input file. Here's a minimal example:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -534,8 +534,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Configuration Parameters</h2>
-<h3>Required Parameters</h3>
+<h2 id="configuration-parameters">Configuration Parameters</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -557,7 +557,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Optional Parameters</h3>
+<h3 id="optional-parameters">Optional Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -601,8 +601,8 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Data Processing Operations</h2>
-<h3>1. Column Dropping</h3>
+<h2 id="data-processing-operations">Data Processing Operations</h2>
+<h3 id="1-column-dropping">1. Column Dropping</h3>
 <p>Remove unnecessary columns that were included in the GCAM extraction but aren't needed for analysis.</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -613,7 +613,7 @@ footer {
 <p><strong>Common columns to drop:</strong><br />
 - <code>Unnamed: 0</code> - Auto-generated index column<br />
 - <code>Units</code> - Unit information (often redundant if units are consistent)</p>
-<h3>2. Column Splitting</h3>
+<h3 id="2-column-splitting">2. Column Splitting</h3>
 <p>Split composite columns (where multiple pieces of information are concatenated with underscores) into separate columns.</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -626,7 +626,7 @@ footer {
 <p><strong>What this does:</strong><br />
 - Takes a column like <code>landleaf</code> with values like <code>"Forest_Amazon"</code><br />
 - Splits it into <code>landtype</code> = <code>"Forest"</code> and <code>basin</code> = <code>"Amazon"</code></p>
-<h3>3. Column Sorting and Selection</h3>
+<h3 id="3-column-sorting-and-selection">3. Column Sorting and Selection</h3>
 <p>Automatically sorts data and selects relevant columns based on <code>key_columns</code>.</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -637,7 +637,7 @@ footer {
 <p><strong>Result:</strong><br />
 - Data is sorted by these columns in order<br />
 - Only these columns plus <code>value</code> are retained in output</p>
-<h3>4. Data Aggregation</h3>
+<h3 id="4-data-aggregation">4. Data Aggregation</h3>
 <p>When multiple rows have the same key column values, they can be aggregated.</p>
 <p><strong>Aggregation Methods:</strong></p>
 <table>
@@ -672,7 +672,7 @@ footer {
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>5. Crop Name Standardization</h3>
+<h3 id="5-crop-name-standardization">5. Crop Name Standardization</h3>
 <p>GCAM uses various crop naming conventions. This feature standardizes them to a common set.</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -704,8 +704,8 @@ SugarCropC4         →  SugarCrop
 </code></pre></div>
 
 <hr />
-<h2>Examples</h2>
-<h3>Example 1: Processing Land Allocation Data</h3>
+<h2 id="examples">Examples</h2>
+<h3 id="example-1-processing-land-allocation-data">Example 1: Processing Land Allocation Data</h3>
 <p><strong>Purpose:</strong> Convert raw GCAM land allocation data into a clean format with standardized crop names.</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/land_allocation.csv&quot;</span><span class="p">,</span>
@@ -740,7 +740,7 @@ SugarCropC4         →  SugarCrop
 <span class="nx">Control</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="nx">USA</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="nx">Amazon</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="nx">Corn</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">2020</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="m m-Double">225.8</span>
 </code></pre></div>
 
-<h3>Example 2: Processing Land Allocation with Original Crop Names</h3>
+<h3 id="example-2-processing-land-allocation-with-original-crop-names">Example 2: Processing Land Allocation with Original Crop Names</h3>
 <p><strong>Purpose:</strong> Process the same data but keep original GCAM crop names.</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/land_allocation.csv&quot;</span><span class="p">,</span>
@@ -759,7 +759,7 @@ SugarCropC4         →  SugarCrop
 - <code>call_modify_crop_names</code> is <code>false</code><br />
 - Crop names remain as they appear in GCAM output<br />
 - Useful when you need to track specific crop variants (e.g., C3 vs C4)</p>
-<h3>Example 3: Processing Agricultural Commodity Prices</h3>
+<h3 id="example-3-processing-agricultural-commodity-prices">Example 3: Processing Agricultural Commodity Prices</h3>
 <p><strong>Purpose:</strong> Clean and aggregate commodity price data.</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices.csv&quot;</span><span class="p">,</span>
@@ -779,7 +779,7 @@ SugarCropC4         →  SugarCrop
 <p><strong>Why use "mean" for prices:</strong><br />
 - If multiple price quotes exist for the same commodity/region/year, averaging gives a representative price<br />
 - Summing prices would give meaningless values</p>
-<h3>Example 4: Processing CO₂ Emissions by Sector</h3>
+<h3 id="example-4-processing-co2-emissions-by-sector">Example 4: Processing CO₂ Emissions by Sector</h3>
 <p><strong>Purpose:</strong> Process emissions data with no crop name standardization needed.</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/co2_emissions_sectors.csv&quot;</span><span class="p">,</span>
@@ -794,7 +794,7 @@ SugarCropC4         →  SugarCrop
 2. Sorts by scenario, region, sector, and year<br />
 3. No aggregation (each row should already be unique)<br />
 4. No crop name modification (not applicable to emissions data)</p>
-<h3>Example 5: Processing CO₂ Emissions by Region</h3>
+<h3 id="example-5-processing-co2-emissions-by-region">Example 5: Processing CO₂ Emissions by Region</h3>
 <p><strong>Purpose:</strong> Process regional aggregate emissions data.</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/co2_emissions_regions.csv&quot;</span><span class="p">,</span>
@@ -809,8 +809,8 @@ SugarCropC4         →  SugarCrop
 - No sector breakdown (regional totals only)<br />
 - Straightforward cleaning and sorting</p>
 <hr />
-<h2>Advanced Features</h2>
-<h3>Understanding Aggregation with Crop Name Standardization</h3>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="understanding-aggregation-with-crop-name-standardization">Understanding Aggregation with Crop Name Standardization</h3>
 <p>When you enable crop name standardization, multiple original crop types may map to the same standardized name. The script handles this intelligently:</p>
 <p><strong>Example scenario:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nx">Original</span><span class="w"> </span><span class="nx">Data</span><span class="p">:</span>
@@ -835,18 +835,18 @@ SugarCropC4         →  SugarCrop
 <span class="nf">Control</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="nv">USA</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="nv">BioenergyCrop</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="mi">2030</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mf">33.33</span>
 </code></pre></div>
 
-<h3>Column Name Normalization</h3>
+<h3 id="column-name-normalization">Column Name Normalization</h3>
 <p>All column names are automatically converted to lowercase. This ensures consistency:</p>
 <p><strong>Input columns:</strong> <code>Scenario</code>, <code>Region</code>, <code>YEAR</code>, <code>Value</code><br />
 <strong>Output columns:</strong> <code>scenario</code>, <code>region</code>, <code>year</code>, <code>value</code></p>
-<h3>Automatic Sorting</h3>
+<h3 id="automatic-sorting">Automatic Sorting</h3>
 <p>Data is always sorted by year first, then by key columns if specified. This ensures:<br />
 - Chronological ordering for time series analysis<br />
 - Consistent row ordering across files<br />
 - Easier debugging and manual inspection</p>
 <hr />
-<h2>Understanding GCAM Land Types</h2>
-<h3>Standard Land Type Groups</h3>
+<h2 id="understanding-gcam-land-types">Understanding GCAM Land Types</h2>
+<h3 id="standard-land-type-groups">Standard Land Type Groups</h3>
 <p>GCAM organizes land into several major categories. The <code>utility_gcam.py</code> module defines these groups:</p>
 <table>
 <thead>
@@ -886,7 +886,7 @@ SugarCropC4         →  SugarCrop
 </tr>
 </tbody>
 </table>
-<h3>Standardized Crop Types</h3>
+<h3 id="standardized-crop-types">Standardized Crop Types</h3>
 <p>After name standardization, crops are consolidated into 18 types:</p>
 <ol>
 <li>BioenergyCrop</li>
@@ -908,7 +908,7 @@ SugarCropC4         →  SugarCrop
 <li>Vegetables</li>
 <li>Wheat</li>
 </ol>
-<h3>Original Crop Types (Before Standardization)</h3>
+<h3 id="original-crop-types-before-standardization">Original Crop Types (Before Standardization)</h3>
 <p>GCAM's original crop list includes 29 types, many with C3/C4 variants or tree/grass variants:</p>
 <ul>
 <li>biomass, biomassGrass, biomassTree</li>
@@ -929,8 +929,8 @@ SugarCropC4         →  SugarCrop
 <li>Wheat</li>
 </ul>
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Common Issues</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
 <p><strong>Problem:</strong> <code>FileNotFoundError</code> when running the script</p>
 <div class="codehilite"><pre><span></span><code><span class="n">Solution</span><span class="o">:</span><span class="w"> </span><span class="n">Check</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">input_file</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">correct</span><span class="o">.</span><span class="w"> </span><span class="n">Use</span><span class="w"> </span><span class="n">absolute</span><span class="w"> </span><span class="n">paths</span><span class="w"> </span>
 <span class="k">if</span><span class="w"> </span><span class="n">running</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">different</span><span class="w"> </span><span class="n">directory</span><span class="o">.</span>
@@ -959,7 +959,7 @@ SugarCropC4         →  SugarCrop
 <span class="n">rows</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">dropped</span><span class="o">.</span>
 </code></pre></div>
 
-<h3>Input File Requirements</h3>
+<h3 id="input-file-requirements">Input File Requirements</h3>
 <p>Your CSV file should have:<br />
 - A <code>year</code> column for temporal data<br />
 - A <code>value</code> column containing the numeric data<br />
@@ -971,7 +971,7 @@ SugarCropC4         →  SugarCrop
 <span class="n">Control</span><span class="p">,</span><span class="n">USA</span><span class="p">,</span><span class="n">Wheat_Mississippi</span><span class="p">,</span><span class="mh">2020</span><span class="p">,</span><span class="mf">200.3</span><span class="p">,</span><span class="n">km²</span><span class="p">,</span><span class="mh">1</span>
 </code></pre></div>
 
-<h3>Performance Tips</h3>
+<h3 id="performance-tips">Performance Tips</h3>
 <ol>
 <li><strong>Multiple Files:</strong> Process multiple files at once by listing them all in one JSON config</li>
 <li><strong>Parallel Processing:</strong> The script automatically uses all CPU cores</li>
@@ -979,8 +979,8 @@ SugarCropC4         →  SugarCrop
 <li><strong>Debugging:</strong> Process one file at a time first to verify configuration before batch processing</li>
 </ol>
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Keep Original Data</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-keep-original-data">1. Keep Original Data</h3>
 <p>Always preserve original GCAM extraction files. Create processed versions with different names:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/raw/land_allocation.csv&quot;</span><span class="p">,</span>
@@ -988,7 +988,7 @@ SugarCropC4         →  SugarCrop
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>2. Maintain Two Versions When Needed</h3>
+<h3 id="2-maintain-two-versions-when-needed">2. Maintain Two Versions When Needed</h3>
 <p>For crop data, consider creating both standardized and original versions:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -1004,34 +1004,34 @@ SugarCropC4         →  SugarCrop
 <span class="p">]</span>
 </code></pre></div>
 
-<h3>3. Document Your Aggregation Choices</h3>
+<h3 id="3-document-your-aggregation-choices">3. Document Your Aggregation Choices</h3>
 <p>Keep notes about why you chose "mean" vs "sum" for different datasets:</p>
 <ul>
 <li><strong>Sum:</strong> Land areas, production quantities, emissions totals</li>
 <li><strong>Mean:</strong> Prices, rates, scalars, percentages</li>
 </ul>
-<h3>4. Use Consistent Key Columns</h3>
+<h3 id="4-use-consistent-key-columns">4. Use Consistent Key Columns</h3>
 <p>Maintain consistent key column ordering across related datasets for easier merging later:</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;key_columns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;region&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;basin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;landtype&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="p">]</span>
 </code></pre></div>
 
-<h3>5. Verify Output</h3>
+<h3 id="5-verify-output">5. Verify Output</h3>
 <p>After processing, check the output file:<br />
 - Row counts make sense<br />
 - Value ranges are reasonable<br />
 - No unexpected NaN or zero values<br />
 - Column names are as expected</p>
 <hr />
-<h2>Integration with Other GCAM Scripts</h2>
+<h2 id="integration-with-other-gcam-scripts">Integration with Other GCAM Scripts</h2>
 <p>This data processing script works in conjunction with other GCAM analysis tools:</p>
-<h3>Workflow Example</h3>
+<h3 id="workflow-example">Workflow Example</h3>
 <div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">Extract</span><span class="w"> </span><span class="kd">data</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="n">CSV</span><span class="w"> </span><span class="n">files</span>
 <span class="mf">2.</span><span class="w"> </span><span class="n">Process</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">gcam_process_extracted_data</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">cleaned</span><span class="w"> </span><span class="n">CSV</span><span class="w"> </span><span class="n">files</span>
 <span class="mf">3.</span><span class="w"> </span><span class="n">Visualize</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">gcam_plot_box_and_whiskers</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="n">plots</span>
 <span class="mf">4.</span><span class="w"> </span><span class="n">Further</span><span class="w"> </span><span class="n">analysis</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="n">series</span><span class="w"> </span><span class="n">scripts</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">trend</span><span class="w"> </span><span class="n">plots</span>
 </code></pre></div>
 
-<h3>Data Flow</h3>
+<h3 id="data-flow">Data Flow</h3>
 <div class="codehilite"><pre><span></span><code>GCAM Model Output
        ↓
 [Raw CSV Files]
@@ -1047,14 +1047,14 @@ Box Plots   Time Series   Statistics   Custom
 </code></pre></div>
 
 <hr />
-<h2>Output File Characteristics</h2>
-<h3>Structure</h3>
+<h2 id="output-file-characteristics">Output File Characteristics</h2>
+<h3 id="structure">Structure</h3>
 <p>Processed files have a consistent structure:<br />
 - <strong>Columns:</strong> Only key columns plus <code>value</code><br />
 - <strong>Sorting:</strong> By year, then by other key columns<br />
 - <strong>Format:</strong> CSV with headers<br />
 - <strong>Encoding:</strong> UTF-8</p>
-<h3>Example Output</h3>
+<h3 id="example-output">Example Output</h3>
 <div class="codehilite"><pre><span></span><code><span class="nx">scenario</span><span class="p">,</span><span class="nx">region</span><span class="p">,</span><span class="nx">basin</span><span class="p">,</span><span class="nx">landtype</span><span class="p">,</span><span class="nx">year</span><span class="p">,</span><span class="nx">value</span>
 <span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2015</span><span class="p">,</span><span class="m m-Double">45.2</span>
 <span class="nx">Control</span><span class="p">,</span><span class="nx">USA</span><span class="p">,</span><span class="nx">Amazon</span><span class="p">,</span><span class="nx">BioenergyCrop</span><span class="p">,</span><span class="mi">2020</span><span class="p">,</span><span class="m m-Double">52.1</span>
@@ -1064,7 +1064,7 @@ Box Plots   Time Series   Statistics   Custom
 </code></pre></div>
 
 <hr />
-<h2>Execution Time</h2>
+<h2 id="execution-time">Execution Time</h2>
 <p>Processing times vary based on:<br />
 - <strong>File size:</strong> 10MB file ≈ 1-2 seconds<br />
 - <strong>Number of files:</strong> Parallel processing scales well<br />
@@ -1077,14 +1077,14 @@ Elapsed time for producing all files: 1.45 seconds
 </code></pre></div>
 
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> gcam_process_extracted_data.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
 <strong>Last Updated:</strong> January 2026<br />
 <strong>Python Version:</strong> 3.7+</p>
 <hr />
-<h2>Appendix: Complete Configuration Reference</h2>
-<h3>Full Parameter List</h3>
+<h2 id="appendix-complete-configuration-reference">Appendix: Complete Configuration Reference</h2>
+<h3 id="full-parameter-list">Full Parameter List</h3>
 <table>
 <thead>
 <tr>
@@ -1147,7 +1147,7 @@ Elapsed time for producing all files: 1.45 seconds
 </tr>
 </tbody>
 </table>
-<h3>Template Configuration</h3>
+<h3 id="template-configuration">Template Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./path/to/input.csv&quot;</span><span class="p">,</span>
@@ -1164,7 +1164,7 @@ Elapsed time for producing all files: 1.45 seconds
 </code></pre></div>
 
 <hr />
-<h2>Support and Feedback</h2>
+<h2 id="support-and-feedback">Support and Feedback</h2>
 <p>For issues or questions:<br />
 1. Verify your JSON configuration is valid (use a JSON validator)<br />
 2. Check that utility modules are in the Python path<br />
@@ -1172,14 +1172,10 @@ Elapsed time for producing all files: 1.45 seconds
 4. Ensure input file format matches expected structure<br />
 5. Test with a small subset of data first</p>
 <p>This documentation provides comprehensive guidance for using the GCAM data processing script to prepare GCAM model outputs for analysis and visualization.</p>
-        
         <footer>
-            <p>
-                Documentation generated for the E3SM-GCAM Analysis Scripts<br>
-                <strong>Script:</strong> gcam_process_extracted_data.py<br>
-                <strong>Documentation Version:</strong> 1.0<br>
-                <strong>Last Updated:</strong> January 2026
-            </p>
+            <p>GCAM Data Processing Script Documentation<br>
+            <strong>Script:</strong> gcam_process_extracted_data.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

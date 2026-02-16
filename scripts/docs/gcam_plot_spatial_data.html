@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GCAM Spatial Data Plotting Script Documentation</title>
-    <style>
-/* 
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,19 +468,20 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1>GCAM Spatial Data Plotting Script Documentation</h1>
-<h2>Overview</h2>
-<p><strong>Script Name:</strong> <code>gcam_plot_spatial_data.py</code></p>
-<p><strong>Purpose:</strong> Creates spatial (geographic) plots from GCAM (Global Change Analysis Model) output files, displaying data on maps using GCAM region/basin boundaries. The script supports individual scenario plots, ensemble means, absolute differences, and percent differences between scenarios, with optional statistical significance stippling.</p>
-<p><strong>Author:</strong> Philip Myint (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f223626213b7e0f2323212361282039">[email&#160;protected]</a>) and Dalei Hao (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5135303d34387f39303e11213f3f3d7f363e27">[email&#160;protected]</a>)</p>
+    <div class="container"><h1 id="gcam-spatial-data-plotting-script-documentation">GCAM Spatial Data Plotting Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="overview">Overview</h2>
+<p><strong>Script Name:</strong> <code>gcam_plot_spatial_data.py</code></p>
+<p><strong>Purpose:</strong> Creates spatial (geographic) plots from GCAM (Global Change Analysis Model) output files, displaying data on maps using GCAM region/basin boundaries. The script supports individual scenario plots, ensemble means, absolute differences, and percent differences between scenarios, with optional statistical significance stippling.</p>
+<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -498,19 +498,19 @@ footer {
 <li><a href="#best-practices">Best Practices</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>scipy<span class="w"> </span>matplotlib<span class="w"> </span>geopandas
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports several utility modules that must be in the same directory or Python path:<br />
 - <code>utility_constants</code> - Default constants for plotting<br />
 - <code>utility_dataframes</code> - Functions for reading files and performing t-tests<br />
 - <code>utility_functions</code> - General utility functions<br />
 - <code>utility_gcam</code> - GCAM-specific functions for landtype grouping<br />
 - <code>utility_plots</code> - Plotting utility functions (provides default values)</p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>GeoPandas for handling shapefiles</li>
@@ -518,8 +518,8 @@ footer {
 <li>LaTeX installation (optional, for publication-quality typography)</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
@@ -527,7 +527,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration block in the JSON file, the script:<br />
 1. <strong>Reads</strong> processed GCAM output CSV files<br />
 2. <strong>Reads</strong> GCAM region/basin boundary shapefiles<br />
@@ -539,9 +539,9 @@ footer {
 8. <strong>Adds</strong> stippling to indicate statistical significance<br />
 9. <strong>Generates</strong> publication-quality PDF (and optionally PNG) figures</p>
 <hr />
-<h2>Plot Types</h2>
+<h2 id="plot-types">Plot Types</h2>
 <p>The script supports four main plot types:</p>
-<h3>1. Single Scenario (<code>plot_type</code> not specified or single scenario)</h3>
+<h3 id="1-single-scenario-plot_type-not-specified-or-single-scenario">1. Single Scenario (<code>plot_type</code> not specified or single scenario)</h3>
 <p>Shows absolute values for one scenario.</p>
 <p><strong>Use for:</strong><br />
 - Displaying baseline conditions<br />
@@ -549,7 +549,7 @@ footer {
 - Initial data exploration</p>
 <p><strong>Example:</strong> Control scenario commodity prices across GCAM regions</p>
 <hr />
-<h3>2. Mean (<code>plot_type: "mean"</code>)</h3>
+<h3 id="2-mean-plot_type-mean">2. Mean (<code>plot_type: "mean"</code>)</h3>
 <p>Shows the mean across multiple scenarios (ensemble mean).</p>
 <p><strong>Use for:</strong><br />
 - Displaying ensemble average<br />
@@ -560,7 +560,7 @@ footer {
 - Multiple scenarios in simple list format<br />
 - All scenarios averaged together</p>
 <hr />
-<h3>3. Absolute Difference (<code>plot_type: "absolute_difference"</code> - default)</h3>
+<h3 id="3-absolute-difference-plot_type-absolute_difference-default">3. Absolute Difference (<code>plot_type: "absolute_difference"</code> - default)</h3>
 <p>Shows the difference between scenarios: Scenario 2 - Scenario 1 (or Ensemble 2 mean - Ensemble 1 mean).</p>
 <p><strong>Use for:</strong><br />
 - Comparing two scenarios directly<br />
@@ -572,7 +572,7 @@ footer {
 - Negative values (blue): Scenario 2 &lt; Scenario 1<br />
 - Zero (white/yellow): No difference</p>
 <hr />
-<h3>4. Percent Difference (<code>plot_type: "percent_difference"</code>)</h3>
+<h3 id="4-percent-difference-plot_type-percent_difference">4. Percent Difference (<code>plot_type: "percent_difference"</code>)</h3>
 <p>Shows the percent change: (Scenario 2 - Scenario 1) / Scenario 1 × 100</p>
 <p><strong>Use for:</strong><br />
 - Comparing relative changes<br />
@@ -588,8 +588,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Complete Parameter Reference Table</h2>
-<h3>Required Parameters</h3>
+<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -620,7 +620,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Data Selection Parameters</h3>
+<h3 id="data-selection-parameters">Data Selection Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -739,7 +739,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Geographic Parameters</h3>
+<h3 id="geographic-parameters">Geographic Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -778,7 +778,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Aggregation Parameters</h3>
+<h3 id="aggregation-parameters">Aggregation Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -833,7 +833,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Plot Type and Display Parameters</h3>
+<h3 id="plot-type-and-display-parameters">Plot Type and Display Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -880,7 +880,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Visual Styling Parameters (from utility_plots.py)</h3>
+<h3 id="visual-styling-parameters-from-utility_plotspy">Visual Styling Parameters (from utility_plots.py)</h3>
 <table>
 <thead>
 <tr>
@@ -951,7 +951,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Colormap and Colorbar Parameters</h3>
+<h3 id="colormap-and-colorbar-parameters">Colormap and Colorbar Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -998,7 +998,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Statistical Significance Parameters</h3>
+<h3 id="statistical-significance-parameters">Statistical Significance Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1054,9 +1054,9 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Detailed Parameter Descriptions</h2>
-<h3>Core Required Parameters</h3>
-<h4><code>shape_file</code></h4>
+<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
+<h3 id="core-required-parameters">Core Required Parameters</h3>
+<h4 id="shape_file"><code>shape_file</code></h4>
 <p><strong>Type:</strong> String (file path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Path to GCAM region/basin boundary shapefile.</p>
@@ -1073,7 +1073,7 @@ footer {
 - Region-only boundaries: <code>reg_boundaries_moirai_3p1_0p5arcmin.shp</code><br />
 - Basin-only boundaries: <code>glu_boundaries_moirai_3p1_0p5arcmin.shp</code></p>
 <hr />
-<h4><code>output_file</code></h4>
+<h4 id="output_file"><code>output_file</code></h4>
 <p><strong>Type:</strong> String (file path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Path to processed CSV file containing GCAM output data.</p>
@@ -1087,7 +1087,7 @@ footer {
 - Must have columns for: scenario, region/basin, year, category (if applicable), value<br />
 - Processed using <code>gcam_process_extracted_data.py</code></p>
 <hr />
-<h4><code>scenarios</code></h4>
+<h4 id="scenarios"><code>scenarios</code></h4>
 <p><strong>Type:</strong> List of strings OR nested list<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Scenarios to plot or compare.</p>
@@ -1127,8 +1127,8 @@ footer {
 - The <code>scenario_sets</code> parameter helps the script detect which format you're using<br />
 - Scenario names do not need to follow any specific naming convention</p>
 <hr />
-<h3>Year Range Parameters</h3>
-<h4><code>start_year</code> and <code>end_year</code></h4>
+<h3 id="year-range-parameters">Year Range Parameters</h3>
+<h4 id="start_year-and-end_year"><code>start_year</code> and <code>end_year</code></h4>
 <p><strong>Type:</strong> Integer<br />
 <strong>Required:</strong> No<br />
 <strong>Defaults:</strong> <code>start_year: 2070</code>, <code>end_year: 2090</code></p>
@@ -1143,8 +1143,8 @@ footer {
 - Longer range: More stable estimates, reduces year-to-year variability<br />
 - Single year: Set both to same value</p>
 <hr />
-<h3>Aggregation Parameters</h3>
-<h4><code>mean_or_sum_for_time_aggregation</code></h4>
+<h3 id="aggregation-parameters_1">Aggregation Parameters</h3>
+<h4 id="mean_or_sum_for_time_aggregation"><code>mean_or_sum_for_time_aggregation</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"mean"</code><br />
@@ -1158,7 +1158,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin</code></h4>
+<h4 id="mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin"><code>mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"mean"</code><br />
@@ -1168,7 +1168,7 @@ footer {
 - <code>"mean"</code> - Average values (e.g., average price across crops in a region)<br />
 - <code>"sum"</code> - Total values (e.g., total land area across all landtypes)</p>
 <hr />
-<h4><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
+<h4 id="mean_or_sum_if_more_than_one_row_in_same_landtype_group"><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"area_weighted_mean"</code><br />
@@ -1179,8 +1179,8 @@ footer {
 - <code>"mean"</code> - Simple average<br />
 - <code>"sum"</code> - Total (for areas, production)</p>
 <hr />
-<h3>Plot Type Parameter</h3>
-<h4><code>plot_type</code></h4>
+<h3 id="plot-type-parameter">Plot Type Parameter</h3>
+<h4 id="plot_type"><code>plot_type</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"absolute_difference"</code><br />
@@ -1203,8 +1203,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h3>Colormap Parameters</h3>
-<h4><code>cmap</code></h4>
+<h3 id="colormap-parameters">Colormap Parameters</h3>
+<h4 id="cmap"><code>cmap</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"viridis"</code></p>
@@ -1230,7 +1230,7 @@ footer {
 - Use sequential colormaps for absolute value plots<br />
 - Consider colorblind accessibility</p>
 <hr />
-<h4><code>cbar_limits</code></h4>
+<h4 id="cbar_limits"><code>cbar_limits</code></h4>
 <p><strong>Type:</strong> List of two numbers<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>None</code> (auto-scaled)</p>
@@ -1249,7 +1249,7 @@ footer {
 - May differ between plots<br />
 - Outliers can compress color range</p>
 <hr />
-<h4><code>cbar_on</code></h4>
+<h4 id="cbar_on"><code>cbar_on</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>true</code></p>
@@ -1263,8 +1263,8 @@ footer {
 - <code>false</code> - When colorbar added separately<br />
 - <code>true</code> - Standard single plots</p>
 <hr />
-<h3>Stippling Parameters</h3>
-<h4><code>stippling_on</code></h4>
+<h3 id="stippling-parameters">Stippling Parameters</h3>
+<h4 id="stippling_on"><code>stippling_on</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>true</code></p>
@@ -1279,7 +1279,7 @@ footer {
 - Adds hatching pattern where p &lt; threshold<br />
 - Only relevant when comparing scenarios/ensembles</p>
 <hr />
-<h4><code>stippling_hatches</code></h4>
+<h4 id="stippling_hatches"><code>stippling_hatches</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"xxxx"</code></p>
@@ -1296,8 +1296,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h3>Shape File Label Parameters</h3>
-<h4><code>shape_file_region_label</code> and <code>shape_file_basin_label</code></h4>
+<h3 id="shape-file-label-parameters">Shape File Label Parameters</h3>
+<h4 id="shape_file_region_label-and-shape_file_basin_label"><code>shape_file_region_label</code> and <code>shape_file_basin_label</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Defaults:</strong> <code>"reg_nm"</code> (region), <code>"glu_nm"</code> (basin)</p>
@@ -1318,8 +1318,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>JSON Configuration Examples</h2>
-<h3>Example 1: Single Scenario Map</h3>
+<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
+<h3 id="example-1-single-scenario-map">Example 1: Single Scenario Map</h3>
 <p><strong>Purpose:</strong> Display agricultural commodity prices for Control scenario</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
@@ -1338,7 +1338,7 @@ footer {
 - Averages over default years (2070-2090)<br />
 - Uses viridis colormap (default)</p>
 <hr />
-<h3>Example 2: Vegetation Scalars with Custom Labels</h3>
+<h3 id="example-2-vegetation-scalars-with-custom-labels">Example 2: Vegetation Scalars with Custom Labels</h3>
 <p><strong>Purpose:</strong> Display EHC vegetation scalars with custom column names</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
@@ -1359,7 +1359,7 @@ footer {
 - Uses "vegetation" column instead of default "value"<br />
 - Custom plot title</p>
 <hr />
-<h3>Example 3: Land Allocation with Landtype Groups</h3>
+<h3 id="example-3-land-allocation-with-landtype-groups">Example 3: Land Allocation with Landtype Groups</h3>
 <p><strong>Purpose:</strong> Show forest area with landtype aggregation and summation</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
@@ -1383,7 +1383,7 @@ footer {
 - Sums across regions/basins<br />
 - LaTeX title with superscript</p>
 <hr />
-<h3>Example 4: Ensemble Mean</h3>
+<h3 id="example-4-ensemble-mean">Example 4: Ensemble Mean</h3>
 <p><strong>Purpose:</strong> Show mean forest area across ensemble members</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
@@ -1407,7 +1407,7 @@ footer {
 - Reduces ensemble variability<br />
 - Shows central tendency</p>
 <hr />
-<h3>Example 5: Absolute Difference (Default)</h3>
+<h3 id="example-5-absolute-difference-default">Example 5: Absolute Difference (Default)</h3>
 <p><strong>Purpose:</strong> Show absolute difference in forest area between scenarios</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
@@ -1430,7 +1430,7 @@ footer {
 - Note: plot_type defaults to "absolute_difference"<br />
 - Shows where and how much forest area changes</p>
 <hr />
-<h3>Example 6: Percent Difference</h3>
+<h3 id="example-6-percent-difference">Example 6: Percent Difference</h3>
 <p><strong>Purpose:</strong> Show percent change in forest area</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
@@ -1454,18 +1454,16 @@ footer {
 - Title automatically gets "% difference" appended<br />
 - Normalizes by baseline values</p>
 <hr />
-<h3>Example 7: Ensemble Comparison</h3>
+<h3 id="example-7-ensemble-comparison">Example 7: Ensemble Comparison</h3>
 <p><strong>Purpose:</strong> Compare ensemble means between two scenario groups</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/land_allocation_processed_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;forest&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/spatial_plots&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;plot_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spatial_land_allocation_forest_ensemble_absolute_difference.pdf&quot;</span><span class="p">,</span>
@@ -1484,18 +1482,16 @@ footer {
 - Shows difference: Full feedback mean - Control mean<br />
 - Performs t-tests and adds stippling</p>
 <hr />
-<h3>Example 8: Percent Difference with Custom Colorbar</h3>
+<h3 id="example-8-percent-difference-with-custom-colorbar">Example 8: Percent Difference with Custom Colorbar</h3>
 <p><strong>Purpose:</strong> Show percent change in vegetation scalars with fixed color scale</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BioenergyCrop&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Rice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SugarCrop&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Soybean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Wheat&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/spatial_plots&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;plot_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spatial_vegetation_scalars_ensemble_percent_difference.pdf&quot;</span><span class="p">,</span>
@@ -1514,18 +1510,16 @@ footer {
 - Ensures consistent scaling across crops<br />
 - Custom value column</p>
 <hr />
-<h3>Example 9: No Stippling</h3>
+<h3 id="example-9-no-stippling">Example 9: No Stippling</h3>
 <p><strong>Purpose:</strong> Show differences without statistical significance markers</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;shape_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;BioenergyCrop&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Rice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SugarCrop&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Soybean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Wheat&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/spatial_plots&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;plot_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spatial_vegetation_scalars_ensemble_absolute_difference_no_stippling.pdf&quot;</span><span class="p">,</span>
@@ -1542,8 +1536,8 @@ footer {
 - Cleaner visual appearance<br />
 - Useful when significance not needed or clutters plot</p>
 <hr />
-<h2>Statistical Significance Stippling</h2>
-<h3>How It Works</h3>
+<h2 id="statistical-significance-stippling">Statistical Significance Stippling</h2>
+<h3 id="how-it-works">How It Works</h3>
 <p><strong>For Difference Plots:</strong><br />
 When comparing scenarios or ensembles, the script:<br />
 1. Performs independent t-test for each region/basin<br />
@@ -1563,7 +1557,7 @@ When comparing scenarios or ensembles, the script:<br />
     <span class="c1"># Add stippling to this region</span>
 </code></pre></div>
 
-<h3>Interpreting Stippling</h3>
+<h3 id="interpreting-stippling">Interpreting Stippling</h3>
 <p><strong>Stippled regions:</strong> Difference is statistically significant (p &lt; 0.05 default)<br />
 - Unlikely difference occurred by chance<br />
 - Strong evidence of real difference between scenarios</p>
@@ -1571,7 +1565,7 @@ When comparing scenarios or ensembles, the script:<br />
 - Could be due to chance/variability<br />
 - Insufficient evidence of real difference<br />
 - Doesn't mean no difference exists</p>
-<h3>Controlling Stippling</h3>
+<h3 id="controlling-stippling">Controlling Stippling</h3>
 <p><strong>Enable/Disable:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">  </span><span class="c1">// Show stippling (default)</span>
 <span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">  </span><span class="c1">// No stippling</span>
@@ -1588,7 +1582,7 @@ When comparing scenarios or ensembles, the script:<br />
 <span class="nt">&quot;stippling_hatches&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;////&quot;</span><span class="w">   </span><span class="c1">// Diagonal lines</span>
 </code></pre></div>
 
-<h3>P-Value Output File</h3>
+<h3 id="p-value-output-file">P-Value Output File</h3>
 <p><strong>Location:</strong> <code>plot_directory/p_values.dat</code></p>
 <p><strong>Content:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="o">============================================================</span>
@@ -1601,8 +1595,8 @@ When comparing scenarios or ensembles, the script:<br />
 </code></pre></div>
 
 <hr />
-<h2>Colormap and Colorbar</h2>
-<h3>Choosing Colormaps</h3>
+<h2 id="colormap-and-colorbar">Colormap and Colorbar</h2>
+<h3 id="choosing-colormaps">Choosing Colormaps</h3>
 <p><strong>For Single Scenario (Absolute Values):</strong><br />
 - Use sequential colormaps<br />
 - Examples: <code>"viridis"</code>, <code>"plasma"</code>, <code>"cividis"</code>, <code>"Blues"</code><br />
@@ -1616,7 +1610,7 @@ When comparing scenarios or ensembles, the script:<br />
 - <code>"viridis"</code>, <code>"plasma"</code>, <code>"cividis"</code> - Sequential<br />
 - <code>"RdBu"</code> - Diverging (but challenging)<br />
 - Avoid <code>"jet"</code> rainbow colormap</p>
-<h3>Setting Colorbar Limits</h3>
+<h3 id="setting-colorbar-limits">Setting Colorbar Limits</h3>
 <p><strong>Auto-scaling (default):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;cbar_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
 </code></pre></div>
@@ -1644,8 +1638,8 @@ When comparing scenarios or ensembles, the script:<br />
 </code></pre></div>
 
 <hr />
-<h2>Shape Files and Geographic Data</h2>
-<h3>GCAM Boundary Shapefiles</h3>
+<h2 id="shape-files-and-geographic-data">Shape Files and Geographic Data</h2>
+<h3 id="gcam-boundary-shapefiles">GCAM Boundary Shapefiles</h3>
 <p><strong>Structure:</strong><br />
 GCAM uses a hierarchical geographic structure:<br />
 - <strong>Regions:</strong> 32 political/economic regions (e.g., USA, China, EU-15)<br />
@@ -1658,7 +1652,7 @@ A shapefile consists of multiple files:<br />
 - <code>.dbf</code> - Attribute data<br />
 - <code>.prj</code> - Projection information</p>
 <p>All must be present in the same directory.</p>
-<h3>Shapefile Attributes</h3>
+<h3 id="shapefile-attributes">Shapefile Attributes</h3>
 <p><strong>Typical Columns:</strong><br />
 - <code>reg_nm</code> - Region name (default for <code>shape_file_region_label</code>)<br />
 - <code>glu_nm</code> - Basin name (default for <code>shape_file_basin_label</code>)<br />
@@ -1672,7 +1666,7 @@ A shapefile consists of multiple files:<br />
 <span class="nb">print</span><span class="p">(</span><span class="n">gdf</span><span class="p">[[</span><span class="s1">&#39;reg_nm&#39;</span><span class="p">,</span> <span class="s1">&#39;glu_nm&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </code></pre></div>
 
-<h3>Joining Data with Shapefile</h3>
+<h3 id="joining-data-with-shapefile">Joining Data with Shapefile</h3>
 <p>The script automatically:<br />
 1. Reads shapefile<br />
 2. Aggregates CSV data by region/basin<br />
@@ -1683,8 +1677,8 @@ A shapefile consists of multiple files:<br />
 - Case-sensitive matching<br />
 - Whitespace matters</p>
 <hr />
-<h2>Output Files</h2>
-<h3>Plot Files</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="plot-files">Plot Files</h3>
 <p><strong>PDF Format (default):</strong><br />
 - Vector graphics (scalable)<br />
 - High resolution<br />
@@ -1698,7 +1692,7 @@ A shapefile consists of multiple files:<br />
 <p><strong>File Naming:</strong><br />
 - Default: <code>spatial_[output_file_name].pdf</code><br />
 - Custom: Specified by <code>plot_name</code></p>
-<h3>P-Value Files</h3>
+<h3 id="p-value-files">P-Value Files</h3>
 <p><strong>Location:</strong> <code>plot_directory/p_values.dat</code></p>
 <p><strong>Generated for:</strong> Difference and percent difference plots with multiple scenarios/ensembles</p>
 <p><strong>Content:</strong><br />
@@ -1706,8 +1700,8 @@ A shapefile consists of multiple files:<br />
 - P-values for each region/basin<br />
 - Significance markers (*)</p>
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Issue 1: Shapefile Not Found</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-shapefile-not-found">Issue 1: Shapefile Not Found</h3>
 <p><strong>Error:</strong> <code>FileNotFoundError</code> or <code>DriverError</code></p>
 <p><strong>Solutions:</strong><br />
 - Verify shapefile path is correct<br />
@@ -1715,7 +1709,7 @@ A shapefile consists of multiple files:<br />
 - Use absolute paths if unsure<br />
 - Check file permissions</p>
 <hr />
-<h3>Issue 2: No Data on Map</h3>
+<h3 id="issue-2-no-data-on-map">Issue 2: No Data on Map</h3>
 <p><strong>Symptom:</strong> Map shows boundaries but no colors/all white</p>
 <p><strong>Causes:</strong><br />
 - Region/basin names don't match between CSV and shapefile<br />
@@ -1736,7 +1730,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>Issue 3: Colorbar Range Issues</h3>
+<h3 id="issue-3-colorbar-range-issues">Issue 3: Colorbar Range Issues</h3>
 <p><strong>Symptom:</strong> All regions same color or very compressed range</p>
 <p><strong>Cause:</strong> Outliers or inappropriate auto-scaling</p>
 <p><strong>Solutions:</strong></p>
@@ -1747,7 +1741,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>Issue 4: Stippling Too Dense</h3>
+<h3 id="issue-4-stippling-too-dense">Issue 4: Stippling Too Dense</h3>
 <p><strong>Symptom:</strong> Hatching pattern overwhelming or obscuring colors</p>
 <p><strong>Solutions:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1">// Use lighter pattern</span>
@@ -1761,7 +1755,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>Issue 5: LaTeX Errors</h3>
+<h3 id="issue-5-latex-errors">Issue 5: LaTeX Errors</h3>
 <p><strong>Error:</strong> <code>RuntimeError: Failed to process string with tex</code></p>
 <p><strong>Solutions:</strong><br />
 - Install LaTeX or set <code>"use_latex": false</code><br />
@@ -1776,7 +1770,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>Issue 6: Memory Issues with Large Shapefiles</h3>
+<h3 id="issue-6-memory-issues-with-large-shapefiles">Issue 6: Memory Issues with Large Shapefiles</h3>
 <p><strong>Symptom:</strong> Slow performance or out of memory errors</p>
 <p><strong>Solutions:</strong><br />
 - Use simplified shapefiles (lower resolution)<br />
@@ -1784,8 +1778,8 @@ A shapefile consists of multiple files:<br />
 - Reduce figure size<br />
 - Close other applications</p>
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Colormap Selection</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-colormap-selection">1. Colormap Selection</h3>
 <p><strong>Guidelines:</strong><br />
 - <strong>Sequential for absolute values:</strong> Single scenario, ensemble mean<br />
 - <strong>Diverging for differences:</strong> Absolute difference, percent difference<br />
@@ -1806,7 +1800,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>2. Time Range Selection</h3>
+<h3 id="2-time-range-selection">2. Time Range Selection</h3>
 <p><strong>Consider:</strong><br />
 - <strong>Longer range (20-30 years):</strong> More stable, averages out variability<br />
 - <strong>Shorter range (5-10 years):</strong> More specific, but may be noisier<br />
@@ -1827,7 +1821,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>3. Statistical Rigor</h3>
+<h3 id="3-statistical-rigor">3. Statistical Rigor</h3>
 <p><strong>For Ensemble Comparisons:</strong><br />
 - Use adequate ensemble size (5+ members preferred)<br />
 - Be aware of multiple testing issues<br />
@@ -1842,7 +1836,7 @@ A shapefile consists of multiple files:<br />
 - Report all comparisons, not just significant<br />
 - Consider effect size alongside significance</p>
 <hr />
-<h3>4. Figure Quality</h3>
+<h3 id="4-figure-quality">4. Figure Quality</h3>
 <p><strong>For Publications:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;width&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
@@ -1875,7 +1869,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>5. Organization</h3>
+<h3 id="5-organization">5. Organization</h3>
 <p><strong>Directory Structure:</strong></p>
 <div class="codehilite"><pre><span></span><code>project/
 ├── data/
@@ -1901,7 +1895,7 @@ A shapefile consists of multiple files:<br />
 </code></pre></div>
 
 <hr />
-<h3>6. Reproducibility</h3>
+<h3 id="6-reproducibility">6. Reproducibility</h3>
 <p><strong>Document Settings:</strong><br />
 - Save configuration files<br />
 - Note shapefile version/source<br />
@@ -1917,8 +1911,8 @@ Use external documentation since JSON doesn't support comments:</p>
 </code></pre></div>
 
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical Workflow</h3>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-workflow">Typical Workflow</h3>
 <div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">gcam_extract_csv_from_project_files</span><span class="mf">.</span><span class="n">R</span>
 <span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
 
@@ -1934,7 +1928,7 @@ Use external documentation since JSON doesn't support comments:</p>
 <span class="mf">5.</span><span class="w"> </span><span class="n">Analysis</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">publication</span>
 </code></pre></div>
 
-<h3>Complementary Visualizations</h3>
+<h3 id="complementary-visualizations">Complementary Visualizations</h3>
 <p><strong>Together with:</strong><br />
 - <strong>Time series plots</strong> (<code>gcam_plot_time_series.py</code>) - Temporal evolution<br />
 - <strong>Box plots</strong> (<code>gcam_plot_box_and_whiskers.py</code>) - Distributions<br />
@@ -1944,8 +1938,8 @@ Use external documentation since JSON doesn't support comments:</p>
 - Statistical: What's the distribution/variability?<br />
 - Spatial: Where do changes occur?</p>
 <hr />
-<h2>Appendix: Complete Default Values</h2>
-<h3>From gcam_plot_spatial_data.py</h3>
+<h2 id="appendix-complete-default-values">Appendix: Complete Default Values</h2>
+<h3 id="from-gcam_plot_spatial_datapy">From gcam_plot_spatial_data.py</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="s1">&#39;basin_label&#39;</span><span class="p">:</span> <span class="s1">&#39;basin&#39;</span><span class="p">,</span>
     <span class="s1">&#39;category_label&#39;</span><span class="p">:</span> <span class="s1">&#39;sector&#39;</span><span class="p">,</span>
@@ -1986,7 +1980,7 @@ Use external documentation since JSON doesn't support comments:</p>
 </code></pre></div>
 
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>DiVittorio et al. (2025). "E3SM-GCAM coupling methodology and applications." <em>Journal of Advances in Modeling Earth Systems</em>. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
@@ -1994,12 +1988,12 @@ Use external documentation since JSON doesn't support comments:</p>
 <li>Matplotlib Colormaps: <a href="https://matplotlib.org/stable/gallery/color/colormap_reference.html">https://matplotlib.org/stable/gallery/color/colormap_reference.html</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="533e2a3a3d2762133f3f3d3f7d343c25">[email&#160;protected]</a><br />
-- <strong>Dalei Hao</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2e4a4f424b4700464f416e5e40404200494158">[email&#160;protected]</a></p>
+- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
+- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> gcam_plot_spatial_data.py<br />
 <strong>Utility Module:</strong> utility_plots.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
@@ -2008,7 +2002,11 @@ Use external documentation since JSON doesn't support comments:</p>
 <strong>GeoPandas Version:</strong> 0.8+</p>
 <hr />
 <p><em>This documentation provides comprehensive guidance for using the <code>gcam_plot_spatial_data.py</code> script to create geographic visualizations of GCAM output data with statistical analysis and publication-quality cartographic displays.</em></p>
-        
         <footer>
-            <p>
-                Comprehensive documentatio
+            <p>GCAM Spatial Data Plotting Script Documentation<br>
+            <strong>Script:</strong> gcam_plot_spatial_data.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
+        </footer>
+    </div>
+</body>
+</html>

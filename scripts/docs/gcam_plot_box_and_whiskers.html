@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCAM Box-and-Whisker Plotting Script Documentation</title>
-    <style>
-/* 
+    <title>GCAM Box and Whisker Plot Script Documentation</title>
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,19 +468,17 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1>GCAM Box-and-Whisker Plotting Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="gcam-box-and-whisker-plotting-script-documentation">GCAM Box-and-Whisker Plotting Script Documentation</h1>
+<h2 id="overview">Overview</h2>
 <p><strong>Script Name:</strong> <code>gcam_plot_box_and_whiskers.py</code></p>
 <p><strong>Purpose:</strong> Creates box-and-whisker plots (box plots) from GCAM (Global Change Analysis Model) output files to visualize data distributions across different scenarios, categories, and regions. Box plots provide a statistical summary showing median, quartiles, and outliers, making them ideal for comparing distributions and identifying variability in GCAM outputs.</p>
-<p><strong>Author:</strong> Philip Myint (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="177a6e7e796326577b7b797b39707861">[email&#160;protected]</a>) and Dalei Hao (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfabaea3aaa6e1a7aea08fbfa1a1a3e1a8a0b9">[email&#160;protected]</a>)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -499,19 +496,19 @@ footer {
 <li><a href="#best-practices">Best Practices</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>scipy<span class="w"> </span>matplotlib<span class="w"> </span>seaborn
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports several utility modules that must be in the same directory or Python path:<br />
 - <code>utility_constants</code> - Default constants for plotting<br />
 - <code>utility_dataframes</code> - Functions for reading files<br />
 - <code>utility_functions</code> - General utility functions<br />
 - <code>utility_gcam</code> - GCAM-specific functions for landtype grouping<br />
 - <code>utility_plots</code> - Plotting utility functions</p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing for multiple plots)</li>
@@ -519,8 +516,8 @@ footer {
 <li>Seaborn library (for enhanced box plot styling)</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_box_and_whiskers.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
@@ -528,7 +525,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_box_and_whiskers.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration block in the JSON file, the script:<br />
 1. <strong>Reads</strong> processed GCAM output CSV files<br />
 2. <strong>Filters</strong> data by scenarios, categories, regions, and years<br />
@@ -537,8 +534,8 @@ footer {
 5. <strong>Applies</strong> styling and customization options<br />
 6. <strong>Generates</strong> publication-quality PDF (and optionally PNG) figures</p>
 <hr />
-<h2>Understanding Box Plots</h2>
-<h3>Box Plot Components</h3>
+<h2 id="understanding-box-plots">Understanding Box Plots</h2>
+<h3 id="box-plot-components">Box Plot Components</h3>
 <p>A box-and-whisker plot displays the distribution of data through quartiles:</p>
 <div class="codehilite"><pre><span></span><code>        │                          outlier ○
         │                          
@@ -563,23 +560,23 @@ footer {
 - <strong>Whiskers:</strong> Extend to min/max values within 1.5 × IQR<br />
 - <strong>Points:</strong> Outliers beyond whiskers</p>
 <hr />
-<h2>Plot Types</h2>
+<h2 id="plot-types">Plot Types</h2>
 <p>The script supports two main plot types:</p>
-<h3>1. Individual Plots</h3>
+<h3 id="1-individual-plots">1. Individual Plots</h3>
 <p>Each scenario plotted as a separate box. Best for:<br />
 - Comparing specific scenarios directly<br />
 - Showing distribution of values across time for each scenario<br />
 - Analyzing individual simulation runs</p>
 <p><strong>Example:</strong> Comparing "Control" vs "Full feedback" scenarios</p>
-<h3>2. Ensemble Plots</h3>
+<h3 id="2-ensemble-plots">2. Ensemble Plots</h3>
 <p>Scenarios are grouped into sets, boxes show combined distribution from ensemble members. Best for:<br />
 - Analyzing ensemble spread and uncertainty<br />
 - Comparing groups of scenarios<br />
 - Understanding variability across ensemble members</p>
 <p><strong>Example:</strong> 5 ensemble members for "Control" vs 5 ensemble members for "Full feedback"</p>
 <hr />
-<h2>Configuration Parameters</h2>
-<h3>Required Parameters</h3>
+<h2 id="configuration-parameters">Configuration Parameters</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -601,7 +598,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Commonly Used Optional Parameters</h3>
+<h3 id="commonly-used-optional-parameters">Commonly Used Optional Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -663,8 +660,8 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Complete Parameter Reference Table</h2>
-<h3>Data Selection Parameters</h3>
+<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
+<h3 id="data-selection-parameters">Data Selection Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -815,7 +812,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Plot Configuration Parameters</h3>
+<h3 id="plot-configuration-parameters">Plot Configuration Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -878,7 +875,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Aggregation &amp; Processing Parameters</h3>
+<h3 id="aggregation-processing-parameters">Aggregation &amp; Processing Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -917,7 +914,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Visual Styling Parameters</h3>
+<h3 id="visual-styling-parameters">Visual Styling Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1036,7 +1033,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Legend Parameters</h3>
+<h3 id="legend-parameters">Legend Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1091,7 +1088,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Font Size Parameters</h3>
+<h3 id="font-size-parameters">Font Size Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -1139,9 +1136,9 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Detailed Parameter Descriptions</h2>
-<h3>Core Data Parameters</h3>
-<h4><code>output_file</code></h4>
+<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
+<h3 id="core-data-parameters">Core Data Parameters</h3>
+<h4 id="output_file"><code>output_file</code></h4>
 <p><strong>Type:</strong> String (file path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Path to the processed CSV file containing GCAM output data.</p>
@@ -1155,7 +1152,7 @@ footer {
 - Must be CSV format with headers<br />
 - Should have been processed using <code>gcam_process_extracted_data.py</code></p>
 <hr />
-<h4><code>scenarios</code></h4>
+<h4 id="scenarios"><code>scenarios</code></h4>
 <p><strong>Type:</strong> List of strings OR nested list (list of lists)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Specifies which scenarios to include in the plot.</p>
@@ -1194,7 +1191,7 @@ footer {
 - The <code>scenario_sets</code> parameter helps the script detect which format you're using<br />
 - Scenario names do not need to follow any specific naming convention</p>
 <hr />
-<h4><code>scenario_sets</code></h4>
+<h4 id="scenario_sets"><code>scenario_sets</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No (required for ensemble plots)<br />
 <strong>Default:</strong> <code>None</code><br />
@@ -1211,7 +1208,7 @@ footer {
 - Assigns readable names to each position across inner lists<br />
 - Used in legend labels and for organizing data</p>
 <hr />
-<h4><code>categories</code></h4>
+<h4 id="categories"><code>categories</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> All categories in the data (minus excluded ones)<br />
@@ -1226,7 +1223,7 @@ footer {
 - If not specified, uses all unique values from the <code>category_label</code> column<br />
 - Can specify landtype groups like "crop", "forest" which aggregate multiple landtypes</p>
 <hr />
-<h4><code>regions</code></h4>
+<h4 id="regions"><code>regions</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>["Global"]</code><br />
@@ -1240,8 +1237,8 @@ footer {
 - <code>"Global"</code> - Aggregates data across all regions<br />
 - Can be used with basins for basin-level analysis</p>
 <hr />
-<h3>Plot Configuration Parameters</h3>
-<h4><code>x_variable</code></h4>
+<h3 id="plot-configuration-parameters_1">Plot Configuration Parameters</h3>
+<h4 id="x_variable"><code>x_variable</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> Same as <code>category_label</code><br />
@@ -1261,7 +1258,7 @@ footer {
 - When set to "scenario": Scenarios appear on x-axis instead<br />
 - Works in combination with <code>hue</code> parameter</p>
 <hr />
-<h4><code>hue</code></h4>
+<h4 id="hue"><code>hue</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>None</code><br />
@@ -1299,7 +1296,7 @@ footer {
 
 <p>Result: Scenarios on x-axis, each with three colored boxes (one per crop).</p>
 <hr />
-<h4><code>plot_percent_difference</code></h4>
+<h4 id="plot_percent_difference"><code>plot_percent_difference</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code><br />
@@ -1318,8 +1315,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h3>Aggregation Parameters</h3>
-<h4><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
+<h3 id="aggregation-parameters">Aggregation Parameters</h3>
+<h4 id="mean_or_sum_if_more_than_one_row_in_same_landtype_group"><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"area_weighted_mean"</code><br />
@@ -1333,8 +1330,8 @@ footer {
 - Only applies when using landtype groups like "crop", "forest", "shrub", etc.<br />
 - Choose based on whether the quantity is intensive (use mean/area_weighted_mean) or extensive (use sum)</p>
 <hr />
-<h3>Visual Styling Parameters</h3>
-<h4><code>y_scale</code></h4>
+<h3 id="visual-styling-parameters_1">Visual Styling Parameters</h3>
+<h4 id="y_scale"><code>y_scale</code></h4>
 <p><strong>Type:</strong> String<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>"linear"</code><br />
@@ -1348,7 +1345,7 @@ footer {
 - <code>"log"</code> - For data spanning multiple orders of magnitude (e.g., commodity prices)<br />
 - <code>"linear"</code> - For most standard plots</p>
 <hr />
-<h4><code>y_limits</code></h4>
+<h4 id="y_limits"><code>y_limits</code></h4>
 <p><strong>Type:</strong> List of two numbers<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>None</code> (auto-scaled)<br />
@@ -1363,7 +1360,7 @@ footer {
 - First value is minimum, second is maximum<br />
 - Particularly useful with percent difference plots</p>
 <hr />
-<h4><code>fill_boxes</code></h4>
+<h4 id="fill_boxes"><code>fill_boxes</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>true</code><br />
@@ -1373,7 +1370,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>use_latex</code></h4>
+<h4 id="use_latex"><code>use_latex</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code><br />
@@ -1389,8 +1386,8 @@ footer {
 <p><strong>Requirements:</strong><br />
 - LaTeX must be installed on the system</p>
 <hr />
-<h2>JSON Configuration Examples</h2>
-<h3>Example 1: Simple Box Plot - No Hue</h3>
+<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
+<h3 id="example-1-simple-box-plot-no-hue">Example 1: Simple Box Plot - No Hue</h3>
 <p><strong>Purpose:</strong> Show distribution of commodity prices across crops for a single scenario</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1409,7 +1406,7 @@ footer {
 - All boxes same color<br />
 - Logarithmic y-axis</p>
 <hr />
-<h3>Example 2: Box Plot with Hue by Region</h3>
+<h3 id="example-2-box-plot-with-hue-by-region">Example 2: Box Plot with Hue by Region</h3>
 <p><strong>Purpose:</strong> Compare regional distributions for each crop</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1430,7 +1427,7 @@ footer {
 - Colors distinguish regions<br />
 - Shows how distributions vary by region for each crop</p>
 <hr />
-<h3>Example 3: Box Plot with Hue by Scenario</h3>
+<h3 id="example-3-box-plot-with-hue-by-scenario">Example 3: Box Plot with Hue by Scenario</h3>
 <p><strong>Purpose:</strong> Compare scenario distributions for each crop</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1451,7 +1448,7 @@ footer {
 - Colors distinguish scenarios<br />
 - Data aggregated across specified regions</p>
 <hr />
-<h3>Example 4: Scenario on X-axis, Category as Hue</h3>
+<h3 id="example-4-scenario-on-x-axis-category-as-hue">Example 4: Scenario on X-axis, Category as Hue</h3>
 <p><strong>Purpose:</strong> Flip the typical layout - scenarios on x-axis, categories colored</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1473,7 +1470,7 @@ footer {
 - Colors distinguish crops<br />
 - Useful for emphasizing scenario differences</p>
 <hr />
-<h3>Example 5: Percent Difference Plot</h3>
+<h3 id="example-5-percent-difference-plot">Example 5: Percent Difference Plot</h3>
 <p><strong>Purpose:</strong> Show relative changes from baseline scenario</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1494,7 +1491,7 @@ footer {
 - Y-axis shows % difference<br />
 - Distribution shows variability in relative change</p>
 <hr />
-<h3>Example 6: Landtype Groups</h3>
+<h3 id="example-6-landtype-groups">Example 6: Landtype Groups</h3>
 <p><strong>Purpose:</strong> Use GCAM landtype aggregations (crop, forest, etc.)</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -1515,7 +1512,7 @@ footer {
 - "crop" box aggregates all crop types<br />
 - Allows comparison of aggregated vs individual categories</p>
 <hr />
-<h3>Example 7: Vegetation Scalars</h3>
+<h3 id="example-7-vegetation-scalars">Example 7: Vegetation Scalars</h3>
 <p><strong>Purpose:</strong> Plot EHC vegetation scalars with specific value column</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
@@ -1537,7 +1534,7 @@ footer {
 - Custom y-axis label<br />
 - Shows distribution of vegetation scalar values</p>
 <hr />
-<h3>Example 8: Basin-Level Analysis</h3>
+<h3 id="example-8-basin-level-analysis">Example 8: Basin-Level Analysis</h3>
 <p><strong>Purpose:</strong> Analyze data at basin (watershed) level instead of regional</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
@@ -1561,17 +1558,14 @@ footer {
 - Shows landtype groups<br />
 - Data aggregated at finer spatial resolution</p>
 <hr />
-<h3>Example 9: Ensemble Plot</h3>
+<h3 id="example-9-ensemble-plot">Example 9: Ensemble Plot</h3>
 <p><strong>Purpose:</strong> Show ensemble spread across multiple simulation members</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;hue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_5&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_5&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;category_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;landtype&quot;</span><span class="p">,</span>
@@ -1590,15 +1584,14 @@ footer {
 - Two boxes per category (Control and Full feedback groups)<br />
 - Distribution includes variability across ensemble members AND across time</p>
 <hr />
-<h3>Example 10: Land Allocation with Custom Y-limits</h3>
+<h3 id="example-10-land-allocation-with-custom-y-limits">Example 10: Land Allocation with Custom Y-limits</h3>
 <p><strong>Purpose:</strong> Plot land areas with consistent y-axis scaling</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/land_allocation_processed_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;hue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">]</span>
 <span class="w">    </span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;scenario_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;category_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;landtype&quot;</span><span class="p">,</span>
@@ -1619,12 +1612,12 @@ footer {
 - Fixed y-axis range for consistency<br />
 - LaTeX formatting in y-axis label (superscript for km²)</p>
 <hr />
-<h2>The x_variable and hue System</h2>
-<h3>Understanding the Layout</h3>
+<h2 id="the-x_variable-and-hue-system">The x_variable and hue System</h2>
+<h3 id="understanding-the-layout">Understanding the Layout</h3>
 <p>Box plots organize data along two dimensions:<br />
 1. <strong>X-axis position</strong> - Controlled by <code>x_variable</code><br />
 2. <strong>Color grouping</strong> - Controlled by <code>hue</code></p>
-<h3>Default Behavior</h3>
+<h3 id="default-behavior">Default Behavior</h3>
 <p><strong>Without specifying x_variable or hue:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Rice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Wheat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Corn&quot;</span><span class="p">],</span>
@@ -1637,8 +1630,8 @@ footer {
 <li>All boxes same color</li>
 <li>One box per category</li>
 </ul>
-<h3>Common Patterns</h3>
-<h4>Pattern 1: Categories on X-axis, Scenarios as Hue</h4>
+<h3 id="common-patterns">Common Patterns</h3>
+<h4 id="pattern-1-categories-on-x-axis-scenarios-as-hue">Pattern 1: Categories on X-axis, Scenarios as Hue</h4>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Rice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Wheat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Corn&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
@@ -1652,7 +1645,7 @@ footer {
 <span class="nl">Colors</span><span class="p">:</span><span class="w">  </span><span class="n">Blue</span><span class="w"> </span><span class="n">Red</span><span class="w">    </span><span class="n">Blue</span><span class="w"> </span><span class="n">Red</span><span class="w">    </span><span class="n">Blue</span><span class="w"> </span><span class="n">Red</span>
 </code></pre></div>
 
-<h4>Pattern 2: Scenarios on X-axis, Categories as Hue</h4>
+<h4 id="pattern-2-scenarios-on-x-axis-categories-as-hue">Pattern 2: Scenarios on X-axis, Categories as Hue</h4>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;x_variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Rice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Wheat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Corn&quot;</span><span class="p">],</span>
@@ -1667,7 +1660,7 @@ footer {
 <span class="nl">Colors</span><span class="p">:</span><span class="w">  </span><span class="n">Blu</span><span class="w"> </span><span class="n">Grn</span><span class="w"> </span><span class="n">Red</span><span class="w">             </span><span class="n">Blu</span><span class="w"> </span><span class="n">Grn</span><span class="w"> </span><span class="n">Red</span>
 </code></pre></div>
 
-<h4>Pattern 3: Categories on X-axis, Regions as Hue</h4>
+<h4 id="pattern-3-categories-on-x-axis-regions-as-hue">Pattern 3: Categories on X-axis, Regions as Hue</h4>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Rice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Wheat&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;USA&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;China&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;India&quot;</span><span class="p">],</span>
@@ -1681,7 +1674,7 @@ footer {
 <span class="nl">Colors</span><span class="p">:</span><span class="w">   </span><span class="n">Blu</span><span class="w">  </span><span class="n">Grn</span><span class="w">   </span><span class="n">Red</span><span class="w">          </span><span class="n">Blu</span><span class="w">  </span><span class="n">Grn</span><span class="w">   </span><span class="n">Red</span>
 </code></pre></div>
 
-<h3>Valid Combinations</h3>
+<h3 id="valid-combinations">Valid Combinations</h3>
 <table>
 <thead>
 <tr>
@@ -1739,8 +1732,8 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Output Files</h2>
-<h3>Plot Files</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="plot-files">Plot Files</h3>
 <p><strong>PDF Format (default):</strong><br />
 - High-resolution vector graphics<br />
 - Suitable for publications<br />
@@ -1749,7 +1742,7 @@ footer {
 - Raster graphics<br />
 - Enabled with <code>produce_png: true</code><br />
 - Same filename as PDF with .png extension</p>
-<h3>Auto-generated Filenames</h3>
+<h3 id="auto-generated-filenames">Auto-generated Filenames</h3>
 <p><strong>Default naming pattern:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">box_plot_</span><span class="o">[</span><span class="n">output_file_name</span><span class="o">]</span><span class="p">.</span><span class="n">pdf</span>
 </code></pre></div>
@@ -1760,8 +1753,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h2>Advanced Features</h2>
-<h3>Landtype Grouping</h3>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="landtype-grouping">Landtype Grouping</h3>
 <p>The script supports two levels of landtype aggregation:</p>
 <p><strong>Modified Groups (default):</strong><br />
 - Aggregates GCAM landtypes into major categories<br />
@@ -1784,7 +1777,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h3>Time Aggregation</h3>
+<h3 id="time-aggregation">Time Aggregation</h3>
 <p>Unlike time series plots, box plots aggregate all data within the specified year range into a single distribution for each box.</p>
 <p><strong>What this means:</strong><br />
 - Start year: 2015, End year: 2100 → Each box shows distribution of 86 data points (one per year)<br />
@@ -1796,12 +1789,11 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Median line = median price across all years<br />
 - IQR = middle 50% of annual values</p>
 <hr />
-<h3>Combining Temporal and Ensemble Variability</h3>
+<h3 id="combining-temporal-and-ensemble-variability">Combining Temporal and Ensemble Variability</h3>
 <p><strong>Ensemble Plots:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control_3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_3&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_3&quot;</span><span class="p">]</span>
 <span class="p">]</span>
 </code></pre></div>
 
@@ -1813,7 +1805,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Understanding total uncertainty (time + ensemble)<br />
 - Comparing ensemble spread between scenarios</p>
 <hr />
-<h3>Regional and Basin Aggregation</h3>
+<h3 id="regional-and-basin-aggregation">Regional and Basin Aggregation</h3>
 <p><strong>Global Aggregation:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Global&quot;</span><span class="p">]</span>
 </code></pre></div>
@@ -1831,7 +1823,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 
 <p>Uses basin column instead of region column</p>
 <hr />
-<h3>Parallel Processing</h3>
+<h3 id="parallel-processing">Parallel Processing</h3>
 <p>The script processes multiple plot configurations in parallel:</p>
 <p><strong>Command:</strong></p>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_plot_box_and_whiskers.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
@@ -1840,19 +1832,19 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 <p><strong>Behavior:</strong><br />
 - Each JSON configuration file processed independently<br />
 - All plots within a file created sequentially<br />
-- Utilizes all available CPU cores<br />
+- Utilizes parallel processing with limited cores to reduce memory pressure<br />
 - Significantly faster for many plots</p>
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Common Issues</h3>
-<h4>Issue 1: File Not Found Error</h4>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="issue-1-file-not-found-error">Issue 1: File Not Found Error</h4>
 <p><strong>Error:</strong> <code>FileNotFoundError: output_file not found</code></p>
 <p><strong>Solutions:</strong><br />
 - Verify file path is correct<br />
 - Use absolute paths if unsure<br />
 - Check file has been processed by <code>gcam_process_extracted_data.py</code></p>
 <hr />
-<h4>Issue 2: Empty Boxes or Missing Data</h4>
+<h4 id="issue-2-empty-boxes-or-missing-data">Issue 2: Empty Boxes or Missing Data</h4>
 <p><strong>Symptom:</strong> Boxes don't appear or have no height</p>
 <p><strong>Causes:</strong><br />
 - Year range doesn't overlap with data<br />
@@ -1863,7 +1855,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Verify category names match exactly<br />
 - Print unique values: <code>df['category_label'].unique()</code></p>
 <hr />
-<h4>Issue 3: Hue Not Working</h4>
+<h4 id="issue-3-hue-not-working">Issue 3: Hue Not Working</h4>
 <p><strong>Symptom:</strong> All boxes same color despite specifying hue</p>
 <p><strong>Causes:</strong><br />
 - Hue variable not in filtered data<br />
@@ -1874,7 +1866,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Check spelling and case<br />
 - Ensure multiple values present after filtering</p>
 <hr />
-<h4>Issue 4: X-axis Labels Overlapping</h4>
+<h4 id="issue-4-x-axis-labels-overlapping">Issue 4: X-axis Labels Overlapping</h4>
 <p><strong>Symptom:</strong> Category names overlap on x-axis</p>
 <p><strong>Solutions:</strong><br />
 - Reduce number of categories<br />
@@ -1882,33 +1874,33 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Rotate labels (requires manual matplotlib adjustment)<br />
 - Use abbreviations in category names</p>
 <hr />
-<h4>Issue 5: LaTeX Errors</h4>
+<h4 id="issue-5-latex-errors">Issue 5: LaTeX Errors</h4>
 <p><strong>Error:</strong> <code>RuntimeError: Failed to process string with tex</code></p>
 <p><strong>Solutions:</strong><br />
 - Install LaTeX or set <code>"use_latex": false</code><br />
 - Escape special characters in labels (e.g., use <code>\$</code> for <code>$</code>)<br />
 - Check y_label for proper LaTeX formatting</p>
 <hr />
-<h4>Issue 6: Ensemble Structure Mismatch</h4>
+<h4 id="issue-6-ensemble-structure-mismatch">Issue 6: Ensemble Structure Mismatch</h4>
 <p><strong>Error:</strong> <code>ValueError: All inner lists must have same length</code></p>
 <p><strong>Cause:</strong> Nested scenario lists have different lengths</p>
 <p><strong>Solution:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1">// Incorrect</span>
 <span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// Missing Full feedback_2</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// Missing Full feedback_2</span>
 <span class="p">]</span>
 
 <span class="c1">// Correct</span>
 <span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control_2&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback_2&quot;</span><span class="p">]</span>
 <span class="p">]</span>
 </code></pre></div>
 
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Organization</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-organization">1. Organization</h3>
 <p><strong>Directory Structure:</strong></p>
 <div class="codehilite"><pre><span></span><code>project/
 ├── data/
@@ -1925,7 +1917,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h3>2. Choosing x_variable and hue</h3>
+<h3 id="2-choosing-x_variable-and-hue">2. Choosing x_variable and hue</h3>
 <p><strong>Question: What do I want to compare?</strong></p>
 <p><strong>Answer: Compare scenarios for each category</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -1949,7 +1941,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h3>3. When to Use Box Plots vs Time Series</h3>
+<h3 id="3-when-to-use-box-plots-vs-time-series">3. When to Use Box Plots vs Time Series</h3>
 <p><strong>Use Box Plots When:</strong><br />
 - Want to see overall distribution across time<br />
 - Interested in quartiles, outliers, and spread<br />
@@ -1964,7 +1956,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Box plot for overview<br />
 - Time series for detailed temporal analysis</p>
 <hr />
-<h3>4. Styling for Publications</h3>
+<h3 id="4-styling-for-publications">4. Styling for Publications</h3>
 <p><strong>High Quality Settings:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
@@ -1996,7 +1988,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h3>5. Data Preparation</h3>
+<h3 id="5-data-preparation">5. Data Preparation</h3>
 <p><strong>Before Plotting:</strong><br />
 - Process with <code>gcam_process_extracted_data.py</code><br />
 - Add areas with <code>gcam_add_areas_to_files.py</code> (if needed for area-weighted means)<br />
@@ -2009,7 +2001,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h3>6. Color Schemes</h3>
+<h3 id="6-color-schemes">6. Color Schemes</h3>
 <p><strong>Default Colors (Matplotlib Tableau palette):</strong><br />
 - Automatically applied when <code>hue</code> is specified<br />
 - Up to 10 colors, then extends to XKCD colors<br />
@@ -2019,7 +2011,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h3>7. Iterative Workflow</h3>
+<h3 id="7-iterative-workflow">7. Iterative Workflow</h3>
 <p><strong>Recommended Process:</strong><br />
 1. Start with simple configuration (one scenario, few categories)<br />
 2. Verify plot looks reasonable<br />
@@ -2028,8 +2020,8 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 5. Adjust styling parameters<br />
 6. Run full ensemble when configuration is finalized</p>
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical Workflow</h3>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-workflow">Typical Workflow</h3>
 <div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">gcam_extract_csv_from_project_files</span><span class="mf">.</span><span class="n">R</span>
 <span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
 
@@ -2045,7 +2037,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 <span class="mf">5.</span><span class="w"> </span><span class="n">Analysis</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">publication</span>
 </code></pre></div>
 
-<h3>Complementary Visualizations</h3>
+<h3 id="complementary-visualizations">Complementary Visualizations</h3>
 <p><strong>Also create:</strong><br />
 - Time series plots (<code>gcam_plot_time_series.py</code>) - Show temporal trends<br />
 - Spatial plots (<code>gcam_plot_spatial_data.py</code>) - Show geographic patterns</p>
@@ -2054,8 +2046,8 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Time series: Temporal evolution<br />
 - Spatial plots: Geographic distribution</p>
 <hr />
-<h2>Performance Considerations</h2>
-<h3>Execution Time</h3>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="execution-time">Execution Time</h3>
 <p><strong>Factors:</strong><br />
 - Number of configurations<br />
 - Number of scenarios/ensemble members<br />
@@ -2072,8 +2064,8 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 - Reduce year range for testing<br />
 - Process multiple configs in parallel</p>
 <hr />
-<h2>Appendix: Complete Default Values</h2>
-<h3>All Default Parameters</h3>
+<h2 id="appendix-complete-default-values">Appendix: Complete Default Values</h2>
+<h3 id="all-default-parameters">All Default Parameters</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
     <span class="s1">&#39;basin_label&#39;</span><span class="p">:</span> <span class="s1">&#39;basin&#39;</span><span class="p">,</span>
     <span class="s1">&#39;basins&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -2119,15 +2111,15 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h2>Quick Reference Guide</h2>
-<h3>Minimal Configuration</h3>
+<h2 id="quick-reference-guide">Quick Reference Guide</h2>
+<h3 id="minimal-configuration">Minimal Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Recommended Configuration</h3>
+<h3 id="recommended-configuration">Recommended Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
@@ -2139,7 +2131,7 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 <span class="p">}</span>
 </code></pre></div>
 
-<h3>Full Featured Configuration</h3>
+<h3 id="full-featured-configuration">Full Featured Configuration</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./data/file.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -2169,24 +2161,30 @@ For "Rice" in "Control" scenario from 2015-2100:<br />
 </code></pre></div>
 
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>DiVittorio et al. (2025). "E3SM-GCAM coupling methodology and applications." <em>Journal of Advances in Modeling Earth Systems</em>. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 <li>Seaborn Box Plot Documentation: <a href="https://seaborn.pydata.org/generated/seaborn.boxplot.html">https://seaborn.pydata.org/generated/seaborn.boxplot.html</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="523f2b3b3c2663123e3e3c3e7c353d24">[email&#160;protected]</a><br />
-- <strong>Dalei Hao</strong>: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3a5e5b565f5314525b557a4a545456145d554c">[email&#160;protected]</a></p>
+- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
+- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> gcam_plot_box_and_whiskers.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
 <strong>Last Updated:</strong> January 2026<br />
 <strong>Python Version:</strong> 3.7+</p>
 <hr />
 <p><em>This documentation provides comprehensive guidance for using the <code>gcam_plot_box_and_whiskers.py</code> script to create statistical visualizations of GCAM output data distributions.</em></p>
-        
-       
+        <footer>
+            <p>GCAM Box and Whisker Plot Script Documentation<br>
+            <strong>Script:</strong> gcam_plot_box_and_whiskers.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
+        </footer>
+    </div>
+</body>
+</html>

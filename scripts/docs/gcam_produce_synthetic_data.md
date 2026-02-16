@@ -6,7 +6,7 @@
 
 **Purpose:** Generates synthetic ensemble sets of time series data by applying random perturbations to base GCAM (Global Change Analysis Model) simulation outputs. This script is designed for testing and validation purposes, allowing users to create multiple variations of existing time series data to simulate ensemble runs.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 
@@ -97,7 +97,7 @@ The script is pre-configured to process six different GCAM output files from the
 | `num_variations_for_each_scenario` | `[5, 5, 5, 5, 5, 5]` | Any positive integer ≥ 1 | Yes | Total number of time series (including base) for each file |
 | `base_multipliers` | `np.linspace(1.02, 1.05, num_synthetic_sets_in_ensemble)` | Any array of positive float values | No | Base multiplicative factors applied to data (hardcoded in function) |
 | `random_multipliers` | `np.random.uniform(low=-0.02, high=0.02, size=len(df_this_scenario))` | Any range of float values | No | Random perturbations added to base multipliers (hardcoded in function) |
-| `processes` | `multiprocessing.cpu_count()` | Any positive integer ≤ CPU count | No | Number of parallel processes to use |
+| `processes` | `MAX_PROCESSES` | Any positive integer | No | Number of parallel processes to use |
 
 ---
 
@@ -293,9 +293,9 @@ Output files will be approximately N times larger than input files, where N is t
 
 ### Multiprocessing
 
-The script uses all available CPU cores by default:
+The script uses parallel processing with limited cores to reduce memory pressure:
 ```python
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
     pool.map(produce_synthetic_time_series, inputs)
 ```
 
@@ -441,7 +441,7 @@ num_variations_for_each_scenario = [10, 10, 10]
 - **Solution:** Reduce number of variations or process fewer files at once
 
 **Issue:** Slow execution
-- **Cause:** Large files or insufficient CPU cores
+- **Cause:** Large files or limited available cores
 - **Solution:** Reduce number of variations or process files sequentially
 
 ---

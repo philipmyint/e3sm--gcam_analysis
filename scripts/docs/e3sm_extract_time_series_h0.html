@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Time Series Extraction Script Documentation</title>
-    <style>
-/* 
+    <title>E3SM Time Series Extraction Script Documentation (h0 files)</title>
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,19 +468,17 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1>E3SM Time Series Extraction Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="e3sm-time-series-extraction-script-documentation">E3SM Time Series Extraction Script Documentation</h1>
+<h2 id="overview">Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_extract_time_series_h0.py</code></p>
 <p><strong>Purpose:</strong> Extracts time series data from E3SM (Energy Exascale Earth System Model) NetCDF h0 output files, aggregates data spatially (global or regional), processes variables (unit conversions, derived quantities), and outputs to formatted text files. The script handles both EAM (atmosphere) and ELM (land) model outputs.</p>
-<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -498,18 +495,18 @@ footer {
 <li><a href="#best-practices">Best Practices</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>xarray<span class="w"> </span>netCDF4<span class="w"> </span>multiprocessing
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <p>The script imports several utility modules that must be in the same directory or Python path:<br />
 - <code>utility_constants</code> - Physical constants (conversion factors, molecular masses)<br />
 - <code>utility_dataframes</code> - DataFrame manipulation functions<br />
 - <code>utility_functions</code> - General utility functions<br />
 - <code>utility_e3sm_netcdf</code> - E3SM-specific NetCDF handling functions</p>
-<h3>System Requirements</h3>
+<h3 id="system-requirements">System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
@@ -517,8 +514,8 @@ footer {
 <li>Access to E3SM simulation output directories</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_h0.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
@@ -526,7 +523,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_h0.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration block in the JSON file, the script:<br />
 1. <strong>Locates</strong> E3SM NetCDF h0 files in simulation directory<br />
 2. <strong>Filters</strong> files by year range and file type (ELM/EAM)<br />
@@ -538,8 +535,8 @@ footer {
 8. <strong>Outputs</strong> time series to formatted text file<br />
 9. <strong>Uses</strong> parallel processing for fast execution</p>
 <hr />
-<h2>E3SM Model Background</h2>
-<h3>E3SM Components</h3>
+<h2 id="e3sm-model-background">E3SM Model Background</h2>
+<h3 id="e3sm-components">E3SM Components</h3>
 <p><strong>E3SM (Energy Exascale Earth System Model)</strong> consists of multiple component models:</p>
 <ul>
 <li><strong>EAM (E3SM Atmosphere Model)</strong> - Atmospheric processes, radiation, clouds</li>
@@ -549,7 +546,7 @@ footer {
 <li><strong>MOSART</strong> - River transport</li>
 </ul>
 <p>This script processes outputs from <strong>EAM</strong> and <strong>ELM</strong> components.</p>
-<h3>NetCDF h0 Files</h3>
+<h3 id="netcdf-h0-files">NetCDF h0 Files</h3>
 <p><strong>File Naming Convention:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="n">component</span><span class="o">]</span><span class="p">.</span><span class="n">h0</span><span class="p">.</span><span class="n">YYYY</span><span class="o">-</span><span class="n">MM</span><span class="p">.</span><span class="n">nc</span>
 
@@ -563,7 +560,7 @@ footer {
 - Gridded data (latitude × longitude)<br />
 - Multiple variables in each file<br />
 - Metadata (units, descriptions)</p>
-<h3>Common Variables</h3>
+<h3 id="common-variables">Common Variables</h3>
 <p><strong>ELM Variables (Land):</strong><br />
 - <code>GPP</code> - Gross Primary Production (gC/m²/s)<br />
 - <code>NPP</code> - Net Primary Production<br />
@@ -579,8 +576,8 @@ footer {
 - <code>TMCO2</code> - Atmospheric CO₂ mass (kg)<br />
 - <code>TREFHT</code> - Reference height temperature (K)</p>
 <hr />
-<h2>Complete Parameter Reference Table</h2>
-<h3>Required Parameters</h3>
+<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -617,7 +614,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Optional Parameters</h3>
+<h3 id="optional-parameters">Optional Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -681,9 +678,9 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Detailed Parameter Descriptions</h2>
-<h3>Core Required Parameters</h3>
-<h4><code>simulation_path</code></h4>
+<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
+<h3 id="core-required-parameters">Core Required Parameters</h3>
+<h4 id="simulation_path"><code>simulation_path</code></h4>
 <p><strong>Type:</strong> String (directory path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Complete path to directory containing E3SM NetCDF output files.</p>
@@ -706,7 +703,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>output_file</code></h4>
+<h4 id="output_file"><code>output_file</code></h4>
 <p><strong>Type:</strong> String (file path)<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Path and filename for output time series data.</p>
@@ -726,7 +723,7 @@ footer {
 </code></pre></div>
 
 <hr />
-<h4><code>netcdf_substrings</code></h4>
+<h4 id="netcdf_substrings"><code>netcdf_substrings</code></h4>
 <p><strong>Type:</strong> Nested list of strings<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Identifies different types of NetCDF files by substrings in filenames.</p>
@@ -749,7 +746,7 @@ footer {
 - Each file must contain ALL substrings in its corresponding list<br />
 - Files grouped by type based on which substring list they match</p>
 <hr />
-<h4><code>variables</code></h4>
+<h4 id="variables"><code>variables</code></h4>
 <p><strong>Type:</strong> Nested list of strings<br />
 <strong>Required:</strong> Yes<br />
 <strong>Description:</strong> Variables to extract from each NetCDF file type.</p>
@@ -791,8 +788,8 @@ footer {
 </code></pre></div>
 
 <hr />
-<h3>Optional Parameters</h3>
-<h4><code>lat_lon_aggregation_types</code></h4>
+<h3 id="optional-parameters_1">Optional Parameters</h3>
+<h4 id="lat_lon_aggregation_types"><code>lat_lon_aggregation_types</code></h4>
 <p><strong>Type:</strong> List of strings<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>["area_weighted_mean_or_sum"]</code> for all file types<br />
@@ -830,7 +827,7 @@ footer {
 </li>
 </ol>
 <hr />
-<h4><code>regions</code></h4>
+<h4 id="regions"><code>regions</code></h4>
 <p><strong>Type:</strong> List of strings or <code>None</code><br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>[None]</code> (global - no filtering)<br />
@@ -880,7 +877,7 @@ Defined in <code>utility_e3sm_netcdf.py</code> as lat/lon bounding boxes.</p>
 </code></pre></div>
 
 <hr />
-<h4><code>process_variables</code></h4>
+<h4 id="process_variables"><code>process_variables</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>true</code><br />
@@ -902,7 +899,7 @@ Defined in <code>utility_e3sm_netcdf.py</code> as lat/lon bounding boxes.</p>
 <p><strong>Transformations Applied:</strong><br />
 See <a href="#variable-processing">Variable Processing</a> section.</p>
 <hr />
-<h4><code>start_year</code> and <code>end_year</code></h4>
+<h4 id="start_year-and-end_year"><code>start_year</code> and <code>end_year</code></h4>
 <p><strong>Type:</strong> Integer<br />
 <strong>Required:</strong> No<br />
 <strong>Defaults:</strong> <code>start_year: 2015</code>, <code>end_year: 2100</code></p>
@@ -924,7 +921,7 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 </code></pre></div>
 
 <hr />
-<h4><code>write_to_csv</code></h4>
+<h4 id="write_to_csv"><code>write_to_csv</code></h4>
 <p><strong>Type:</strong> Boolean<br />
 <strong>Required:</strong> No<br />
 <strong>Default:</strong> <code>false</code></p>
@@ -951,8 +948,8 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 </code></pre></div>
 
 <hr />
-<h2>Spatial Aggregation Types</h2>
-<h3>Area-Weighted Mean or Sum (Recommended)</h3>
+<h2 id="spatial-aggregation-types">Spatial Aggregation Types</h2>
+<h3 id="area-weighted-mean-or-sum-recommended">Area-Weighted Mean or Sum (Recommended)</h3>
 <p><strong>Name:</strong> <code>"area_weighted_mean_or_sum"</code></p>
 <p><strong>How It Works:</strong></p>
 <ol>
@@ -994,7 +991,7 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 </code></pre></div>
 
 <hr />
-<h3>Simple Mean</h3>
+<h3 id="simple-mean">Simple Mean</h3>
 <p><strong>Name:</strong> <code>"mean"</code></p>
 <p><strong>How It Works:</strong><br />
 - Arithmetic mean across all gridcells<br />
@@ -1008,7 +1005,7 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 - Not appropriate for fluxes/stocks<br />
 - Not scientifically rigorous for global estimates</p>
 <hr />
-<h3>Simple Sum</h3>
+<h3 id="simple-sum">Simple Sum</h3>
 <p><strong>Name:</strong> <code>"sum"</code></p>
 <p><strong>How It Works:</strong><br />
 - Simple sum across all gridcells<br />
@@ -1021,9 +1018,9 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 - Meaningless for intensive variables<br />
 - Incorrect for fluxes (doesn't account for area)</p>
 <hr />
-<h2>Variable Processing</h2>
+<h2 id="variable-processing">Variable Processing</h2>
 <p>When <code>process_variables: true</code>, the script applies multiple transformations:</p>
-<h3>1. Precipitation Unit Conversion</h3>
+<h3 id="1-precipitation-unit-conversion">1. Precipitation Unit Conversion</h3>
 <p><strong>Variables:</strong> <code>PRECC</code>, <code>PRECL</code>, <code>PRECSC</code>, <code>PRECSL</code></p>
 <p><strong>Transformation:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">m</span><span class="o">/</span><span class="n">s</span>
@@ -1039,7 +1036,7 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 - Individual precipitation components in mm/month<br />
 - Total precipitation as new column</p>
 <hr />
-<h3>2. CO₂ Mole Fraction Calculation</h3>
+<h3 id="2-co2-mole-fraction-calculation">2. CO₂ Mole Fraction Calculation</h3>
 <p><strong>Variables Required:</strong> <code>PBOT</code>, <code>PCO2</code>, <code>QBOT</code></p>
 <p><strong>Calculation:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Partial pressure of water vapor</span>
@@ -1058,7 +1055,7 @@ elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
 - Must remove water vapor contribution<br />
 - Uses humidity formula from psychrometric calculations</p>
 <hr />
-<h3>3. Carbon Mass Unit Conversion</h3>
+<h3 id="3-carbon-mass-unit-conversion">3. Carbon Mass Unit Conversion</h3>
 <p><strong>Variables:</strong> All with units containing <code>gC</code>, <code>g/</code>, or <code>kg</code></p>
 <p><strong>Transformation:</strong></p>
 <div class="codehilite"><pre><span></span><code>g → Pg (1 Pg = 10¹⁵ g)
@@ -1081,7 +1078,7 @@ kg → Pg (1 Pg = 10¹² kg)
 - Appropriate scale for global carbon budgets<br />
 - Standard in climate science literature</p>
 <hr />
-<h3>4. Temporal Unit Conversion</h3>
+<h3 id="4-temporal-unit-conversion">4. Temporal Unit Conversion</h3>
 <p><strong>Variables:</strong> All with units containing <code>/s</code></p>
 <p><strong>Transformation:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">per</span><span class="w"> </span><span class="n">second</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">per</span><span class="w"> </span><span class="n">month</span>
@@ -1104,7 +1101,7 @@ kg → Pg (1 Pg = 10¹² kg)
 </code></pre></div>
 
 <hr />
-<h3>5. CO₂ to C Conversion</h3>
+<h3 id="5-co2-to-c-conversion">5. CO₂ to C Conversion</h3>
 <p><strong>Variables:</strong> <code>SFCO2</code>, <code>TMCO2</code> (and variants)</p>
 <p><strong>Transformation:</strong></p>
 <div class="codehilite"><pre><span></span><code>PgCO₂ → PgC
@@ -1125,7 +1122,7 @@ Factor: MM_C / MM_CO₂ = 12 / 44 = 0.2727
 - Carbon budgets reported in C, not CO₂<br />
 - Molecular mass conversion: CO₂ (44 g/mol) → C (12 g/mol)</p>
 <hr />
-<h3>6. Plant Functional Type (PFT) Analysis</h3>
+<h3 id="6-plant-functional-type-pft-analysis">6. Plant Functional Type (PFT) Analysis</h3>
 <p><strong>Variables:</strong> <code>PCT_LANDUNIT</code>, <code>PCT_NAT_PFT</code></p>
 <p><strong>Processing:</strong></p>
 <p><strong>Land Unit Extraction:</strong></p>
@@ -1171,8 +1168,8 @@ CROP_AREA (km^2)
 </code></pre></div>
 
 <hr />
-<h2>Regional Analysis</h2>
-<h3>Defining Regions</h3>
+<h2 id="regional-analysis">Regional Analysis</h2>
+<h3 id="defining-regions">Defining Regions</h3>
 <p>Regions defined by lat/lon bounding boxes in <code>utility_e3sm_netcdf.py</code>:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_regional_bounds</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">region</span> <span class="o">==</span> <span class="s1">&#39;amazon&#39;</span><span class="p">:</span>
@@ -1182,7 +1179,7 @@ CROP_AREA (km^2)
     <span class="c1"># ... etc</span>
 </code></pre></div>
 
-<h3>How Regional Filtering Works</h3>
+<h3 id="how-regional-filtering-works">How Regional Filtering Works</h3>
 <ol>
 <li>
 <p><strong>Before spatial aggregation:</strong><br />
@@ -1200,7 +1197,7 @@ CROP_AREA (km^2)
    - Regional totals or means instead of global</p>
 </li>
 </ol>
-<h3>Example: Amazon Carbon Fluxes</h3>
+<h3 id="example-amazon-carbon-fluxes">Example: Amazon Carbon Fluxes</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/simulation&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_carbon.dat&quot;</span><span class="p">,</span>
@@ -1216,8 +1213,8 @@ CROP_AREA (km^2)
 - GPP, NPP, NBP, ER for Amazon Basin only<br />
 - Units: PgC/month (regional totals)</p>
 <hr />
-<h2>JSON Configuration Examples</h2>
-<h3>Example 1: Global Carbon Cycle (ELM + EAM)</h3>
+<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
+<h3 id="example-1-global-carbon-cycle-elm-eam">Example 1: Global Carbon Cycle (ELM + EAM)</h3>
 <p><strong>Purpose:</strong> Extract comprehensive carbon cycle variables globally</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1241,7 +1238,7 @@ CROP_AREA (km^2)
 - Processes units (g→Pg, /s→/month)<br />
 - Output: 86 years × 12 months = 1,032 rows</p>
 <hr />
-<h3>Example 2: Regional Analysis (Amazon)</h3>
+<h3 id="example-2-regional-analysis-amazon">Example 2: Regional Analysis (Amazon)</h3>
 <p><strong>Purpose:</strong> Focus on Amazon Basin carbon dynamics</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1265,7 +1262,7 @@ CROP_AREA (km^2)
 - Regional totals/means (not global)<br />
 - Total precipitation derived from PRECC + PRECL</p>
 <hr />
-<h3>Example 3: Climate Variables Only (EAM)</h3>
+<h3 id="example-3-climate-variables-only-eam">Example 3: Climate Variables Only (EAM)</h3>
 <p><strong>Purpose:</strong> Extract atmospheric/climate data without land carbon</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1287,7 +1284,7 @@ CROP_AREA (km^2)
 - Calculates ZCO2 (CO₂ mole fraction in ppm)<br />
 - Global mean temperature (TREFHT)</p>
 <hr />
-<h3>Example 4: Land Use and Vegetation</h3>
+<h3 id="example-4-land-use-and-vegetation">Example 4: Land Use and Vegetation</h3>
 <p><strong>Purpose:</strong> Track land use changes and vegetation types</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1311,7 +1308,7 @@ CROP_AREA (km^2)
 - PFT areas (individual and aggregated)<br />
 - Output includes: FRAC_VEG, FOREST_AREA, CROP_AREA, etc.</p>
 <hr />
-<h3>Example 5: Short Time Period for Testing</h3>
+<h3 id="example-5-short-time-period-for-testing">Example 5: Short Time Period for Testing</h3>
 <p><strong>Purpose:</strong> Quick test with subset of data</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1330,7 +1327,7 @@ CROP_AREA (km^2)
 - Fast execution for testing<br />
 - Verify configuration before full run</p>
 <hr />
-<h3>Example 6: CSV Output</h3>
+<h3 id="example-6-csv-output">Example 6: CSV Output</h3>
 <p><strong>Purpose:</strong> Output in CSV format for easy import to other tools</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1350,7 +1347,7 @@ CROP_AREA (km^2)
 - Comma-separated values<br />
 - Easy import to Excel, R, Python</p>
 <hr />
-<h3>Example 7: Raw Variables (No Processing)</h3>
+<h3 id="example-7-raw-variables-no-processing">Example 7: Raw Variables (No Processing)</h3>
 <p><strong>Purpose:</strong> Extract raw NetCDF values without unit conversions</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
@@ -1369,8 +1366,8 @@ CROP_AREA (km^2)
 - Original units: gC/m²/s, etc.<br />
 - Use for custom processing or debugging</p>
 <hr />
-<h2>Output Files</h2>
-<h3>Fixed-Width Format (.dat)</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="fixed-width-format-dat">Fixed-Width Format (.dat)</h3>
 <p><strong>Default format</strong> - Human-readable with aligned columns</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)  NBP (PgC/month)  TREFHT (K)
@@ -1385,7 +1382,7 @@ CROP_AREA (km^2)
 - Easy to read<br />
 - Standard for E3SM analysis</p>
 <hr />
-<h3>CSV Format (.csv)</h3>
+<h3 id="csv-format-csv">CSV Format (.csv)</h3>
 <p><strong>Optional format</strong> - Machine-readable</p>
 <p><strong>Example:</strong></p>
 <div class="codehilite"><pre><span></span><code>Year,Month,GPP (PgC/month),NPP (PgC/month),NBP (PgC/month),TREFHT (K)
@@ -1399,7 +1396,7 @@ CROP_AREA (km^2)
 - Smaller file size<br />
 - Easy import to Excel, pandas, R</p>
 <hr />
-<h3>Output Structure</h3>
+<h3 id="output-structure">Output Structure</h3>
 <p><strong>Temporal Organization:</strong><br />
 - One row per month<br />
 - Sorted by Year, then Month<br />
@@ -1419,8 +1416,8 @@ ZCO2 (ppm)
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Issue 1: No NetCDF Files Found</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-no-netcdf-files-found">Issue 1: No NetCDF Files Found</h3>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code>No files found matching criteria
 </code></pre></div>
@@ -1445,7 +1442,7 @@ ls<span class="w"> </span>/path/to/simulation/elm.h0.2015-*.nc
 </code></pre></div>
 
 <hr />
-<h3>Issue 2: Variable Not Found in NetCDF</h3>
+<h3 id="issue-2-variable-not-found-in-netcdf">Issue 2: Variable Not Found in NetCDF</h3>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code>KeyError: &#39;VARIABLE_NAME&#39;
 </code></pre></div>
@@ -1467,7 +1464,7 @@ ls<span class="w"> </span>/path/to/simulation/elm.h0.2015-*.nc
 </code></pre></div>
 
 <hr />
-<h3>Issue 3: Memory Error</h3>
+<h3 id="issue-3-memory-error">Issue 3: Memory Error</h3>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code>MemoryError
 </code></pre></div>
@@ -1505,7 +1502,7 @@ ls<span class="w"> </span>/path/to/simulation/elm.h0.2015-*.nc
 </code></pre></div>
 
 <hr />
-<h3>Issue 4: Slow Execution</h3>
+<h3 id="issue-4-slow-execution">Issue 4: Slow Execution</h3>
 <p><strong>Symptom:</strong> Script taking hours to complete</p>
 <p><strong>Causes:</strong><br />
 - Many NetCDF files (86 years × 12 months × 2 file types = 2,064 files)<br />
@@ -1535,7 +1532,7 @@ Script prints completion time for each output file</p>
 </li>
 </ol>
 <hr />
-<h3>Issue 5: Regional Bounds Error</h3>
+<h3 id="issue-5-regional-bounds-error">Issue 5: Regional Bounds Error</h3>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">Did</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">recognize</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">selected</span><span class="w"> </span><span class="n">region</span><span class="o">!</span>
 </code></pre></div>
@@ -1555,7 +1552,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>Issue 6: Mismatched List Lengths</h3>
+<h3 id="issue-6-mismatched-list-lengths">Issue 6: Mismatched List Lengths</h3>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">IndexError</span><span class="o">:</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">range</span>
 </code></pre></div>
@@ -1580,8 +1577,8 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Directory Organization</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-directory-organization">1. Directory Organization</h3>
 <p><strong>Recommended Structure:</strong></p>
 <div class="codehilite"><pre><span></span><code>project/
 ├── simulations/
@@ -1601,7 +1598,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>2. Configuration File Organization</h3>
+<h3 id="2-configuration-file-organization">2. Configuration File Organization</h3>
 <p><strong>Use descriptive names:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">configs</span><span class="o">/</span>
 <span class="err">├──</span><span class="w"> </span><span class="n">global_carbon_extraction</span><span class="o">.</span><span class="n">json</span>
@@ -1620,7 +1617,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>3. Testing Strategy</h3>
+<h3 id="3-testing-strategy">3. Testing Strategy</h3>
 <p><strong>Start small:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
@@ -1638,7 +1635,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>4. Variable Selection</h3>
+<h3 id="4-variable-selection">4. Variable Selection</h3>
 <p><strong>Consider your analysis needs:</strong></p>
 <p><strong>Carbon budget analysis:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NEE&quot;</span><span class="p">]]</span>
@@ -1661,7 +1658,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>5. Regional vs Global</h3>
+<h3 id="5-regional-vs-global">5. Regional vs Global</h3>
 <p><strong>When to use global:</strong><br />
 - Earth system scale analysis<br />
 - Comparing total carbon budgets<br />
@@ -1679,7 +1676,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>6. Performance Optimization</h3>
+<h3 id="6-performance-optimization">6. Performance Optimization</h3>
 <p><strong>Parallel processing:</strong><br />
 - Script uses all CPU cores automatically<br />
 - Process multiple output files in one run</p>
@@ -1696,7 +1693,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>7. Data Validation</h3>
+<h3 id="7-data-validation">7. Data Validation</h3>
 <p><strong>After extraction, verify:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
@@ -1717,7 +1714,7 @@ Script prints completion time for each output file</p>
 </code></pre></div>
 
 <hr />
-<h3>8. Reproducibility</h3>
+<h3 id="8-reproducibility">8. Reproducibility</h3>
 <p><strong>Document your extraction:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Global carbon cycle for control simulation&quot;</span><span class="p">,</span>
@@ -1734,8 +1731,8 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 </code></pre></div>
 
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical E3SM-GCAM Analysis Workflow</h3>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-e3sm-gcam-analysis-workflow">Typical E3SM-GCAM Analysis Workflow</h3>
 <div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="kr">Run</span><span class="w"> </span><span class="n">E3SM</span><span class="w"> </span><span class="n">simulation</span>
 <span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Produces</span><span class="w"> </span><span class="n">NetCDF</span><span class="w"> </span><span class="n">h0</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
 
@@ -1749,7 +1746,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="n">coupling</span><span class="w"> </span><span class="nb">val</span><span class="n">idation</span>
 </code></pre></div>
 
-<h3>Downstream Analysis</h3>
+<h3 id="downstream-analysis">Downstream Analysis</h3>
 <p><strong>Time Series Plotting:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Use extracted data in plotting scripts</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -1774,8 +1771,8 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 </code></pre></div>
 
 <hr />
-<h2>Appendix: Common E3SM Variables</h2>
-<h3>ELM Carbon Cycle Variables</h3>
+<h2 id="appendix-common-e3sm-variables">Appendix: Common E3SM Variables</h2>
+<h3 id="elm-carbon-cycle-variables">ELM Carbon Cycle Variables</h3>
 <table>
 <thead>
 <tr>
@@ -1842,7 +1839,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 </tr>
 </tbody>
 </table>
-<h3>ELM Carbon Stock Variables</h3>
+<h3 id="elm-carbon-stock-variables">ELM Carbon Stock Variables</h3>
 <table>
 <thead>
 <tr>
@@ -1879,7 +1876,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 </tr>
 </tbody>
 </table>
-<h3>EAM Atmospheric Variables</h3>
+<h3 id="eam-atmospheric-variables">EAM Atmospheric Variables</h3>
 <table>
 <thead>
 <tr>
@@ -1931,7 +1928,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 </tr>
 </tbody>
 </table>
-<h3>EAM CO₂ Flux Variables</h3>
+<h3 id="eam-co2-flux-variables">EAM CO₂ Flux Variables</h3>
 <table>
 <thead>
 <tr>
@@ -1984,7 +1981,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 </tbody>
 </table>
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>E3SM Model Description: <a href="https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2018MS001350">https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2018MS001350</a></li>
@@ -1993,12 +1990,12 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <li>xarray Documentation: <a href="https://xarray.pydata.org/">https://xarray.pydata.org/</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
 - <strong>Philip Myint</strong>: myint1@llnl.gov<br />
 - <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> e3sm_extract_time_series_h0.py<br />
 <strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
@@ -2007,16 +2004,10 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <strong>xarray Version:</strong> 0.16+</p>
 <hr />
 <p><em>This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_h0.py</code> script to extract, aggregate, and process time series data from E3SM model output NetCDF files for climate and carbon cycle analysis.</em></p>
-        
         <footer>
-            <p>
-                Comprehensive documentation for E3SM NetCDF time series extraction<br>
-                <strong>Script:</strong> e3sm_extract_time_series_h0.py<br>
-                <strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py<br>
-                <strong>Authors:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)<br>
-                <strong>Documentation Version:</strong> 1.0<br>
-                <strong>Last Updated:</strong> January 2026
-            </p>
+            <p>E3SM Time Series Extraction Script Documentation (h0 files)<br>
+            <strong>Script:</strong> e3sm_extract_time_series_h0.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

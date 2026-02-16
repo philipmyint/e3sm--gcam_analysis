@@ -8,7 +8,7 @@
 
 **Key Difference from h0 Script:** Unlike `e3sm_extract_time_series_h0.py` which processes monthly ELM/EAM output files, this script processes a **single NetCDF file** containing time-varying land use data that is updated dynamically during E3SM-GCAM coupled simulations.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 

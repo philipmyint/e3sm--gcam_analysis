@@ -1,5 +1,11 @@
 # GCAM EHC Scalar Compilation Script Documentation
 
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 The `gcam_compile_ehc_scalars.py` script is a Python tool for compiling and processing E3SM Human Component (EHC) scalar files generated during coupled E3SM–GCAM simulations. During runtime, the EHC dynamically generates CSV files containing soil and vegetation multipliers (referred to as "scalars") that are passed to GCAM. This script aggregates multiple scalar files from different directories (representing different scenarios) into a single consolidated CSV file for analysis and visualization.
@@ -39,7 +45,7 @@ The script imports several utility modules that must be in the same directory or
 ### System Requirements
 
 - Python 3.7+
-- Multi-core processor (script uses all available CPU cores for parallel processing)
+- Multi-core processor (script uses parallel processing with limited cores to reduce memory pressure for parallel processing)
 - Sufficient memory to handle multiple CSV files simultaneously
 
 ---
@@ -95,7 +101,7 @@ You can specify multiple JSON configuration files:
 python gcam_compile_ehc_scalars.py config1.json config2.json config3.json
 ```
 
-The script processes all configurations in parallel using all available CPU cores.
+The script processes all configurations in parallel using parallel processing with limited cores to reduce memory pressure.
 
 ### What the Script Does
 

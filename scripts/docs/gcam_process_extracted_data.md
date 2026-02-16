@@ -1,5 +1,12 @@
 # GCAM Data Processing Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 The `gcam_process_extracted_data.py` script is a Python tool for processing raw data extracted from GCAM (Global Change Analysis Model) project files. It transforms, cleans, aggregates, and standardizes GCAM output data, preparing it for analysis and visualization. The script is particularly useful for handling land allocation data, commodity prices, emissions data, and other GCAM outputs.

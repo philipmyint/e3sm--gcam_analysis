@@ -6,7 +6,7 @@
 
 **Purpose:** Extracts time series data from E3SM (Energy Exascale Earth System Model) NetCDF h0 output files, aggregates data spatially (global or regional), processes variables (unit conversions, derived quantities), and outputs to formatted text files. The script handles both EAM (atmosphere) and ELM (land) model outputs.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 

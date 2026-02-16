@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Time Series Plotting Documentation</title>
+    <title>E3SM Time Series Plotting Script Documentation</title>
     <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
@@ -471,8 +471,8 @@ footer {
 </style>
 </head>
 <body>
-    <div class="container"><h1>E3SM Time Series Plotting Script Documentation</h1>
-<h2>Overview</h2>
+    <div class="container"><h1 id="e3sm-time-series-plotting-script-documentation">E3SM Time Series Plotting Script Documentation</h1>
+<h2 id="overview">Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_plot_time_series.py</code></p>
 <p><strong>Purpose:</strong> Creates comprehensive time series plots from E3SM extracted data files with support for annual means, seasonal averages, monthly climatologies, ensemble analysis, statistical significance testing, and percent difference comparisons.</p>
 <p><strong>Key Capabilities:</strong><br />
@@ -484,10 +484,10 @@ footer {
 - Percent difference plots<br />
 - Multiple scenarios comparison<br />
 - Flexible ensemble file organization</p>
-<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Table of Contents</h2>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
@@ -502,12 +502,12 @@ footer {
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 </ol>
 <hr />
-<h2>Installation &amp; Requirements</h2>
-<h3>Required Python Libraries</h3>
+<h2 id="installation-requirements">Installation &amp; Requirements</h2>
+<h3 id="required-python-libraries">Required Python Libraries</h3>
 <div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>matplotlib<span class="w"> </span>scipy<span class="w"> </span>json<span class="w"> </span>multiprocessing
 </code></pre></div>
 
-<h3>Required Utility Modules</h3>
+<h3 id="required-utility-modules">Required Utility Modules</h3>
 <ul>
 <li><code>utility_constants</code> - Physical constants</li>
 <li><code>utility_dataframes</code> - DataFrame operations</li>
@@ -515,8 +515,8 @@ footer {
 <li><code>utility_plots</code> - Plotting defaults and functions</li>
 </ul>
 <hr />
-<h2>Basic Usage</h2>
-<h3>Command Line Execution</h3>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_plot_time_series.py<span class="w"> </span>config.json
 </code></pre></div>
 
@@ -524,7 +524,7 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_plot_time_series.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json
 </code></pre></div>
 
-<h3>What the Script Does</h3>
+<h3 id="what-the-script-does">What the Script Does</h3>
 <ol>
 <li>Reads JSON configuration file(s)</li>
 <li>Loads time series data files (.dat or .csv)</li>
@@ -535,8 +535,8 @@ footer {
 <li>Outputs p-value files</li>
 </ol>
 <hr />
-<h2>Complete Parameter Reference</h2>
-<h3>Required Parameters</h3>
+<h2 id="complete-parameter-reference">Complete Parameter Reference</h2>
+<h3 id="required-parameters">Required Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -571,7 +571,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Core Optional Parameters</h3>
+<h3 id="core-optional-parameters">Core Optional Parameters</h3>
 <table>
 <thead>
 <tr>
@@ -627,7 +627,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Visual Customization</h3>
+<h3 id="visual-customization">Visual Customization</h3>
 <table>
 <thead>
 <tr>
@@ -732,7 +732,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Seasonal Analysis</h3>
+<h3 id="seasonal-analysis">Seasonal Analysis</h3>
 <table>
 <thead>
 <tr>
@@ -772,7 +772,7 @@ footer {
 - <strong>JJA:</strong> June-July-August (summer)<br />
 - <strong>SON:</strong> September-October-November (fall)<br />
 - <strong>DJF:</strong> December-January-February (winter)</p>
-<h3>Monthly Time Series</h3>
+<h3 id="monthly-time-series">Monthly Time Series</h3>
 <table>
 <thead>
 <tr>
@@ -821,7 +821,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Statistical Testing</h3>
+<h3 id="statistical-testing">Statistical Testing</h3>
 <table>
 <thead>
 <tr>
@@ -926,7 +926,7 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3>Advanced Options</h3>
+<h3 id="advanced-options">Advanced Options</h3>
 <table>
 <thead>
 <tr>
@@ -969,8 +969,8 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Ensemble vs Individual Plots</h2>
-<h3>Plot Type: <code>'ensemble'</code> (Default)</h3>
+<h2 id="ensemble-vs-individual-plots">Ensemble vs Individual Plots</h2>
+<h3 id="plot-type-ensemble-default">Plot Type: <code>'ensemble'</code> (Default)</h3>
 <p><strong>Purpose:</strong> Calculate and display ensemble mean with uncertainty quantification</p>
 <p><strong>When to Use:</strong><br />
 - Multiple realizations available (ensemble members)<br />
@@ -999,7 +999,7 @@ footer {
 - Shaded bands showing ±1σ uncertainty<br />
 - Markers at points where scenarios are significantly different (p &lt; 0.05)</p>
 <hr />
-<h3>Plot Type: <code>'individual'</code></h3>
+<h3 id="plot-type-individual">Plot Type: <code>'individual'</code></h3>
 <p><strong>Purpose:</strong> Display each ensemble member as a separate line</p>
 <p><strong>When to Use:</strong><br />
 - Want to see range of individual realizations<br />
@@ -1028,7 +1028,7 @@ footer {
 - No averaging or error bars<br />
 - No statistical testing</p>
 <hr />
-<h3>Comparison Table</h3>
+<h3 id="comparison-table">Comparison Table</h3>
 <table>
 <thead>
 <tr>
@@ -1071,9 +1071,9 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Statistical Testing Explained</h2>
+<h2 id="statistical-testing-explained">Statistical Testing Explained</h2>
 <p>The script performs <strong>three types of statistical tests</strong> depending on configuration:</p>
-<h3>1. Aggregated t-test (Always Available)</h3>
+<h3 id="1-aggregated-t-test-always-available">1. Aggregated t-test (Always Available)</h3>
 <p><strong>What:</strong> Tests if the overall means differ across entire time period</p>
 <p><strong>When:</strong> Both ensemble and individual plots</p>
 <p><strong>How:</strong><br />
@@ -1088,7 +1088,7 @@ GPP in Scenario: 1.234e-04
 
 <p><strong>Interpretation:</strong> Scenario is significantly different from Control over entire period</p>
 <hr />
-<h3>2. Per-Year t-test (Ensemble Only)</h3>
+<h3 id="2-per-year-t-test-ensemble-only">2. Per-Year t-test (Ensemble Only)</h3>
 <p><strong>What:</strong> Tests if means differ at each individual year</p>
 <p><strong>When:</strong> <code>plot_type = 'ensemble'</code> with ≥2 members per scenario</p>
 <p><strong>How:</strong><br />
@@ -1099,7 +1099,7 @@ GPP in Scenario: 1.234e-04
 <p><strong>Example:</strong> Markers appear at years 2075, 2080, 2085, 2090 where p &lt; 0.05</p>
 <p><strong>Interpretation:</strong> These specific years show significant differences</p>
 <hr />
-<h3>3. Per-Month t-test (Ensemble + Monthly Plot)</h3>
+<h3 id="3-per-month-t-test-ensemble-monthly-plot">3. Per-Month t-test (Ensemble + Monthly Plot)</h3>
 <p><strong>What:</strong> Tests if means differ for each month (averaged across years)</p>
 <p><strong>When:</strong> <code>plot_type = 'ensemble'</code>, <code>monthly_time_series_plot = true</code>, ≥2 members</p>
 <p><strong>How:</strong><br />
@@ -1110,7 +1110,7 @@ GPP in Scenario: 1.234e-04
 <p><strong>Example:</strong> Markers at June, July, August (summer months significantly different)</p>
 <p><strong>Interpretation:</strong> Seasonal differences identified</p>
 <hr />
-<h3>Statistical Testing Summary</h3>
+<h3 id="statistical-testing-summary">Statistical Testing Summary</h3>
 <p><strong>Configuration Controls:</strong><br />
 - <code>p_value_threshold</code>: Significance level (default: 0.05)<br />
 - <code>p_value_marker</code>: Shape of significance markers (default: 'o')<br />
@@ -1137,9 +1137,9 @@ NBP in Ag scaling: 8.765e-02
 - Values &lt; 0.05: Statistically significant<br />
 - Values ≥ 0.05: Not statistically significant at 95% confidence</p>
 <hr />
-<h2>Ensemble File Organization</h2>
+<h2 id="ensemble-file-organization">Ensemble File Organization</h2>
 <p>When plotting ensembles, you can organize your file lists in <strong>two equivalent ways</strong>:</p>
-<h3>Option 1: Organized by Scenario (Intuitive)</h3>
+<h3 id="option-1-organized-by-scenario-intuitive">Option 1: Organized by Scenario (Intuitive)</h3>
 <p>Each row groups all ensemble members for one scenario together:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1157,7 +1157,7 @@ NBP in Ag scaling: 8.765e-02
 - Row 3: All Scenario files<br />
 - Easy to see which files belong to each scenario</p>
 <hr />
-<h3>Option 2: Organized by Ensemble Member</h3>
+<h3 id="option-2-organized-by-ensemble-member">Option 2: Organized by Ensemble Member</h3>
 <p>Each row contains one member from each scenario:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1177,15 +1177,15 @@ NBP in Ag scaling: 8.765e-02
 - Row 3: Member 3 for all scenarios<br />
 - Easy to add/remove ensemble members</p>
 <hr />
-<h3>Automatic Detection</h3>
+<h3 id="automatic-detection">Automatic Detection</h3>
 <p>The script automatically detects which organization you're using by comparing:<br />
 1. Number of items in <code>output_labels</code><br />
 2. Dimensions of <code>output_files</code> matrix</p>
 <p><strong>Both produce identical results!</strong> Use whichever is more intuitive for your workflow.</p>
 <p><strong>Tip:</strong> Always provide <code>output_labels</code> for unambiguous detection.</p>
 <hr />
-<h2>Comprehensive JSON Examples</h2>
-<h3>Example 1: Simple Individual Scenarios</h3>
+<h2 id="comprehensive-json-examples">Comprehensive JSON Examples</h2>
+<h3 id="example-1-simple-individual-scenarios">Example 1: Simple Individual Scenarios</h3>
 <p><strong>From JSON file (Config #1):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1218,7 +1218,7 @@ NBP in Ag scaling: 8.765e-02
 - Example: <code>ZCO2 in Full feedback: 1.234e-05</code></p>
 <p><strong>No per-year markers</strong> (individual plots don't show these)</p>
 <hr />
-<h3>Example 2: Regional Comparison</h3>
+<h3 id="example-2-regional-comparison">Example 2: Regional Comparison</h3>
 <p><strong>From JSON file (Config #2):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1252,7 +1252,7 @@ NBP in Ag scaling: 8.765e-02
 <p><strong>For all other variables:</strong><br />
 - Standard annual plots (no seasons, no monthly)</p>
 <hr />
-<h3>Example 3: Percent Difference</h3>
+<h3 id="example-3-percent-difference">Example 3: Percent Difference</h3>
 <p><strong>From JSON file (Config #3):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1281,7 +1281,7 @@ NBP in Ag scaling: 8.765e-02
 <p><strong>Y-axis for ZCO2:</strong> [-10, 10]% (custom limits)</p>
 <p><strong>Useful for:</strong> Highlighting relative impacts rather than absolute values</p>
 <hr />
-<h3>Example 4: Ensemble Analysis</h3>
+<h3 id="example-4-ensemble-analysis">Example 4: Ensemble Analysis</h3>
 <p><strong>From JSON file (Config #4):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1316,7 +1316,7 @@ NBP in Ag scaling: 8.765e-02
   GPP in Carbon scaling: 7.89e-01</code></p>
 <p><strong>Uncertainty bands:</strong> Default ±1σ (can adjust with <code>std_annual_multiplier</code>)</p>
 <hr />
-<h3>Example 5: Ensemble Percent Difference</h3>
+<h3 id="example-5-ensemble-percent-difference">Example 5: Ensemble Percent Difference</h3>
 <p><strong>From JSON file (Config #5):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1345,7 +1345,7 @@ NBP in Ag scaling: 8.765e-02
 - Carbon scaling: +2.1% ± 0.6%</p>
 <p><strong>Combines:</strong> Ensemble uncertainty + percent difference + significance testing</p>
 <hr />
-<h3>Example 6: Individual Members Despite Ensemble Format</h3>
+<h3 id="example-6-individual-members-despite-ensemble-format">Example 6: Individual Members Despite Ensemble Format</h3>
 <p><strong>From JSON file (Config #6):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1371,7 +1371,7 @@ NBP in Ag scaling: 8.765e-02
 <p><strong>No averaging, no statistics, no uncertainty bands</strong></p>
 <p><strong>Use case:</strong> Want to see full range of ensemble spread without averaging</p>
 <hr />
-<h3>Example 7: Simple Surfdata Comparison</h3>
+<h3 id="example-7-simple-surfdata-comparison">Example 7: Simple Surfdata Comparison</h3>
 <p><strong>From JSON file (Config #7):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1394,7 +1394,7 @@ NBP in Ag scaling: 8.765e-02
 - PCT_CROP, PCT_NATVEG, AREA_CROP, etc.<br />
 - Land use change variables</p>
 <hr />
-<h3>Example 8: Version Comparison</h3>
+<h3 id="example-8-version-comparison">Example 8: Version Comparison</h3>
 <p><strong>From JSON file (Config #9):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1423,7 +1423,7 @@ NBP in Ag scaling: 8.765e-02
 - If 20240730 and 20240820 lines identical → code changes didn't affect results<br />
 - If different → can quantify impact of updates</p>
 <hr />
-<h3>Example 9: Surfdata Ensemble</h3>
+<h3 id="example-9-surfdata-ensemble">Example 9: Surfdata Ensemble</h3>
 <p><strong>From JSON file (Config #10):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1448,7 +1448,7 @@ NBP in Ag scaling: 8.765e-02
 - Full feedback ensemble mean: 15.2% ± 0.3% (2015) → 19.8% ± 0.6% (2100)<br />
 - Markers appear starting around year 2050 where differences emerge</p>
 <hr />
-<h3>Example 10: Surfdata Ensemble Percent Difference</h3>
+<h3 id="example-10-surfdata-ensemble-percent-difference">Example 10: Surfdata Ensemble Percent Difference</h3>
 <p><strong>From JSON file (Config #11):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1474,8 +1474,8 @@ NBP in Ag scaling: 8.765e-02
 - Calculation: (19.8 - 18.5) / 18.5 × 100 = +7.0%<br />
 - Uncertainty from ensemble spread</p>
 <hr />
-<h2>Output Files</h2>
-<h3>Plot Files</h3>
+<h2 id="output-files">Output Files</h2>
+<h3 id="plot-files">Plot Files</h3>
 <p><strong>Naming Convention:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="o">.</span><span class="n">pdf</span>
 <span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_MAM</span><span class="o">.</span><span class="n">pdf</span><span class="w">  </span><span class="p">(</span><span class="n">seasonal</span><span class="p">)</span>
@@ -1501,7 +1501,7 @@ NBP in Ag scaling: 8.765e-02
 └── p_values.dat
 </code></pre></div>
 
-<h3>P-Value Files</h3>
+<h3 id="p-value-files">P-Value Files</h3>
 <p><strong>Purpose:</strong> Records aggregated statistical test results</p>
 <p><strong>Format:</strong></p>
 <div class="codehilite"><pre><span></span><code>GPP in Full feedback: 1.234e-05
@@ -1516,8 +1516,8 @@ NBP in Full feedback: 5.678e-02
 - ≥ 0.05: Not statistically significant at 95% confidence level</p>
 <p><strong>Note:</strong> This file contains <strong>aggregated</strong> p-values (whole period). Per-year and per-month p-values shown as markers on plots.</p>
 <hr />
-<h2>Best Practices</h2>
-<h3>1. Choose Appropriate Plot Type</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-choose-appropriate-plot-type">1. Choose Appropriate Plot Type</h3>
 <p><strong>Use <code>plot_type: "ensemble"</code> when:</strong><br />
 - Multiple ensemble members available<br />
 - Need statistical confidence<br />
@@ -1529,7 +1529,7 @@ NBP in Full feedback: 5.678e-02
 - Comparing specific members<br />
 - Initial investigation phase</p>
 <hr />
-<h3>2. Variable Selection</h3>
+<h3 id="2-variable-selection">2. Variable Selection</h3>
 <p><strong>Plot all variables:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
 </code></pre></div>
@@ -1540,7 +1540,7 @@ NBP in Full feedback: 5.678e-02
 
 <p><strong>Recommendation:</strong> Start specific for testing, expand to "all" for comprehensive analysis</p>
 <hr />
-<h3>3. Monthly Aggregation</h3>
+<h3 id="3-monthly-aggregation">3. Monthly Aggregation</h3>
 <p><strong>Use <code>"sum"</code> for:</strong><br />
 - Fluxes (GPP, NPP, NBP, ER)<br />
 - Precipitation (PRECIP)<br />
@@ -1560,13 +1560,13 @@ NBP in Full feedback: 5.678e-02
 </code></pre></div>
 
 <hr />
-<h3>4. Ensemble Size</h3>
+<h3 id="4-ensemble-size">4. Ensemble Size</h3>
 <p><strong>Recommended:</strong> 5-10 members</p>
 <p><strong>Small (n=3-5):</strong> Quick analysis, limited statistical power<br />
 <strong>Medium (n=5-10):</strong> Standard analysis, good balance (recommended)<br />
 <strong>Large (n=10-20):</strong> Publication-quality, robust statistics, high computational cost</p>
 <hr />
-<h3>5. Seasonal Analysis Strategy</h3>
+<h3 id="5-seasonal-analysis-strategy">5. Seasonal Analysis Strategy</h3>
 <p><strong>Step 1:</strong> Include key seasons on main plot</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;include_seasons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;JJA&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;DJF&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}}</span>
 </code></pre></div>
@@ -1579,7 +1579,7 @@ NBP in Full feedback: 5.678e-02
 
 <p><strong>Avoid:</strong> Including all 4 seasons on main plot (too cluttered)</p>
 <hr />
-<h3>6. Ensemble File Organization</h3>
+<h3 id="6-ensemble-file-organization">6. Ensemble File Organization</h3>
 <p><strong>Recommendation:</strong> Use Option 1 (organized by scenario) for clarity</p>
 <div class="codehilite"><pre><span></span><code><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">[</span><span class="s2">&quot;ctrl.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ctrl_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ctrl_3.dat&quot;</span><span class="p">],</span>
@@ -1592,7 +1592,7 @@ NBP in Full feedback: 5.678e-02
 </code></pre></div>
 
 <hr />
-<h3>7. File Organization</h3>
+<h3 id="7-file-organization">7. File Organization</h3>
 <div class="codehilite"><pre><span></span><code>project/
 ├── data/
 │   ├── control_time_series.dat
@@ -1611,8 +1611,8 @@ NBP in Full feedback: 5.678e-02
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Issue 1: Wrong Number of Lines</h3>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-wrong-number-of-lines">Issue 1: Wrong Number of Lines</h3>
 <p><strong>Symptom:</strong> Plot has unexpected number of lines</p>
 <p><strong>Possible Causes:</strong><br />
 1. <code>plot_type</code> set incorrectly<br />
@@ -1636,7 +1636,7 @@ NBP in Full feedback: 5.678e-02
 </code></pre></div>
 
 <hr />
-<h3>Issue 2: No Significance Markers</h3>
+<h3 id="issue-2-no-significance-markers">Issue 2: No Significance Markers</h3>
 <p><strong>Symptom:</strong> Expected markers but none appear</p>
 <p><strong>Possible Causes:</strong><br />
 1. Using <code>plot_type: "individual"</code> (no per-year tests)<br />
@@ -1657,7 +1657,7 @@ NBP in Full feedback: 5.678e-02
 
 <p>If aggregated p-values high, per-year likely also high</p>
 <hr />
-<h3>Issue 3: File Not Found</h3>
+<h3 id="issue-3-file-not-found">Issue 3: File Not Found</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">FileNotFoundError</span><span class="o">:</span><span class="w"> </span><span class="n">control_time_series</span><span class="o">.</span><span class="na">dat</span>
 </code></pre></div>
@@ -1674,7 +1674,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series*.dat
 </code></pre></div>
 
 <hr />
-<h3>Issue 4: Variable Not Found</h3>
+<h3 id="issue-4-variable-not-found">Issue 4: Variable Not Found</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code>KeyError: &#39;GPP&#39;
 </code></pre></div>
@@ -1687,7 +1687,7 @@ ls<span class="w"> </span>-la<span class="w"> </span>control_time_series*.dat
 
 <p>Check exact variable names (case-sensitive)</p>
 <hr />
-<h3>Issue 5: Memory Error</h3>
+<h3 id="issue-5-memory-error">Issue 5: Memory Error</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">MemoryError</span><span class="o">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">allocate</span><span class="w"> </span><span class="n">array</span>
 </code></pre></div>
@@ -1704,7 +1704,7 @@ python<span class="w"> </span>script.py<span class="w"> </span>config2.json
 </code></pre></div>
 
 <hr />
-<h3>Issue 6: LaTeX Errors</h3>
+<h3 id="issue-6-latex-errors">Issue 6: LaTeX Errors</h3>
 <p><strong>Error:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">RuntimeError</span><span class="o">:</span><span class="w"> </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">tex</span>
 </code></pre></div>
@@ -1723,8 +1723,8 @@ brew<span class="w"> </span>install<span class="w"> </span>mactex
 </code></pre></div>
 
 <hr />
-<h2>Advanced Features</h2>
-<h3>Per-Variable Configuration</h3>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="per-variable-configuration">Per-Variable Configuration</h3>
 <p>Most parameters accept dictionaries for per-variable customization:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TREFHT&quot;</span><span class="p">],</span>
@@ -1747,7 +1747,7 @@ brew<span class="w"> </span>install<span class="w"> </span>mactex
 </code></pre></div>
 
 <hr />
-<h3>Multiple Configurations in One File</h3>
+<h3 id="multiple-configurations-in-one-file">Multiple Configurations in One File</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
@@ -1762,7 +1762,7 @@ brew<span class="w"> </span>install<span class="w"> </span>mactex
 
 <p><strong>Result:</strong> All plots generated in one execution</p>
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>Matplotlib Documentation: <a href="https://matplotlib.org/">https://matplotlib.org/</a></li>
@@ -1770,12 +1770,12 @@ brew<span class="w"> </span>install<span class="w"> </span>mactex
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
 - <strong>Philip Myint</strong>: myint1@llnl.gov<br />
 - <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
-<h2>Version Information</h2>
+<h2 id="version-information">Version Information</h2>
 <p><strong>Script:</strong> e3sm_plot_time_series.py<br />
 <strong>Documentation Version:</strong> 2.0<br />
 <strong>Last Updated:</strong> January 2026<br />
@@ -1786,8 +1786,7 @@ brew<span class="w"> </span>install<span class="w"> </span>mactex
         <footer>
             <p>E3SM Time Series Plotting Script Documentation<br>
             <strong>Script:</strong> e3sm_plot_time_series.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao<br>
-            <strong>Version:</strong> 2.0 | January 2026</p>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

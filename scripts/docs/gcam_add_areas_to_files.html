@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GCAM Add Areas to Files Script Documentation</title>
-    <style>
-/* 
+    <title>GCAM Area Addition Script Documentation</title>
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,21 +468,22 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1>GCAM Add Areas to Files Script Documentation</h1>
-<h2>Overview</h2>
-<p><strong>Script Name:</strong> <code>gcam_add_areas_to_files.py</code></p>
-<p><strong>Purpose:</strong> Adds land allocation area data as an additional column to GCAM (Global Change Analysis Model) output files. This script matches area information from detailed land allocation files with other GCAM datasets (such as agricultural commodity prices, CO2 emissions, or vegetation/soil scalars) based on scenario, geographical unit, category, and year.</p>
-<p><strong>Author:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)</p>
+    <div class="container"><h1 id="gcam-add-areas-to-files-script-documentation">GCAM Add Areas to Files Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
 <hr />
-<h2>Script Description</h2>
+<h2 id="overview">Overview</h2>
+<p><strong>Script Name:</strong> <code>gcam_add_areas_to_files.py</code></p>
+<p><strong>Purpose:</strong> Adds land allocation area data as an additional column to GCAM (Global Change Analysis Model) output files. This script matches area information from detailed land allocation files with other GCAM datasets (such as agricultural commodity prices, CO2 emissions, or vegetation/soil scalars) based on scenario, geographical unit, category, and year.</p>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
+<h2 id="script-description">Script Description</h2>
 <p>The <code>gcam_add_areas_to_files.py</code> script enriches GCAM output files by adding land area information, enabling area-weighted calculations and analyses. The script matches entries between a target data file and a land allocation reference file based on common identifiers (scenario, region/basin, category, year).</p>
-<h3>Key Features</h3>
+<h3 id="key-features">Key Features</h3>
 <ul>
 <li><strong>Parallel Processing:</strong> Utilizes multiprocessing to add areas to different data subsets simultaneously</li>
 <li><strong>Flexible Matching:</strong> Supports matching at both regional and basin (watershed) levels</li>
@@ -492,7 +492,7 @@ footer {
 <li><strong>Crop Name Standardization:</strong> Optional conversion to standardized crop naming conventions</li>
 <li><strong>Area Aggregation:</strong> Automatically sums areas across basins when matching at regional level</li>
 </ul>
-<h3>Workflow</h3>
+<h3 id="workflow">Workflow</h3>
 <ol>
 <li>Reads target data file and land allocation reference file</li>
 <li>Extracts unique scenarios, geographical units, and categories</li>
@@ -506,8 +506,8 @@ footer {
 <li>Outputs enhanced file with area column</li>
 </ol>
 <hr />
-<h2>Function Documentation</h2>
-<h3><code>add_areas_to_subset_of_file(df, df_land, geographical_label, category_label, scenario, geography, category)</code></h3>
+<h2 id="function-documentation">Function Documentation</h2>
+<h3 id="add_areas_to_subset_of_filedf-df_land-geographical_label-category_label-scenario-geography-category"><code>add_areas_to_subset_of_file(df, df_land, geographical_label, category_label, scenario, geography, category)</code></h3>
 <p><strong>Purpose:</strong> Core function that adds land allocation areas to a specific subset of data matching given criteria.</p>
 <p><strong>Parameters:</strong><br />
 - <code>df</code> (DataFrame): Target data containing the quantity of interest<br />
@@ -526,7 +526,7 @@ footer {
 5. For basin matching: Aggregates areas across all regions containing that basin<br />
 6. Returns enhanced DataFrame with area column</p>
 <hr />
-<h3><code>add_areas_to_file(inputs)</code></h3>
+<h3 id="add_areas_to_fileinputs"><code>add_areas_to_file(inputs)</code></h3>
 <p><strong>Purpose:</strong> Orchestrates the process of adding areas to an entire file based on JSON configuration.</p>
 <p><strong>Parameters:</strong><br />
 - <code>inputs</code> (dict): Dictionary containing all configuration parameters (see Input Parameters Table below)</p>
@@ -542,7 +542,7 @@ footer {
 8. Writes enhanced data to output file<br />
 9. Reports execution time</p>
 <hr />
-<h2>Input Parameters Table</h2>
+<h2 id="input-parameters-table">Input Parameters Table</h2>
 <table>
 <thead>
 <tr>
@@ -613,9 +613,9 @@ footer {
 </tbody>
 </table>
 <hr />
-<h2>Detailed Parameter Descriptions</h2>
-<h3>Required Parameters</h3>
-<h4><code>input_file</code></h4>
+<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
+<h3 id="required-parameters">Required Parameters</h3>
+<h4 id="input_file"><code>input_file</code></h4>
 <p><strong>Type:</strong> String (file path)</p>
 <p><strong>Description:</strong> Path to the GCAM output file that requires area information.</p>
 <p><strong>Examples:</strong></p>
@@ -626,7 +626,7 @@ footer {
 <p><strong>Supported Formats:</strong> CSV (.csv) or fixed-width format (.dat) files</p>
 <p><strong>Expected Structure:</strong> Must contain columns for scenario, geographical unit, category (if applicable), and year</p>
 <hr />
-<h4><code>output_file</code></h4>
+<h4 id="output_file"><code>output_file</code></h4>
 <p><strong>Type:</strong> String (file path)</p>
 <p><strong>Description:</strong> Path where the enhanced file with area column will be saved.</p>
 <p><strong>Examples:</strong></p>
@@ -637,7 +637,7 @@ footer {
 <p><strong>Note:</strong> Can be the same as <code>input_file</code> to overwrite the original file, or a different path to preserve the original.</p>
 <p><strong>Output Format:</strong> Matches input format (CSV or .dat)</p>
 <hr />
-<h4><code>key_columns</code></h4>
+<h4 id="key_columns"><code>key_columns</code></h4>
 <p><strong>Type:</strong> List of strings</p>
 <p><strong>Description:</strong> Column names used for sorting the final output DataFrame. Order matters - data will be sorted by the first column, then second, etc.</p>
 <p><strong>Examples:</strong></p>
@@ -651,7 +651,7 @@ footer {
 - Sector data: <code>["scenario", "region", "sector", "year"]</code></p>
 <p><strong>Important:</strong> All columns listed must exist in the input file.</p>
 <hr />
-<h4><code>geographical_label</code></h4>
+<h4 id="geographical_label"><code>geographical_label</code></h4>
 <p><strong>Type:</strong> String</p>
 <p><strong>Description:</strong> Column name that identifies geographical units in the data.</p>
 <p><strong>Possible Values:</strong><br />
@@ -666,7 +666,7 @@ footer {
 - <strong>Region level:</strong> Areas are summed across all basins within each region<br />
 - <strong>Basin level:</strong> Areas are collected from all regions that contain portions of that basin</p>
 <hr />
-<h4><code>category_label</code></h4>
+<h4 id="category_label"><code>category_label</code></h4>
 <p><strong>Type:</strong> String</p>
 <p><strong>Description:</strong> Column name that identifies the category of data (e.g., crop types, sectors, land uses).</p>
 <p><strong>Possible Values:</strong> Any valid column name from the input file<br />
@@ -685,7 +685,7 @@ footer {
 - Emissions data: <code>"sector"</code><br />
 - Vegetation/soil scalars: <code>"landtype"</code></p>
 <hr />
-<h4><code>land_allocation_file</code></h4>
+<h4 id="land_allocation_file"><code>land_allocation_file</code></h4>
 <p><strong>Type:</strong> String (file path)</p>
 <p><strong>Description:</strong> Path to the reference file containing detailed land allocation area data. This file must have been previously extracted and processed from GCAM outputs.</p>
 <p><strong>Examples:</strong></p>
@@ -702,8 +702,8 @@ footer {
 - For standardized crop names: use <code>land_allocation_processed.csv</code><br />
 - For original GCAM crop names: use <code>land_allocation_processed_original_crop_names.csv</code></p>
 <hr />
-<h3>Optional Parameters</h3>
-<h4><code>call_modify_crop_names</code></h4>
+<h3 id="optional-parameters">Optional Parameters</h3>
+<h4 id="call_modify_crop_names"><code>call_modify_crop_names</code></h4>
 <p><strong>Type:</strong> Boolean</p>
 <p><strong>Default:</strong> <code>false</code></p>
 <p><strong>Description:</strong> Determines whether to apply crop name standardization after adding areas. When enabled, converts original GCAM crop names to standardized names defined in the <code>gcam_crop_mappings</code> dictionary.</p>
@@ -724,7 +724,7 @@ footer {
 - <code>Forest</code>, <code>ProtectedUnmanagedForest</code>, <code>UnmanagedForest</code> → <code>forest</code> (aggregate)<br />
 - See <code>utility_gcam.py</code> for complete mapping definitions</p>
 <hr />
-<h4><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
+<h4 id="mean_or_sum_if_more_than_one_row_in_same_landtype_group"><code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code></h4>
 <p><strong>Type:</strong> String or None</p>
 <p><strong>Default:</strong> <code>None</code></p>
 <p><strong>Description:</strong> Specifies how to aggregate data when crop name standardization causes multiple rows to map to the same standardized landtype.</p>
@@ -745,8 +745,8 @@ footer {
 - Required when <code>call_modify_crop_names</code> is <code>true</code><br />
 - Particularly important for scalar files where values represent rates or densities</p>
 <hr />
-<h2>JSON Configuration File Structure</h2>
-<h3>File Format</h3>
+<h2 id="json-configuration-file-structure">JSON Configuration File Structure</h2>
+<h3 id="file-format">File Format</h3>
 <p>The script accepts JSON configuration files containing an array of configuration objects. Each object represents one file to process.</p>
 <p><strong>Basic Structure:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
@@ -764,8 +764,8 @@ footer {
 <span class="p">]</span>
 </code></pre></div>
 
-<h3>Example Configurations</h3>
-<h4>Example 1: Regional Agricultural Commodity Prices</h4>
+<h3 id="example-configurations">Example Configurations</h3>
+<h4 id="example-1-regional-agricultural-commodity-prices">Example 1: Regional Agricultural Commodity Prices</h4>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv&quot;</span><span class="p">,</span>
@@ -783,7 +783,7 @@ footer {
 - No crop name standardization needed<br />
 - Output overwrites input file</p>
 <hr />
-<h4>Example 2: Basin-Level Vegetation and Soil Scalars with Crop Standardization</h4>
+<h4 id="example-2-basin-level-vegetation-and-soil-scalars-with-crop-standardization">Example 2: Basin-Level Vegetation and Soil Scalars with Crop Standardization</h4>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv&quot;</span><span class="p">,</span>
@@ -804,7 +804,7 @@ footer {
 - Uses area-weighted mean for aggregation (appropriate for intensive properties like scalars)<br />
 - Uses land allocation file with original crop names for proper matching</p>
 <hr />
-<h4>Example 3: Ensemble Data Processing</h4>
+<h4 id="example-3-ensemble-data-processing">Example 3: Ensemble Data Processing</h4>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed_ensemble.csv&quot;</span><span class="p">,</span>
@@ -821,8 +821,8 @@ footer {
 - Uses corresponding ensemble land allocation file<br />
 - Same configuration structure as non-ensemble files</p>
 <hr />
-<h2>Usage Instructions</h2>
-<h3>Command Line Execution</h3>
+<h2 id="usage-instructions">Usage Instructions</h2>
+<h3 id="command-line-execution">Command Line Execution</h3>
 <p><strong>Basic Syntax:</strong></p>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
@@ -835,8 +835,8 @@ footer {
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>/full/path/to/gcam_add_areas_to_files.json
 </code></pre></div>
 
-<h3>Example Workflow</h3>
-<h4>Step 1: Prepare Land Allocation File</h4>
+<h3 id="example-workflow">Example Workflow</h3>
+<h4 id="step-1-prepare-land-allocation-file">Step 1: Prepare Land Allocation File</h4>
 <p>Ensure you have extracted and processed land allocation data using <code>gcam_extract_csv_from_project_files.R</code> and <code>gcam_process_extracted_data.py</code>.</p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Extract data from GCAM project files</span>
 Rscript<span class="w"> </span>gcam_extract_csv_from_project_files.R<span class="w"> </span>extraction_config.json
@@ -845,7 +845,7 @@ Rscript<span class="w"> </span>gcam_extract_csv_from_project_files.R<span class=
 python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </span>processing_config.json
 </code></pre></div>
 
-<h4>Step 2: Create JSON Configuration</h4>
+<h4 id="step-2-create-json-configuration">Step 2: Create JSON Configuration</h4>
 <p>Create a JSON file specifying which files need areas added:</p>
 <p><strong>my_config.json:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
@@ -860,11 +860,11 @@ python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </s
 <span class="p">]</span>
 </code></pre></div>
 
-<h4>Step 3: Run the Script</h4>
+<h4 id="step-3-run-the-script">Step 3: Run the Script</h4>
 <div class="codehilite"><pre><span></span><code>python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>my_config.json
 </code></pre></div>
 
-<h4>Step 4: Verify Output</h4>
+<h4 id="step-4-verify-output">Step 4: Verify Output</h4>
 <p>Check the output file to ensure the 'area' column has been added:</p>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/emissions_by_region_with_areas.csv&#39;</span><span class="p">)</span>
@@ -873,8 +873,8 @@ python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </s
 </code></pre></div>
 
 <hr />
-<h2>Understanding Area Matching Logic</h2>
-<h3>Regional Matching (geographical_label: "region")</h3>
+<h2 id="understanding-area-matching-logic">Understanding Area Matching Logic</h2>
+<h3 id="regional-matching-geographical_label-region">Regional Matching (geographical_label: "region")</h3>
 <p><strong>Process:</strong><br />
 1. Filter land allocation data to matching scenario, region, and landtype<br />
 2. For each year, sum areas across all basins within that region<br />
@@ -899,7 +899,7 @@ python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </s
 </code></pre></div>
 
 <hr />
-<h3>Basin Matching (geographical_label: "basin")</h3>
+<h3 id="basin-matching-geographical_label-basin">Basin Matching (geographical_label: "basin")</h3>
 <p><strong>Process:</strong><br />
 1. Filter land allocation data to matching scenario, basin, and landtype<br />
 2. Some basins span multiple regions - collect areas from all relevant regions<br />
@@ -925,7 +925,7 @@ python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </s
 </code></pre></div>
 
 <hr />
-<h3>Handling Missing Matches</h3>
+<h3 id="handling-missing-matches">Handling Missing Matches</h3>
 <p>When no corresponding land allocation data is found for a particular combination:<br />
 - Area is set to <strong>0</strong><br />
 - No error is raised<br />
@@ -936,10 +936,10 @@ python<span class="w"> </span>gcam_process_extracted_data.py<span class="w"> </s
 - Year range mismatch between files<br />
 - Scenario name mismatch</p>
 <hr />
-<h2>Crop Name Standardization</h2>
-<h3>Overview</h3>
+<h2 id="crop-name-standardization">Crop Name Standardization</h2>
+<h3 id="overview_1">Overview</h3>
 <p>When <code>call_modify_crop_names</code> is set to <code>true</code>, the script applies standardization mappings defined in the <code>gcam_crop_mappings</code> dictionary from <code>utility_gcam.py</code>.</p>
-<h3>Standard Mappings</h3>
+<h3 id="standard-mappings">Standard Mappings</h3>
 <p><strong>Bioenergy Crops:</strong></p>
 <div class="codehilite"><pre><span></span><code>biomass, biomassGrass, biomassTree → BioenergyCrop
 </code></pre></div>
@@ -962,7 +962,7 @@ FodderGrass → FodderGrass (unchanged)
 Rice → Rice (unchanged)
 </code></pre></div>
 
-<h3>Aggregation After Standardization</h3>
+<h3 id="aggregation-after-standardization">Aggregation After Standardization</h3>
 <p>When multiple original crop types map to the same standardized name, aggregation is controlled by <code>mean_or_sum_if_more_than_one_row_in_same_landtype_group</code>:</p>
 <p><strong>Area-Weighted Mean (for intensive properties):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Example: Vegetation scalars</span>
@@ -985,10 +985,10 @@ Rice → Rice (unchanged)
 </code></pre></div>
 
 <hr />
-<h2>Performance Considerations</h2>
-<h3>Multiprocessing</h3>
-<p>The script uses all available CPU cores for parallel processing:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="multiprocessing">Multiprocessing</h3>
+<p>The script uses parallel processing with limited cores to reduce memory pressure for parallel processing:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
     <span class="n">dataframes_for_each_subset</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">starmap</span><span class="p">(</span><span class="n">add_areas_to_subset_of_file</span><span class="p">,</span> <span class="n">cartesian_product</span><span class="p">))</span>
 </code></pre></div>
 
@@ -1001,7 +1001,7 @@ Rice → Rice (unchanged)
 <p><strong>Scalability:</strong><br />
 - Processing time scales roughly linearly with Cartesian product size<br />
 - More CPU cores = faster processing for large datasets</p>
-<h3>Execution Time</h3>
+<h3 id="execution-time">Execution Time</h3>
 <p><strong>Typical Performance:</strong><br />
 - Small files (&lt; 10,000 rows): 1-5 seconds<br />
 - Medium files (10,000-100,000 rows): 5-30 seconds<br />
@@ -1013,7 +1013,7 @@ Elapsed time for adding areas to scalars_control+full_feedback.csv: 45.67 second
 Elapsed time for adding areas to all files: 58.01 seconds
 </code></pre></div>
 
-<h3>Memory Requirements</h3>
+<h3 id="memory-requirements">Memory Requirements</h3>
 <p><strong>Memory Usage Estimation:</strong></p>
 <div class="codehilite"><pre><span></span><code>Peak Memory ≈ (Input File Size + Land Allocation File Size) × Number of CPU Cores × 1.5
 </code></pre></div>
@@ -1028,8 +1028,8 @@ Elapsed time for adding areas to all files: 58.01 seconds
 - Close unnecessary applications to free memory<br />
 - For very large ensembles, process subset of files at a time</p>
 <hr />
-<h2>Dependencies</h2>
-<h3>Required Python Modules</h3>
+<h2 id="dependencies">Dependencies</h2>
+<h3 id="required-python-modules">Required Python Modules</h3>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>        <span class="c1"># Standard library</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>            <span class="c1"># Standard library</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span> <span class="c1"># Standard library</span>
@@ -1038,7 +1038,7 @@ Elapsed time for adding areas to all files: 58.01 seconds
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>           <span class="c1"># Standard library</span>
 </code></pre></div>
 
-<h3>Custom Utility Modules</h3>
+<h3 id="custom-utility-modules">Custom Utility Modules</h3>
 <p><strong>From <code>utility_constants.py</code>:</strong><br />
 - Various constants used throughout the analysis pipeline</p>
 <p><strong>From <code>utility_dataframes.py</code>:</strong><br />
@@ -1049,14 +1049,14 @@ Elapsed time for adding areas to all files: 58.01 seconds
 <p><strong>Installation:</strong><br />
 Ensure all utility modules are available in the Python path or the same directory as the script.</p>
 <hr />
-<h2>Output File Structure</h2>
-<h3>Added Column</h3>
+<h2 id="output-file-structure">Output File Structure</h2>
+<h3 id="added-column">Added Column</h3>
 <p>The script adds a single new column to the input file:</p>
 <p><strong>Column Name:</strong> <code>area</code></p>
 <p><strong>Data Type:</strong> Float</p>
 <p><strong>Units:</strong> Typically thousands of square kilometers (km²), depending on GCAM output units</p>
 <p><strong>Position:</strong> Appended as the last column (rightmost)</p>
-<h3>Example Output Structure</h3>
+<h3 id="example-output-structure">Example Output Structure</h3>
 <p><strong>Before (Input):</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">scenario</span><span class="p">,</span><span class="n">region</span><span class="p">,</span><span class="n">sector</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">value</span>
 <span class="n">base</span><span class="p">,</span><span class="n">USA</span><span class="p">,</span><span class="n">Corn</span><span class="p">,</span><span class="mh">2020</span><span class="p">,</span><span class="mf">150.5</span>
@@ -1071,14 +1071,14 @@ Ensure all utility modules are available in the Python path or the same director
 <span class="n">base</span><span class="p">,</span><span class="n">USA</span><span class="p">,</span><span class="n">Wheat</span><span class="p">,</span><span class="mh">2020</span><span class="p">,</span><span class="mf">95.3</span><span class="p">,</span><span class="mf">82.4</span>
 </code></pre></div>
 
-<h3>Data Sorting</h3>
+<h3 id="data-sorting">Data Sorting</h3>
 <p>Output is sorted according to <code>key_columns</code> specification:<br />
 - Primary sort: First column in key_columns<br />
 - Secondary sort: Second column in key_columns<br />
 - And so on...</p>
 <hr />
-<h2>Common Use Cases</h2>
-<h3>Use Case 1: Area-Weighted Regional Analysis</h3>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<h3 id="use-case-1-area-weighted-regional-analysis">Use Case 1: Area-Weighted Regional Analysis</h3>
 <p><strong>Goal:</strong> Calculate area-weighted average agricultural commodity prices by region</p>
 <p><strong>Configuration:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -1100,7 +1100,7 @@ Ensure all utility modules are available in the Python path or the same director
 </code></pre></div>
 
 <hr />
-<h3>Use Case 2: Basin-Level Ecosystem Analysis</h3>
+<h3 id="use-case-2-basin-level-ecosystem-analysis">Use Case 2: Basin-Level Ecosystem Analysis</h3>
 <p><strong>Goal:</strong> Analyze vegetation scalars at the basin level with standardized crop names</p>
 <p><strong>Configuration:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -1120,7 +1120,7 @@ Ensure all utility modules are available in the Python path or the same director
 - Area-weighted aggregation for physically meaningful averages<br />
 - Basin-level spatial resolution for watershed analysis</p>
 <hr />
-<h3>Use Case 3: Ensemble Time Series Comparison</h3>
+<h3 id="use-case-3-ensemble-time-series-comparison">Use Case 3: Ensemble Time Series Comparison</h3>
 <p><strong>Goal:</strong> Compare land use changes across ensemble members with area weighting</p>
 <p><strong>Configuration:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
@@ -1151,9 +1151,9 @@ Ensure all utility modules are available in the Python path or the same director
 </code></pre></div>
 
 <hr />
-<h2>Troubleshooting</h2>
-<h3>Common Issues and Solutions</h3>
-<h4>Issue 1: FileNotFoundError</h4>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
+<h4 id="issue-1-filenotfounderror">Issue 1: FileNotFoundError</h4>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code>FileNotFoundError: [Errno 2] No such file or directory: &#39;./data/input.csv&#39;
 </code></pre></div>
@@ -1167,7 +1167,7 @@ Ensure all utility modules are available in the Python path or the same director
 - Check that input files exist before running<br />
 - Use <code>pwd</code> command to check current working directory</p>
 <hr />
-<h4>Issue 2: KeyError on Column Names</h4>
+<h4 id="issue-2-keyerror-on-column-names">Issue 2: KeyError on Column Names</h4>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code>KeyError: &#39;sector&#39;
 </code></pre></div>
@@ -1181,7 +1181,7 @@ Ensure all utility modules are available in the Python path or the same director
 - Check for exact spelling and capitalization<br />
 - Inspect a few rows of the input file: <code>df.head()</code></p>
 <hr />
-<h4>Issue 3: No Areas Added (All Zeros)</h4>
+<h4 id="issue-3-no-areas-added-all-zeros">Issue 3: No Areas Added (All Zeros)</h4>
 <p><strong>Symptom:</strong> Area column added but all values are 0</p>
 <p><strong>Causes:</strong><br />
 - Mismatch between category names in input and land allocation files<br />
@@ -1194,7 +1194,7 @@ Ensure all utility modules are available in the Python path or the same director
 - Ensure land allocation file covers the same time period<br />
 - If using crop name standardization, ensure land allocation file uses corresponding naming convention</p>
 <hr />
-<h4>Issue 4: Memory Error</h4>
+<h4 id="issue-4-memory-error">Issue 4: Memory Error</h4>
 <p><strong>Error Message:</strong></p>
 <div class="codehilite"><pre><span></span><code><span class="n">MemoryError</span><span class="o">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">allocate</span><span class="w"> </span><span class="n">array</span>
 </code></pre></div>
@@ -1210,7 +1210,7 @@ Ensure all utility modules are available in the Python path or the same director
 - Close other applications to free memory<br />
 - Use machine with more RAM</p>
 <hr />
-<h4>Issue 5: Slow Performance</h4>
+<h4 id="issue-5-slow-performance">Issue 5: Slow Performance</h4>
 <p><strong>Symptom:</strong> Script takes much longer than expected</p>
 <p><strong>Causes:</strong><br />
 - Very large Cartesian product (many scenarios × regions × categories)<br />
@@ -1222,7 +1222,7 @@ Ensure all utility modules are available in the Python path or the same director
 - Ensure multiprocessing is working (should use multiple cores)<br />
 - Verify no other intensive processes running</p>
 <hr />
-<h4>Issue 6: Incorrect Aggregation After Crop Standardization</h4>
+<h4 id="issue-6-incorrect-aggregation-after-crop-standardization">Issue 6: Incorrect Aggregation After Crop Standardization</h4>
 <p><strong>Symptom:</strong> Values don't make sense after aggregation</p>
 <p><strong>Causes:</strong><br />
 - Using "sum" for intensive properties (should use area-weighted mean)<br />
@@ -1232,16 +1232,16 @@ Ensure all utility modules are available in the Python path or the same director
 - Use <code>"sum"</code> for: totals, absolute quantities, production volumes<br />
 - Verify units of the quantity being aggregated</p>
 <hr />
-<h2>Validation and Quality Checks</h2>
-<h3>Recommended Checks After Running</h3>
-<h4>1. Verify Area Column Added</h4>
+<h2 id="validation-and-quality-checks">Validation and Quality Checks</h2>
+<h3 id="recommended-checks-after-running">Recommended Checks After Running</h3>
+<h4 id="1-verify-area-column-added">1. Verify Area Column Added</h4>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;output_file.csv&#39;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="s1">&#39;area&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s2">&quot;Area column not added!&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ Area column successfully added&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<h4>2. Check for Missing Areas</h4>
+<h4 id="2-check-for-missing-areas">2. Check for Missing Areas</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">zero_areas</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zero_areas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Warning: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">zero_areas</span><span class="p">)</span><span class="si">}</span><span class="s2"> rows have zero area&quot;</span><span class="p">)</span>
@@ -1250,7 +1250,7 @@ Ensure all utility modules are available in the Python path or the same director
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✓ No zero areas found&quot;</span><span class="p">)</span>
 </code></pre></div>
 
-<h4>3. Verify Area Distributions</h4>
+<h4 id="3-verify-area-distributions">3. Verify Area Distributions</h4>
 <div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="n">df</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
@@ -1259,13 +1259,13 @@ Ensure all utility modules are available in the Python path or the same director
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </code></pre></div>
 
-<h4>4. Check Total Areas by Scenario</h4>
+<h4 id="4-check-total-areas-by-scenario">4. Check Total Areas by Scenario</h4>
 <div class="codehilite"><pre><span></span><code><span class="n">total_areas</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;scenario&#39;</span><span class="p">)[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total areas by scenario:&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">total_areas</span><span class="p">)</span>
 </code></pre></div>
 
-<h4>5. Validate Sorting</h4>
+<h4 id="5-validate-sorting">5. Validate Sorting</h4>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Verify data is sorted according to key_columns</span>
 <span class="n">key_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;scenario&#39;</span><span class="p">,</span> <span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="s1">&#39;sector&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">]</span>
 <span class="n">is_sorted</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">key_cols</span><span class="p">]</span> <span class="o">==</span> <span class="n">df</span><span class="p">[</span><span class="n">key_cols</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">key_cols</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
@@ -1273,36 +1273,36 @@ Ensure all utility modules are available in the Python path or the same director
 </code></pre></div>
 
 <hr />
-<h2>Best Practices</h2>
-<h3>1. File Organization</h3>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-file-organization">1. File Organization</h3>
 <ul>
 <li>Keep land allocation files in a central reference directory</li>
 <li>Use descriptive output file names</li>
 <li>Maintain separate directories for processed vs. raw data</li>
 <li>Document which land allocation file corresponds to which datasets</li>
 </ul>
-<h3>2. Configuration Management</h3>
+<h3 id="2-configuration-management">2. Configuration Management</h3>
 <ul>
 <li>Create separate JSON files for different analysis workflows</li>
 <li>Comment JSON files (use external documentation file)</li>
 <li>Version control JSON configurations</li>
 <li>Use meaningful file and parameter names</li>
 </ul>
-<h3>3. Data Quality</h3>
+<h3 id="3-data-quality">3. Data Quality</h3>
 <ul>
 <li>Always validate land allocation files before use</li>
 <li>Check for completeness (all scenarios, regions, years covered)</li>
 <li>Verify units are consistent across files</li>
 <li>Inspect sample outputs before processing entire ensemble</li>
 </ul>
-<h3>4. Processing Strategy</h3>
+<h3 id="4-processing-strategy">4. Processing Strategy</h3>
 <ul>
 <li>Process smaller test files first</li>
 <li>Start with single files before batch processing</li>
 <li>Monitor memory usage for large datasets</li>
 <li>Keep backups of original files when overwriting</li>
 </ul>
-<h3>5. Documentation</h3>
+<h3 id="5-documentation">5. Documentation</h3>
 <ul>
 <li>Document which land allocation file was used for each analysis</li>
 <li>Record any crop name standardization applied</li>
@@ -1310,8 +1310,8 @@ Ensure all utility modules are available in the Python path or the same director
 <li>Keep log of execution times for performance tracking</li>
 </ul>
 <hr />
-<h2>Integration with Other Scripts</h2>
-<h3>Typical Workflow Position</h3>
+<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
+<h3 id="typical-workflow-position">Typical Workflow Position</h3>
 <div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">gcam_extract_csv_from_project_files</span><span class="mf">.</span><span class="n">R</span>
 <span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="kd">data</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="n">project</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
 
@@ -1325,18 +1325,18 @@ Ensure all utility modules are available in the Python path or the same director
 <span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Visualize</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">analyze</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">area</span><span class="w"> </span><span class="n">weighting</span><span class="p">)</span>
 </code></pre></div>
 
-<h3>Upstream Dependencies</h3>
+<h3 id="upstream-dependencies">Upstream Dependencies</h3>
 <p><strong>Required predecessor scripts:</strong><br />
 - <code>gcam_extract_csv_from_project_files.R</code> - Must run first to extract land allocation data<br />
 - <code>gcam_process_extracted_data.py</code> - Should run to clean and organize data</p>
-<h3>Downstream Usage</h3>
+<h3 id="downstream-usage">Downstream Usage</h3>
 <p><strong>Scripts that benefit from added area data:</strong><br />
 - <code>gcam_plot_time_series.py</code> - Can create area-weighted plots<br />
 - <code>gcam_plot_box_and_whiskers.py</code> - Can display area-weighted distributions<br />
 - <code>gcam_plot_spatial_data.py</code> - Can show area-normalized spatial patterns</p>
 <hr />
-<h2>Related Scripts</h2>
-<h3>Complementary GCAM Scripts</h3>
+<h2 id="related-scripts">Related Scripts</h2>
+<h3 id="complementary-gcam-scripts">Complementary GCAM Scripts</h3>
 <p><strong><code>gcam_extract_csv_from_project_files.R</code></strong><br />
 - Extracts data from GCAM project files (including land allocations)<br />
 - Creates the land allocation reference files used by this script</p>
@@ -1349,12 +1349,12 @@ Ensure all utility modules are available in the Python path or the same director
 <p><strong><code>gcam_plot_time_series.py</code></strong><br />
 - Plots GCAM time series with optional area weighting<br />
 - Directly uses output from this script</p>
-<h3>Related E3SM Scripts</h3>
+<h3 id="related-e3sm-scripts">Related E3SM Scripts</h3>
 <p><strong><code>e3sm_extract_time_series_surfdata_iesm_dyn.py</code></strong><br />
 - Extracts land surface data from E3SM<br />
 - Creates analogous area data for E3SM analysis</p>
 <hr />
-<h2>Example JSON Configuration File</h2>
+<h2 id="example-json-configuration-file">Example JSON Configuration File</h2>
 <p>Here is the complete example configuration file from the repository:</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -1402,27 +1402,27 @@ Ensure all utility modules are available in the Python path or the same director
 3. Base vegetation/soil scalars with crop standardization<br />
 4. Ensemble vegetation/soil scalars with crop standardization</p>
 <hr />
-<h2>References</h2>
+<h2 id="references">References</h2>
 <ul>
 <li>DiVittorio et al. (2025). "E3SM-GCAM coupling methodology and applications." <em>Journal of Advances in Modeling Earth Systems</em>. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 <li>GCAM Documentation: <a href="https://gcims.pnnl.gov/modeling/gcam-global-change-analysis-model">https://gcims.pnnl.gov/modeling/gcam-global-change-analysis-model</a></li>
 </ul>
 <hr />
-<h2>Contact</h2>
+<h2 id="contact">Contact</h2>
 <p>For questions or issues:<br />
 - <strong>Philip Myint</strong>: myint1@llnl.gov<br />
 - <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <p>For bug reports or feature requests, please create an issue on the <a href="https://github.com/philipmyint/e3sm--gcam_analysis/issues">GitHub repository</a>.</p>
 <hr />
-<h2>Version History</h2>
+<h2 id="version-history">Version History</h2>
 <ul>
 <li><strong>Current Version:</strong> As documented in repository (January 2025)</li>
 <li><strong>Last Updated:</strong> January 2026</li>
 </ul>
 <hr />
-<h2>Appendix: Quick Reference</h2>
-<h3>Quick Start Checklist</h3>
+<h2 id="appendix-quick-reference">Appendix: Quick Reference</h2>
+<h3 id="quick-start-checklist">Quick Start Checklist</h3>
 <ul>
 <li>[ ] Install required Python packages (pandas)</li>
 <li>[ ] Ensure utility modules are accessible</li>
@@ -1434,7 +1434,7 @@ Ensure all utility modules are available in the Python path or the same director
 <li>[ ] Check for zero or missing areas</li>
 <li>[ ] Proceed with downstream analysis</li>
 </ul>
-<h3>Command Quick Reference</h3>
+<h3 id="command-quick-reference">Command Quick Reference</h3>
 <div class="codehilite"><pre><span></span><code><span class="c1"># Basic execution</span>
 python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>config.json
 
@@ -1445,7 +1445,7 @@ python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>
 python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>--help
 </code></pre></div>
 
-<h3>JSON Template</h3>
+<h3 id="json-template">JSON Template</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path/to/input.csv&quot;</span><span class="p">,</span>
@@ -1462,13 +1462,10 @@ python<span class="w"> </span>gcam_add_areas_to_files.py<span class="w"> </span>
 
 <hr />
 <p><em>This documentation provides comprehensive guidance for using the <code>gcam_add_areas_to_files.py</code> script to enrich GCAM output files with land allocation area data for area-weighted analyses.</em></p>
-        
         <footer>
-            <p>
-                Documentation generated for the E3SM-GCAM Analysis Scripts<br>
-                <strong>Authors:</strong> Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)<br>
-                <strong>Last Updated:</strong> January 2026
-            </p>
+            <p>GCAM Area Addition Script Documentation<br>
+            <strong>Script:</strong> gcam_add_areas_to_files.py<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

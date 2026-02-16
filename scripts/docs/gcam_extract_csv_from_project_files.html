@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GCAM CSV Extraction Script Documentation</title>
-    <style>
-/* 
+    <style>/* 
  * Documentation Stylesheet for GCAM Synthetic Data Generation Script
  * A modern, colorful design with good readability
  */
@@ -469,193 +468,169 @@ footer {
     color: var(--text-secondary);
     font-size: 0.9em;
 }
-
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-<h1 id="gcam-csv-extraction-script-documentation">GCAM CSV Extraction
-Script Documentation</h1>
+    <div class="container"><h1 id="gcam-csv-extraction-script-documentation">GCAM CSV Extraction Script Documentation</h1>
+<p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
+<p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
+<hr />
 <h2 id="overview">Overview</h2>
-<p>The <code>gcam_extract_csv_from_project_files.R</code> script is
-designed to extract specific variables from GCAM (Global Change Analysis
-Model) project files and export them as CSV files. This script processes
-multiple scenarios simultaneously and combines their data into unified
-CSV outputs for analysis and visualization.</p>
+<p>The <code>gcam_extract_csv_from_project_files.R</code> script is designed to extract specific variables from GCAM (Global Change Analysis Model) project files and export them as CSV files. This script processes multiple scenarios simultaneously and combines their data into unified CSV outputs for analysis and visualization.</p>
 <h2 id="purpose">Purpose</h2>
-<p>This script automates the extraction of GCAM output data by: -
-Reading GCAM project files (.dat format) - Extracting specified
-variables (e.g., CO2 emissions, land allocation, commodity prices) -
-Combining data from multiple scenarios into single CSV files -
-Organizing output for downstream analysis</p>
+<p>This script automates the extraction of GCAM output data by:<br />
+- Reading GCAM project files (.dat format)<br />
+- Extracting specified variables (e.g., CO2 emissions, land allocation, commodity prices)<br />
+- Combining data from multiple scenarios into single CSV files<br />
+- Organizing output for downstream analysis</p>
 <h2 id="requirements">Requirements</h2>
 <h3 id="r-packages">R Packages</h3>
-<p>The script requires the following R packages: - <code>devtools</code>
-- Development tools for R packages - <code>dplyr</code> - Data
-manipulation and transformation - <code>rgcam</code> - GCAM-specific
-data reading and processing functions - <code>rjson</code> - JSON file
-parsing</p>
+<p>The script requires the following R packages:<br />
+- <code>devtools</code> - Development tools for R packages<br />
+- <code>dplyr</code> - Data manipulation and transformation<br />
+- <code>rgcam</code> - GCAM-specific data reading and processing functions<br />
+- <code>rjson</code> - JSON file parsing</p>
 <p>Install missing packages using:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;devtools&quot;</span>, <span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;rjson&quot;</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rgcam may require special installation from GCAM repository</span></span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="nf">install.packages</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;devtools&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;dplyr&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rjson&quot;</span><span class="p">))</span>
+<span class="c1"># rgcam may require special installation from GCAM repository</span>
+</code></pre></div>
+
 <h2 id="input-files">Input Files</h2>
-<h3 id="json-configuration-file">1. JSON Configuration File</h3>
-<p>The script uses a JSON configuration file to specify: - Which
-variables to extract - Output file locations - Scenario names - Project
-file paths</p>
+<h3 id="1-json-configuration-file">1. JSON Configuration File</h3>
+<p>The script uses a JSON configuration file to specify:<br />
+- Which variables to extract<br />
+- Output file locations<br />
+- Scenario names<br />
+- Project file paths</p>
 <h4 id="json-structure">JSON Structure</h4>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;variable&quot;</span><span class="fu">:</span> <span class="st">&quot;variable name as it appears in GCAM&quot;</span><span class="fu">,</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;outputFile&quot;</span><span class="fu">:</span> <span class="st">&quot;path/to/output.csv&quot;</span><span class="fu">,</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Scenario1&quot;</span><span class="ot">,</span> <span class="st">&quot;Scenario2&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;projectFiles&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;path/to/scenario1.dat&quot;</span><span class="ot">,</span> <span class="st">&quot;path/to/scenario2.dat&quot;</span><span class="ot">]</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;variable name as it appears in GCAM&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;outputFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path/to/output.csv&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Scenario1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario2&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;projectFiles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;path/to/scenario1.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;path/to/scenario2.dat&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
 <h4 id="json-fields-explained">JSON Fields Explained</h4>
 <ul>
-<li><strong>variable</strong>: The exact name of the GCAM query/variable
-to extract (must match GCAM’s internal variable names)</li>
-<li><strong>outputFile</strong>: The destination path and filename for
-the CSV output</li>
-<li><strong>scenarios</strong>: Array of descriptive scenario names
-(used as labels in the output)</li>
-<li><strong>projectFiles</strong>: Array of GCAM project file paths
-(must correspond to scenarios in the same order)</li>
+<li><strong>variable</strong>: The exact name of the GCAM query/variable to extract (must match GCAM's internal variable names)</li>
+<li><strong>outputFile</strong>: The destination path and filename for the CSV output</li>
+<li><strong>scenarios</strong>: Array of descriptive scenario names (used as labels in the output)</li>
+<li><strong>projectFiles</strong>: Array of GCAM project file paths (must correspond to scenarios in the same order)</li>
 </ul>
-<h3 id="gcam-project-files">2. GCAM Project Files</h3>
-<p>Binary <code>.dat</code> files generated by GCAM containing model
-output data. These files are produced by loading GCAM XML outputs into
-the GCAM project database system.</p>
+<h3 id="2-gcam-project-files">2. GCAM Project Files</h3>
+<p>Binary <code>.dat</code> files generated by GCAM containing model output data. These files are produced by loading GCAM XML outputs into the GCAM project database system.</p>
 <h2 id="example-usage">Example Usage</h2>
 <h3 id="example-json-configuration">Example JSON Configuration</h3>
-<p>Based on the provided example file
-<code>gcam_extract_csv_from_project_files.json</code>:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;variable&quot;</span><span class="fu">:</span> <span class="st">&quot;ag commodity prices&quot;</span><span class="fu">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;outputFile&quot;</span><span class="fu">:</span> <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv&quot;</span><span class="fu">,</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;projectFiles&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat&quot;</span><span class="ot">,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat&quot;</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;variable&quot;</span><span class="fu">:</span> <span class="st">&quot;CO2 emissions by sector&quot;</span><span class="fu">,</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;outputFile&quot;</span><span class="fu">:</span> <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors.csv&quot;</span><span class="fu">,</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;scenarios&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;Control&quot;</span><span class="ot">,</span> <span class="st">&quot;Full feedback&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;projectFiles&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat&quot;</span><span class="ot">,</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat&quot;</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="ot">]</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ot">]</span></span></code></pre></div>
-<p>This configuration will: 1. Extract agricultural commodity prices
-from both Control and Full feedback scenarios 2. Create
-<code>ag_commodity_prices.csv</code> containing combined data 3. Extract
-CO2 emissions by sector from the same scenarios 4. Create
-<code>co2_emissions_sectors.csv</code> containing combined emissions
-data</p>
+<p>Based on the provided example file <code>gcam_extract_csv_from_project_files.json</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ag commodity prices&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;outputFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;projectFiles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat&quot;</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;variable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CO2 emissions by sector&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;outputFile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors.csv&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;projectFiles&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat&quot;</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+
+<p>This configuration will:<br />
+1. Extract agricultural commodity prices from both Control and Full feedback scenarios<br />
+2. Create <code>ag_commodity_prices.csv</code> containing combined data<br />
+3. Extract CO2 emissions by sector from the same scenarios<br />
+4. Create <code>co2_emissions_sectors.csv</code> containing combined emissions data</p>
 <h3 id="running-the-script">Running the Script</h3>
 <p><strong>Command line execution:</strong></p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> gcam_extract_csv_from_project_files.R path/to/config.json</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>Rscript<span class="w"> </span>gcam_extract_csv_from_project_files.R<span class="w"> </span>path/to/config.json
+</code></pre></div>
+
 <p><strong>Multiple JSON files:</strong></p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> gcam_extract_csv_from_project_files.R config1.json config2.json config3.json</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>Rscript<span class="w"> </span>gcam_extract_csv_from_project_files.R<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
+</code></pre></div>
+
 <p><strong>Using the example file:</strong></p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> gcam_extract_csv_from_project_files.R gcam_extract_csv_from_project_files.json</span></code></pre></div>
+<div class="codehilite"><pre><span></span><code>Rscript<span class="w"> </span>gcam_extract_csv_from_project_files.R<span class="w"> </span>gcam_extract_csv_from_project_files.json
+</code></pre></div>
+
 <h2 id="output-files">Output Files</h2>
 <h3 id="csv-structure">CSV Structure</h3>
-<p>Each output CSV file contains: - All columns from the GCAM query
-result (varies by variable) - A <code>scenario</code> column identifying
-which scenario each row belongs to - Combined data from all specified
-scenarios in a single file</p>
+<p>Each output CSV file contains:<br />
+- All columns from the GCAM query result (varies by variable)<br />
+- A <code>scenario</code> column identifying which scenario each row belongs to<br />
+- Combined data from all specified scenarios in a single file</p>
 <h3 id="example-output-structure">Example Output Structure</h3>
-<p>For “ag commodity prices”, the CSV might look like:</p>
-<pre><code>region, sector, subsector, year, value, scenario
-USA, Corn, ..., 2020, 150.5, Control
-USA, Corn, ..., 2025, 155.2, Control
-USA, Corn, ..., 2020, 148.3, Full feedback
-...</code></pre>
+<p>For "ag commodity prices", the CSV might look like:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">region</span><span class="p">,</span><span class="w"> </span><span class="n">sector</span><span class="p">,</span><span class="w"> </span><span class="n">subsector</span><span class="p">,</span><span class="w"> </span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">scenario</span>
+<span class="n">USA</span><span class="p">,</span><span class="w"> </span><span class="n">Corn</span><span class="p">,</span><span class="w"> </span><span class="p">...,</span><span class="w"> </span><span class="mh">2020</span><span class="p">,</span><span class="w"> </span><span class="mf">150.5</span><span class="p">,</span><span class="w"> </span><span class="n">Control</span>
+<span class="n">USA</span><span class="p">,</span><span class="w"> </span><span class="n">Corn</span><span class="p">,</span><span class="w"> </span><span class="p">...,</span><span class="w"> </span><span class="mh">2025</span><span class="p">,</span><span class="w"> </span><span class="mf">155.2</span><span class="p">,</span><span class="w"> </span><span class="n">Control</span>
+<span class="n">USA</span><span class="p">,</span><span class="w"> </span><span class="n">Corn</span><span class="p">,</span><span class="w"> </span><span class="p">...,</span><span class="w"> </span><span class="mh">2020</span><span class="p">,</span><span class="w"> </span><span class="mf">148.3</span><span class="p">,</span><span class="w"> </span><span class="n">Full</span><span class="w"> </span><span class="n">feedback</span>
+<span class="p">...</span>
+</code></pre></div>
+
 <h2 id="script-workflow">Script Workflow</h2>
-<ol type="1">
-<li><strong>Parse Command Line Arguments</strong>: Reads JSON file
-path(s) from command line</li>
-<li><strong>Validate Input</strong>: Checks that at least one JSON file
-was provided</li>
-<li><strong>Process Each JSON File</strong>: Iterates through all
-specified JSON files</li>
-<li><strong>Process Each Variable Block</strong>: For each variable
-specification in the JSON:
-<ul>
-<li>Loads each project file</li>
-<li>Extracts the specified variable using <code>getQuery()</code></li>
-<li>Converts to dataframe and adds scenario label</li>
-<li>Combines all scenario dataframes</li>
-<li>Writes combined dataframe to CSV</li>
-</ul></li>
-<li><strong>File Extension Handling</strong>: Automatically appends
-<code>.csv</code> if not present in output filename</li>
+<ol>
+<li><strong>Parse Command Line Arguments</strong>: Reads JSON file path(s) from command line</li>
+<li><strong>Validate Input</strong>: Checks that at least one JSON file was provided</li>
+<li><strong>Process Each JSON File</strong>: Iterates through all specified JSON files</li>
+<li><strong>Process Each Variable Block</strong>: For each variable specification in the JSON:<br />
+   - Loads each project file<br />
+   - Extracts the specified variable using <code>getQuery()</code><br />
+   - Converts to dataframe and adds scenario label<br />
+   - Combines all scenario dataframes<br />
+   - Writes combined dataframe to CSV</li>
+<li><strong>File Extension Handling</strong>: Automatically appends <code>.csv</code> if not present in output filename</li>
 </ol>
 <h2 id="error-handling">Error Handling</h2>
-<p>The script will stop execution with an error message if: - No JSON
-configuration file is provided on the command line - Project files
-cannot be found or loaded - Variable names don’t match available queries
-in the project files - Invalid JSON formatting</p>
+<p>The script will stop execution with an error message if:<br />
+- No JSON configuration file is provided on the command line<br />
+- Project files cannot be found or loaded<br />
+- Variable names don't match available queries in the project files<br />
+- Invalid JSON formatting</p>
 <h2 id="best-practices">Best Practices</h2>
-<ol type="1">
-<li><strong>Use Relative Paths</strong>: The example uses relative paths
-(<code>../</code>) for portability across systems</li>
-<li><strong>Consistent Scenario Order</strong>: Ensure scenarios array
-order matches projectFiles array order</li>
-<li><strong>Descriptive Scenario Names</strong>: Use clear scenario
-labels for easier data interpretation</li>
-<li><strong>Variable Name Accuracy</strong>: Verify variable names match
-GCAM’s internal query names exactly</li>
-<li><strong>Directory Structure</strong>: Ensure output directories
-exist before running the script</li>
+<ol>
+<li><strong>Use Relative Paths</strong>: The example uses relative paths (<code>../</code>) for portability across systems</li>
+<li><strong>Consistent Scenario Order</strong>: Ensure scenarios array order matches projectFiles array order</li>
+<li><strong>Descriptive Scenario Names</strong>: Use clear scenario labels for easier data interpretation</li>
+<li><strong>Variable Name Accuracy</strong>: Verify variable names match GCAM's internal query names exactly</li>
+<li><strong>Directory Structure</strong>: Ensure output directories exist before running the script</li>
 </ol>
 <h2 id="common-variables-to-extract">Common Variables to Extract</h2>
-<p>Based on the example, common GCAM variables include: -
-<code>ag commodity prices</code> - Agricultural commodity price
-trajectories - <code>CO2 emissions by sector</code> - Sectoral CO2
-emissions - <code>CO2 emissions by region</code> - Regional CO2
-emissions - <code>detailed land allocation</code> - Land use and land
-cover change data</p>
-<p>Consult GCAM documentation for complete list of available
-queries.</p>
+<p>Based on the example, common GCAM variables include:<br />
+- <code>ag commodity prices</code> - Agricultural commodity price trajectories<br />
+- <code>CO2 emissions by sector</code> - Sectoral CO2 emissions<br />
+- <code>CO2 emissions by region</code> - Regional CO2 emissions<br />
+- <code>detailed land allocation</code> - Land use and land cover change data</p>
+<p>Consult GCAM documentation for complete list of available queries.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<p><strong>“No such file or directory” errors</strong>: Check that all
-project file paths are correct and files exist</p>
-<p><strong>“Query not found” errors</strong>: Verify that the variable
-name exactly matches a query available in your GCAM project files</p>
-<p><strong>Package loading errors</strong>: Install missing packages and
-ensure rgcam is properly installed</p>
-<p><strong>Empty CSV files</strong>: Verify that project files contain
-data for the specified variables and scenarios</p>
+<p><strong>"No such file or directory" errors</strong>: Check that all project file paths are correct and files exist</p>
+<p><strong>"Query not found" errors</strong>: Verify that the variable name exactly matches a query available in your GCAM project files</p>
+<p><strong>Package loading errors</strong>: Install missing packages and ensure rgcam is properly installed</p>
+<p><strong>Empty CSV files</strong>: Verify that project files contain data for the specified variables and scenarios</p>
 <h2 id="additional-notes">Additional Notes</h2>
 <ul>
 <li>The script preserves all original columns from GCAM queries</li>
-<li>Data from different scenarios is stacked (row-wise
-concatenation)</li>
-<li>The <code>scenario</code> column is added for filtering and grouping
-in subsequent analyses</li>
+<li>Data from different scenarios is stacked (row-wise concatenation)</li>
+<li>The <code>scenario</code> column is added for filtering and grouping in subsequent analyses</li>
 <li>CSV files use standard comma-separated format with headers</li>
 <li>Row names are included in the CSV output (first column)</li>
 </ul>
-
-        
         <footer>
-            <p>
-                Documentation generated for the E3SM-GCAM Analysis Scripts<br>
-                <strong>Script:</strong> gcam_extract_csv_from_project_files.R<br>
-                <strong>Last Updated:</strong> January 2026
-            </p>
+            <p>GCAM CSV Extraction Script Documentation<br>
+            <strong>Script:</strong> gcam_extract_csv_from_project_files.R<br>
+            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>
 </body>

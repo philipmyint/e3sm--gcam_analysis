@@ -1,5 +1,12 @@
 # E3SM Synthetic Spatial Data Generation Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 **Script Name:** `e3sm_produce_synthetic_spatial_data.py`
@@ -8,7 +15,7 @@
 
 **Key Use Case:** Creating synthetic ensemble members to enable statistical testing (e.g., t-tests, ensemble means) when only single simulation outputs exist. Common in climate model analysis for assessing spatial variability and statistical significance of differences between scenarios.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 
@@ -138,7 +145,7 @@ The script uses Python's multiprocessing to create synthetic ensembles in parall
 
 ```python
 # Process multiple base files simultaneously
-with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
     pool.map(produce_synthetic_spatial_data, inputs)
 ```
 
@@ -1041,7 +1048,7 @@ if __name__ == '__main__':
     
     inputs = list(zip(files, num_files_in_each_set))
     
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
         pool.map(produce_synthetic_spatial_data, inputs)
     
     end_time = time.time()

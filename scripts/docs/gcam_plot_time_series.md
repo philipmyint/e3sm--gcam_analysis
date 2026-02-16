@@ -1,5 +1,12 @@
 # GCAM Time Series Plotting Script Documentation
 
+
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+
+**Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
+
+---
+
 ## Overview
 
 **Script Name:** `gcam_plot_time_series.py`
@@ -1635,7 +1642,7 @@ python gcam_plot_time_series.py config1.json config2.json config3.json
 **Behavior:**
 - Each JSON configuration file processed independently
 - All plots within a file created sequentially
-- Utilizes all available CPU cores
+- Utilizes parallel processing with limited cores to reduce memory pressure
 - Significantly faster for many plots
 
 ---

@@ -6,7 +6,7 @@
 
 **Purpose:** Creates box-and-whisker plots (box plots) from GCAM (Global Change Analysis Model) output files to visualize data distributions across different scenarios, categories, and regions. Box plots provide a statistical summary showing median, quartiles, and outliers, making them ideal for comparing distributions and identifying variability in GCAM outputs.
 
-**Author:** Philip Myint (myint1@llnl.gov) and Dalei Hao (dalei.hao@pnnl.gov)
+**Authors:** Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
 
 **Repository:** [E3SM-GCAM Analysis Scripts](https://github.com/philipmyint/e3sm--gcam_analysis)
 
@@ -1059,7 +1059,7 @@ python gcam_plot_box_and_whiskers.py config1.json config2.json config3.json
 **Behavior:**
 - Each JSON configuration file processed independently
 - All plots within a file created sequentially
-- Utilizes all available CPU cores
+- Utilizes parallel processing with limited cores to reduce memory pressure
 - Significantly faster for many plots
 
 ---
