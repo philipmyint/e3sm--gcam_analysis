@@ -1,0 +1,106 @@
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/cfs/cdirs/e3sm/feng809/s2d/compr/utility_plots.py:140: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, frameon=False, loc='best', ncol=legend_num_columns)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/cfs/cdirs/e3sm/feng809/s2d/compr/utility_plots.py:140: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, frameon=False, loc='best', ncol=legend_num_columns)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/site-packages/scipy/stats/_axis_nan_policy.py:579: RuntimeWarning: Precision loss occurred in moment calculation due to catastrophic cancellation. This occurs when the data are nearly identical. Results may be unreliable.
+  res = hypotest_fun_out(*samples, **kwds)
+p-value of GPP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 8.6430e-01
+Elapsed time for producing plots for GPP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.76 seconds
+p-value of TWS in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for TWS in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.82 seconds
+p-value of HR in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 8.6316e-01
+Elapsed time for producing plots for HR in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.89 seconds
+Warning: No data found for variable 'LAISHA' in file /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_s2d.dat. Skipping this file.
+Warning: No data found for variable 'LAISHA' in file /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat. Skipping this file.
+Elapsed time for producing plots for LAISHA in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.90 seconds
+p-value of WOOD_HARVESTC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 2.3347e-24, which is less than 0.05
+Elapsed time for producing plots for WOOD_HARVESTC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.91 seconds
+p-value of WOODC_ALLOC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 5.0341e-220, which is less than 0.05
+Elapsed time for producing plots for WOODC_ALLOC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.93 seconds
+p-value of ER in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 1.0287e-287, which is less than 0.05
+Elapsed time for producing plots for ER in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.95 seconds
+p-value of NEP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 1.7499e-228, which is less than 0.05
+Elapsed time for producing plots for NEP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.97 seconds
+Warning: No data found for variable 'LAISUN' in file /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_s2d.dat. Skipping this file.
+Warning: No data found for variable 'LAISUN' in file /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat. Skipping this file.
+Elapsed time for producing plots for LAISUN in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.94 seconds
+p-value of QINTR in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for QINTR in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.98 seconds
+p-value of NPP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for NPP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 1.99 seconds
+p-value of WOODC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 5.0341e-220, which is less than 0.05
+Elapsed time for producing plots for WOODC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.00 seconds
+p-value of NBP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for NBP in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.01 seconds
+p-value of WOODC_LOSS in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 1.8379e-321, which is less than 0.05
+Elapsed time for producing plots for WOODC_LOSS in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.01 seconds
+p-value of TOTVEGC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for TOTVEGC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.02 seconds
+p-value of LAND_USE_FLUX in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 2.3933e-168, which is less than 0.05
+Elapsed time for producing plots for LAND_USE_FLUX in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.02 seconds
+p-value of SOILWATER_10CM in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for SOILWATER_10CM in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.01 seconds
+p-value of TOTVEGC_ABG in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for TOTVEGC_ABG in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.02 seconds
+p-value of TOTLITC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for TOTLITC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.02 seconds
+p-value of TOTSOMC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for TOTSOMC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.02 seconds
+p-value of PFT_FIRE_CLOSS in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 5.5165e-315, which is less than 0.05
+Elapsed time for producing plots for PFT_FIRE_CLOSS in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.03 seconds
+p-value of LAND_UPTAKE in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 1.2673e-32, which is less than 0.05
+Elapsed time for producing plots for LAND_UPTAKE in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.03 seconds
+p-value of DWT_CONV_CFLUX_GRC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: nan
+Elapsed time for producing plots for DWT_CONV_CFLUX_GRC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.03 seconds
+p-value of NEE in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for NEE in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.03 seconds
+p-value of TOTECOSYSC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for TOTECOSYSC in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.03 seconds
+p-value of ZWT in /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_gcam.dat: 0.0000e+00, which is less than 0.05
+Elapsed time for producing plots for ZWT in /global/cfs/cdirs/e3sm/feng809/s2d/compr/plot: 2.03 seconds
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ~~~~^^^^^^^^^^^^^^^
+  File "/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+  File "/global/cfs/cdirs/e3sm/feng809/s2d/compr/e3sm_plot_time_series.py", line 442, in plot_time_series
+    df, column = read_file_into_single_variable_dataframe(file, variable, start_year, end_year, multiplier, return_column=True)
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/global/cfs/cdirs/e3sm/feng809/s2d/compr/e3sm_plot_time_series.py", line 265, in read_file_into_single_variable_dataframe
+    raise ValueError(f"Variable '{variable}' not found in data file {file}")
+ValueError: Variable 'PCT_NAT_PFT' not found in data file /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_s2d.dat
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/global/cfs/cdirs/e3sm/feng809/s2d/compr/e3sm_plot_time_series.py", line 732, in <module>
+    pool.map(plot_time_series, list_of_inputs)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/multiprocessing/pool.py", line 367, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/global/common/software/e3sm/anaconda_envs/e3smu_1_12_0/pm-cpu/conda/envs/e3sm_unified_1.12.0_login/lib/python3.13/multiprocessing/pool.py", line 774, in get
+    raise self._value
+ValueError: Variable 'PCT_NAT_PFT' not found in data file /global/cfs/cdirs/e3sm/feng809/s2d/compr/output/control_time_series_s2d.dat

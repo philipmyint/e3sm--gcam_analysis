@@ -1,0 +1,13 @@
+[
+    {
+        "simulation_path": "/global/cfs/cdirs/e3sm/lvroekel/archive/lnd/hist",
+        "output_file": "/global/cfs/cdirs/e3sm/feng809/s2d/compr/output/test_single_amazon.dat",
+        "netcdf_substrings": [["elm.h0"]],
+        "variables": [["ZWT","LAISHA","LAISUN"]],
+        "regions": ["amazon"],
+        "lat_lon_aggregation_types": ["area_weighted_mean_or_sum"],
+        "process_variables": true,
+        "start_year": 1,
+        "end_year": 3
+    }
+]
