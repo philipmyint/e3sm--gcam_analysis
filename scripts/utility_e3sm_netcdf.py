@@ -51,25 +51,30 @@ def find_gridcell_areas_in_netcdf_file(file, region=None):
 
     # If a region has been specified, get the bounds on the lat/lon coordinates and apply these bounds to restrict the lat/lon coordinates.
     if region:
+        # Lon and lat bounds from get_regional_bounds(region) are in the range 0 to 360 and -90 to 90, respectively.
         bounds = get_regional_bounds(region)
         lon_bounds = bounds[:2]
         lat_bounds = bounds[2:]
-        if 'elm.h0' in file:
-            ds = ds.where((ds.lon >= lon_bounds[0]), drop=True)
-            ds = ds.where((ds.lon <= lon_bounds[1]), drop=True)
-            ds = ds.where((ds.lat >= lat_bounds[0]), drop=True)
-            ds = ds.where((ds.lat <= lat_bounds[1]), drop=True)
-        elif 'eam.h0' in file:
-            ds.load()
-            ds = ds.where((ds.lon >= lon_bounds[0]), drop=True)
-            ds = ds.where((ds.lon <= lon_bounds[1]), drop=True)
-            ds = ds.where((ds.lat >= lat_bounds[0]), drop=True)
-            ds = ds.where((ds.lat <= lat_bounds[1]), drop=True)
+        
+        # If the lon and lat coordinates in the file are in the range of -180 to 180 and 0 to 180, respectively, 
+        # then convert the bounds to be in the same range as the coordinates in the file. 
+        # Then apply the bounds to restrict the lat/lon coordinates in the Dataset.
+        if 'elm.h0' in file or 'eam.h0' in file:
+            if 'eam.h0' in file:
+                ds.load()
+            if ds.lon.min() < 0:
+                lon_bounds = lon_bounds - 180
+            if ds.lat.max() > 90:
+                lat_bounds = lat_bounds + 90
+            ds = ds.where((ds.lon >= lon_bounds[0]) & (ds.lon <= lon_bounds[1]), drop=True)
+            ds = ds.where((ds.lat >= lat_bounds[0]) & (ds.lat <= lat_bounds[1]), drop=True)
         elif 'surfdata_iESM_dyn' in file:
-            ds = ds.where((ds.LONGXY >= lon_bounds[0]), drop=True)
-            ds = ds.where((ds.LONGXY <= lon_bounds[1]), drop=True)
-            ds = ds.where((ds.LATIXY >= lat_bounds[0]), drop=True)
-            ds = ds.where((ds.LATIXY <= lat_bounds[1]), drop=True)
+            if ds.LONGXY.min() < 0:
+                lon_bounds = lon_bounds - 180
+            if ds.LATIXY.max() > 90:
+                lat_bounds = lat_bounds + 90
+            ds = ds.where((ds.LONGXY >= lon_bounds[0]) & (ds.LONGXY <= lon_bounds[1]), drop=True)
+            ds = ds.where((ds.LATIXY >= lat_bounds[0]) & (ds.LATIXY <= lat_bounds[1]), drop=True)
 
     if 'elm.h0' in file:
         # If the NetCDF file is produced by the ELM model, multiply the areas by the land fraction, plus additional land and pft masks.
