@@ -9,6 +9,36 @@ from utility_dataframes import move_columns_next_to_each_other_in_dataframe, wri
 from utility_functions import *
 from utility_e3sm_netcdf import *
 
+def get_seconds_for_each_month(df, NUM_SECONDS_IN_MONTHS):
+    """
+    Get the number of seconds for each row based on the actual month in that row.
+    
+    This function properly handles missing months by using the actual Month column
+    rather than assuming data starts in January.
+    
+    Parameters:
+        df: DataFrame with a 'Month' column containing values 1-12
+        NUM_SECONDS_IN_MONTHS: List/array of seconds for each month (12 values)
+                               [Jan_secs, Feb_secs, ..., Dec_secs]
+    
+    Returns:
+        Array of shape (len(df), 1) with correct seconds for each row's month
+        
+    Example:
+        If df has months [2, 3, 4] (Feb, Mar, Apr), returns:
+        [[Feb_secs],
+         [Mar_secs],
+         [Apr_secs]]
+    """
+    # Create mapping: Month 1 -> NUM_SECONDS_IN_MONTHS[0], Month 2 -> NUM_SECONDS_IN_MONTHS[1], etc.
+    month_to_seconds = dict(enumerate(NUM_SECONDS_IN_MONTHS, start=1))
+    
+    # Map each row's month to its corresponding seconds value.
+    seconds_array = df['Month'].map(month_to_seconds).values
+    
+    # Reshape to column vector for broadcasting with DataFrame columns.
+    return seconds_array.reshape(-1, 1)
+
 def process_dataframe(df):
     """ 
     Processes a Pandas DataFrame by adding new columns (e.g., total precipitation, mole fraction CO2) or changing the units (e.g., Pg instead of g). 
@@ -19,16 +49,12 @@ def process_dataframe(df):
     Returns:
         The processed DataFrame.
     """
-    # The number of years will later be used in NumPy tiling operations to produce an array with length equal to the number of rows in the DataFrame.
-    start_year = df['Year'].min()
-    end_year = df['Year'].max()
-    num_years = end_year - start_year + 1
-
     # Convert precipitation variables from m/s to mm/month, add a new column for the total precipitation, and update the column labels.
     substrings = ['PRECC', 'PRECL', 'PRECSC', 'PRECSL']
     if check_substrings_in_list(substrings, df.columns, all_or_any='all'):
         columns_to_modify = [label for label in df.columns for substring in substrings if substring in label]
-        seconds_in_months_tiled = np.tile(NUM_SECONDS_IN_MONTHS, num_years).reshape(-1,1)
+        # Use actual Month column to get correct seconds for each row.
+        seconds_in_months_tiled = get_seconds_for_each_month(df, NUM_SECONDS_IN_MONTHS)
         df[columns_to_modify] *= seconds_in_months_tiled*m_TO_mm
         df['PRECIP (mm/month)'] = df[columns_to_modify].sum(axis=1)
         condition = lambda x: any(substring in x for substring in ['PRECC', 'PRECL', 'PRECSC', 'PRECSL'])
@@ -59,7 +85,8 @@ def process_dataframe(df):
     # Convert fluxes from per second to per month.
     old_label = '/s)'
     columns_to_modify = [label for label in df.columns if old_label in label]
-    seconds_in_months_tiled = np.tile(NUM_SECONDS_IN_MONTHS, num_years).reshape(-1,1)
+    # Use actual Month column to get correct seconds for each row.
+    seconds_in_months_tiled = get_seconds_for_each_month(df, NUM_SECONDS_IN_MONTHS)
     df[columns_to_modify] *= seconds_in_months_tiled
     condition = lambda x: old_label in x
     new_column_label_function = lambda x: x.replace(old_label, '/month)')
