@@ -42,7 +42,7 @@ Python 3 is required to run the scripts. The [e3sm_unified Conda environment](ht
 One of the scripts in the repo, `gcam_extract_csv_from_project_files.R`, is based on R. For this script, the following libraries and packages, plus their dependencies, must be installed:
 - `devtools`
 - `dplyr`
-- `rgcam`
+- `rgcam` (In an R session, try `devtools::install_github("JGCRI/rgcam")`)
 - `rjson`
 
 Finally, one can optionally install [LaTeX](https://www.latex-project.org/). The JSON examples in the repo assume that it has been installed so that LaTeX is used to typeset the axis labels, legends, titles, and other text in the plots. However, the default option in the scripts themselves is actually to not use LaTeX, so one can just delete the `use_latex: true` lines (or set `use_latex: false`) in the JSON files if LaTeX is not installed or not desired. Note that if installing LaTeX on a Linux machine like Chrysalis, root access is not required; follow the instructions [here](https://www.tug.org/texlive/quickinstall.html#running), and specifically follow the steps under `writable destination` to install LaTeX without needing root access. As part of these steps, the default installation directory may have to be changed to some other writable directory.

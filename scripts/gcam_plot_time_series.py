@@ -318,7 +318,7 @@ def plot_time_series(inputs):
                     if aggregation_type_in_each_year == 'mean':
                         y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
                     elif aggregation_type_in_each_year == 'area_weighted_mean':
-                        y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum()) * multiplier 
+                        y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum(), include_groups=False) * multiplier 
                         if any(df_this_region.groupby(year_label)['area'].sum() == 0):
                             if set_nan_to_zero:
                                 print('Fixing area-weighted mean calculation where total area is zero by setting value to zero instead of NaN.')
@@ -445,7 +445,7 @@ def plot_time_series(inputs):
                         if aggregation_type_in_each_year == 'mean':
                             y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
                         elif aggregation_type_in_each_year == 'area_weighted_mean':
-                            y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum()) * multiplier
+                            y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum(), include_groups=False) * multiplier
                         elif aggregation_type_in_each_year == 'sum':
                             y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
 

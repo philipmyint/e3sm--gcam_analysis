@@ -5,3 +5,7 @@ scripts/__pycache__/*
 scripts/.DS_Store
 2025_DiVittorio_et_al_e3sm/
 2025_DiVittorio_et_al_gcam/
+.RData
+.Rhistory
+scripts/.RData
+scripts/.Rhistory

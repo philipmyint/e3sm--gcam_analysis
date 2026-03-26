@@ -156,7 +156,7 @@ def perform_ttest(df, columns_set_1, columns_set_2, equal_var=False):
     """
     set_1 = df[columns_set_1]
     set_2 = df[columns_set_2]
-    ttest = stats.ttest_ind(set_1, set_2, equal_var)
+    ttest = stats.ttest_ind(set_1, set_2, equal_var=equal_var)
     return ttest.pvalue
 
 def read_file_into_dataframe(file_name, clean_up_df=False):
