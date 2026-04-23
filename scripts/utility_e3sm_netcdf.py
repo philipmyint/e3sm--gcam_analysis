@@ -48,7 +48,34 @@ def find_gridcell_areas_in_netcdf_file(file, region=None):
     """
     # Load the file into an xarray Dataset and put the grid cell areas into a NumPy array.
     ds = xr.open_dataset(file)
+    
+    # Determine file type from filename.
+    if 'elm.h0' in file:
+        file_type = 'elm.h0'
+    elif 'eam.h0' in file:
+        file_type = 'eam.h0'
+    elif 'surfdata_iESM_dyn' in file:
+        file_type = 'surfdata_iESM_dyn'
+    else:
+        file_type = 'surfdata_iESM_dyn'  # Default
+    
+    # Employ method chaining to call the version of this function that assumes the ds has been loaded already
+    return find_gridcell_areas_in_netcdf_file_ds(ds, region, file_type)
 
+def find_gridcell_areas_in_netcdf_file_ds(ds, region=None, file_type='surfdata_iESM_dyn'):
+    """ 
+    Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated (EAM or ELM or EHC) NetCDF file for the given region.
+    This function assumes that the file has been pre-loaded into an xarray Dataset.
+
+    Parameters:
+        ds: Pre-loaded xarray Dataset.
+        region: String for the region of interest. If not specified or not recognized, then there will be no restrictions on the lat/lon coordinates. 
+        file_type: Type of file. Options include: 'elm.h0', 'eam.h0', or 'surfdata_iESM_dyn'.
+
+    Returns:
+        NumPy array containing the grid cell areas of all coordinates in units of m^2 and an xarray Dataset containing data from the file.
+        Also returns the land and non-land (which is defined as ocean if in the case of EAM) fractions.
+    """
     # If a region has been specified, get the bounds on the lat/lon coordinates and apply these bounds to restrict the lat/lon coordinates.
     if region:
         # Lon and lat bounds from get_regional_bounds(region) are in the range 0 to 360 and -90 to 90, respectively.
@@ -59,8 +86,8 @@ def find_gridcell_areas_in_netcdf_file(file, region=None):
         # If the lon and lat coordinates in the file are in the range of -180 to 180 and 0 to 180, respectively, 
         # then convert the bounds to be in the same range as the coordinates in the file. 
         # Then apply the bounds to restrict the lat/lon coordinates in the Dataset.
-        if 'elm.h0' in file or 'eam.h0' in file:
-            if 'eam.h0' in file:
+        if file_type == 'elm.h0' or file_type == 'eam.h0':
+            if file_type == 'eam.h0':
                 ds.load()
             if ds.lon.min() < 0:
                 lon_bounds = lon_bounds - 180
@@ -68,7 +95,7 @@ def find_gridcell_areas_in_netcdf_file(file, region=None):
                 lat_bounds = lat_bounds + 90
             ds = ds.where((ds.lon >= lon_bounds[0]) & (ds.lon <= lon_bounds[1]), drop=True)
             ds = ds.where((ds.lat >= lat_bounds[0]) & (ds.lat <= lat_bounds[1]), drop=True)
-        elif 'surfdata_iESM_dyn' in file:
+        elif file_type == 'surfdata_iESM_dyn':
             if ds.LONGXY.min() < 0:
                 lon_bounds = lon_bounds - 180
             if ds.LATIXY.max() > 90:
@@ -76,7 +103,7 @@ def find_gridcell_areas_in_netcdf_file(file, region=None):
             ds = ds.where((ds.LONGXY >= lon_bounds[0]) & (ds.LONGXY <= lon_bounds[1]), drop=True)
             ds = ds.where((ds.LATIXY >= lat_bounds[0]) & (ds.LATIXY <= lat_bounds[1]), drop=True)
 
-    if 'elm.h0' in file:
+    if file_type == 'elm.h0':
         # If the NetCDF file is produced by the ELM model, multiply the areas by the land fraction, plus additional land and pft masks.
         areas = create_numpy_array_from_ds(ds, ['area'], [0])
         variables = ['landfrac', 'landmask', 'pftmask']
@@ -84,14 +111,14 @@ def find_gridcell_areas_in_netcdf_file(file, region=None):
         areas *= landfrac*landmask*pftmask*km2_TO_m2
         landfrac *= landmask*pftmask
         non_landfrac = 1 - landfrac
-    elif 'eam.h0' in file:
+    elif file_type == 'eam.h0':
         # If the NetCDF file is produced by the EAM model, multiply the areas by the Earth surface area so that the areas are in units of m^2.
         areas = create_numpy_array_from_ds(ds, ['area'], [0])
         areas *= SURF_AREA
         # Find the land and ocean fractions.
         variables = ['LANDFRAC', 'OCNFRAC']
         landfrac, non_landfrac = create_numpy_array_from_ds(ds, variables, [0]*len(variables))
-    elif 'surfdata_iESM_dyn' in file:
+    elif file_type == 'surfdata_iESM_dyn':
         # Case where the NetCDF file is the land surface data file produced dynamically by the E3SM human component (EHC) model during run time.
         areas = create_numpy_array_from_ds(ds, ['AREA'], [0])
         variables = ['LANDFRAC_PFT', 'PFTDATA_MASK']
