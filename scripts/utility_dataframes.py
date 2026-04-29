@@ -114,7 +114,7 @@ def get_matching_column_in_dataframe(df, variable, get_all_matches=False):
     all_matching_columns = []
     for column in df.columns:
         units_in_column = ' (' in column
-        is_match = (units_in_column and variable + ' (' in column) or \
+        is_match = (units_in_column and column.startswith(variable + ' (')) or \
                     (not units_in_column and variable in column)
         if is_match:
             if not get_all_matches:
