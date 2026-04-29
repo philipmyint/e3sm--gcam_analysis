@@ -101,6 +101,13 @@ def process_dataframe(df):
     new_column_label_function = lambda x: x.replace(old_label, 'PgC')
     df.columns = modify_list_based_on_condition(df.columns, condition, new_column_label_function)
 
+    # Convert CO2 concentration variables to ppm from dry mixing ratio (kg/kg)
+    columns_to_modify = [label for label in df.columns if label.startswith('CO2') and '(kg/kg)' in label]
+    df[columns_to_modify] *= mole_fraction_TO_ppm*MM_ATM/MM_CO2
+    condition = lambda x: x.startswith('CO2') and '(kg/kg)' in x
+    new_column_label_function = lambda x: x.replace('(kg/kg)', '(ppm)')
+    df.columns = modify_list_based_on_condition(df.columns, condition, new_column_label_function)
+
     return df
 
 def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type, region):
@@ -130,6 +137,13 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             variables_except_landunits_and_pfts.remove(variable)
             variables_landunits_and_pfts.append(variable)
     if variables_except_landunits_and_pfts:
+        # For CO2 concentration variables that have a lev dimension, select only the surface
+        # level (index -1, i.e. the lowest/highest-pressure level) before
+        # converting to a DataFrame, so that all variables share the same
+        # (time, ncol) dimensions.
+        for variable in variables_except_landunits_and_pfts:
+            if 'lev' in ds[variable].dims and variable.startswith('CO2'):
+                ds[variable] = ds[variable].isel(lev=-1)
         df = ds[variables_except_landunits_and_pfts].to_dataframe()
         # Remove the time index since we do not use it.
         df = df.reset_index(level='time', drop=True)
