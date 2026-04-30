@@ -36,6 +36,9 @@ def add_areas_to_subset_of_file(df, df_land, geographical_label, category_label,
         dataframes[df_index] = dataframe
 
     df = dataframes[0]
+    if df.empty:
+        # If no data exists for this combination of scenario, geography, and category, return the empty DataFrame immediately.
+        return df
     start_year, end_year = min(df['year'].unique()), max(df['year'].unique())
     df_land = dataframes[1]
     if df_land.empty:
@@ -45,7 +48,11 @@ def add_areas_to_subset_of_file(df, df_land, geographical_label, category_label,
         df_land = df_land[(df_land['year'] >= start_year) & (df_land['year'] <= end_year)]
         if geographical_label == 'region':
             # For each year, add up the areas of all rows (e.g., from all basins) that correspond to the given scenario, category, and region.
-            df['area'] = df_land.groupby('year').sum()['value'].to_numpy()
+            # Map each year in df to its summed area using a Series index lookup. This handles any number of rows per year in df
+            # (e.g., files with subsector or technology columns) and fills 0 for any year with no matching land allocation,
+            # consistent with the df_land.empty branch above.
+            area_by_year = df_land.groupby('year')['value'].sum()
+            df['area'] = df['year'].map(area_by_year).fillna(0)
         if geographical_label == 'basin':
             # If matching on the basin, there could be multiple regions that contain parts of this basin. As a result, for each year, 
             # collect the areas of all matching regions that correspond to the given scenario, category, and basin.
@@ -57,7 +64,11 @@ def add_areas_to_subset_of_file(df, df_land, geographical_label, category_label,
                 if df_land_this_region.empty:
                     df_this_region['area'] = 0
                 else:
-                    df_this_region['area'] = df_land_this_region['value'].to_numpy()
+                    # Map each year in df_this_region to its area using a Series index lookup. This handles any number of rows per year
+                    # (e.g., files with subsector or technology columns) and fills 0 for any year with no matching land allocation,
+                    # consistent with the df_land_this_region.empty branch above.
+                    area_by_year = df_land_this_region.set_index('year')['value']
+                    df_this_region['area'] = df_this_region['year'].map(area_by_year).fillna(0)
                 dataframes_for_this_region.append(df_this_region)
             # Concatenate the DataFrame from all regions into a single DataFrame for the given scenario, category, and basin.
             df = pd.concat(dataframes_for_this_region)
@@ -138,4 +149,3 @@ if __name__ == '__main__':
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time for adding areas to all files: {elapsed_time:.2f} seconds")
-    
