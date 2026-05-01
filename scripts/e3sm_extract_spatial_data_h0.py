@@ -77,7 +77,15 @@ def process_dataset(ds):
         partial_pressure_H2O = ds['PBOT']*ds['QBOT']/(0.622 + (0.378*ds['QBOT']))
         ds['ZCO2'] = mole_fraction_TO_ppm*ds['PCO2']/(ds['PBOT'] - partial_pressure_H2O)
         ds['ZCO2'].attrs = {'units':'ppm', 'description':'CO2 mole fraction in dry air'}
-    
+
+
+    # select the surface level for EAM CO2 concentration variables and calculate ppm concentration from the dry mixing ratio (kg/kg)
+    for variable in variables:
+        if 'lev' in ds[variable].dims and variable.startswith('CO2'):
+            ds[variable] = ds[variable].isel(lev=-1)
+            ds[variable] *= mole_fraction_TO_ppm*MM_ATM/MM_CO2
+            ds[variable].attrs['units'] = 'ppm'
+
     return ds
 
 def extract_spatial_data_from_netcdf_files(inputs):
@@ -103,7 +111,7 @@ def extract_spatial_data_from_netcdf_files(inputs):
     # Get all NetCDF files for this particular type that fall within the specified start and end years.
     netcdf_files = get_all_files_in_path(simulation_path, file_name_substrings=netcdf_substrings, file_extension='.nc')
     netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
-    
+   
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.
     ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True)[variables]
     

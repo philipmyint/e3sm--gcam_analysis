@@ -288,10 +288,25 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
                              [regions[index]]*len(netcdf_files)))
         # Limit processes to reduce memory pressure - use at most 16 processes or half of available CPUs.
-        max_processes = min(16, multiprocessing.cpu_count() // 2) 
-        with multiprocessing.Pool(processes=max_processes) as pool:
+        max_processes = min(16, multiprocessing.cpu_count() // 2)
+        # use spawn instead of fork because the HDF5/NetCDF4 library is not fork safe
+        # this did not work so remove multiprocessinf for now.
+        # it worked the other day, not sure what the issue is.
+        '''
+        ctx = multiprocessing.get_context('spawn')
+        with ctx.Pool(processes=max_processes) as pool:
+        #with multiprocessing.Pool(processes=max_processes) as pool:
             dataframes_for_each_nc_file = list(pool.starmap(extract_netcdf_file_into_dataframe, arguments))
-        
+        '''
+
+        print(f"Processing files sequentially...")
+        dataframes_for_each_nc_file = []
+        for i, args in enumerate(arguments, 1):
+            print(f"  [{i}/{len(netcdf_files)}] Processing {args[0]}...")
+            dataframes_for_each_nc_file.append(
+                extract_netcdf_file_into_dataframe(*args)
+            )
+
         # Concatenate all DataFrames in the list together to form a single DataFrame for this NetCDF type. Sort by year and month.
         df = pd.concat(dataframes_for_each_nc_file)
         df.sort_values(['Year', 'Month'], inplace=True)

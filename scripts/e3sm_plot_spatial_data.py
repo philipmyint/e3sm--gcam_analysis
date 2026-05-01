@@ -200,16 +200,26 @@ def plot_spatial_data_eam(inputs, grid_file):
     #   For ensemble plots: [["Control", "Full feedback"], ["Control_2", "Full feedback_2"], ...]
     num_files_in_each_set = len(netcdf_files)
     num_file_sets = len(netcdf_files[0])
-    
+   
     # Note that unlike time series, it is not meaningful to have a spatial plot with more than two ensembles, 
     # which is why we are restricting the total number of data sets to 2 when producing ensemble plots.
+    # Note that num_file_sets and num_files_in_each_set represent different things depending on whether there
+    #    are one or two ensembles.
+    # If there is one ensemble (of any length, including 1 file):
+    #    num_file_sets = the number of files in the ensemble
+    #    num_files_in_each_set = 1 (the number of ensembles)
+    #    only mean or sum can be calculated across the files and plotted (no comparison)
+    # If there are two ensembles (or more, but the code exits if there are more than two):
+    #    num_file_sets = 2 (the number of ensembles)
+    #    num_files_in_each_set = the number of files in each ensemble
+    #    the ensemble means are calculated and can be plotted separately or as one of two difference comparisons
+
     if (num_files_in_each_set == 1) or (num_file_sets == 2):
         pass
     else:
-        error_message = "Error: For spatial plots, either there should be only one file per data set (individual plots)" \
-            + " or there should be at most two data sets (ensemble plots)."
-        print(error_message)
-        sys.exit(1)
+        error_message = "Error: For spatial plots, there can be only one or two sets of netcdf_files, " \
+            + "and if there are two sets there must be at least two files in each set (for ensemble plots)."
+        raise ValueError(error_message)
 
     # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an uxarray DataArray and then add each of these 
     # DataArrays to a single uxarray Dataset that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
@@ -220,12 +230,22 @@ def plot_spatial_data_eam(inputs, grid_file):
             file = netcdf_files[file_index][file_set_index]
             # Create a temporary NetCDF file with data between only the start and end years. 
             ds = xr.open_dataset(file).sel(year=slice(start_year, end_year))[variable]
-            file = os.path.join(plot_directory, f'temp_{variable}.nc')
-            ds.to_netcdf(file, 'w')
+
+            # check that the specified plot years are available in the files
+            if ds.year.min() > start_year:
+                error_message = f"Plot start_year {start_year} not in data file; update input json file"
+                raise ValueError(error_message)
+            if ds.year.max() < end_year:
+                error_message = f"Plot end_year {end_year} not in data file; update input json file"
+                raise ValueError(error_message)
+
+            wfile = os.path.join(plot_directory, f'temp_{variable}.nc')
+            ds.to_netcdf(wfile, 'w')
+            ds.close()
             if time_calculation == 'mean':
-                uxda = ux.open_dataset(grid_file, file).mean(dim='year')[variable]*multiplier
+                uxda = ux.open_dataset(grid_file, wfile).mean(dim='year')[variable]*multiplier
             elif time_calculation == 'sum':
-                uxda = ux.open_dataset(grid_file, file).sum(dim='year')[variable]*multiplier
+                uxda = ux.open_dataset(grid_file, wfile).sum(dim='year')[variable]*multiplier
                 # If calculating the sum, change the per-time quantities and their units accordingly.
                 per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
                 time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
@@ -240,7 +260,7 @@ def plot_spatial_data_eam(inputs, grid_file):
                 uxda = uxda.rename(f'{variable}_{file_index}_{file_set_index}')
             uxds[uxda.name] = uxda
             # Delete the temporary NetCDF file now that the data have been read.
-            os.system(f'rm {file}')
+            os.system(f'rm {wfile}')
     
     # Initialize list that will store all the uxarray DataArrays that we will want to plot for the variable.
     uxDataArrays_to_plot = []
@@ -253,6 +273,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         elif plot_type == 'sum':
             df = df.sum(axis=1)
         uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
+        print(f"Calculating {plot_type} of {num_file_sets} files.")
     
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
     elif num_file_sets == 2:
@@ -272,16 +293,25 @@ def plot_spatial_data_eam(inputs, grid_file):
             # Plot absolute differences between the two data sets. 
             df = df_test_set - df_control_set
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
+            print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
             df = ((df_test_set - df_control_set)/(df_control_set.abs() + EPSILON))*100
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
             title = replace_inside_parentheses(title, rf'($\%$ difference)')
+            print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'separate_plots':
             # Plot the two data sets individually in their own separate plots. 
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_control_set.to_xarray(), grid, variable=variable))
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_test_set.to_xarray(), grid, variable=variable))
+            print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
+
+    # this is when there are more than three files listed in one input set, so differences don't make sense
+    else:
+        error_message = "Error: If there are more than two netcdf_files in one single input set " \
+            + "plot_type must be mean or sum."
+        raise ValueError(error_message)
 
     # If stippling_on is True, meaning we want to add markers on plot to indicate potential regions of statistical significance, 
     if stippling_on:
@@ -363,6 +393,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         # Save the figure and then close it. Record the elapsed time.
         end_time = time.time()
         elapsed_time = end_time - start_time
+
         if len(uxDataArrays_to_plot) > 1:
             # If we want to plot two data sets separately, add a set number to the figure name for each set.
             save_figure(plot_name + f'_set_{uxda_index+1}', fig, inputs)
@@ -426,13 +457,23 @@ def plot_spatial_data_elm(inputs):
     
     # Note that unlike time series, it is not meaningful to have a spatial plot with more than two ensembles, 
     # which is why we are restricting the total number of data sets to 2 when producing ensemble plots.
+    # Note that num_file_sets and num_files_in_each_set represent different things depending on whether there
+    #    are one or two ensembles.
+    # If there is one ensemble (of any length, including 1 file):
+    #    num_file_sets = the number of files in the ensemble
+    #    num_files_in_each_set = 1 (the number of ensembles)
+    #    only mean or sum can be calculated across the files and plotted (no comparison)
+    # If there are two ensembles (or more, but the code exits if there are more than two):
+    #    num_file_sets = 2 (the number of ensembles)
+    #    num_files_in_each_set = the number of files in each ensemble
+    #    the ensemble means are calculated and can be plotted separately or as one of two difference comparisons
+
     if (num_files_in_each_set == 1) or (num_file_sets == 2):
         pass
     else:
-        error_message = "Error: For spatial plots, either there should be only one file per data set (individual plots)" \
-            + " or there should be at most two data sets (ensemble plots)."
-        print(error_message)
-        sys.exit(1)
+        error_message = "Error: For spatial plots, there can be only one or two sets of netcdf_files, " \
+            + "and if there are two sets there must be at least two files in each set (for ensemble plots)."
+        raise ValueError(error_message)
 
     # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an xarray DataArray and then add each of these 
     # DataArrays to a single Pandas DataFrame that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
@@ -443,6 +484,18 @@ def plot_spatial_data_elm(inputs):
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
+
+            # first make sure that the plot years are avaliable in the data file
+            ds = xr.open_dataset(file).sel(year=slice(start_year, end_year))[variable]
+            # check that the specified plot years are available in the files
+            if ds.year.min() > start_year:
+                error_message = f"Plot start_year {start_year} not in data file; update input json file"
+                raise ValueError(error_message)
+            if ds.year.max() < end_year:
+                error_message = f"Plot end_year {end_year} not in data file; update input json file"
+                raise ValueError(error_message)
+            ds.close()
+
             if time_calculation == 'mean':
                 da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).mean(dim='year')[variable]*multiplier
             elif time_calculation == 'sum':
@@ -460,7 +513,8 @@ def plot_spatial_data_elm(inputs):
             if num_file_sets >= 2:
                 da = da.rename(f'{variable}_{file_index}_{file_set_index}')
             df = pd.concat([df, da.to_dataframe().dropna()], axis=1)
-
+            da.close()
+    
     # Initialize list that will store all the DataArrays that we will want to plot for the variable.
     dataArrays_to_plot = []
 
@@ -472,6 +526,7 @@ def plot_spatial_data_elm(inputs):
             df = df.sum(axis=1)
         da = df.to_xarray()
         dataArrays_to_plot.append(da)
+        print(f"Calculating {plot_type} of {num_file_sets} files.")
 
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
     elif num_file_sets == 2:
@@ -498,6 +553,7 @@ def plot_spatial_data_elm(inputs):
             df = df_test_set - df_control_set
             da = df.to_xarray()
             dataArrays_to_plot.append(da)
+            print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
@@ -508,10 +564,18 @@ def plot_spatial_data_elm(inputs):
             da = df.to_xarray()
             dataArrays_to_plot.append(da)
             title = replace_inside_parentheses(title, rf'($\%$ difference)')
+            print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'separate_plots':
             # Plot the two data sets individually in their own separate plots. 
             dataArrays_to_plot.append(df_control_set.to_xarray())
             dataArrays_to_plot.append(df_test_set.to_xarray())
+            print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
+
+    # this is when there are more than three files listed in one input set, so differences don't make sense
+    else:
+        error_message = "Error: If there are more than two netcdf_files in one single input set " \
+            + "plot_type must be mean or sum."
+        raise ValueError(error_message)
 
     # Iterate over all dataArrays in the list to create a plot for each one.
     for da_index, da in enumerate(dataArrays_to_plot):
@@ -625,9 +689,13 @@ if __name__ == '__main__':
             os.remove(file)
 
     # Create all of the spatial plots in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
-        pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs)
-    
+    try:
+        with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+            pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs)
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
+
     # Sort all the p-value files alphabetically.
     for inputs in list_of_inputs:
         file = inputs['p_value_file']
