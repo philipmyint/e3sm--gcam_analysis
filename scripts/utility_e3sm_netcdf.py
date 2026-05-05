@@ -34,30 +34,43 @@ def extract_year_and_month_from_netcdf_file(file):
     month = ds['time'].dt.month.values[0]
     return year, month
 
-def find_gridcell_areas_in_netcdf_file(file, region=None):
+def find_gridcell_areas_in_netcdf_file(file, region=None, variables_to_keep=None):
     """ 
     Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated (EAM or ELM or EHC) NetCDF file for the given region.
 
     Parameters:
         file: NetCDF file.
-        region: String for the region of interest. If not specified or not recognized, then there will be no restrictions on the lat/lon coordinates. 
+        region: String for the region of interest. If not specified or not recognized, then there will be no restrictions on the lat/lon coordinates.
+        variables_to_keep: List of user-requested variables to retain when opening the dataset. All other variables not needed for area/fraction
+                           calculations will be dropped to reduce memory usage and I/O time. If None, all variables are loaded.
 
     Returns:
         NumPy array containing the grid cell areas of all coordinates in units of m^2 and an xarray Dataset containing data from the file.
         Also returns the land and non-land (which is defined as ocean if in the case of EAM) fractions.
     """
-    # Load the file into an xarray Dataset and put the grid cell areas into a NumPy array.
-    ds = xr.open_dataset(file)
-    
-    # Determine file type from filename.
+    # Determine file type from filename so we know which auxiliary variables (areas, fractions, masks) must be retained.
     if 'elm.h0' in file:
         file_type = 'elm.h0'
+        auxiliary_vars = ['area', 'landfrac', 'landmask', 'pftmask']
     elif 'eam.h0' in file:
         file_type = 'eam.h0'
+        auxiliary_vars = ['area', 'LANDFRAC', 'OCNFRAC']
     elif 'surfdata_iESM_dyn' in file:
         file_type = 'surfdata_iESM_dyn'
+        auxiliary_vars = ['AREA', 'LANDFRAC_PFT', 'PFTDATA_MASK']
     else:
         file_type = 'surfdata_iESM_dyn'  # Default
+        auxiliary_vars = ['AREA', 'LANDFRAC_PFT', 'PFTDATA_MASK']
+
+    # Load the file into an xarray Dataset, dropping all variables that are neither auxiliary (needed for area/fraction calculations)
+    # nor user-requested. This reduces memory usage and I/O time by avoiding loading unnecessary variables from the file.
+    if variables_to_keep is not None:
+        all_vars_in_file = list(xr.open_dataset(file, decode_times=False).data_vars)
+        vars_to_retain = set(auxiliary_vars) | set(variables_to_keep)
+        drop_vars = [v for v in all_vars_in_file if v not in vars_to_retain]
+        ds = xr.open_dataset(file, drop_variables=drop_vars)
+    else:
+        ds = xr.open_dataset(file)
     
     # Employ method chaining to call the version of this function that assumes the ds has been loaded already
     return find_gridcell_areas_in_netcdf_file_ds(ds, region, file_type)

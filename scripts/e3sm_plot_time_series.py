@@ -103,6 +103,21 @@ def process_inputs(inputs):
         variables = [variables]
         inputs['variables'] = variables
 
+    # Check that each requested variable can be found as a column in the DataFrame. Warn and remove any that cannot be matched.
+    if variables and variables != 'all':
+        valid_variables = []
+        for variable in variables:
+            column = get_matching_column_in_dataframe(df, variable)
+            if column is None:
+                print(f"Warning: variable '{variable}' not found in {file} — skipping.")
+            else:
+                valid_variables.append(variable)
+        variables = valid_variables
+        inputs['variables'] = variables
+
+    # Print the final list of variables that will be plotted so the user can verify them before plotting begins.
+    print(f"Variables to plot ({len(variables)}): {variables}")
+
     # Add keys for plotting options that have not been specified in the inputs dictionary, and set to an empty dictionary or use default values.
     for key in default_inputs.keys():
         if key not in inputs:
@@ -259,6 +274,21 @@ def read_file_into_single_variable_dataframe(file, variable, start_year, end_yea
     """
     df = read_file_into_dataframe(file)
     df = df[(df['Year'] >= start_year) & (df['Year'] <= end_year)]
+
+    # Check for missing year-month combinations in the filtered data. Warn the user about any gaps in the time series.
+    if 'Month' in df.columns:
+        expected = {(y, m) for y in range(start_year, end_year + 1) for m in range(1, 13)}
+        actual = set(zip(df['Year'], df['Month']))
+        missing = sorted(expected - actual)
+        if missing:
+            print(f"Warning: {len(missing)} missing year-month combinations in {file}: {missing[:5]}{'...' if len(missing) > 5 else ''}")
+    else:
+        expected_years = set(range(start_year, end_year + 1))
+        actual_years = set(df['Year'])
+        missing_years = sorted(expected_years - actual_years)
+        if missing_years:
+            print(f"Warning: {len(missing_years)} missing years in {file}: {missing_years}")
+
     # Find the column label for the variable, reduce the DataFrame to that column (plus columns for Year and Month).
     column = get_matching_column_in_dataframe(df, variable)
     if 'Month' in df.columns:
@@ -373,6 +403,13 @@ def plot_time_series(inputs):
     y_limits = inputs['y_limits']
     y_scale = inputs['y_scale']
     y_tick_label_size = inputs['y_tick_label_size']
+
+    # Verify that the output plot file is writable before doing any work, so the user gets an immediate error rather than one at the very end.
+    try:
+        open(plot_name, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to plot file '{plot_name}': {e}")
+        return
 
     # For area variables that are in units of km^2, plot them in units of thousands of km^2 if specified to do so.
     if areas_in_thousands_km2 and 'AREA' in variable and 'km^2' in y_label:
@@ -662,6 +699,14 @@ def plot_time_series(inputs):
                     if std_multiplier:
                         error = df_all_data_set_means.std(axis=1)*std_multiplier
                         axis.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
+
+    # Print a summary of what was plotted for this variable now that all output files have been processed.
+    if not df_all_annual_time_series.empty:
+        year_min = int(df_all_annual_time_series['Year'].min())
+        year_max = int(df_all_annual_time_series['Year'].max())
+        num_years = year_max - year_min + 1
+        num_series = len([c for c in df_all_annual_time_series.columns if c != 'Year'])
+        print(f"Summary for '{variable}': {num_series} time series plotted over {year_min}–{year_max} ({num_years} years).")
 
     # Finalize the annual time series plot for the variable now that all output files for the variable have been processed.
     plot_options['name'] = plot_name

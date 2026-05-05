@@ -1,6 +1,7 @@
 import json
 import multiprocessing
 import numpy as np
+import os
 import pandas as pd
 import sys
 import time
@@ -101,7 +102,7 @@ def process_dataframe(df):
     new_column_label_function = lambda x: x.replace(old_label, 'PgC')
     df.columns = modify_list_based_on_condition(df.columns, condition, new_column_label_function)
 
-    # Convert CO2 concentration variables to ppm from dry mixing ratio (kg/kg)
+    # Convert EAM CO2 concentration variables to ppm from dry mixing ratio (kg/kg).
     columns_to_modify = [label for label in df.columns if label.startswith('CO2') and '(kg/kg)' in label]
     df[columns_to_modify] *= mole_fraction_TO_ppm*MM_ATM/MM_CO2
     condition = lambda x: x.startswith('CO2') and '(kg/kg)' in x
@@ -126,7 +127,7 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         DataFrame containing one column for each of the variables, plus year and month columns.
     """
     # Extract the area as a function of lat/lon coordinate from the NetCDF file and forms an xarray Dataset for the variables.
-    areas, ds, landfrac, non_landfrac = find_gridcell_areas_in_netcdf_file(file, region=region)
+    areas, ds, landfrac, non_landfrac = find_gridcell_areas_in_netcdf_file(file, region=region, variables_to_keep=variables)
 
     # Convert the Dataset to create an overall DataFrame that stores all variables except those for land units and plant-functional types (PFTs).
     # If land units and/or PFTs are also of interest, create a second DataFrame to store them.
@@ -137,10 +138,8 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             variables_except_landunits_and_pfts.remove(variable)
             variables_landunits_and_pfts.append(variable)
     if variables_except_landunits_and_pfts:
-        # For CO2 concentration variables that have a lev dimension, select only the surface
-        # level (index -1, i.e. the lowest/highest-pressure level) before
-        # converting to a DataFrame, so that all variables share the same
-        # (time, ncol) dimensions.
+        # For CO2 concentration variables that have a lev dimension, select only the surface level (index -1, i.e. the lowest/highest-pressure level)
+        # before converting to a DataFrame, so that all variables share the same (time, ncol) dimensions.
         for variable in variables_except_landunits_and_pfts:
             if 'lev' in ds[variable].dims and variable.startswith('CO2'):
                 ds[variable] = ds[variable].isel(lev=-1)
@@ -240,10 +239,16 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
     column_names_with_year_and_month_first.extend(df.columns)
     df['Year'] = year
     df['Month'] = month
+    ds.close()
+    print(f"  Extracted {os.path.basename(file)} ({year}-{month:02d})")
     return df[column_names_with_year_and_month_first]
 
+def _extract_netcdf_file_into_dataframe_star(args):
+    """ Module-level wrapper that unpacks a tuple of arguments for use with imap_unordered, which requires a single-argument callable. """
+    return extract_netcdf_file_into_dataframe(*args)
+
 def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_substrings, variables, 
-                lat_lon_aggregation_types=None, regions=None, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False):
+                lat_lon_aggregation_types=None, regions=None, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False, max_processes=None):
     """ 
     Extracts time series data from E3SM-generated NetCDF h0 files in a simulation directory into a Pandas DataFrame and writes it to an output file. 
     The NetCDF files can be of more than one type (e.g., one set generated from the ELM model and another set from the EAM model in E3SM).
@@ -264,10 +269,18 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
                            not in the NetCDF files (e.g., total precipitation, mole fraction CO2) or changing the units (e.g., Pg instead of g).
         start_year: First year in the extracted time series data.
         end_year: Last year in the extracted time series data.
+        max_processes: Maximum number of parallel processes to use. If not specified, defaults to the smaller of 16 and half the available CPUs.
 
     Returns:
         N/A.
     """
+    # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
+    try:
+        open(output_file, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to output file '{output_file}': {e}")
+        return
+
     # This list will store a DataFrame for each type of NetCDF file, and all elements of this list will later be merged into a single DataFrame.
     dataframes = []
 
@@ -283,34 +296,63 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         # Get all NetCDF files for this particular type that fall within the start and end years.
         netcdf_files = get_all_files_in_path(simulation_path, file_name_substrings=netcdf_substrings[index], file_extension='.nc')
         netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
+        # Derive a readable name for this file type from its identifying substrings.
+        file_type_name = ', '.join(netcdf_substrings[index])
     
+        # Open the first NetCDF file to check that all requested variables exist and to print their names and units before spawning the pool.
+        if netcdf_files:
+            import xarray as xr
+            ds_check = xr.open_dataset(netcdf_files[0])
+            missing_vars = [v for v in variables[index] if v not in ds_check.data_vars]
+            if missing_vars:
+                print(f"Error: the following variables were not found in {os.path.basename(netcdf_files[0])}: {missing_vars}")
+                print(f"  Available variables: {list(ds_check.data_vars)}")
+                ds_check.close()
+                return
+            print(f"Variables to extract for file type {index+1}/{len(variables)} ({file_type_name}):")
+            for v in variables[index]:
+                units = ds_check[v].attrs.get('units', 'no units')
+                long_name = ds_check[v].attrs.get('long_name', '')
+                print(f"  {v} ({units}){': ' + long_name if long_name else ''}")
+            ds_check.close()
+
         # Use multiprocessing to extract data from all the files. Put the data from each file into DataFrame, store all such DataFrames in a list.
         arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
                              [regions[index]]*len(netcdf_files)))
-        # Limit processes to reduce memory pressure - use at most 16 processes or half of available CPUs.
-        max_processes = min(16, multiprocessing.cpu_count() // 2)
-        # use spawn instead of fork because the HDF5/NetCDF4 library is not fork safe
-        # this did not work so remove multiprocessinf for now.
-        # it worked the other day, not sure what the issue is.
-        '''
-        ctx = multiprocessing.get_context('spawn')
-        with ctx.Pool(processes=max_processes) as pool:
-        #with multiprocessing.Pool(processes=max_processes) as pool:
-            dataframes_for_each_nc_file = list(pool.starmap(extract_netcdf_file_into_dataframe, arguments))
-        '''
-
-        print(f"Processing files sequentially...")
+        # Limit processes to reduce memory pressure. Use the user-specified value if provided, otherwise default to the smaller of 16 and half the available CPUs.
+        if max_processes is None:
+            max_processes = min(16, multiprocessing.cpu_count() // 2)
+        print(f"Processing file type {index+1}/{len(variables)} ({file_type_name}): {len(netcdf_files)} files using {max_processes} processes...")
+        start_time_pool = time.time()
+        # Use imap_unordered so that results are returned and appended as each worker finishes, rather than waiting for all workers to complete.
+        # This reduces peak memory usage by freeing each worker's DataFrame as soon as it is collected, and gives more responsive progress output.
         dataframes_for_each_nc_file = []
-        for i, args in enumerate(arguments, 1):
-            print(f"  [{i}/{len(netcdf_files)}] Processing {args[0]}...")
-            dataframes_for_each_nc_file.append(
-                extract_netcdf_file_into_dataframe(*args)
-            )
+        num_completed = 0
+        with multiprocessing.Pool(processes=max_processes) as pool:
+            for df_result in pool.imap_unordered(_extract_netcdf_file_into_dataframe_star, arguments):
+                dataframes_for_each_nc_file.append(df_result)
+                num_completed += 1
+                print(f"  [{num_completed}/{len(netcdf_files)}] files completed for file type {index+1}/{len(variables)} ({file_type_name}).")
+        print(f"Finished file type {index+1}/{len(variables)} ({file_type_name}) in {time.time() - start_time_pool:.2f} seconds.")
 
         # Concatenate all DataFrames in the list together to form a single DataFrame for this NetCDF type. Sort by year and month.
         df = pd.concat(dataframes_for_each_nc_file)
         df.sort_values(['Year', 'Month'], inplace=True)
-    
+
+        # Check for missing year-month combinations in the concatenated DataFrame and warn the user about any gaps.
+        # A gap here indicates an entire file was missing from the directory (e.g. from a simulation that crashed mid-run).
+        expected = {(y, m) for y in range(start_year, end_year + 1) for m in range(1, 13)}
+        actual = set(zip(df['Year'], df['Month']))
+        missing = sorted(expected - actual)
+        if missing:
+            print(f"Warning: {len(missing)} missing year-month combinations for file type {index+1}/{len(variables)} ({file_type_name}): "
+                  f"{missing[:5]}{'...' if len(missing) > 5 else ''}")
+
+        # Print a summary of the concatenated DataFrame for this file type.
+        print(f"Summary for file type {index+1}/{len(variables)} ({file_type_name}): {len(df)} rows, "
+              f"years {int(df['Year'].min())}–{int(df['Year'].max())}, "
+              f"columns: {list(df.columns)}")
+
         # Add the DataFrame for this NetCDF type into the master list.
         dataframes.append(df)
 
