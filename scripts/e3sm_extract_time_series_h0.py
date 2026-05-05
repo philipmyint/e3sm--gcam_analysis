@@ -5,6 +5,7 @@ import os
 import pandas as pd
 import sys
 import time
+import xarray as xr
 from utility_constants import *
 from utility_dataframes import move_columns_next_to_each_other_in_dataframe, write_dataframe_to_fwf
 from utility_functions import *
@@ -301,7 +302,6 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
     
         # Open the first NetCDF file to check that all requested variables exist and to print their names and units before spawning the pool.
         if netcdf_files:
-            import xarray as xr
             ds_check = xr.open_dataset(netcdf_files[0])
             missing_vars = [v for v in variables[index] if v not in ds_check.data_vars]
             if missing_vars:
@@ -321,7 +321,7 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
                              [regions[index]]*len(netcdf_files)))
         # Limit processes to reduce memory pressure. Use the user-specified value if provided, otherwise default to the smaller of 16 and half the available CPUs.
         if max_processes is None:
-            max_processes = min(16, multiprocessing.cpu_count() // 2)
+            max_processes = MAX_PROCESSES
         print(f"Processing file type {index+1}/{len(variables)} ({file_type_name}): {len(netcdf_files)} files using {max_processes} processes...")
         start_time_pool = time.time()
         # Use imap_unordered so that results are returned and appended as each worker finishes, rather than waiting for all workers to complete.

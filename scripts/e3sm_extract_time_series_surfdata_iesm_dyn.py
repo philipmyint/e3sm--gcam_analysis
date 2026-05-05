@@ -199,11 +199,27 @@ def extract_time_series_from_netcdf_file(inputs):
     write_to_csv = inputs.get('write_to_csv', False)
     start_year = inputs.get('start_year', 2015)
     end_year = inputs.get('end_year', 2100)
+    max_processes = inputs.get('max_processes', MAX_PROCESSES)
     file = os.path.join(simulation_path, 'surfdata_iESM_dyn.nc')
     
+    # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
+    try:
+        open(output_file, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to output file '{output_file}': {e}")
+        return
+
     # Load file. Do it in this function (outside of the multiprocessing steps) so that the file is loaded only once.
+    # Prefilter to only load variables that are needed: the user-requested variables, those that may be added implicitly
+    # for grazing/harvest calculations, and the auxiliary variables required for area/fraction calculations.
+    # This reduces memory usage and I/O time by avoiding loading unnecessary variables from the file.
     print(f"Loading {file}...")
-    ds = xr.open_dataset(file)
+    auxiliary_vars = ['AREA', 'LANDFRAC_PFT', 'PFTDATA_MASK']
+    implicit_vars = ['PCT_NAT_PFT', 'PCT_NATVEG']
+    vars_to_retain = set(variables) | set(auxiliary_vars) | set(implicit_vars)
+    all_vars_in_file = list(xr.open_dataset(file, decode_times=False).data_vars)
+    drop_vars = [v for v in all_vars_in_file if v not in vars_to_retain]
+    ds = xr.open_dataset(file, drop_variables=drop_vars)
     # Drop duplicate 'time' coordinate values (e.g., that get generated during restarts), keeping the data that correspond to the last occurrence.
     ds = ds.drop_duplicates(dim='time', keep='last') 
     
@@ -211,6 +227,16 @@ def extract_time_series_from_netcdf_file(inputs):
     print("Calculating grid cell areas...")
     areas, ds, _, _ = find_gridcell_areas_in_netcdf_file_ds(ds, region=region, file_type='surfdata_iESM_dyn')
     
+    # Check that all requested variables exist in the dataset before doing any per-year processing.
+    missing_vars = [v for v in variables if v not in ds.data_vars
+                    and v not in ('PCT_NAT_PFT', 'PCT_NATVEG')]  # these may be added implicitly
+    if missing_vars:
+        print(f"Error: the following variables were not found in {file}: {missing_vars}")
+        print(f"  Available variables: {list(ds.data_vars)}")
+        ds.close()
+        return
+    print(f"Variables to extract ({len(variables)}): {variables}")
+
     # Check which years actually exist in the file.
     print(f'Checking available years in {file}...')
     if 'YEAR' in ds:
@@ -242,13 +268,22 @@ def extract_time_series_from_netcdf_file(inputs):
     print(f"Processing {num_years} years sequentially...")
     dataframes_for_each_year = []
     for i, year in enumerate(years_to_process, 1):
-        print(f"  [{i}/{num_years}] Processing year {year}...")
+        print(f" {file}: Processing year {year} [{i}/{num_years}]...")
         df = extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region, year)
         dataframes_for_each_year.append(df)
 
     # Concatenate all DataFrames in the list together to form a single DataFrame over all years. Sort by year.
     df = pd.concat(dataframes_for_each_year)
-    df.sort_values(['Year'], inplace=True)  
+    df.sort_values(['Year'], inplace=True)
+
+    # Check for missing years in the concatenated DataFrame and warn the user about any gaps.
+    actual_years = set(df['Year'])
+    missing_years = sorted(set(years_to_process) - actual_years)
+    if missing_years:
+        print(f"Warning: {len(missing_years)} missing years in output: {missing_years}")
+
+    # Close the dataset now that all years have been processed.
+    ds.close()
 
     # Write the DataFrame to the specified output file.
     if write_to_csv or output_file.endswith('.csv'):

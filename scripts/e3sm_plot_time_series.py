@@ -289,8 +289,18 @@ def read_file_into_single_variable_dataframe(file, variable, start_year, end_yea
         if missing_years:
             print(f"Warning: {len(missing_years)} missing years in {file}: {missing_years}")
 
-    # Find the column label for the variable, reduce the DataFrame to that column (plus columns for Year and Month).
+    # Check that the year filter produced a non-empty DataFrame. If it is empty, the requested year range is not in the file.
+    if df.empty:
+        print(f"Warning: no data found in '{file}' for variable '{variable}' between years {start_year} and {end_year}. "
+              f"Check that start_year and end_year are within the range of the file.")
+        return (pd.DataFrame(), None) if return_column else pd.DataFrame()
+
+    # Find the column label for the variable. Warn clearly if it cannot be matched rather than passing None as a column name downstream.
     column = get_matching_column_in_dataframe(df, variable)
+    if column is None:
+        available = list(df.columns)
+        print(f"Warning: variable '{variable}' not found in '{file}'. Available columns: {available}")
+        return (pd.DataFrame(), None) if return_column else pd.DataFrame()
     if 'Month' in df.columns:
         df = df[['Year', 'Month', column]]
     else:
@@ -332,6 +342,13 @@ def read_file_set_into_single_variable_dataframe(output_files, file_set_index, v
             df = pd.merge(df, df_for_this_file, on=['Year'], how='inner')
     # After the join operation, there will be multiple columns for the variable. Return the list of all of these columns along with the DataFrame.
     columns = get_matching_column_in_dataframe(df, variable, get_all_matches=True)
+
+    # Warn if the inner merge dropped any rows, which would indicate inconsistent year coverage across files in this set.
+    expected_rows = len(read_file_into_dataframe(output_files[0][file_set_index]))
+    if len(df) < expected_rows:
+        print(f"Warning: file set {file_set_index} has inconsistent year coverage across ensemble members — "
+              f"{expected_rows - len(df)} rows were dropped during the merge. "
+              f"Check that all files cover the same year range.")
     return df, columns
 
 def plot_time_series(inputs):
@@ -409,6 +426,24 @@ def plot_time_series(inputs):
         open(plot_name, 'a').close()
     except OSError as e:
         print(f"Error: cannot write to plot file '{plot_name}': {e}")
+        return
+
+    # Verify that all output files exist before doing any work, so a missing file is caught immediately with a clear message.
+    all_files = output_files if isinstance(output_files, list) else [output_files]
+    if check_is_list_of_lists(all_files):
+        all_files = [f for file_set in all_files for f in file_set]
+    missing_files = [f for f in all_files if not os.path.exists(f)]
+    if missing_files:
+        print(f"Error: the following output files do not exist for variable '{variable}':")
+        for f in missing_files:
+            print(f"  {f}")
+        return
+
+    # Check that output_labels length matches the number of output files/sets, to catch mismatches before they cause IndexErrors in the plot loop.
+    num_labels = len(output_labels) if isinstance(output_labels, list) else 1
+    num_files_or_sets = len(output_files[0]) if check_is_list_of_lists(output_files) else len(output_files)
+    if num_labels != num_files_or_sets:
+        print(f"Error: '{variable}': {num_labels} output_labels provided but {num_files_or_sets} output files/sets found.")
         return
 
     # For area variables that are in units of km^2, plot them in units of thousands of km^2 if specified to do so.
@@ -701,7 +736,7 @@ def plot_time_series(inputs):
                         axis.fill_between(x, y-error, y+error, color='k', alpha=error_bars_alpha)
 
     # Print a summary of what was plotted for this variable now that all output files have been processed.
-    if not df_all_annual_time_series.empty:
+    if not df_all_annual_time_series.empty and pd.api.types.is_numeric_dtype(df_all_annual_time_series['Year']):
         year_min = int(df_all_annual_time_series['Year'].min())
         year_max = int(df_all_annual_time_series['Year'].max())
         num_years = year_max - year_min + 1
