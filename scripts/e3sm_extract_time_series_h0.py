@@ -101,6 +101,13 @@ def process_dataframe(df):
     new_column_label_function = lambda x: x.replace(old_label, 'PgC')
     df.columns = modify_list_based_on_condition(df.columns, condition, new_column_label_function)
 
+    # Convert CO2 concentration variables to ppm from dry mixing ratio (kg/kg)
+    columns_to_modify = [label for label in df.columns if label.startswith('CO2') and '(kg/kg)' in label]
+    df[columns_to_modify] *= mole_fraction_TO_ppm*MM_ATM/MM_CO2
+    condition = lambda x: x.startswith('CO2') and '(kg/kg)' in x
+    new_column_label_function = lambda x: x.replace('(kg/kg)', '(ppm)')
+    df.columns = modify_list_based_on_condition(df.columns, condition, new_column_label_function)
+
     return df
 
 def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type, region):
@@ -130,6 +137,13 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             variables_except_landunits_and_pfts.remove(variable)
             variables_landunits_and_pfts.append(variable)
     if variables_except_landunits_and_pfts:
+        # For CO2 concentration variables that have a lev dimension, select only the surface
+        # level (index -1, i.e. the lowest/highest-pressure level) before
+        # converting to a DataFrame, so that all variables share the same
+        # (time, ncol) dimensions.
+        for variable in variables_except_landunits_and_pfts:
+            if 'lev' in ds[variable].dims and variable.startswith('CO2'):
+                ds[variable] = ds[variable].isel(lev=-1)
         df = ds[variables_except_landunits_and_pfts].to_dataframe()
         # Remove the time index since we do not use it.
         df = df.reset_index(level='time', drop=True)
@@ -274,10 +288,25 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
                              [regions[index]]*len(netcdf_files)))
         # Limit processes to reduce memory pressure - use at most 16 processes or half of available CPUs.
-        max_processes = min(16, multiprocessing.cpu_count() // 2) 
-        with multiprocessing.Pool(processes=max_processes) as pool:
+        max_processes = min(16, multiprocessing.cpu_count() // 2)
+        # use spawn instead of fork because the HDF5/NetCDF4 library is not fork safe
+        # this did not work so remove multiprocessinf for now.
+        # it worked the other day, not sure what the issue is.
+        '''
+        ctx = multiprocessing.get_context('spawn')
+        with ctx.Pool(processes=max_processes) as pool:
+        #with multiprocessing.Pool(processes=max_processes) as pool:
             dataframes_for_each_nc_file = list(pool.starmap(extract_netcdf_file_into_dataframe, arguments))
-        
+        '''
+
+        print(f"Processing files sequentially...")
+        dataframes_for_each_nc_file = []
+        for i, args in enumerate(arguments, 1):
+            print(f"  [{i}/{len(netcdf_files)}] Processing {args[0]}...")
+            dataframes_for_each_nc_file.append(
+                extract_netcdf_file_into_dataframe(*args)
+            )
+
         # Concatenate all DataFrames in the list together to form a single DataFrame for this NetCDF type. Sort by year and month.
         df = pd.concat(dataframes_for_each_nc_file)
         df.sort_values(['Year', 'Month'], inplace=True)

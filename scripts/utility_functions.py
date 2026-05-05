@@ -267,10 +267,12 @@ def transpose_scenarios_if_needed(scenarios, scenario_sets=None):
     num_rows = len(scenarios)
     num_cols = len(scenarios[0]) if scenarios else 0
     
-    # If all inner lists don't have the same length, we cannot reliably detect format; return as-is.
+    # If all inner lists don't have the same length, we cannot reliably detect format
+    # abort with message
     if not all(len(row) == num_cols for row in scenarios):
-        return scenarios, False
-    
+        print("In json input file: netdcf_files requires equal length lists of file names")
+        os._exit(1)
+
     # Heuristic 1 (Primary): If scenario_sets is provided, use its length to determine the format.
     # This is the most reliable method and works regardless of scenario naming conventions.
     if scenario_sets is not None:
@@ -300,5 +302,7 @@ def transpose_scenarios_if_needed(scenarios, scenario_sets=None):
         transposed = [[scenarios[row][col] for row in range(num_rows)] for col in range(num_cols)]
         return transposed, True
     else:
-        # rows >= cols: assume original format or ambiguous square matrix; return as-is.
-        return scenarios, False
+        # rows >= cols: assume original format or ambiguous square matrix
+        # abort with error message
+        print("In json input file: netdcf_files has ambiguous format. Specify netcdf_file_sets for two separate ensemble inputs and set netcdf_files accordingly (one ensemble in each sublist)")
+        os._exit(1)
