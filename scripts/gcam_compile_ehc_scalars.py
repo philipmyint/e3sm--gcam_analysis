@@ -1,5 +1,6 @@
 import json
 import multiprocessing
+import os
 import pandas as pd
 import sys
 import time
@@ -25,23 +26,66 @@ def compile_ehc_scalars(inputs):
     output_file = inputs['output_file']
     call_modify_crop_names = inputs.get('call_modify_crop_names', False)
     scenarios = inputs['scenarios']
+
+    # Check that input_directories and scenarios are the same length.
+    if len(input_directories) != len(scenarios):
+        print(f"Error: 'input_directories' (length {len(input_directories)}) and 'scenarios' "
+              f"(length {len(scenarios)}) must be the same length.")
+        return
+
+    # Check that the output file is writable before doing any processing.
+    try:
+        open(output_file, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to output file '{output_file}': {e}")
+        return
+
     dataframes_for_all_scenarios = []
     for index, scenario in enumerate(scenarios):
         input_directory = input_directories[index]
-        files = get_all_files_in_path(input_directory)
+
+        # Check that the input directory exists before scanning for files.
+        if not os.path.exists(input_directory):
+            print(f"Error: input directory not found: '{input_directory}' (scenario '{scenario}').")
+            return
+
+        # Filter to CSV files only to avoid attempting to read non-CSV files (e.g. .DS_Store, README, log files).
+        files = get_all_files_in_path(input_directory, file_extension='.csv')
+
+        # Check that the directory contains at least one CSV file.
+        if len(files) == 0:
+            print(f"Error: no CSV files found in '{input_directory}' (scenario '{scenario}').")
+            return
+
+        print(f"  [{index+1}/{len(scenarios)}] Reading {len(files)} file(s) for scenario '{scenario}'...")
         dataframes_for_all_files_for_this_scenario = [read_file_into_dataframe(file) for file in files]
         df = pd.concat(dataframes_for_all_files_for_this_scenario, ignore_index=True)
+
         # Convert all column names to lowercase.
         df.columns = df.columns.str.lower()
+
+        # Check that the landtype_basin column exists after lowercasing before splitting.
+        if 'landtype_basin' not in df.columns:
+            print(f"Error: 'landtype_basin' column not found in files in '{input_directory}'. "
+                  f"Available columns: {list(df.columns)}")
+            return
+
         df = df.sort_values(by='year')
         # Split the landtype_basin column into 'landtype' and 'basin' columns. Delete the original 'landtype_basin' column.
-        df[['landtype', 'basin']] = df['landtype_basin'].str.split('_', expand=True)   
-        df.drop('landtype_basin', axis=1, inplace=True) 
+        df[['landtype', 'basin']] = df['landtype_basin'].str.split('_', expand=True)
+        df.drop('landtype_basin', axis=1, inplace=True)
         df['scenario'] = scenario
         dataframes_for_all_scenarios.append(df)
-        
+
     df = pd.concat(dataframes_for_all_scenarios, ignore_index=True)
     key_columns = ['scenario', 'region', 'basin', 'landtype', 'year']
+
+    # Check that vegetation and soil columns exist before selecting them.
+    for col in ['vegetation', 'soil']:
+        if col not in df.columns:
+            print(f"Error: '{col}' column not found in compiled data. Available columns: {list(df.columns)}")
+            return
+
     df = df.sort_values(by=key_columns)
     df = df[key_columns + ['vegetation', 'soil']]
 

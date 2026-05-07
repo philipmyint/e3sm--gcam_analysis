@@ -1,5 +1,6 @@
 import json
 import multiprocessing
+import os
 import pandas as pd
 import sys
 import time
@@ -27,19 +28,61 @@ def process_extracted_data(inputs):
     mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs.get('mean_or_sum_if_more_than_one_row_in_same_landtype_group', None) 
     call_modify_crop_names = inputs.get('call_modify_crop_names', False)
     
+    # Verify input file exists and output file is writable before doing any processing.
+    if not os.path.exists(input_file):
+        print(f"Error: input file '{input_file}' does not exist.")
+        return
+    try:
+        open(output_file, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to output file '{output_file}': {e}")
+        return
+
     df = read_file_into_dataframe(input_file)
+
+    # Check that columns_to_drop columns actually exist before dropping, and warn about any that are missing.
     if columns_to_drop:
-        df = df.drop(columns_to_drop, axis=1)
+        missing_drop = [c for c in columns_to_drop if c not in df.columns]
+        if missing_drop:
+            print(f"Warning: the following columns_to_drop were not found in '{input_file}' and will be skipped: {missing_drop}")
+        columns_to_drop_existing = [c for c in columns_to_drop if c in df.columns]
+        df = df.drop(columns_to_drop_existing, axis=1)
     df.columns = df.columns.str.lower()
+
+    # Check that the 'year' column exists after lowercasing before sorting by it.
+    if 'year' not in df.columns:
+        print(f"Error: no 'year' column found in '{input_file}' after lowercasing. Available columns: {list(df.columns)}")
+        return
     df = df.sort_values(by='year')
 
-    # Split each specified column (if any) separated by underscores into a set of new columns. 
+    # Split each specified column (if any) separated by underscores into a set of new columns.
     if columns_to_split:
         for column_to_split, new_columns in columns_to_split.items():
-            df[new_columns] = df[column_to_split].str.split('_', expand=True).iloc[:, :len(new_columns)]
+            # Check that the column to split exists after lowercasing.
+            if column_to_split not in df.columns:
+                print(f"Error: columns_to_split column '{column_to_split}' not found in '{input_file}' after lowercasing. "
+                      f"Available columns: {list(df.columns)}")
+                return
+            # Check that the split produces enough columns for the requested new column names.
+            split_result = df[column_to_split].str.split('_', expand=True)
+            if split_result.shape[1] < len(new_columns):
+                print(f"Error: splitting '{column_to_split}' on '_' produced {split_result.shape[1]} column(s) "
+                      f"but {len(new_columns)} new column(s) were requested: {new_columns}.")
+                return
+            df[new_columns] = split_result.iloc[:, :len(new_columns)]
 
     # Sort columns by a set of keys if specified to do so.
     if key_columns:
+        # Check that all key_columns exist (including any newly created columns from columns_to_split).
+        missing_keys = [c for c in key_columns if c not in df.columns]
+        if missing_keys:
+            print(f"Error: the following key_columns were not found in '{input_file}' after all processing steps: {missing_keys}. "
+                  f"Available columns: {list(df.columns)}")
+            return
+        # Check that a 'value' column exists before selecting key_columns + ['value'].
+        if 'value' not in df.columns:
+            print(f"Error: no 'value' column found in '{input_file}'. Available columns: {list(df.columns)}")
+            return
         df = df.sort_values(by=key_columns)
         df = df[key_columns + ['value']]
 

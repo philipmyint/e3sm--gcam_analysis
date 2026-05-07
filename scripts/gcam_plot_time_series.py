@@ -77,6 +77,9 @@ def process_inputs(inputs):
         Dictionary that completely specifies all plotting options. 
         If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
     """
+    # Check that the output file exists before trying to read it.
+    if not os.path.exists(inputs['output_file']):
+        raise FileNotFoundError(f"Error: output file not found: '{inputs['output_file']}'")
     df = read_file_into_dataframe(inputs['output_file'])
 
     # If the category label (e.g., sector or landtype) has not been specified, use the default value.
@@ -149,7 +152,33 @@ def process_inputs(inputs):
     # If the user specified anything other than a dictionary for the 'regions', create a dictionary with the keys given by the categories. 
     if 'regions' not in inputs or not isinstance(inputs['regions'], dict):
         inputs['regions'] = dict.fromkeys(categories, inputs['regions'])
-    
+
+    # Check that the value_label column exists in the DataFrame.
+    value_label = inputs['value_label']
+    if value_label not in df.columns:
+        raise KeyError(f"Error: value_label '{value_label}' not found in '{inputs['output_file']}'. "
+                       f"Available columns: {list(df.columns)}")
+
+    # If aggregation_type_in_each_year is area_weighted_mean, check that the 'area' column exists.
+    if inputs['aggregation_type_in_each_year'] == 'area_weighted_mean' and 'area' not in df.columns:
+        raise KeyError(f"Error: aggregation_type_in_each_year is 'area_weighted_mean' but no 'area' column "
+                       f"found in '{inputs['output_file']}'. Consider using 'mean' instead, or add area data "
+                       f"using gcam_add_areas_to_files.py.")
+
+    # Warn if any specified scenario is not found in the DataFrame.
+    scenario_label = inputs['scenario_label']
+    if scenario_label in df.columns:
+        available_scenarios = set(df[scenario_label].unique())
+        specified_scenarios = inputs['scenarios']
+        if check_is_list_of_lists(specified_scenarios):
+            flat_scenarios = [s for member in specified_scenarios for s in member]
+        else:
+            flat_scenarios = list(specified_scenarios)
+        missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
+        if missing_scenarios:
+            print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
+                  f"and will produce empty plots: {missing_scenarios}")
+
     return inputs
 
 def plot_time_series(inputs):
@@ -244,8 +273,9 @@ def plot_time_series(inputs):
     # Use LaTeX fonts for figures and set font size of tick labels.
     setup_plot_params(plot_options)
 
-    # Create an empty DataFrame that will later be used to store all of the time series data and to calculate their statistics.
-    df_all_time_series = pd.DataFrame()
+    # Collect all time series into a list and concatenate once after all loops complete, rather than calling pd.concat
+    # inside the nested loops. The growing-concat pattern is O(n^2) in the number of series; collecting into a list is O(n).
+    all_time_series = []
     have_not_stored_time_in_df = True
 
     # Create the figure and axis for the time series plot.
@@ -353,16 +383,16 @@ def plot_time_series(inputs):
                     # Do not include the first scenario if plotting a percent difference. Include the data in the plot otherwise.
                     if not plot_percent_difference or scenario_index != 0:
                         ax.plot(x, y, label=label, color=line_color, linestyle=linestyle, linewidth=linewidth, marker=marker, markersize=marker_size)
-                    # Join the time series data from the current scenario, category, and region into the larger DataFrame.
+                    # Collect each time series into a list; a single pd.concat is performed after all loops complete.
                     if have_not_stored_time_in_df:
                         x_series = pd.Series(x, name='Year')
-                        df_all_time_series = pd.concat([df_all_time_series, x_series], axis=1)
+                        all_time_series.append(x_series)
                         have_not_stored_time_in_df = False
                     y_series = pd.Series(list(y), name=f'scen={scenario_index}_cat={category_index}_reg={region_index}')
-                    # The end result after all iterations of the nested loops is a DataFrame in which time (x) is stored in the first column,
-                    # and each subsequent column is a time series.
-                    df_all_time_series = pd.concat([df_all_time_series, y_series], axis=1)
+                    all_time_series.append(y_series)
 
+        # Concatenate all collected time series into a single DataFrame now that all loops are complete.
+        df_all_time_series = pd.concat(all_time_series, axis=1)
         # Calculate the overall mean and standard deviation (for error bars) across all time series.
         df = df_all_time_series
         if include_mean_across_all_data:
@@ -449,16 +479,17 @@ def plot_time_series(inputs):
                         elif aggregation_type_in_each_year == 'sum':
                             y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
 
-                        # Join time series data for the current scenario, category, and region in the current scenario set into the larger DataFrame.
+                        # Collect each time series into a list; a single pd.concat is performed after all loops complete.
                         if have_not_stored_time_in_df:
                             x_series = pd.Series(x, name='Year')
-                            df_all_time_series = pd.concat([df_all_time_series, x_series], axis=1)
+                            all_time_series.append(x_series)
                             have_not_stored_time_in_df = False
                         y_series = pd.Series(list(y), name=f'set={scenario_set_index}_scen={scenario_index}_cat={category_index}_reg={region_index}')
-                        # The end result after all iterations of the nested loops is a DataFrame in which time (x) is stored in the first column,
-                        # and each subsequent column is a time series.
-                        df_all_time_series = pd.concat([df_all_time_series, y_series], axis=1)
+                        all_time_series.append(y_series)
         
+        # Concatenate all collected time series into a single DataFrame now that all loops are complete.
+        df_all_time_series = pd.concat(all_time_series, axis=1)
+
         # Now that each individual time series has been stored, group them into scenario sets (ensembles) and perform analysis on the group/set means.
         x = x_series
         # Initialize DataFrame to store all of the set means.
@@ -584,7 +615,7 @@ def plot_time_series(inputs):
                         label += f' ({category}_{region})'
                     elif num_categories > 1:
                         label += f' ({category})'
-                    elif num_categories > 1:
+                    elif num_regions > 1:
                         label += f' ({region})'
                     ax.plot(x, y, label=label, color='k', linestyle=linestyle, linewidth=linewidth, marker=marker, markersize=marker_size)
                     if std_mean_across_all_data_multiplier:

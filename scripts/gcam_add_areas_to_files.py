@@ -1,6 +1,6 @@
-import itertools
 import json
 import multiprocessing
+import os
 import pandas as pd
 import sys
 import time
@@ -8,75 +8,12 @@ from utility_constants import *
 from utility_dataframes import read_file_into_dataframe, write_dataframe_to_file
 from utility_gcam import modify_crop_names
 
-def add_areas_to_subset_of_file(df, df_land, geographical_label, category_label, scenario, geography, category):
-    """ 
-    Adds areas from land allocation data contained in a Pandas DataFrame to another DataFrame containing data for the quantity of interest.
-    This function adds areas to a subset of the DataFrame that matches the given scenario, geographical unit, and category.
-
-    Parameters:
-        df: DataFrame containing the data of interest.
-        df_land: DataFrame for the land allocation areas.
-        geographical_label: String specifying the label for the geographical unit (e.g., 'region' or 'basin').
-        category_label: String specifying the label for the appropriate category (e.g., 'sector' or 'landtype').
-        scenario: String for the scenario (simulation name) of interest.
-        geography: String specifying the name of the geographical unit for the subset of interest (e.g., the name of the region or the basin).
-        category: String specifying the name of the category for the subset of interest (e.g., the name of the sector or the landtype).
-
-    Returns:
-        DataFrame that is the same as the input df, but with an extra column for the corresponding land allocation areas.
-    """
-    # Read in two DataFrames: one for the data and the other land allocations, get the appropriate subset for each of them, 
-    # and put these two subset DataFrames into a list that we will then work with below.
-    dataframes = [df, df_land]
-    columns = {0: ['scenario', geographical_label, category_label], 1: ['scenario', geographical_label, 'landtype']}
-    matches = [scenario, geography, category]
-    for df_index, dataframe in enumerate(dataframes):
-        for index, column in enumerate(columns[df_index]):
-            dataframe = dataframe[dataframe[column] == matches[index]]
-        dataframes[df_index] = dataframe
-
-    df = dataframes[0]
-    if df.empty:
-        # If no data exists for this combination of scenario, geography, and category, return the empty DataFrame immediately.
-        return df
-    start_year, end_year = min(df['year'].unique()), max(df['year'].unique())
-    df_land = dataframes[1]
-    if df_land.empty:
-        # If there are no corresponding land allocations, set the areas to 0.
-        df['area'] = 0
-    else:
-        df_land = df_land[(df_land['year'] >= start_year) & (df_land['year'] <= end_year)]
-        if geographical_label == 'region':
-            # For each year, add up the areas of all rows (e.g., from all basins) that correspond to the given scenario, category, and region.
-            # Map each year in df to its summed area using a Series index lookup. This handles any number of rows per year in df
-            # (e.g., files with subsector or technology columns) and fills 0 for any year with no matching land allocation,
-            # consistent with the df_land.empty branch above.
-            area_by_year = df_land.groupby('year')['value'].sum()
-            df['area'] = df['year'].map(area_by_year).fillna(0)
-        if geographical_label == 'basin':
-            # If matching on the basin, there could be multiple regions that contain parts of this basin. As a result, for each year, 
-            # collect the areas of all matching regions that correspond to the given scenario, category, and basin.
-            regions = df['region'].unique()
-            dataframes_for_this_region = []
-            for region in regions:
-                df_this_region = df[df['region'] == region].copy()
-                df_land_this_region = df_land[df_land['region'] == region]
-                if df_land_this_region.empty:
-                    df_this_region['area'] = 0
-                else:
-                    # Map each year in df_this_region to its area using a Series index lookup. This handles any number of rows per year
-                    # (e.g., files with subsector or technology columns) and fills 0 for any year with no matching land allocation,
-                    # consistent with the df_land_this_region.empty branch above.
-                    area_by_year = df_land_this_region.set_index('year')['value']
-                    df_this_region['area'] = df_this_region['year'].map(area_by_year).fillna(0)
-                dataframes_for_this_region.append(df_this_region)
-            # Concatenate the DataFrame from all regions into a single DataFrame for the given scenario, category, and basin.
-            df = pd.concat(dataframes_for_this_region)
-    return df
-
 def add_areas_to_file(inputs):
     """ 
     Adds areas from the land allocation file as an extra column to the file specified in the inputs dictionary.
+    Areas are matched to rows in the input file using a vectorized merge on scenario, geographical unit,
+    category, and year — replacing a previous approach that used a multiprocessing pool over a Cartesian
+    product of all (scenario, geography, category) combinations.
 
     Parameters:
         inputs: Dictionary with user-specified inputs for the name of the input and output files, the name of the land allocation file, etc.
@@ -84,7 +21,7 @@ def add_areas_to_file(inputs):
     Returns:
         N/A.
     """
-    # Unpack the inputs and read both the input file and the land allocation file into Pandas DataFrames.
+    # Unpack the inputs.
     start_time = time.time()
     input_file = inputs['input_file']
     output_file = inputs['output_file']
@@ -92,30 +29,81 @@ def add_areas_to_file(inputs):
     geographical_label = inputs['geographical_label']
     category_label = inputs.get('category_label', None)
     land_allocation_file = inputs['land_allocation_file']
+    mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs.get('mean_or_sum_if_more_than_one_row_in_same_landtype_group', None)
+    call_modify_crop_names = inputs.get('call_modify_crop_names', False)
+
+    # Check that the input and land allocation files exist, and that the output file is writable.
+    if not os.path.exists(input_file):
+        print(f"Error: input file not found: '{input_file}'")
+        return
+    if not os.path.exists(land_allocation_file):
+        print(f"Error: land allocation file not found: '{land_allocation_file}'")
+        return
+    try:
+        open(output_file, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to output file '{output_file}': {e}")
+        return
+
+    # Read both the input file and the land allocation file into Pandas DataFrames.
     df = read_file_into_dataframe(input_file)
     df_land = read_file_into_dataframe(land_allocation_file)
-    mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs.get('mean_or_sum_if_more_than_one_row_in_same_landtype_group', None) 
-    call_modify_crop_names = inputs.get('call_modify_crop_names', False)
-    
-    # Form a list of tuples that represents the Cartesian product of all scenarios, geographies, and categories, along with the DataFrames and labels.
-    scenarios = df['scenario'].unique()
-    geographies = df[geographical_label].unique()
-    if category_label:
-        categories = df[category_label].unique()
-    else:
-        categories = [None]
-    cartesian_product = list(itertools.product([df], [df_land], [geographical_label], [category_label], 
-                                               scenarios, geographies, categories))
 
-    # Add areas for each subset of the data (each tuple in the Cartesian product) in parallel. Store the subsets in a list of DataFrames.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
-        dataframes_for_each_subset = list(pool.starmap(add_areas_to_subset_of_file, cartesian_product))
+    # Drop any existing 'area' column from df. Since input_file and output_file are often the same path,
+    # the file may already contain an 'area' column from a previous run. If not dropped, the merge would
+    # produce 'area_x' and 'area_y' columns instead of 'area', causing a KeyError downstream.
+    if 'area' in df.columns:
+        df = df.drop('area', axis=1)
 
-    # Concatenate all DataFrames in the list together to form a single DataFrame for this file. Sort by all the given key columns.
-    df = pd.concat(dataframes_for_each_subset)
+    # Check that the required columns exist in both DataFrames before attempting the merge.
+    for col in ['scenario', geographical_label, 'year']:
+        if col not in df.columns:
+            print(f"Error: '{col}' column not found in input file '{input_file}'. Available columns: {list(df.columns)}")
+            return
+    for col in ['scenario', geographical_label, 'year', 'value', 'landtype']:
+        if col not in df_land.columns:
+            print(f"Error: '{col}' column not found in land allocation file '{land_allocation_file}'. Available columns: {list(df_land.columns)}")
+            return
+    if category_label and category_label not in df.columns:
+        print(f"Error: category_label '{category_label}' not found in input file '{input_file}'. Available columns: {list(df.columns)}")
+        return
+
+    # Add areas using a vectorized merge. This replaces the previous approach of creating a Cartesian product
+    # of all (scenario, geography, category) combinations and processing each in a separate worker process.
+    # The merge achieves the same result in a single pass without the overhead of pickling full DataFrames
+    # to many workers.
+    if geographical_label == 'region':
+        # Sum land areas across all basins for each (scenario, region, landtype, year) to get the total
+        # area per region — equivalent to what the previous code computed inside each worker.
+        area_df = df_land.groupby(['scenario', 'region', 'landtype', 'year'])['value'].sum().reset_index()
+        area_df = area_df.rename(columns={'value': 'area'})
+        if category_label:
+            area_df = area_df.rename(columns={'landtype': category_label})
+            merge_cols = ['scenario', 'region', category_label, 'year']
+        else:
+            area_df = area_df.groupby(['scenario', 'region', 'year'])['area'].sum().reset_index()
+            merge_cols = ['scenario', 'region', 'year']
+        df = df.merge(area_df, on=merge_cols, how='left')
+
+    elif geographical_label == 'basin':
+        # For basin-level matching, areas are already per (scenario, region, basin, landtype, year),
+        # so no groupby is needed — just rename and merge directly.
+        area_df = df_land[['scenario', 'region', 'basin', 'landtype', 'year', 'value']].copy()
+        area_df = area_df.rename(columns={'value': 'area'})
+        if category_label:
+            area_df = area_df.rename(columns={'landtype': category_label})
+            merge_cols = ['scenario', 'region', 'basin', category_label, 'year']
+        else:
+            area_df = area_df.groupby(['scenario', 'region', 'basin', 'year'])['area'].sum().reset_index()
+            merge_cols = ['scenario', 'region', 'basin', 'year']
+        df = df.merge(area_df, on=merge_cols, how='left')
+
+    # Fill any unmatched rows with 0, consistent with the previous approach which set area to 0
+    # when no matching land allocation data was found.
+    df['area'] = df['area'].fillna(0)
     df.sort_values(key_columns, inplace=True)
 
-    # Update original crop names to a common, standardized set of names. 
+    # Update original crop names to a common, standardized set of names.
     if call_modify_crop_names:
         df = modify_crop_names(df, key_columns, mean_or_sum_if_more_than_one_row_in_same_landtype_group)
 
@@ -140,10 +128,10 @@ if __name__ == '__main__':
         input_file = sys.argv[i]
         with open(input_file) as f:
             list_of_inputs.extend(json.load(f))
-    
-    # Add areas to each file sequentially.
-    for inputs in list_of_inputs:
-        add_areas_to_file(inputs)
+
+    # Add areas to each file in parallel.
+    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+        pool.map(add_areas_to_file, list_of_inputs)
 
     # Print the total execution time to add areas to all the files.
     end_time = time.time()

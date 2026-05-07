@@ -69,6 +69,9 @@ def process_inputs(inputs):
         Dictionary that completely specifies all plotting options. 
         If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
     """
+    # Check that the output file exists before trying to read it.
+    if not os.path.exists(inputs['output_file']):
+        raise FileNotFoundError(f"Error: output file not found: '{inputs['output_file']}'")
     df = read_file_into_dataframe(inputs['output_file'])
 
     # If the category label (e.g., sector or landtype) has not been specified, use the default value.
@@ -81,7 +84,7 @@ def process_inputs(inputs):
     # If the list of categories (e.g., sectors or landtypes) have not been specified, populate the list with all categories except the excluded ones.
     if 'categories' not in inputs:
         if category_label in df.columns:
-            inputs['categories'] = df[category_label].unique()
+            inputs['categories'] = list(df[category_label].unique())
             if 'categories_to_exclude' in inputs:
                 inputs['categories'] = [column for column in inputs['categories'] if column not in inputs['categories_to_exclude']]
         else:
@@ -136,6 +139,49 @@ def process_inputs(inputs):
         scenario_label = inputs['scenario_label']
         inputs['scenarios'] = df[scenario_label].unique()
     
+    # Check that the value_label column exists in the DataFrame.
+    value_label = inputs['value_label']
+    if value_label not in df.columns:
+        raise KeyError(f"Error: value_label '{value_label}' not found in '{inputs['output_file']}'. "
+                       f"Available columns: {list(df.columns)}")
+
+    # If mean_or_sum is area_weighted_mean, check that the 'area' column exists.
+    if inputs['mean_or_sum_if_more_than_one_row_in_same_landtype_group'] == 'area_weighted_mean' and 'area' not in df.columns:
+        raise KeyError(f"Error: mean_or_sum_if_more_than_one_row_in_same_landtype_group is 'area_weighted_mean' "
+                       f"but no 'area' column found in '{inputs['output_file']}'. "
+                       f"Consider using 'mean' or 'sum' instead, or add area data using gcam_add_areas_to_files.py.")
+
+    # Check that hue and x_variable columns exist in the DataFrame if specified.
+    hue = inputs.get('hue', None)
+    if hue and hue not in df.columns:
+        raise KeyError(f"Error: hue '{hue}' not found in '{inputs['output_file']}'. "
+                       f"Available columns: {list(df.columns)}")
+    x_variable = inputs.get('x_variable', inputs['category_label'])
+    if x_variable not in df.columns:
+        raise KeyError(f"Error: x_variable '{x_variable}' not found in '{inputs['output_file']}'. "
+                       f"Available columns: {list(df.columns)}")
+
+    # Warn if any specified scenario is not found in the DataFrame.
+    scenario_label = inputs['scenario_label']
+    if scenario_label in df.columns:
+        available_scenarios = set(df[scenario_label].unique())
+        specified_scenarios = inputs['scenarios']
+        if check_is_list_of_lists(specified_scenarios):
+            flat_scenarios = [s for member in specified_scenarios for s in member]
+        else:
+            flat_scenarios = list(specified_scenarios)
+        missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
+        if missing_scenarios:
+            print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
+                  f"and will produce empty plots: {missing_scenarios}")
+
+    # Verify the plot file is writable before doing any work.
+    plot_name = inputs['plot_name']
+    try:
+        open(plot_name, 'a').close()
+    except OSError as e:
+        raise OSError(f"Error: cannot write to plot file '{plot_name}': {e}")
+
     return inputs
 
 def plot_box_and_whiskers(inputs):
