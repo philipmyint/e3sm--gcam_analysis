@@ -77,7 +77,7 @@ gcam_basin_names_and_abbrevations = {
 'Russia_Barents_Sea_Coast': 'BarentsSea', 'Northern_Dvina': 'DvinaRN', 'Kara_Sea_Coast': 'KaraSea', 'Lena': 'LenaR', 
 'Siberia_North_Coast': 'SiberiaN', 'Siberia_West_Coast': 'SiberiaW', 'South_Africa_West_Coast': 'AfrCstSSW', 'Peru_Pacific_Coast': 'PeruCst', 
 'Sri_Lanka': 'SriLanka', 'North_and_South_Korea': 'Korea', 'Chao_Phraya': 'ChaoPhrR', 'Peninsula_Malaysia': 'MalaysiaP', 
-'South_Pacific_Islands': 'NewCaledn', 'Papua_New_Guinea_Coast': 'PapuaCst', 'Philippines': 'Phlppns', 'Sittaung': 'SittaungR', ''
+'South_Pacific_Islands': 'NewCaledn', 'Papua_New_Guinea_Coast': 'PapuaCst', 'Philippines': 'Phlppns', 'Sittaung': 'SittaungR', 
 'Solomon_Islands': 'SolomonIsl', 'Gulf_of_Thailand_Coast': 'ThaiGulf', 'Viet_Nam_Coast': 'VietnamCst', 'Arkansas_White_Red_Basin': 'ArkWhtRedR', 
 'Great_Basin': 'GreatBasin', 'Hawaii': 'Hawaii', 'Upper_Mississippi_Basin': 'MissppRN', 'Lower_Mississippi_River_Basin': 'MissppRS', 
 'Ohio_River_Basin': 'OhioR', 'Tennessee_River_Basin': 'TennR', 'Texas_Gulf_Coast_Basin': 'TexasCst', 'Upper_Colorado_River_Basin': 'UsaColoRN', 
@@ -166,7 +166,7 @@ def produce_dataframe_for_landtype_group(df, category, category_label, value_lab
         df.loc[:, value_label] = df.loc[:, value_label].div(total_area, axis=0)
         df = df.reset_index()
     elif mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'area_weighted_sum':
-        df[:, value_label] = df['area']*df[value_label]
+        df.loc[:, value_label] = df['area']*df[value_label]
         df = df.groupby(key_columns).sum().reset_index()
     df[category_label] = category
     return df

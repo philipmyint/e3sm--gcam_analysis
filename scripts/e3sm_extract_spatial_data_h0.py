@@ -1,5 +1,6 @@
 import json
 import multiprocessing
+import os
 import sys
 import time
 import xarray as xr
@@ -108,11 +109,50 @@ def extract_spatial_data_from_netcdf_files(inputs):
     start_year = inputs['start_years']   
     end_year = inputs['end_years']   
 
+    # Check that the simulation path exists before scanning for files.
+    if not os.path.exists(simulation_path):
+        print(f"Error: simulation path not found: '{simulation_path}'")
+        return
+
+    # Check that start_year is not greater than end_year.
+    if start_year > end_year:
+        print(f"Error: start_year ({start_year}) is greater than end_year ({end_year}) for output file '{output_file}'.")
+        return
+
+    # Check that the output directory exists and the output file is writable before doing any expensive processing.
+    output_dir = os.path.dirname(os.path.abspath(output_file))
+    if not os.path.exists(output_dir):
+        print(f"Error: output directory does not exist: '{output_dir}'")
+        return
+    try:
+        open(output_file, 'a').close()
+    except OSError as e:
+        print(f"Error: cannot write to output file '{output_file}': {e}")
+        return
+
     # Get all NetCDF files for this particular type that fall within the specified start and end years.
     netcdf_files = get_all_files_in_path(simulation_path, file_name_substrings=netcdf_substrings, file_extension='.nc')
     netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
-   
+
+    # Check that at least one matching file was found.
+    if len(netcdf_files) == 0:
+        print(f"Error: no NetCDF files found in '{simulation_path}' matching substrings {netcdf_substrings} "
+              f"between years {start_year} and {end_year}.")
+        return
+    print(f"Found {len(netcdf_files)} file(s) for '{output_file}'. Checking variables...")
+
+    # Check that all requested variables exist in the first file before opening the full dataset.
+    with xr.open_dataset(netcdf_files[0], decode_times=False) as ds_check:
+        missing_vars = [v for v in variables if v not in ds_check.data_vars]
+    if missing_vars:
+        print(f"Error: the following variables were not found in '{netcdf_files[0]}': {missing_vars}")
+        with xr.open_dataset(netcdf_files[0], decode_times=False) as ds_check:
+            print(f"  Available variables: {list(ds_check.data_vars)}")
+        return
+    print(f"Extracting {len(variables)} variable(s): {variables}")
+
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.
+    print(f"Opening {len(netcdf_files)} file(s) with xarray...")
     ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True)[variables]
     
     # Shift output back by one month to get rid of the extra month (January in the next year after end_year) that somehow gets added.
@@ -125,6 +165,7 @@ def extract_spatial_data_from_netcdf_files(inputs):
     ds = process_dataset(ds)
 
     # Write the Dataset to a NetCDF file.
+    print(f"Writing output to '{output_file}'...")
     ds.to_netcdf(output_file, mode='w')
 
     # Print the time needed to create the smaller NetCDF file.

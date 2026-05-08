@@ -76,8 +76,24 @@ def process_inputs(inputs):
         elif isinstance(inputs['netcdf_files'], list):
             inputs['netcdf_files'] = [inputs['netcdf_files']]
 
+    # Collect all NetCDF file paths from the (potentially nested) list and check that each one exists.
+    netcdf_files_flat = []
+    raw_files = inputs['netcdf_files']
+    if check_is_list_of_lists(raw_files):
+        for sublist in raw_files:
+            netcdf_files_flat.extend(sublist)
+    elif isinstance(raw_files, list):
+        netcdf_files_flat.extend(raw_files)
+    else:
+        netcdf_files_flat.append(raw_files)
+    missing_files = [f for f in netcdf_files_flat if not os.path.exists(f)]
+    if missing_files:
+        raise FileNotFoundError(f"Error: the following NetCDF files were not found: {missing_files}")
+
     # Read one of the NetCDF files into an xarray Dataset so that we can later get the variables contained in them and the units of these variables.
-    ds = xr.open_dataset(inputs['netcdf_files'][0][0])
+    ds = xr.open_dataset(inputs['netcdf_files'][0][0] if check_is_list_of_lists(inputs['netcdf_files']) else
+                         inputs['netcdf_files'][0] if isinstance(inputs['netcdf_files'], list) else
+                         inputs['netcdf_files'])
 
     # If the user entered the string 'all' for the variables or no input at all for the variables, assume that they want to make plots for
     # all variables that are in the Dataset.
@@ -91,6 +107,14 @@ def process_inputs(inputs):
     if isinstance(variables, str):
         variables = [variables]
         inputs['variables'] = variables
+
+    # Check that all requested variables exist in the first NetCDF file.
+    missing_vars = [v for v in variables if v not in ds]
+    if missing_vars:
+        available = list(ds.keys())
+        ds.close()
+        raise KeyError(f"Error: the following variables were not found in '{netcdf_files_flat[0]}': {missing_vars}. "
+                       f"Available variables: {available}")
 
     # For the plotting options that have not been specified in the inputs dictionary, add keys for them if necessary and use the default values.
     for key in default_inputs.keys():
@@ -133,6 +157,14 @@ def process_inputs(inputs):
             if key not in ['variables', 'plot_directory', 'plot_name', 'title']:
                 if not any(value_key == variable for value_key in value.keys()):
                     inputs[key][variable] = default_inputs[key]
+
+    # Close the dataset now that all variable and unit information has been extracted.
+    ds.close()
+
+    # Check that the grid file exists if one has been specified (required for EAM plots).
+    grid_file = inputs['grid_file'][variables[0]] if isinstance(inputs['grid_file'], dict) else inputs['grid_file']
+    if grid_file and not os.path.exists(grid_file):
+        raise FileNotFoundError(f"Error: grid file not found: '{grid_file}'")
 
     # Now that the dictionary has been populated with complete plotting options for each variable, separate it into a list of dictionaries,
     # where each of these smaller dictionaries contain the plotting options for a single variable. Return this list of dictionaries.
@@ -228,24 +260,32 @@ def plot_spatial_data_eam(inputs, grid_file):
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
-            # Create a temporary NetCDF file with data between only the start and end years. 
-            ds = xr.open_dataset(file).sel(year=slice(start_year, end_year))[variable]
+            # Check that the requested start and end years fall within the year range of the file before slicing,
+            # so the error message can report the available range rather than checking an already-filtered dataset.
+            ds_full = xr.open_dataset(file)
+            file_start = int(ds_full['year'].min())
+            file_end = int(ds_full['year'].max())
+            if start_year < file_start or start_year > file_end:
+                ds_full.close()
+                raise ValueError(f"Plot start_year {start_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+            if end_year < file_start or end_year > file_end:
+                ds_full.close()
+                raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
 
-            # check that the specified plot years are available in the files
-            if ds.year.min() > start_year:
-                error_message = f"Plot start_year {start_year} not in data file; update input json file"
-                raise ValueError(error_message)
-            if ds.year.max() < end_year:
-                error_message = f"Plot end_year {end_year} not in data file; update input json file"
-                raise ValueError(error_message)
-
-            wfile = os.path.join(plot_directory, f'temp_{variable}.nc')
+            # Create a temporary NetCDF file with data between only the start and end years.
+            ds = ds_full.sel(year=slice(start_year, end_year))[variable]
+            ds_full.close()
+            wfile = os.path.join(plot_directory, f'temp_{variable}_{file_index}_{file_set_index}.nc')
             ds.to_netcdf(wfile, 'w')
             ds.close()
             if time_calculation == 'mean':
-                uxda = ux.open_dataset(grid_file, wfile).mean(dim='year')[variable]*multiplier
+                xr_ds = xr.open_dataset(wfile).mean(dim='year')
+                uxda = ux.UxDataset.from_xarray(xr_ds, grid)[variable]*multiplier
+                xr_ds.close()
             elif time_calculation == 'sum':
-                uxda = ux.open_dataset(grid_file, wfile).sum(dim='year')[variable]*multiplier
+                xr_ds = xr.open_dataset(wfile).sum(dim='year')
+                uxda = ux.UxDataset.from_xarray(xr_ds, grid)[variable]*multiplier
+                xr_ds.close()
                 # If calculating the sum, change the per-time quantities and their units accordingly.
                 per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
                 time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
@@ -307,7 +347,7 @@ def plot_spatial_data_eam(inputs, grid_file):
             uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_test_set.to_xarray(), grid, variable=variable))
             print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
 
-    # this is when there are more than three files listed in one input set, so differences don't make sense
+    # This is when there are more than three files listed in one input set, so differences don't make sense.
     else:
         error_message = "Error: If there are more than two netcdf_files in one single input set " \
             + "plot_type must be mean or sum."
@@ -485,16 +525,18 @@ def plot_spatial_data_elm(inputs):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
 
-            # first make sure that the plot years are avaliable in the data file
-            ds = xr.open_dataset(file).sel(year=slice(start_year, end_year))[variable]
-            # check that the specified plot years are available in the files
-            if ds.year.min() > start_year:
-                error_message = f"Plot start_year {start_year} not in data file; update input json file"
-                raise ValueError(error_message)
-            if ds.year.max() < end_year:
-                error_message = f"Plot end_year {end_year} not in data file; update input json file"
-                raise ValueError(error_message)
-            ds.close()
+            # Check that the requested start and end years fall within the year range of the file before slicing,
+            # so the error message can report the available range rather than checking an already-filtered dataset.
+            ds_full = xr.open_dataset(file)
+            file_start = int(ds_full['year'].min())
+            file_end = int(ds_full['year'].max())
+            if start_year < file_start or start_year > file_end:
+                ds_full.close()
+                raise ValueError(f"Plot start_year {start_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+            if end_year < file_start or end_year > file_end:
+                ds_full.close()
+                raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+            ds_full.close()
 
             if time_calculation == 'mean':
                 da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).mean(dim='year')[variable]*multiplier
