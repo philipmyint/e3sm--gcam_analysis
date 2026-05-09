@@ -163,6 +163,9 @@ def extract_spatial_data_from_netcdf_files(inputs):
 
     # Add total precipitation (in units of mm/year) and CO2 concentration variables to the Dataset.
     ds = process_dataset(ds)
+    
+    # Clear the unlimited_dims encoding entirely since the output is a static spatial file and does not need any unlimited dimension.
+    ds.encoding['unlimited_dims'] = set()
 
     # Write the Dataset to a NetCDF file.
     print(f"Writing output to '{output_file}'...")

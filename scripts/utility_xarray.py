@@ -71,7 +71,20 @@ def convert_xarray_to_uxarray(data, grid, variable=None, fillna=1):
         ds[variable] = data
     else:
         ds = data
+    # Apply fillna on the xarray Dataset before constructing the UxDataset, to avoid the
+    # uxarray/xarray >= 2025.7.1 incompatibility. Both ux.UxDataset.from_xarray and
+    # ux.UxDataset.fillna internally reconstruct a UxDataset by passing a Dataset as the
+    # first positional argument, which xarray >= 2025.7.1 no longer supports.
+    # Applying fillna on the xr.Dataset first and passing dict(ds) to UxDataset avoids both issues.
     if fillna:
-        return ux.UxDataset.from_xarray(ds, grid).fillna(fillna)
-    else:
-        return ux.UxDataset.from_xarray(ds, grid)
+        ds = ds.fillna(fillna)
+    # Rename the spatial dimension to match uxarray's face dimension name ('n_face') if needed.
+    # When ux.open_dataset was used, this mapping was done automatically. With direct UxDataset
+    # construction, we must do it manually — otherwise uxarray raises 'Data variable must be face
+    # centered' at plot time because the data dimension (e.g. 'ncol') doesn't match 'n_face'.
+    if hasattr(grid, 'n_face'):
+        for dim in list(ds.dims):
+            if dim not in ('time', 'year', 'lev', 'ilev') and ds.dims[dim] == grid.n_face:
+                ds = ds.rename({dim: 'n_face'})
+                break
+    return ux.UxDataset(dict(ds), uxgrid=grid)

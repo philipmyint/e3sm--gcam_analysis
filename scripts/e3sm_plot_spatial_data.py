@@ -256,7 +256,9 @@ def plot_spatial_data_eam(inputs, grid_file):
     # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an uxarray DataArray and then add each of these 
     # DataArrays to a single uxarray Dataset that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
     # between the start and end years for each lat/lon coordinate. We will later display some function of this mean or sum on the spatial plot.
-    uxds = ux.UxDataset()
+    # Use a plain xr.Dataset as the intermediate container to avoid uxarray constructor
+    # incompatibility with xarray >= 2025.7.1; convert to uxarray only at the plotting step.
+    uxds = xr.Dataset()
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
@@ -278,13 +280,18 @@ def plot_spatial_data_eam(inputs, grid_file):
             wfile = os.path.join(plot_directory, f'temp_{variable}_{file_index}_{file_set_index}.nc')
             ds.to_netcdf(wfile, 'w')
             ds.close()
+            # Load the temporal aggregate as a plain xr.DataArray rather than a ux.UxDataArray.
+            # ux.UxDataset.from_xarray and ux.open_dataset both use a UxDataset constructor
+            # that is incompatible with xarray >= 2025.7.1. Since uxarray is only needed at
+            # the final plotting step (where convert_xarray_to_uxarray is called), we use
+            # plain xarray DataArrays here and store them in an xr.Dataset (uxds).
             if time_calculation == 'mean':
                 xr_ds = xr.open_dataset(wfile).mean(dim='year')
-                uxda = ux.UxDataset.from_xarray(xr_ds, grid)[variable]*multiplier
+                uxda = xr_ds[variable]*multiplier
                 xr_ds.close()
             elif time_calculation == 'sum':
                 xr_ds = xr.open_dataset(wfile).sum(dim='year')
-                uxda = ux.UxDataset.from_xarray(xr_ds, grid)[variable]*multiplier
+                uxda = xr_ds[variable]*multiplier
                 xr_ds.close()
                 # If calculating the sum, change the per-time quantities and their units accordingly.
                 per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
@@ -306,14 +313,12 @@ def plot_spatial_data_eam(inputs, grid_file):
     uxDataArrays_to_plot = []
     df = uxds.to_dataframe()
 
-    # If we have only one file per set, possible options are to take either the mean or sum over all files for each lat/lon coordinate.
-    if num_files_in_each_set == 1 and (plot_type == 'mean' or plot_type == 'sum'):
-        if plot_type == 'mean':
-            df = df.mean(axis=1)
-        elif plot_type == 'sum':
-            df = df.sum(axis=1)
+    # If we have a single data set (but potentially multiple files in this set), take the mean over all files
+    # for each spatial coordinate. For a single file this is equivalent to just plotting that file's values directly.
+    if num_files_in_each_set == 1:
+        df = df.mean(axis=1)
         uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
-        print(f"Calculating {plot_type} of {num_file_sets} files.")
+        print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
     
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
     elif num_file_sets == 2:
@@ -349,8 +354,10 @@ def plot_spatial_data_eam(inputs, grid_file):
 
     # This is when there are more than three files listed in one input set, so differences don't make sense.
     else:
-        error_message = "Error: If there are more than two netcdf_files in one single input set " \
-            + "plot_type must be mean or sum."
+        error_message = (f"Error: variable '{variable}', num_files_in_each_set={num_files_in_each_set}, "
+                         f"num_file_sets={num_file_sets}, plot_type='{plot_type}': "
+                         "If there are more than two netcdf_files in one single input set "
+                         "plot_type must be mean or sum.")
         raise ValueError(error_message)
 
     # If stippling_on is True, meaning we want to add markers on plot to indicate potential regions of statistical significance, 
@@ -560,15 +567,13 @@ def plot_spatial_data_elm(inputs):
     # Initialize list that will store all the DataArrays that we will want to plot for the variable.
     dataArrays_to_plot = []
 
-    # If we have only one file per set, possible options are to take either the mean or sum over all files for each lat/lon coordinate.
-    if num_files_in_each_set == 1 and (plot_type == 'mean' or plot_type == 'sum'):
-        if plot_type == 'mean':
-            df = df.mean(axis=1)
-        elif plot_type == 'sum':
-            df = df.sum(axis=1)
+    # If we have a single data set (but potentially multiple files in this set), take the mean over all files
+    # for each spatial coordinate. For a single file this is equivalent to just plotting that file's values directly.
+    if num_files_in_each_set == 1:
+        df = df.mean(axis=1)
         da = df.to_xarray()
         dataArrays_to_plot.append(da)
-        print(f"Calculating {plot_type} of {num_file_sets} files.")
+        print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
 
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
     elif num_file_sets == 2:
@@ -615,8 +620,10 @@ def plot_spatial_data_elm(inputs):
 
     # this is when there are more than three files listed in one input set, so differences don't make sense
     else:
-        error_message = "Error: If there are more than two netcdf_files in one single input set " \
-            + "plot_type must be mean or sum."
+        error_message = (f"Error: variable '{variable}', num_files_in_each_set={num_files_in_each_set}, "
+                         f"num_file_sets={num_file_sets}, plot_type='{plot_type}': "
+                         "If there are more than two netcdf_files in one single input set "
+                         "plot_type must be mean or sum.")
         raise ValueError(error_message)
 
     # Iterate over all dataArrays in the list to create a plot for each one.
