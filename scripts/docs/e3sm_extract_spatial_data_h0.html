@@ -622,8 +622,14 @@ footer {
 </tr>
 </tbody>
 </table>
-<h3 id="no-optional-parameters">No Optional Parameters</h3>
-<p>This script requires all parameters to be specified. Unlike other scripts in the suite, there are no default values for optional parameters.</p>
+<h3 id="no-optional-parameters">Optional Parameters</h3>
+<table>
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody><tr>
+<td><code>max_processes</code></td><td>integer</td><td><code>MAX_PROCESSES</code></td>
+<td>Maximum number of parallel worker processes. Useful on HPC clusters to limit memory pressure or filesystem contention. Defaults to the lesser of 16 or half the available CPU cores.</td>
+</tr></tbody>
+</table>
 <hr />
 <h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
 <h3 id="core-required-parameters">Core Required Parameters</h3>
@@ -809,6 +815,14 @@ If you provide a single string, the script converts it to a list:</p>
 → Output: 6 annual means at each gridcell
 </code></pre></div>
 
+<hr />
+<h3 id="max-processes"><code>max_processes</code></h3>
+<p><strong>Type:</strong> Integer<br />
+<strong>Required:</strong> No<br />
+<strong>Default:</strong> <code>MAX_PROCESSES</code> (lesser of 16 or half the available CPU cores, defined in <code>utility_constants.py</code>)<br />
+<strong>Description:</strong> Controls the maximum number of parallel worker processes used when extracting data from multiple output files simultaneously. On HPC clusters with shared filesystems (e.g., Lustre on Chrysalis), too many concurrent processes can cause filesystem contention or excessive memory usage. Reducing <code>max_processes</code> can help in those situations.</p>
+<p><strong>Example:</strong></p>
+<pre><code>"max_processes": 8</code></pre>
 <hr />
 <h2 id="variable-processing">Variable Processing</h2>
 <p>The script automatically processes certain variables when they are present:</p>

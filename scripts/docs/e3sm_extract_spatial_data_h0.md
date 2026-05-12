@@ -146,9 +146,11 @@ ds = xr.open_mfdataset(
 | `start_years` | integer or list | **Yes** | First year(s) to extract |
 | `end_years` | integer or list | **Yes** | Last year(s) to extract |
 
-### No Optional Parameters
+### Optional Parameters
 
-This script requires all parameters to be specified. Unlike other scripts in the suite, there are no default values for optional parameters.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `max_processes` | integer | `MAX_PROCESSES` | Maximum number of parallel worker processes. Useful on HPC clusters to limit memory pressure or filesystem contention. Defaults to the lesser of 16 or half the available CPU cores. |
 
 ---
 
@@ -375,6 +377,19 @@ start_years = 2085, end_years = 2090
 → Extracts: 2085, 2086, 2087, 2088, 2089, 2090 (6 years)
 → Processes: 72 monthly files (6 years × 12 months)
 → Output: 6 annual means at each gridcell
+```
+
+---
+
+#### `max_processes`
+**Type:** Integer  
+**Required:** No  
+**Default:** `MAX_PROCESSES` (lesser of 16 or half the available CPU cores, defined in `utility_constants.py`)  
+**Description:** Controls the maximum number of parallel worker processes used when extracting data from multiple output files simultaneously. On HPC clusters with shared filesystems (e.g., Lustre on Chrysalis), too many concurrent processes can cause filesystem contention or excessive memory usage. Reducing `max_processes` can help in those situations.
+
+**Example:**
+```json
+"max_processes": 8
 ```
 
 ---

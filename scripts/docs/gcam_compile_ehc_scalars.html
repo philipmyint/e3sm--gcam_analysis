@@ -636,12 +636,19 @@ footer {
 <td><code>false</code></td>
 <td>Whether to standardize crop names to common naming convention</td>
 </tr>
+<tr>
+<td><code>file_root_names</code></td>
+<td>dictionary</td>
+<td><code>{}</code></td>
+<td>Maps scenario names to the filename prefix used to filter CSV files in each scenario's directory. Scenarios not listed default to <code>scalars</code>.</td>
+</tr>
 </tbody>
 </table>
 <hr />
 <h2 id="data-processing-operations">Data Processing Operations</h2>
 <h3 id="1-directory-scanning-and-file-reading">1. Directory Scanning and File Reading</h3>
-<p>The script automatically finds all files in each specified directory:</p>
+<p>The script scans each scenario's input directory for CSV files whose names begin with the prefix specified in <code>file_root_names</code> for that scenario (default: <code>scalars</code>). This prevents other CSV files that may be present in the same directory from being read inadvertently. To use a different prefix for a specific scenario, add a <code>file_root_names</code> entry to the JSON block, e.g.: <code>"file_root_names": {"Control": "SCALARS", "Full feedback": "SCALARS"}</code>. Scenarios not listed will use the default prefix <code>scalars</code>.</p>
+<p>The script finds all matching files in each specified directory:</p>
 <div class="codehilite"><pre><span></span><code>./scalars_output/control/
 ├── scalars_2015.csv
 ├── scalars_2020.csv

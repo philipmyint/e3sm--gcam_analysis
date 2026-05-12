@@ -154,6 +154,7 @@ The configuration file is a JSON array where each object specifies one compilati
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `call_modify_crop_names` | boolean | `false` | Whether to standardize crop names to common naming convention |
+| `file_root_names` | dictionary | `{}` | Maps scenario names to the filename prefix used to filter CSV files in each scenario's directory. Scenarios not listed default to `scalars`. |
 
 ---
 
@@ -161,17 +162,24 @@ The configuration file is a JSON array where each object specifies one compilati
 
 ### 1. Directory Scanning and File Reading
 
-The script automatically finds all files in each specified directory:
+The script scans each scenario's input directory for CSV files whose names begin with the prefix specified in `file_root_names` for that scenario (default: `scalars`). This prevents other CSV files that may be present in the same directory from being read inadvertently.
 
 ```
 ./scalars_output/control/
-├── scalars_2015.csv
-├── scalars_2020.csv
-├── scalars_2025.csv
-└── scalars_2030.csv
+├── scalars_2015.csv        ← read (starts with 'scalars')
+├── scalars_2020.csv        ← read
+├── scalars_2025.csv        ← read
+├── scalars_2030.csv        ← read
+└── land_allocation.csv     ← skipped (does not start with 'scalars')
 ```
 
-All CSV files are read and concatenated together for each scenario.
+To use a different prefix for a specific scenario, add a `file_root_names` entry to the JSON block:
+```json
+"file_root_names": {"Control": "SCALARS", "Full feedback": "SCALARS"}
+```
+Scenarios not listed in the dictionary (e.g., `Ag scaling`, `Carbon scaling`) will use the default prefix `scalars`.
+
+All matching CSV files are read and concatenated together for each scenario.
 
 ### 2. Column Name Normalization
 

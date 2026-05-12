@@ -26,6 +26,9 @@ def compile_ehc_scalars(inputs):
     output_file = inputs['output_file']
     call_modify_crop_names = inputs.get('call_modify_crop_names', False)
     scenarios = inputs['scenarios']
+    # file_root_names is an optional dict mapping scenario names to file root names.
+    # Scenarios not present in the dict fall back to the default root name 'scalars'.
+    file_root_names = inputs.get('file_root_names', {})
 
     # Check that input_directories and scenarios are the same length.
     if len(input_directories) != len(scenarios):
@@ -49,12 +52,18 @@ def compile_ehc_scalars(inputs):
             print(f"Error: input directory not found: '{input_directory}' (scenario '{scenario}').")
             return
 
-        # Filter to CSV files only to avoid attempting to read non-CSV files (e.g. .DS_Store, README, log files).
-        files = get_all_files_in_path(input_directory, file_extension='.csv')
+        # Look up the root name for this scenario from the file_root_names dict; default to 'scalars'.
+        file_root_name = file_root_names.get(scenario, 'scalars')
 
-        # Check that the directory contains at least one CSV file.
+        # Filter to CSV files whose names start with file_root_name, to avoid reading non-scalars
+        # files (e.g. land allocation, commodity prices) that may be in the same directory.
+        files = get_all_files_in_path(input_directory, file_extension='.csv')
+        files = [f for f in files if os.path.basename(f).startswith(file_root_name)]
+
+        # Check that the directory contains at least one matching CSV file.
         if len(files) == 0:
-            print(f"Error: no CSV files found in '{input_directory}' (scenario '{scenario}').")
+            print(f"Error: no CSV files starting with '{file_root_name}' found in '{input_directory}' "
+                  f"(scenario '{scenario}').")
             return
 
         print(f"  [{index+1}/{len(scenarios)}] Reading {len(files)} file(s) for scenario '{scenario}'...")
