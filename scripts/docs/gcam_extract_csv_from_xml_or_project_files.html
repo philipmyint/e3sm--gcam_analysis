@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCAM CSV Extraction Script Documentation</title>
+    <style>/* 
+ * Documentation Stylesheet for GCAM Synthetic Data Generation Script
+ * A modern, colorful design with good readability
+ */
+
+/* ===== ROOT VARIABLES ===== */
+:root {
+    /* Color Palette */
+    --primary-blue: #2563eb;
+    --primary-blue-light: #3b82f6;
+    --primary-blue-dark: #1e40af;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    --accent-purple: #8b5cf6;
+    --accent-red: #ef4444;
+    
+    /* Background Colors */
+    --bg-main: #f8fafc;
+    --bg-code: #1e293b;
+    --bg-code-inline: #e2e8f0;
+    --bg-table-header: #1e40af;
+    --bg-table-row-even: #f1f5f9;
+    --bg-table-row-odd: #ffffff;
+    --bg-note: #fef3c7;
+    --bg-warning: #fee2e2;
+    --bg-info: #dbeafe;
+    --bg-success: #d1fae5;
+    
+    /* Text Colors */
+    --text-main: #1e293b;
+    --text-secondary: #64748b;
+    --text-code: #e2e8f0;
+    --text-link: #2563eb;
+    --text-link-hover: #1e40af;
+    
+    /* Border Colors */
+    --border-light: #e2e8f0;
+    --border-medium: #cbd5e1;
+    --border-dark: #94a3b8;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+}
+
+/* ===== BASE STYLES ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: var(--text-main);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: var(--spacing-xl) var(--spacing-md);
+    font-size: 16px;
+}
+
+/* Main Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-main);
+    padding: var(--spacing-2xl);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== TYPOGRAPHY ===== */
+h1 {
+    font-size: 2.5rem;
+    color: var(--primary-blue-dark);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 4px solid var(--primary-blue);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-lg);
+    padding-left: var(--spacing-md);
+    border-left: 5px solid var(--accent-green);
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 1.5rem;
+    color: var(--primary-blue-dark);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+h3::before {
+    content: "▸";
+    color: var(--accent-orange);
+    margin-right: var(--spacing-sm);
+    font-size: 1.2rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+    color: var(--accent-purple);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-main);
+}
+
+/* ===== LINKS ===== */
+a {
+    color: var(--text-link);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--text-link-hover);
+    border-bottom-color: var(--text-link-hover);
+}
+
+/* ===== LISTS ===== */
+ul, ol {
+    margin-left: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+}
+
+li {
+    margin-bottom: var(--spacing-sm);
+    padding-left: var(--spacing-sm);
+}
+
+ul li::marker {
+    color: var(--accent-green);
+    font-size: 1.2em;
+}
+
+ol li::marker {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+/* ===== CODE BLOCKS ===== */
+code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--bg-code-inline);
+    color: var(--accent-red);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+pre {
+    background: var(--bg-code);
+    color: var(--text-code);
+    padding: var(--spacing-lg);
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: var(--spacing-lg) 0;
+    border-left: 4px solid var(--accent-green);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+pre code {
+    background: transparent;
+    color: var(--text-code);
+    padding: 0;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+/* ===== TABLES ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--spacing-xl) 0;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    color: white;
+}
+
+th {
+    padding: var(--spacing-md);
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.05em;
+    border-bottom: 3px solid var(--accent-orange);
+}
+
+td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-light);
+}
+
+tbody tr:nth-child(even) {
+    background: var(--bg-table-row-even);
+}
+
+tbody tr:nth-child(odd) {
+    background: var(--bg-table-row-odd);
+}
+
+tbody tr:hover {
+    background: #e0f2fe;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ===== BLOCKQUOTES ===== */
+blockquote {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--bg-info);
+    border-left: 5px solid var(--primary-blue);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--primary-blue-dark);
+}
+
+/* ===== HORIZONTAL RULES ===== */
+hr {
+    border: none;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
+    margin: var(--spacing-2xl) 0;
+    border-radius: 2px;
+}
+
+/* ===== SPECIAL BOXES ===== */
+.note {
+    background: var(--bg-note);
+    border-left: 5px solid var(--accent-orange);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.warning {
+    background: var(--bg-warning);
+    border-left: 5px solid var(--accent-red);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.info {
+    background: var(--bg-info);
+    border-left: 5px solid var(--primary-blue);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.success {
+    background: var(--bg-success);
+    border-left: 5px solid var(--accent-green);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    border-radius: 0 8px 8px 0;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin: 0 var(--spacing-xs);
+}
+
+.badge-required {
+    background: var(--accent-red);
+    color: white;
+}
+
+.badge-optional {
+    background: var(--accent-green);
+    color: white;
+}
+
+.badge-default {
+    background: var(--primary-blue);
+    color: white;
+}
+
+/* ===== STRONG & EM ===== */
+strong {
+    color: var(--primary-blue-dark);
+    font-weight: 700;
+}
+
+em {
+    color: var(--accent-purple);
+    font-style: italic;
+}
+
+/* ===== IMAGES ===== */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: var(--spacing-lg) 0;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-table-row-even);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--accent-purple) 100%);
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    
+    .container {
+        box-shadow: none;
+        max-width: 100%;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    
+    pre, table {
+        page-break-inside: avoid;
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    body {
+        padding: var(--spacing-md) var(--spacing-sm);
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: var(--spacing-lg);
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+    
+    table {
+        font-size: 0.9em;
+    }
+    
+    th, td {
+        padding: var(--spacing-sm);
+    }
+}
+
+/* ===== ADDITIONAL UTILITY CLASSES ===== */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.margin-top-lg {
+    margin-top: var(--spacing-2xl);
+}
+
+.margin-bottom-lg {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.highlight {
+    background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+    padding: 0 var(--spacing-xs);
+    border-radius: 3px;
+}
+
+/* ===== SECTION DIVIDERS ===== */
+.section-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: var(--spacing-2xl) 0;
+}
+
+.section-divider::before,
+.section-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 2px solid var(--border-medium);
+}
+
+.section-divider::before {
+    margin-right: var(--spacing-md);
+}
+
+.section-divider::after {
+    margin-left: var(--spacing-md);
+}
+
+/* ===== FOOTER ===== */
+footer {
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-lg);
+    border-top: 2px solid var(--border-light);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GCAM CSV Extraction Script Documentation</h1>
+            <div class="subtitle">gcam_extract_csv_from_xml_or_project_files.R</div>
+            <div class="authors">
+                <strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov),
+                Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)
+            </div>
+        </div>
+
+        <h2 id="overview">Overview</h2>
+        <p>The <code>gcam_extract_csv_from_xml_or_project_files.R</code> script extracts variables from GCAM output and writes them to CSV files, one file per variable. It supports two modes of operation: reading from pre-existing project files, or creating new project files from raw GCAM XML output before extracting.</p>
+
+        <h2 id="purpose">Purpose</h2>
+        <p>This script automates the extraction of GCAM output data by:</p>
+        <ul>
+            <li>Reading from existing GCAM project files (.dat format), or creating them from raw GCAM XML output</li>
+            <li>Extracting specified variables from project files using <code>getQuery</code></li>
+            <li>Combining data from multiple scenarios into single CSV files</li>
+            <li>Caching project files in memory to avoid redundant loading across multiple variables</li>
+        </ul>
+
+        <h2 id="requirements">Requirements</h2>
+        <h3>R Packages</h3>
+        <ul>
+            <li><code>dplyr</code> — Data manipulation and transformation</li>
+            <li><code>rgcam</code> — GCAM-specific data reading and processing functions</li>
+            <li><code>rjson</code> — JSON file parsing</li>
+        </ul>
+        <pre><code>install.packages(c("dplyr", "rjson"))
+devtools::install_github("JGCRI/rgcam")</code></pre>
+
+        <hr />
+        <h2 id="input-files">Input Files</h2>
+
+        <h3>1. JSON Configuration File</h3>
+        <p>Each block in the JSON file specifies one variable to extract and write to a CSV file.</p>
+
+        <h4>Required Parameters</h4>
+        <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>variable</code></td><td>string</td><td>Exact name of the GCAM query to extract; must match a query title in the project file</td></tr>
+                <tr><td><code>outputFile</code></td><td>string</td><td>Path and filename for the CSV output</td></tr>
+                <tr><td><code>scenarios</code></td><td>array</td><td>Descriptive scenario names, one per project file</td></tr>
+                <tr><td><code>projectFiles</code></td><td>array</td><td>Paths to GCAM project (.dat) files, in the same order as <code>scenarios</code></td></tr>
+            </tbody>
+        </table>
+
+        <h4>Optional Parameters</h4>
+        <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>queryFile</code></td><td>string</td><td><code>Main_queries.xml</code></td><td>Path to the XML query file. Only required when <code>createProjectFiles</code> is <code>true</code></td></tr>
+                <tr><td><code>createProjectFiles</code></td><td>boolean</td><td><code>false</code></td><td>If <code>true</code>, creates project files from raw XML output before extracting. Requires <code>xmlFiles</code> and <code>queryFile</code></td></tr>
+                <tr><td><code>xmlFiles</code></td><td>array</td><td>—</td><td>Paths to raw GCAM XML output files (one per scenario). Required when <code>createProjectFiles</code> is <code>true</code></td></tr>
+                <tr><td><code>maxMemory</code></td><td>string</td><td><code>"8g"</code></td><td>Java heap memory limit for the <code>addScenario</code> step. Increase for large XML files (e.g., <code>"32g"</code>)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>2. GCAM Project Files (.dat)</h3>
+        <p>Binary project files containing pre-computed query results, created by <code>addScenario</code> from raw GCAM XML output. These may already exist (e.g., transferred from an HPC cluster) or can be created by the script itself using <code>createProjectFiles: true</code>.</p>
+
+        <h3>3. Query File (optional)</h3>
+        <p>An XML file containing query definitions used to create project files. Only needed when <code>createProjectFiles: true</code>. Two query files are included in the repository:</p>
+        <ul>
+            <li><strong><code>energy_and_water_queries.xml</code></strong> — A small targeted file containing 4 queries. Use this for fast extraction of specific variables.</li>
+            <li><strong><code>Main_queries.xml</code></strong> — A comprehensive file with 268 queries covering all major GCAM output variables. Note that 10 of these use complex XPath syntax incompatible with older BaseX versions.</li>
+        </ul>
+
+        <hr />
+        <h2 id="modes">Modes of Operation</h2>
+
+        <h3>Mode 1: Reading from Existing Project Files</h3>
+        <p>Set <code>createProjectFiles</code> to <code>false</code> (or omit it). No <code>queryFile</code> or <code>xmlFiles</code> are needed.</p>
+        <pre><code>{
+    "variable": "ag commodity prices",
+    "outputFile": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv",
+    "scenarios": ["Control", "Full feedback"],
+    "projectFiles": [
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"
+    ]
+}</code></pre>
+
+        <h3>Mode 2: Creating Project Files from Raw XML</h3>
+        <p>Set <code>createProjectFiles: true</code> and provide <code>xmlFiles</code> and <code>queryFile</code>. The script runs <code>addScenario</code> to create the project file, then immediately extracts the requested variable.</p>
+        <p><strong>Important:</strong> <code>addScenario</code> runs all queries in the query file, not just the one requested. Use a small targeted query file rather than <code>Main_queries.xml</code> when only a few variables are needed. Only the first block that creates a given project file needs <code>createProjectFiles: true</code>; subsequent blocks referencing the same file can omit it since the project is cached in memory.</p>
+        <pre><code>{
+    "variable": "irrigation water withdrawals by region",
+    "queryFile": "energy_and_water_queries.xml",
+    "outputFile": "./../2025_DiVittorio_et_al_gcam/irrigation_water_withdrawals_by_region.csv",
+    "scenarios": ["Control"],
+    "projectFiles": ["./../2025_DiVittorio_et_al_gcam/extraction_from_gcamdboutput.dat"],
+    "xmlFiles": ["./../2025_DiVittorio_et_al_gcam/GCAMDBOutput.xml"],
+    "createProjectFiles": true,
+    "maxMemory": "32g"
+}</code></pre>
+
+        <hr />
+        <h2 id="example-usage">Example Usage</h2>
+
+        <h3>Example JSON Configuration</h3>
+        <pre><code>[
+    {
+        "variable": "ag commodity prices",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": [
+            "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+            "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"
+        ]
+    },
+    {
+        "variable": "irrigation water withdrawals by region",
+        "queryFile": "energy_and_water_queries.xml",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/irrigation_water_withdrawals_by_region.csv",
+        "scenarios": ["Control"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/extraction_from_gcamdboutput.dat"],
+        "xmlFiles": ["./../2025_DiVittorio_et_al_gcam/GCAMDBOutput.xml"],
+        "createProjectFiles": true,
+        "maxMemory": "32g"
+    },
+    {
+        "variable": "total final energy by region",
+        "outputFile": "./../2025_DiVittorio_et_al_gcam/total_final_energy_by_region.csv",
+        "scenarios": ["Control"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/extraction_from_gcamdboutput.dat"]
+    }
+]</code></pre>
+        <p>Blocks 1 reads from an existing project file. Block 2 creates a new project file from raw XML, then extracts irrigation water withdrawals. Block 3 reads from the same project file created by block 2 — no <code>createProjectFiles</code> needed since it is already cached.</p>
+
+        <h3>Running the Script</h3>
+        <pre><code>Rscript gcam_extract_csv_from_xml_or_project_files.R path/to/config.json</code></pre>
+        <pre><code>Rscript gcam_extract_csv_from_xml_or_project_files.R config1.json config2.json</code></pre>
+
+        <hr />
+        <h2 id="output-files">Output Files</h2>
+        <h3>CSV Structure</h3>
+        <p>Each output CSV file contains all columns from the GCAM query result plus a <code>scenario</code> column identifying which scenario each row belongs to. Data from all specified scenarios is row-stacked into a single file.</p>
+
+        <hr />
+        <h2 id="workflow">Script Workflow</h2>
+        <ol>
+            <li>Parse command line arguments and validate that at least one JSON file was provided</li>
+            <li>For each JSON block: validate lengths of <code>scenarios</code> and <code>projectFiles</code></li>
+            <li>If <code>createProjectFiles: true</code>, validate <code>xmlFiles</code> and <code>queryFile</code>; run <code>addScenario</code> to create the project file</li>
+            <li>For each scenario: load the project file (using the cache if already loaded), call <code>getQuery</code> to retrieve the variable, add the scenario label</li>
+            <li>If a query returns no data, print a warning and skip to the next block</li>
+            <li>Combine all scenario dataframes and write to the output CSV</li>
+        </ol>
+
+        <hr />
+        <h2 id="querying-available">Querying Available Variables</h2>
+        <p>To see which variables are stored in an existing project file:</p>
+        <pre><code>library(rgcam)
+project = loadProject("path/to/project.dat")
+print(listQueries(project))
+print(listScenarios(project))</code></pre>
+        <p>The 268 queries available in <code>Main_queries.xml</code> are listed in <code>Main_queries_list.md</code> in the repository. Of these, 258 are compatible with BaseX 9.5.0 (bundled with rgcam 1.2.0). Use <code>Main_queries_compatible.xml</code> (with the 10 incompatible queries removed) on systems with older BaseX versions.</p>
+
+        <hr />
+        <h2 id="error-handling">Error Handling</h2>
+        <p>The script stops with an error if:</p>
+        <ul>
+            <li>No JSON file is provided on the command line</li>
+            <li>A JSON file does not exist</li>
+            <li><code>scenarios</code> and <code>projectFiles</code> have different lengths</li>
+            <li><code>createProjectFiles: true</code> but <code>xmlFiles</code> is not specified</li>
+            <li>A project file does not exist (and <code>createProjectFiles</code> is <code>false</code>)</li>
+            <li>The output directory does not exist</li>
+            <li>The query file does not exist (when <code>createProjectFiles: true</code>)</li>
+        </ul>
+        <p>If a query returns no data, the script prints a warning and skips to the next block rather than halting.</p>
+
+        <hr />
+        <h2 id="troubleshooting">Troubleshooting</h2>
+        <p><strong>"Query not found" warning:</strong> The variable name does not match any query stored in the project file. Check <code>listQueries(project)</code> to see what is available.</p>
+        <p><strong><code>addScenario</code> fails with <code>[XPST0003]</code> error:</strong> The query file contains XPath expressions incompatible with your BaseX version. Use <code>Main_queries_compatible.xml</code> or a smaller targeted query file like <code>energy_and_water_queries.xml</code>.</p>
+        <p><strong><code>addScenario</code> is very slow:</strong> Use a small targeted query file rather than <code>Main_queries.xml</code> when only a few variables are needed.</p>
+        <p><strong>Scenario name mismatch:</strong> The scenario name stored in the project file (check with <code>listScenarios(project)</code>) must match the name in <code>scenarios</code> in the JSON. For project files created from <code>GCAMDBOutput.xml</code>, the scenario name is typically <code>gcam_test</code>.</p>
+    </div>
+</body>
+</html>

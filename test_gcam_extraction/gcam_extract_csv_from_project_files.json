@@ -1,0 +1,226 @@
+[
+    {
+        "variable": "ag commodity prices",
+        "outputFile": "./ag_commodity_prices.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 emissions by sector",
+        "outputFile": "./co2_emissions_sectors.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 emissions by region",
+        "outputFile": "./co2_emissions_regions.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "detailed land allocation",
+        "outputFile": "./land_allocation.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "ag production by crop type",
+        "outputFile": "./ag_production_by_crop_type.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "ag production by tech",
+        "outputFile": "./ag_production_by_tech.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "ag tech variable cost",
+        "outputFile": "./ag_tech_variable_cost.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "ag tech yield",
+        "outputFile": "./ag_tech_yield.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "aggregated land allocation",
+        "outputFile": "./aggregated_land_allocation.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "food demand",
+        "outputFile": "./food_demand.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "food demand prices",
+        "outputFile": "./food_demand_prices.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "meat and dairy prices",
+        "outputFile": "./meat_and_dairy_prices.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "land allocation by crop",
+        "outputFile": "./land_allocation_by_crop.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 emissions by subsector",
+        "outputFile": "./co2_emissions_subsectors.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 emissions by tech",
+        "outputFile": "./co2_emissions_by_tech.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 sequestration by sector",
+        "outputFile": "./co2_sequestration_by_sector.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 sequestration by tech",
+        "outputFile": "./co2_sequestration_by_tech.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 prices",
+        "outputFile": "./co2_prices.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "CO2 concentrations",
+        "outputFile": "./co2_concentrations.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "net terrestrial C uptake",
+        "outputFile": "./net_terrestrial_c_uptake.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "global mean temperature",
+        "outputFile": "./global_mean_temperature.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "total climate forcing",
+        "outputFile": "./total_climate_forcing.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water consumption by region",
+        "outputFile": "./water_consumption_by_region.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water consumption by sector",
+        "outputFile": "./water_consumption_by_sector.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water consumption by subsector",
+        "outputFile": "./water_consumption_by_subsector.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water consumption by tech",
+        "outputFile": "./water_consumption_by_tech.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water withdrawals by region",
+        "outputFile": "./water_withdrawals_by_region.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water withdrawals by sector",
+        "outputFile": "./water_withdrawals_by_sector.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water withdrawals by subsector",
+        "outputFile": "./water_withdrawals_by_subsector.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "water withdrawals by tech",
+        "outputFile": "./water_withdrawals_by_tech.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "Crop exports",
+        "outputFile": "./crop_exports.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    },
+    {
+        "variable": "profit rate",
+        "outputFile": "./profit_rate.csv",
+        "scenarios": ["Control", "Full feedback"],
+        "projectFiles": ["./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_control.dat",
+        "./../2025_DiVittorio_et_al_gcam/20240730_SSP245_ZATM_full_feedback.dat"]
+    }
+]

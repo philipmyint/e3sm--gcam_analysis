@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+    <queryGroup title="Energy and water queries">
+        <supplyDemandQuery title="irrigation water withdrawals by region">
+                            <axis1 name="region">region</axis1>
+                            <axis2 name="Year">demand-physical[@vintage]</axis2>
+                            <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and not(contains(@name, 'water_td_irr')) ]//
+                       *[@type='input' (:collapse:) and contains(@name, 'water_td_irr') and ends-with(@name, '_W')]/
+                       demand-physical/node()</xPath>
+                            <comments/>
+                        </supplyDemandQuery>
+        <supplyDemandQuery title="biophysical water demand by region">
+                            <axis1 name="region">region</axis1>
+                            <axis2 name="Year">demand-physical[@vintage]</axis2>
+                            <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and (local-name()='AgSupplySector')]//
+                       *[@type='input' (:collapse:) and (@name='biophysical water consumption')]/
+                       demand-physical/node()</xPath>
+                            <comments/>
+                        </supplyDemandQuery>
+        <supplyDemandQuery title="total final energy by region">
+                            <axis1 name="region">region</axis1>
+                            <axis2 name="Year">demand-physical[@vintage]</axis2>
+                            <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and ((@name='building' or @name='industry' or @name='transportation') or
+                    (exists(child::keyword/@final-energy)))]//*[@type='input' (:collapse:) and
+                    not(@name='limestone' or @name='process heat cement' or @name='industrial energy use' or
+                        @name='industrial feedstocks' or @name='renewable' or contains(@name, 'trn_') or @name='oil-credits')]/
+                    demand-physical[@unit='EJ']/node()</xPath>
+                            <comments/>
+                        </supplyDemandQuery>
+        <supplyDemandQuery title="building total final energy by region">
+                            <axis1 name="region">region</axis1>
+                            <axis2 name="Year">demand-physical[@vintage]</axis2>
+                            <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and (@name='building' or (exists(child::keyword[@final-energy='building'])))]//
+                       *[@type='input' (:collapse:)]/demand-physical/node()</xPath>
+                            <comments/>
+                        </supplyDemandQuery>
+    </queryGroup>
+</queries>

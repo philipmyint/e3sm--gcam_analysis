@@ -1,0 +1,513 @@
+[
+    {
+        "input_file": "./land_allocation.csv",
+        "output_file": "./land_allocation_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "columns_to_split": {
+            "landleaf": [
+                "landtype",
+                "basin"
+            ]
+        },
+        "key_columns": [
+            "scenario",
+            "region",
+            "basin",
+            "landtype",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./land_allocation.csv",
+        "output_file": "./land_allocation_processed_original_crop_names.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "columns_to_split": {
+            "landleaf": [
+                "landtype",
+                "basin"
+            ]
+        },
+        "key_columns": [
+            "scenario",
+            "region",
+            "basin",
+            "landtype",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_modify_crop_names": false
+    },
+    {
+        "input_file": "./ag_commodity_prices.csv",
+        "output_file": "./ag_commodity_prices_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./co2_emissions_sectors.csv",
+        "output_file": "./co2_emissions_sectors_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./co2_emissions_regions.csv",
+        "output_file": "./co2_emissions_regions_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./ag_production_by_crop_type.csv",
+        "output_file": "./ag_production_by_crop_type_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "output",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./ag_production_by_tech.csv",
+        "output_file": "./ag_production_by_tech_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "output",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./ag_tech_variable_cost.csv",
+        "output_file": "./ag_tech_variable_cost_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean"
+    },
+    {
+        "input_file": "./ag_tech_yield.csv",
+        "output_file": "./ag_tech_yield_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./aggregated_land_allocation.csv",
+        "output_file": "./aggregated_land_allocation_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "columns_to_split": {
+            "landleaf": [
+                "landtype"
+            ]
+        },
+        "key_columns": [
+            "scenario",
+            "region",
+            "landtype",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
+    },
+    {
+        "input_file": "./land_allocation_by_crop.csv",
+        "output_file": "./land_allocation_by_crop_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "landleaf",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./food_demand.csv",
+        "output_file": "./food_demand_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "gcam-consumer",
+            "nodeinput",
+            "input",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./food_demand_prices.csv",
+        "output_file": "./food_demand_prices_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "gcam-consumer",
+            "nodeinput",
+            "input",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./meat_and_dairy_prices.csv",
+        "output_file": "./meat_and_dairy_prices_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean"
+    },
+    {
+        "input_file": "./crop_exports.csv",
+        "output_file": "./crop_exports_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ],
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "call_modify_crop_names": true
+    },
+    {
+        "input_file": "./profit_rate.csv",
+        "output_file": "./profit_rate_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "landleaf",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./co2_emissions_subsectors.csv",
+        "output_file": "./co2_emissions_subsectors_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./co2_emissions_by_tech.csv",
+        "output_file": "./co2_emissions_by_tech_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./co2_sequestration_by_sector.csv",
+        "output_file": "./co2_sequestration_by_sector_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./co2_sequestration_by_tech.csv",
+        "output_file": "./co2_sequestration_by_tech_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./co2_prices.csv",
+        "output_file": "./co2_prices_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "year",
+            "market"
+        ]
+    },
+    {
+        "input_file": "./co2_concentrations.csv",
+        "output_file": "./co2_concentrations_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./global_mean_temperature.csv",
+        "output_file": "./global_mean_temperature_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./total_climate_forcing.csv",
+        "output_file": "./total_climate_forcing_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./net_terrestrial_c_uptake.csv",
+        "output_file": "./net_terrestrial_c_uptake_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_consumption_by_region.csv",
+        "output_file": "./water_consumption_by_region_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_consumption_by_sector.csv",
+        "output_file": "./water_consumption_by_sector_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_consumption_by_subsector.csv",
+        "output_file": "./water_consumption_by_subsector_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_consumption_by_tech.csv",
+        "output_file": "./water_consumption_by_tech_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_withdrawals_by_region.csv",
+        "output_file": "./water_withdrawals_by_region_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_withdrawals_by_sector.csv",
+        "output_file": "./water_withdrawals_by_sector_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_withdrawals_by_subsector.csv",
+        "output_file": "./water_withdrawals_by_subsector_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "year"
+        ]
+    },
+    {
+        "input_file": "./water_withdrawals_by_tech.csv",
+        "output_file": "./water_withdrawals_by_tech_processed.csv",
+        "columns_to_drop": [
+            "Unnamed: 0",
+            "Units"
+        ],
+        "key_columns": [
+            "scenario",
+            "region",
+            "sector",
+            "subsector",
+            "technology",
+            "year"
+        ]
+    }
+]
