@@ -94,7 +94,7 @@
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
         "hue": "scenario",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
@@ -111,7 +111,7 @@
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
         "hue": "scenario",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
