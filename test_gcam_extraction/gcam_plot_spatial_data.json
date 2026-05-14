@@ -1,6 +1,6 @@
 [
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_commodity_prices_processed.csv",
         "scenarios": [
             "Control"
@@ -18,7 +18,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "scenarios": [
             "Control"
@@ -38,7 +38,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control"
@@ -61,7 +61,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control"
@@ -84,7 +84,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control"
@@ -107,7 +107,7 @@
         "title": "Shrubland area (thousands km$^2$)"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control"
@@ -130,7 +130,7 @@
         "title": "Pasture area (thousands km$^2$)"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control"
@@ -153,7 +153,7 @@
         "title": "Grassland area (thousands km$^2$)"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -178,7 +178,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -203,7 +203,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -228,7 +228,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -253,7 +253,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -278,7 +278,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -304,7 +304,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./land_allocation_processed.csv",
         "scenarios": [
             "Control",
@@ -330,7 +330,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "scenarios": [
             "Control",
@@ -354,7 +354,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "scenarios": [
             "Control",
@@ -379,7 +379,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "scenarios": [
             "Control"
@@ -401,7 +401,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "scenarios": [
             "Control",
@@ -425,7 +425,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "scenarios": [
             "Control",
@@ -450,7 +450,7 @@
         "cmap": "RdBu_r"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_commodity_prices_processed.csv",
         "scenarios": [
             "Control",
@@ -470,7 +470,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_commodity_prices_processed.csv",
         "scenarios": [
             "Control",
@@ -491,7 +491,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_production_by_crop_type_processed.csv",
         "scenarios": [
             "Control"
@@ -510,7 +510,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_production_by_crop_type_processed.csv",
         "scenarios": [
             "Control",
@@ -531,7 +531,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_production_by_crop_type_processed.csv",
         "scenarios": [
             "Control",
@@ -553,7 +553,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_tech_yield_processed.csv",
         "scenarios": [
             "Control"
@@ -572,7 +572,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./ag_tech_yield_processed.csv",
         "scenarios": [
             "Control",
@@ -594,7 +594,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./co2_emissions_regions_processed.csv",
         "scenarios": [
             "Control"
@@ -607,7 +607,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./co2_emissions_regions_processed.csv",
         "scenarios": [
             "Control",
@@ -622,7 +622,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./co2_emissions_regions_processed.csv",
         "scenarios": [
             "Control",
@@ -638,7 +638,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./water_consumption_by_region_processed.csv",
         "scenarios": [
             "Control"
@@ -651,7 +651,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./water_consumption_by_region_processed.csv",
         "scenarios": [
             "Control",
@@ -666,7 +666,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./water_consumption_by_region_processed.csv",
         "scenarios": [
             "Control",
@@ -682,7 +682,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./water_withdrawals_by_region_processed.csv",
         "scenarios": [
             "Control"
@@ -695,7 +695,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./water_withdrawals_by_region_processed.csv",
         "scenarios": [
             "Control",
@@ -710,7 +710,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./water_withdrawals_by_region_processed.csv",
         "scenarios": [
             "Control",
@@ -726,7 +726,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum"
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./food_demand_processed.csv",
         "scenarios": [
             "Control"
@@ -743,7 +743,7 @@
         "use_latex": true
     },
     {
-        "shape_file": "./../2025_Divittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./food_demand_processed.csv",
         "scenarios": [
             "Control",

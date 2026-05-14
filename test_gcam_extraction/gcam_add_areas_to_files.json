@@ -26,8 +26,8 @@
         "land_allocation_file": "./land_allocation_processed.csv"
     },
     {
-        "input_file": "./scalars_control+full_feedback.csv",
-        "output_file": "./scalars_control+full_feedback.csv",
+        "input_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
         "key_columns": [
             "scenario",
             "region",
