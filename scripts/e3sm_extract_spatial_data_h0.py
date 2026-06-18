@@ -6,7 +6,20 @@ import time
 import xarray as xr
 from utility_constants import *
 from utility_functions import check_substrings_in_list, get_all_files_in_path
-from utility_e3sm_netcdf import get_netcdf_files_between_start_and_end_years
+from utility_e3sm_netcdf import find_gridcell_areas_in_netcdf_file, get_netcdf_files_between_start_and_end_years
+
+
+def get_spatial_dims_and_coords_for_h0(ds_grid, netcdf_file):
+    """Return the spatial dims/coords used for static area and land-fraction arrays."""
+    if 'elm.h0' in netcdf_file or 'eam.h0' in netcdf_file:
+        area_var = 'area'
+    else:
+        area_var = 'AREA'
+    area_da = ds_grid[area_var].squeeze(drop=True)
+    spatial_dims = area_da.dims
+    spatial_coords = {dim: area_da.coords[dim] for dim in spatial_dims if dim in area_da.coords}
+    spatial_shape = area_da.shape
+    return spatial_dims, spatial_coords, spatial_shape
 
 def process_inputs(inputs):    
     """ 
@@ -153,13 +166,27 @@ def extract_spatial_data_from_netcdf_files(inputs):
 
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.
     print(f"Opening {len(netcdf_files)} file(s) with xarray...")
-    ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True)[variables]
+    ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True, compat='no_conflicts')[variables]
     
     # Shift output back by one month to get rid of the extra month (January in the next year after end_year) that somehow gets added.
     ds['time'] = xr.CFTimeIndex(ds.get_index('time').shift(-1, 'ME'))
 
-    # Take the mean over all months in each year so that the Dataset records only an annual mean value for each variable at each lat/lon coordinate.
-    ds = ds.groupby('time.year').mean()
+    # Take a month-length-weighted mean in each year so annual means account for different month lengths.
+    month_weights = ds['time'].dt.days_in_month.groupby('time.year') / ds['time'].dt.days_in_month.groupby('time.year').sum()
+    ds = (ds * month_weights).groupby('time.year').sum()
+
+    # Add static grid-cell area and land fraction from one NetCDF file (these do not vary across time).
+    areas_m2, ds_grid, landfrac, _ = find_gridcell_areas_in_netcdf_file(netcdf_files[0], variables_to_keep=variables)
+    spatial_dims, spatial_coords, spatial_shape = get_spatial_dims_and_coords_for_h0(ds_grid, netcdf_files[0])
+    ds_grid.close()
+
+    area_values = areas_m2.reshape(spatial_shape)
+    landfrac_values = landfrac.reshape(spatial_shape)
+
+    ds['AREA_H0 (km^2)'] = xr.DataArray(area_values/km2_TO_m2, dims=spatial_dims, coords=spatial_coords)
+    ds['AREA_H0 (km^2)'].attrs = {'units': 'km^2', 'description': 'Grid-cell area from h0 file'}
+    ds['LANDFRAC_H0'] = xr.DataArray(landfrac_values, dims=spatial_dims, coords=spatial_coords)
+    ds['LANDFRAC_H0'].attrs = {'units': '1', 'description': 'Land fraction from h0 file'}
 
     # Add total precipitation (in units of mm/year) and CO2 concentration variables to the Dataset.
     ds = process_dataset(ds)

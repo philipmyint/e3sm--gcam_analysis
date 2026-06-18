@@ -28,20 +28,30 @@ def calculate_mean_and_std_of_da_list(da_list, calculate_std=False):
     else:
         return mean_da
 
-def calculate_statistics_of_xarray(data, variable=None):
+def calculate_statistics_of_xarray(data, variable=None, weights=None):
     """
     Calculates the min, mean, median, max, and the standard deviation of an xarray or uxarray object (DataArray, Dataset, or uxarray data structure).
 
     Parameters:
         data: Object of type xarray or uxarray whose statistical properties we want to calculate.
         variable: Variable of interest, used in the case of an xarray Dataset or uxarray data structure (UxDataArray or UxDataset).
+        weights: Optional xarray DataArray of weights to use when calculating the mean.
 
     Returns:
         min, mean, median, max, and standard deviation of the xarray or uxarray object.
     """
     if isinstance(data, xr.DataArray):
         min = data.min().item()
-        mean = data.mean().item()
+        if weights is not None:
+            aligned_data, aligned_weights = xr.align(data, weights, join='inner')
+            valid_weights = aligned_weights.where(aligned_data.notnull())
+            weight_sum = valid_weights.sum()
+            if weight_sum.item() == 0:
+                mean = aligned_data.mean().item()
+            else:
+                mean = ((aligned_data * valid_weights).sum()/weight_sum).item()
+        else:
+            mean = data.mean().item()
         median = data.median().item()
         max = data.max().item()
         std = data.std().item()
@@ -84,7 +94,7 @@ def convert_xarray_to_uxarray(data, grid, variable=None, fillna=1):
     # centered' at plot time because the data dimension (e.g. 'ncol') doesn't match 'n_face'.
     if hasattr(grid, 'n_face'):
         for dim in list(ds.dims):
-            if dim not in ('time', 'year', 'lev', 'ilev') and ds.dims[dim] == grid.n_face:
+            if dim not in ('time', 'year', 'lev', 'ilev') and ds.sizes[dim] == grid.n_face:
                 ds = ds.rename({dim: 'n_face'})
                 break
     return ux.UxDataset(dict(ds), uxgrid=grid)

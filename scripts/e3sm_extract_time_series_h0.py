@@ -162,22 +162,22 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         # across all such rows), so just take the mean to extract this land unit fraction value at each lat/lon coordinate.
         if variables_except_landunits_and_pfts:
             # Add the vegetation fraction to the overall DataFrame that will store all variables except land units and PFTs.
-            df['FRAC_VEG'] = df_landunits_and_pfts['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
+            df['FRAC_VEG_H0'] = df_landunits_and_pfts['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
         else:
             # If the overall DataFrame is empty (no variables other than land units and PFTs were specified in the JSON files), create the DataFrame.
             df = df_landunits_and_pfts['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
             df = df.to_frame()
-            df = df.rename(columns={'PCT_LANDUNIT': 'FRAC_VEG'})
+            df = df.rename(columns={'PCT_LANDUNIT': 'FRAC_VEG_H0'})
         # Add a column for the area at each lat/lon coordinate to the overall DataFrame.
-        df['AREA (km^2)'] = areas/km2_TO_m2
+        df['AREA_H0 (km^2)'] = areas/km2_TO_m2
 
     # 17 PFTs in order: 1 bare, 8 tree, 3 shrub, 3 grass, 1 crop, 1 empty. These can be further aggregated into subgroups as follows:
     # Bare soil (index 0), forest (the 8 trees, indices 1--8); shrub (indices 9--11); grass (indices 12--14), crop (index 15). Ignore the empty PFT.
     if 'PCT_LANDUNIT' in variables and 'PCT_NAT_PFT' in variables:
         df_landunits_and_pfts = df_landunits_and_pfts.reset_index(level='natpft')
         # Get data for the individual PFTs (again ignoring the empty one), as well as the aggregate subgroups.
-        pft_labels = [f'PFT_{i+1}_AREA (km^2)' for i in range(16)]
-        pft_labels.extend(['BARE_AREA (km^2)', 'FOREST_AREA (km^2)', 'SHRUB_AREA (km^2)', 'GRASS_AREA (km^2)', 'CROP_AREA (km^2)'])
+        pft_labels = [f'PFT_{i}_AREA_H0 (km^2)' for i in range(16)]
+        pft_labels.extend(['BARE_AREA_H0 (km^2)', 'FOREST_AREA_H0 (km^2)', 'SHRUB_AREA_H0 (km^2)', 'GRASS_AREA_H0 (km^2)', 'CROP_AREA_H0 (km^2)'])
         pft_min_max_indices = [(i, i) for i in range(16)]
         pft_min_max_indices.extend([(0, 0), (1, 8), (9, 11), (12, 14), (15, 15)])
         # Select only the rows that pertain to this particular PFT category and for each lat/lon coordinate, sum over all PFTs if a subgroup.
@@ -188,7 +188,7 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             # Add up the percentages over all PFTs in the subgroup and divide that total percent by 100 to change it to a fraction.
             df_this_pft = df_this_pft['PCT_NAT_PFT'].groupby(['lat', 'lon']).sum().fillna(0)/100
             # Add a column to the overall DataFrame to record the area of this PFT category (individual or subgroup) at each lat/lon coordinate.
-            df[pft_label] = df['AREA (km^2)']*df['FRAC_VEG']*df_this_pft      
+            df[pft_label] = df['AREA_H0 (km^2)']*df['FRAC_VEG_H0']*df_this_pft      
     
     if lat_lon_aggregation_type == 'area_weighted_mean_or_sum':
         # Calculate an area-weighted mean or sum over all latitude/longitude coordinates for each variable.

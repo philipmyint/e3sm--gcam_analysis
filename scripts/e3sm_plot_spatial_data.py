@@ -45,6 +45,8 @@ default_inputs = {
     'width': width_default               
 }
 
+LANDFRAC_EPSILON = 1e-12
+
 def process_inputs(inputs):
     """ 
     Processes a dictionary of inputs (keys are options, values are choices for those options) for creating spatial plots from data in NetCDF files.
@@ -101,12 +103,16 @@ def process_inputs(inputs):
         inputs['variables'] = None
     variables = inputs['variables']
     if not variables or variables == 'all':
-        variables = list(ds.keys())
+        variables = [variable for variable in ds.keys() if not variable.upper().startswith(('AREA', 'LANDFRAC'))]
         inputs['variables'] = variables
     # If the user entered a string to indicate a single variable, put that string in a list.
     if isinstance(variables, str):
         variables = [variables]
-        inputs['variables'] = variables
+    variables = [variable for variable in variables if not variable.upper().startswith(('AREA', 'LANDFRAC'))]
+    inputs['variables'] = variables
+    if not variables:
+        ds.close()
+        raise ValueError('Error: no plottable variables remain after excluding AREA and LANDFRAC fields.')
 
     # Check that all requested variables exist in the first NetCDF file.
     missing_vars = [v for v in variables if v not in ds]
@@ -221,6 +227,10 @@ def plot_spatial_data_eam(inputs, grid_file):
     title_size = inputs['title_size']
     use_latex = inputs['use_latex']
     width = inputs['width'] 
+
+    # add the year range to the plot name, before the extension if there is one
+    plot_root, plot_ext = os.path.splitext(plot_name)
+    plot_name = f'{plot_root}_{start_year}-{end_year}{plot_ext}'
  
     # Store the grid file in an uxarray Dataset.
     grid = ux.open_grid(grid_file)
@@ -259,65 +269,75 @@ def plot_spatial_data_eam(inputs, grid_file):
     # Use a plain xr.Dataset as the intermediate container to avoid uxarray constructor
     # incompatibility with xarray >= 2025.7.1; convert to uxarray only at the plotting step.
     uxds = xr.Dataset()
+    area_weights = None
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
             # Check that the requested start and end years fall within the year range of the file before slicing,
             # so the error message can report the available range rather than checking an already-filtered dataset.
             ds_full = xr.open_dataset(file)
-            file_start = int(ds_full['year'].min())
-            file_end = int(ds_full['year'].max())
-            if start_year < file_start or start_year > file_end:
-                ds_full.close()
-                raise ValueError(f"Plot start_year {start_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
-            if end_year < file_start or end_year > file_end:
-                ds_full.close()
-                raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+            if area_weights is None and 'AREA_H0 (km^2)' in ds_full:
+                area_weights = ds_full['AREA_H0 (km^2)'].load()
+            if 'year' in ds_full[variable].dims:
+                file_start = int(ds_full['year'].min())
+                file_end = int(ds_full['year'].max())
+                if start_year < file_start or start_year > file_end:
+                    ds_full.close()
+                    raise ValueError(f"Plot start_year {start_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+                if end_year < file_start or end_year > file_end:
+                    ds_full.close()
+                    raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
 
-            # Create a temporary NetCDF file with data between only the start and end years.
-            ds = ds_full.sel(year=slice(start_year, end_year))[variable]
-            ds_full.close()
-            wfile = os.path.join(plot_directory, f'temp_{variable}_{file_index}_{file_set_index}.nc')
-            ds.to_netcdf(wfile, 'w')
-            ds.close()
-            # Load the temporal aggregate as a plain xr.DataArray rather than a ux.UxDataArray.
-            # ux.UxDataset.from_xarray and ux.open_dataset both use a UxDataset constructor
-            # that is incompatible with xarray >= 2025.7.1. Since uxarray is only needed at
-            # the final plotting step (where convert_xarray_to_uxarray is called), we use
-            # plain xarray DataArrays here and store them in an xr.Dataset (uxds).
-            if time_calculation == 'mean':
-                xr_ds = xr.open_dataset(wfile).mean(dim='year')
-                uxda = xr_ds[variable]*multiplier
-                xr_ds.close()
-            elif time_calculation == 'sum':
-                xr_ds = xr.open_dataset(wfile).sum(dim='year')
-                uxda = xr_ds[variable]*multiplier
-                xr_ds.close()
-                # If calculating the sum, change the per-time quantities and their units accordingly.
-                per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
-                time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
-                for index, per_time_label in enumerate(per_time_labels):
-                    if per_time_label in title:
-                        title = title.replace(per_time_label, '')
-                        uxda.attrs['units'] = uxda.attrs['units'].replace(per_time_label, '')
-                        uxda *= time_multipliers[index]
-                        break
+                # Create a temporary NetCDF file with data between only the start and end years.
+                ds = ds_full.sel(year=slice(start_year, end_year))[variable]
+                ds_full.close()
+                wfile = os.path.join(plot_directory, f'temp_{variable}_{file_index}_{file_set_index}.nc')
+                ds.to_netcdf(wfile, 'w')
+                ds.close()
+                # Load the temporal aggregate as a plain xr.DataArray rather than a ux.UxDataArray.
+                # ux.UxDataset.from_xarray and ux.open_dataset both use a UxDataset constructor
+                # that is incompatible with xarray >= 2025.7.1. Since uxarray is only needed at
+                # the final plotting step (where convert_xarray_to_uxarray is called), we use
+                # plain xarray DataArrays here and store them in an xr.Dataset (uxds).
+                if time_calculation == 'mean':
+                    xr_ds = xr.open_dataset(wfile).mean(dim='year')
+                    uxda = xr_ds[variable]*multiplier
+                    xr_ds.close()
+                elif time_calculation == 'sum':
+                    xr_ds = xr.open_dataset(wfile).sum(dim='year')
+                    uxda = xr_ds[variable]*multiplier
+                    xr_ds.close()
+                    # If calculating the sum, change the per-time quantities and their units accordingly.
+                    per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
+                    time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
+                    for index, per_time_label in enumerate(per_time_labels):
+                        if per_time_label in title:
+                            title = title.replace(per_time_label, '')
+                            uxda.attrs['units'] = uxda.attrs['units'].replace(per_time_label, '')
+                            uxda *= time_multipliers[index]
+                            break
+                # Delete the temporary NetCDF file now that the data have been read.
+                os.system(f'rm {wfile}')
+            else:
+                uxda = ds_full[variable].load()*multiplier
+                ds_full.close()
             # If there is more than one data set, modify the labels so that we know which data set corresponds to which variable of the DataFrame.
             if num_file_sets >= 2:
                 uxda = uxda.rename(f'{variable}_{file_index}_{file_set_index}')
             uxds[uxda.name] = uxda
-            # Delete the temporary NetCDF file now that the data have been read.
-            os.system(f'rm {wfile}')
     
     # Initialize list that will store all the uxarray DataArrays that we will want to plot for the variable.
     uxDataArrays_to_plot = []
+    xrDataArrays_for_statistics = []
     df = uxds.to_dataframe()
 
     # If we have a single data set (but potentially multiple files in this set), take the mean over all files
     # for each spatial coordinate. For a single file this is equivalent to just plotting that file's values directly.
     if num_files_in_each_set == 1:
         df = df.mean(axis=1)
-        uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
+        plot_data = df.to_xarray()
+        uxDataArrays_to_plot.append(convert_xarray_to_uxarray(plot_data, grid, variable=variable))
+        xrDataArrays_for_statistics.append(plot_data)
         print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
     
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
@@ -337,19 +357,27 @@ def plot_spatial_data_eam(inputs, grid_file):
         if plot_type == 'absolute_difference':
             # Plot absolute differences between the two data sets. 
             df = df_test_set - df_control_set
-            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
+            plot_data = df.to_xarray()
+            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(plot_data, grid, variable=variable))
+            xrDataArrays_for_statistics.append(plot_data)
             print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
             df = ((df_test_set - df_control_set)/(df_control_set.abs() + EPSILON))*100
-            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df.to_xarray(), grid, variable=variable))
+            plot_data = df.to_xarray()
+            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(plot_data, grid, variable=variable))
+            xrDataArrays_for_statistics.append(plot_data)
             title = replace_inside_parentheses(title, rf'($\%$ difference)')
             print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'separate_plots':
             # Plot the two data sets individually in their own separate plots. 
-            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_control_set.to_xarray(), grid, variable=variable))
-            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(df_test_set.to_xarray(), grid, variable=variable))
+            control_plot_data = df_control_set.to_xarray()
+            test_plot_data = df_test_set.to_xarray()
+            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(control_plot_data, grid, variable=variable))
+            uxDataArrays_to_plot.append(convert_xarray_to_uxarray(test_plot_data, grid, variable=variable))
+            xrDataArrays_for_statistics.append(control_plot_data)
+            xrDataArrays_for_statistics.append(test_plot_data)
             print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
 
     # This is when there are more than three files listed in one input set, so differences don't make sense.
@@ -377,7 +405,10 @@ def plot_spatial_data_eam(inputs, grid_file):
     for uxda_index, uxda in enumerate(uxDataArrays_to_plot):
 
         # Calculate some basic statistics of the current uxDataArray.
-        min, mean, median, max, std = calculate_statistics_of_xarray(uxda, variable)
+        min, mean, median, max, std = calculate_statistics_of_xarray(
+            xrDataArrays_for_statistics[uxda_index],
+            weights=area_weights,
+        )
 
         # Use LaTeX for the labels if specified to do so.
         if use_latex:
@@ -392,7 +423,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         fig = plt.figure(figsize=(width, height))
         ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=projection())
         uxda = uxda[variable]
-        uxda_fig = uxda.to_polycollection(cache=True)
+        uxda_fig = uxda.to_polycollection(cache=True, periodic_elements='split')
         uxda_fig.set_transform(ccrs.PlateCarree())
         uxda_fig.set_cmap(cmap_color)
         ax.set_title(title)
@@ -494,6 +525,9 @@ def plot_spatial_data_elm(inputs):
     use_latex = inputs['use_latex']
     width = inputs['width'] 
 
+    plot_root, plot_ext = os.path.splitext(plot_name)
+    plot_name = f'{plot_root}_{start_year}-{end_year}{plot_ext}'
+
     # We either have individual plots, in which case there could be multiple files arranged like [[file1, file2, file3, ...]],
     # or we could have ensemble plots, in which case there are at most two data sets, but potentially multiple files in each of the sets.
     # The preprocessing done earlier has formatted the files into a list of lists so that they are in the form:
@@ -522,12 +556,12 @@ def plot_spatial_data_elm(inputs):
             + "and if there are two sets there must be at least two files in each set (for ensemble plots)."
         raise ValueError(error_message)
 
-    # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an xarray DataArray and then add each of these 
-    # DataArrays to a single Pandas DataFrame that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
-    # between the start and end years for each lat/lon coordinate. We will later display some function of this mean or sum on the spatial plot.
+    # Read each of the NetCDF output files and accumulate them in xarray Datasets, maintaining proper NaN handling.
+    # Use a plain xr.Dataset to avoid uxarray constructor incompatibility with xarray >= 2025.7.1.
     num_files_in_each_set = len(netcdf_files)
     num_file_sets = len(netcdf_files[0])
-    df = pd.DataFrame()
+    xrds = xr.Dataset()
+    area_weights = None
     for file_set_index in range(num_file_sets):
         for file_index in range(num_files_in_each_set):
             file = netcdf_files[file_index][file_set_index]
@@ -535,59 +569,87 @@ def plot_spatial_data_elm(inputs):
             # Check that the requested start and end years fall within the year range of the file before slicing,
             # so the error message can report the available range rather than checking an already-filtered dataset.
             ds_full = xr.open_dataset(file)
-            file_start = int(ds_full['year'].min())
-            file_end = int(ds_full['year'].max())
-            if start_year < file_start or start_year > file_end:
+            landfrac = ds_full['LANDFRAC_H0'].load() if 'LANDFRAC_H0' in ds_full else None
+            area_h0 = ds_full['AREA_H0 (km^2)'].load() if 'AREA_H0 (km^2)' in ds_full else None
+            if area_weights is None and 'AREA_H0 (km^2)' in ds_full and 'LANDFRAC_H0' in ds_full:
+                area_weights = (ds_full['AREA_H0 (km^2)']*ds_full['LANDFRAC_H0']).load()
+            if 'year' in ds_full[variable].dims:
+                file_start = int(ds_full['year'].min())
+                file_end = int(ds_full['year'].max())
+                if start_year < file_start or start_year > file_end:
+                    ds_full.close()
+                    raise ValueError(f"Plot start_year {start_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+                if end_year < file_start or end_year > file_end:
+                    ds_full.close()
+                    raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
+                if time_calculation == 'mean':
+                    da = ds_full.sel(year=slice(start_year, end_year)).mean(dim='year')[variable]*multiplier
+                elif time_calculation == 'sum':
+                    da = ds_full.sel(year=slice(start_year, end_year)).sum(dim='year')[variable]*multiplier
+                    # If calculating the sum, change the per-time quantities and their units accordingly.
+                    per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
+                    time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
+                    for index, per_time_label in enumerate(per_time_labels):
+                        if per_time_label in title:
+                            title = title.replace(per_time_label, '')
+                            da.attrs['units'] = da.attrs['units'].replace(per_time_label, '')
+                            da *= time_multipliers[index]
+                            break
                 ds_full.close()
-                raise ValueError(f"Plot start_year {start_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
-            if end_year < file_start or end_year > file_end:
+            else:
+                da = ds_full[variable].load()*multiplier
                 ds_full.close()
-                raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
-            ds_full.close()
 
-            if time_calculation == 'mean':
-                da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).mean(dim='year')[variable]*multiplier
-            elif time_calculation == 'sum':
-                da = xr.open_dataset(file).sel(year=slice(start_year, end_year)).sum(dim='year')[variable]*multiplier
-                # If calculating the sum, change the per-time quantities and their units accordingly.
-                per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
-                time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
-                for index, per_time_label in enumerate(per_time_labels):
-                    if per_time_label in title:
-                        title = title.replace(per_time_label, '')
-                        da.attrs['units'] = da.attrs['units'].replace(per_time_label, '')
-                        da *= time_multipliers[index]
-                        break
-            # If there is more than one data set, modify the labels so that we know which data set corresponds to which column of the DataFrame.
+            # Enforce land-only masking so ocean grid cells cannot appear as zeros in the plots.
+            land_mask = None
+            if landfrac is not None:
+                land_mask = np.isfinite(landfrac) & (landfrac > LANDFRAC_EPSILON)
+                if area_h0 is not None:
+                    land_mask = land_mask & np.isfinite(area_h0) & (area_h0 > 0)
+            elif area_h0 is not None:
+                land_mask = np.isfinite(area_h0) & (area_h0 > 0)
+            elif area_weights is not None:
+                land_mask = np.isfinite(area_weights) & (area_weights > 0)
+            if land_mask is not None:
+                da = da.where(land_mask)
+
+            # If there is more than one data set, rename to track which data set this belongs to.
             if num_file_sets >= 2:
                 da = da.rename(f'{variable}_{file_index}_{file_set_index}')
-            df = pd.concat([df, da.to_dataframe().dropna()], axis=1)
-            da.close()
+            xrds[da.name] = da
     
     # Initialize list that will store all the DataArrays that we will want to plot for the variable.
     dataArrays_to_plot = []
+    dataArrays_for_statistics = []
 
     # If we have a single data set (but potentially multiple files in this set), take the mean over all files
     # for each spatial coordinate. For a single file this is equivalent to just plotting that file's values directly.
     if num_files_in_each_set == 1:
-        df = df.mean(axis=1)
-        da = df.to_xarray()
+        # Use xarray's mean to properly handle NaN values
+        da = xrds.to_array(dim='files').mean(dim='files')
+        # Get the data variable name (should be the original variable name)
+        da.name = variable
         dataArrays_to_plot.append(da)
+        dataArrays_for_statistics.append(da)
         print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
 
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
     elif num_file_sets == 2:
         # Take the mean over all files for each lat/lon coordinate in each data set.
-        columns_control_set = [column for column in df.columns if column.endswith(f'_0')]
-        columns_test_set = [column for column in df.columns if column.endswith(f'_1')]
-        df_control_set = df[columns_control_set].mean(axis=1)
-        df_test_set = df[columns_test_set].mean(axis=1)
+        # Extract and average each ensemble separately using xarray
+        vars_control = [v for v in xrds.data_vars if v.endswith(f'_0')]
+        vars_test = [v for v in xrds.data_vars if v.endswith(f'_1')]
+        control_da = xrds[vars_control].to_array(dim='files').mean(dim='files')
+        test_da = xrds[vars_test].to_array(dim='files').mean(dim='files')
+        df_control_set = control_da.to_pandas()
+        df_test_set = test_da.to_pandas()
 
         # If there is more than one file per data set (meaning that we have an ensemble) and we do not want separate plots,
         # we can compare the two data sets by performing a t-test at each individual lat/lon coordinate and later adding stippling.
         if num_files_in_each_set >= 2 and stippling_on and plot_type != 'separate_plots':
             # Perform this per-pixel t-test only if we do not want separate plots and if stippling_on is True (want to add p-value markers on plot).
-            da_pvalues = df.apply(perform_ttest, columns_set_1=columns_control_set, columns_set_2=columns_test_set, axis=1).fillna(1).to_xarray()
+            df = xrds.to_dataframe()
+            da_pvalues = df.apply(perform_ttest, columns_set_1=vars_control, columns_set_2=vars_test, axis=1).fillna(1).to_xarray()
 
         # Perform a t-test to compare the two spatial data sets as whole over all coordinates. Print the results to the console and to an output file.
         ttest = stats.ttest_ind(df_control_set, df_test_set)
@@ -597,25 +659,28 @@ def plot_spatial_data_elm(inputs):
         # If we have more than one file per data set (meaning that we have an ensemble), we will be examining the ensemble means in all cases.
         if plot_type == 'absolute_difference':
             # Plot absolute differences between the two data sets. 
-            df = df_test_set - df_control_set
-            da = df.to_xarray()
-            dataArrays_to_plot.append(da)
+            diff_da = test_da - control_da
+            diff_da.name = variable
+            dataArrays_to_plot.append(diff_da)
+            dataArrays_for_statistics.append(diff_da)
             print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
-            df = ((df_test_set - df_control_set)/(df_control_set.abs() + EPSILON))*100
-            #mask = df_test_set > 1.0e4*df_control_set
-            #print('test', df_test_set[mask].head(10))
-            #print('control', df_control_set[mask].head(10))
-            da = df.to_xarray()
-            dataArrays_to_plot.append(da)
+            percent_da = ((test_da - control_da)/(control_da.abs() + EPSILON))*100
+            percent_da.name = variable
+            dataArrays_to_plot.append(percent_da)
+            dataArrays_for_statistics.append(percent_da)
             title = replace_inside_parentheses(title, rf'($\%$ difference)')
             print(f"Calculating {plot_type} between {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
         elif plot_type == 'separate_plots':
             # Plot the two data sets individually in their own separate plots. 
-            dataArrays_to_plot.append(df_control_set.to_xarray())
-            dataArrays_to_plot.append(df_test_set.to_xarray())
+            control_da.name = variable
+            test_da.name = variable
+            dataArrays_to_plot.append(control_da)
+            dataArrays_to_plot.append(test_da)
+            dataArrays_for_statistics.append(control_da)
+            dataArrays_for_statistics.append(test_da)
             print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
 
     # this is when there are more than three files listed in one input set, so differences don't make sense
@@ -629,8 +694,17 @@ def plot_spatial_data_elm(inputs):
     # Iterate over all dataArrays in the list to create a plot for each one.
     for da_index, da in enumerate(dataArrays_to_plot):
 
+        # Re-apply a final land mask before plotting so ocean values never affect colormap limits.
+        if area_weights is not None:
+            final_land_mask = np.isfinite(area_weights) & (area_weights > 0)
+            da = da.where(final_land_mask)
+            dataArrays_for_statistics[da_index] = dataArrays_for_statistics[da_index].where(final_land_mask)
+
         # Calculate some basic statistics of the current dataArray.
-        min, mean, median, max, std = calculate_statistics_of_xarray(da)
+        min, mean, median, max, std = calculate_statistics_of_xarray(
+            dataArrays_for_statistics[da_index],
+            weights=area_weights,
+        )
 
         # Use LaTeX for the labels if specified to do so.
         if use_latex:

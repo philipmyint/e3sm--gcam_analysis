@@ -351,6 +351,24 @@ def read_file_set_into_single_variable_dataframe(output_files, file_set_index, v
               f"Check that all files cover the same year range.")
     return df, columns
 
+def add_year_range_to_plot_name(plot_name, variable, start_year, end_year, suffix=None):
+    """Return a plot name with year tags inserted after the variable name."""
+    year_tag = f"{start_year}-{end_year}"
+    directory, filename = os.path.split(plot_name)
+    stem, extension = os.path.splitext(filename)
+
+    if variable in stem:
+        insert_index = stem.find(variable) + len(variable)
+        stem = f"{stem[:insert_index]}_{year_tag}{stem[insert_index:]}"
+    else:
+        stem = f"{stem}_{year_tag}"
+
+    if suffix:
+        stem = f"{stem}_{suffix}"
+
+    updated_name = stem + extension
+    return os.path.join(directory, updated_name) if directory else updated_name
+
 def plot_time_series(inputs):
     """ 
     Create time series plots and performs statistical analysis for a single variable. 
@@ -421,11 +439,17 @@ def plot_time_series(inputs):
     y_scale = inputs['y_scale']
     y_tick_label_size = inputs['y_tick_label_size']
 
+    plot_name_annual = add_year_range_to_plot_name(plot_name, variable, start_year, end_year)
+    plot_name_seasons = add_year_range_to_plot_name(plot_name, variable, start_year, end_year, suffix='seasons')
+    plot_name_monthly = add_year_range_to_plot_name(plot_name, variable, monthly_time_series_start_year, monthly_time_series_end_year, suffix='monthly')
+
     # Verify that the output plot file is writable before doing any work, so the user gets an immediate error rather than one at the very end.
-    try:
-        open(plot_name, 'a').close()
-    except OSError as e:
-        print(f"Error: cannot write to plot file '{plot_name}': {e}")
+    plot_dir = plot_directory if plot_directory else os.path.dirname(plot_name) or '.'
+    if not os.path.isdir(plot_dir):
+        print(f"Error: plot directory does not exist: '{plot_dir}'")
+        return
+    if not os.access(plot_dir, os.W_OK):
+        print(f"Error: plot directory is not writable: '{plot_dir}'")
         return
 
     # Verify that all output files exist before doing any work, so a missing file is caught immediately with a clear message.
@@ -539,7 +563,7 @@ def plot_time_series(inputs):
             if monthly_aggregation_type == 'mean' and any(seasons_to_plot_separately.values()):
                 reference_data = plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth,
                                                columns=column, reference_data=reference_data, file_or_file_set_index=file_index)
-                plot_options['name'] = plot_name + '_seasons'   
+                plot_options['name'] = plot_name_seasons
                 set_figure_options(fig_seasons, ax_seasons, plot_options)
 
             # Create the monthly time series plot for the variable if specified to do so.
@@ -649,7 +673,7 @@ def plot_time_series(inputs):
                 plot_seasons(seasons_to_plot_separately, ax_seasons, df, x, output_label, line_color, linestyle_tuples, linewidth, 
                             columns=columns, reference_data=reference_data, file_or_file_set_index=file_set_index, 
                             std_multiplier=std_seasons_multiplier, error_bars_alpha=error_bars_alpha)
-                plot_options['name'] = plot_name + '_seasons'   
+                plot_options['name'] = plot_name_seasons
                 set_figure_options(fig_seasons, ax_seasons, plot_options)
 
             # Create the monthly time series plot for the variable if specified to do so.
@@ -744,12 +768,12 @@ def plot_time_series(inputs):
         print(f"Summary for '{variable}': {num_series} time series plotted over {year_min}–{year_max} ({num_years} years).")
 
     # Finalize the annual time series plot for the variable now that all output files for the variable have been processed.
-    plot_options['name'] = plot_name
+    plot_options['name'] = plot_name_annual
     set_figure_options(fig, ax, plot_options)
     
     # Finalize the monthly time series plot for the variable now that all output files for the variable have been processed.
     if monthly_time_series_plot:
-        plot_options['name'] = plot_name + '_monthly'
+        plot_options['name'] = plot_name_monthly
         plot_options['x_label'] = 'Month'
         plot_options['x_limits'] = monthly_time_series_x_limits
         plot_options['y_limits'] = monthly_time_series_y_limits

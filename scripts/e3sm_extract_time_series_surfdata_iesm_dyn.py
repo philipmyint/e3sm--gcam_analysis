@@ -103,7 +103,7 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
         df_pfts = df_pfts.reset_index(level='natpft')
         
         # Get data for the individual PFTs (again ignoring the empty one), as well as the aggregate subgroups.
-        pft_labels = [f'PFT_{i+1}_AREA (km^2)' for i in range(16)]
+        pft_labels = [f'PFT_{i}_AREA (km^2)' for i in range(16)]
         pft_labels.extend(['BARE_AREA (km^2)', 'FOREST_AREA (km^2)', 'SHRUB_AREA (km^2)', 'GRASS_AREA (km^2)', 'CROP_AREA (km^2)'])
         pft_min_max_indices = [(i, i) for i in range(16)]
         pft_min_max_indices.extend([(0, 0), (1, 8), (9, 11), (12, 14), (15, 15)])
