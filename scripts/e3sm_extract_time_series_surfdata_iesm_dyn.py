@@ -203,6 +203,10 @@ def extract_time_series_from_netcdf_file(inputs):
     file = os.path.join(simulation_path, 'surfdata_iESM_dyn.nc')
     
     # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
+    output_dir = os.path.dirname(os.path.abspath(output_file))
+    if not os.path.exists(output_dir):
+        print(f"Output directory does not exist: '{output_dir}'. Creating it now...")
+        os.makedirs(output_dir)
     try:
         open(output_file, 'a').close()
     except OSError as e:
@@ -311,6 +315,15 @@ if __name__ == '__main__':
         input_file = sys.argv[index]
         with open(input_file) as f:
             list_of_inputs.extend(json.load(f))
+
+    # Check upfront whether any output files already exist; report all conflicts before exiting.
+    existing_files = [i['output_file'] for i in list_of_inputs if os.path.exists(i['output_file'])]
+    if existing_files:
+        for f in existing_files:
+            print(f"Error: output file already exists: '{f}'")
+        print("Error: some files in output_file already exist. To create new output_files either delete/rename existing files or "
+              "rename project files in input json file. No new files have been created")
+        sys.exit(1)
 
     # Process multiple files in parallel using multiprocessing.
     print(f"\nProcessing {len(list_of_inputs)} file(s)...")

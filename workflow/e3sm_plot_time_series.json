@@ -1,0 +1,22 @@
+[
+    {
+        "output_files": ["./output/control_time_series.dat", 
+        "./output/case1_time_series.dat"],
+        "output_labels": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_e3sm/individual",
+        "y_label": {"ZCO2": "CO2 concentration (ppm)", "SFCO2": "CO2 surface flux (Pg C/month)", "CO2": "CO2 concentration (ppm)"},
+        "monthly_aggregation_type": {"PRECIP": "sum", "NPP": "sum"},
+	    "use_latex": false,
+	    "start_year": 2015,
+	    "end_year": 2038
+    },
+    {
+	"output_files": ["./output/control_time_series_surfdata_iESM_dyn.dat",
+        "./output/case1_time_series_surfdata_iESM_dyn.dat"],
+        "output_labels": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_e3sm/surfdata",
+        "use_latex": false,
+	    "start_year": 2015,
+        "end_year": 2038
+    }
+]

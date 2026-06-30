@@ -1,0 +1,32 @@
+[
+    {
+        "simulation_path": "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/archive/",
+        "output_file": "./output/control_time_series.dat",
+        "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
+        "variables": [
+            ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
+            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC", "PCT_LANDUNIT", "PCT_NAT_PFT"],
+            ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
+        ],
+        "lat_lon_aggregation_types": ["area_weighted_mean_or_sum", "area_weighted_mean_or_sum"],
+        "process_variables": true,
+        "start_year": 2015,
+        "end_year": 2038,
+	    "max_processes": 8
+    },
+    {
+        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026042816_v3_pr_test/run/",
+        "output_file": "./output/case1_time_series.dat",
+        "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
+        "variables": [
+            ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
+            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC", "PCT_LANDUNIT", "PCT_NAT_PFT"],
+            ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
+        ],
+        "lat_lon_aggregation_types": ["area_weighted_mean_or_sum", "area_weighted_mean_or_sum"],
+        "process_variables": true,
+        "start_year": 2015,
+        "end_year": 2038,
+	    "max_processes": 8
+    }
+]

@@ -1,0 +1,327 @@
+[
+    {
+        "variable": "detailed land allocation",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/detailed_land_allocation.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ],
+        "xmlFiles": [
+            "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/run/GCAMDBOutput_E3SM_GCAM_SSP245_51442298.xml",
+            "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026042816_v3_pr_test/run/GCAMDBOutput_E3SM_GCAM_SSP245_52431283.xml"
+        ],
+        "createProjectFiles": true
+    },
+    {
+        "variable": "aggregated land allocation",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/aggregated_land_allocation.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "CO2 emissions by subsector",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/co2_emissions_by_subsector.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "CO2 sequestration by tech",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/co2_sequestration_by_tech.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "ag production by subsector (land use region)",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/ag_production_by_subsector.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "ag commodity prices",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/ag_commodity_prices.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "purpose-grown biomass production",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/purpose_grown_biomass_production.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "residue biomass production",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/residue_biomass_production.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "MSW production",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/msw_production.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "regional biomass consumption",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/regional_biomass_consumption.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "meat and dairy prices",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/meat_and_dairy_prices.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "food demand prices",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/food_demand_prices.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "food demand",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/food_demand.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "yield-scaler",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/yield_scaler.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "above-ground-carbon-density",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/above_ground_carbon_density.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "below-ground-carbon-density",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/below_ground_carbon_density.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "CO2 prices",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/co2_prices.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "profit rate",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/profit_rate.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "water withdrawals by tech",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/water_withdrawals_by_tech.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "water consumption by tech",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/water_consumption_by_tech.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "irrigation water withdrawals by crop type and land region",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/irrigation_water_withdrawals_by_crop_type_and_land_region.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "irrigation water consumption by crop type and land region",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/irrigation_water_consumption_by_crop_type_and_land_region.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "biophysical water demand by crop type and land region",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/biophysical_water_demand_by_crop_type_and_land_region.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "fertilizer consumption by ag tech",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/fertilizer_consumption_by_ag_tech.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "total final energy by sector",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/total_final_energy_by_sector.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "final energy consumption by region and sector and fuel",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/final_energy_consumption_by_region_and_sector_and_fuel.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "final energy prices",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/final_energy_prices.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "building final energy by service and fuel",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/building_final_energy_by_service_and_fuel.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "building service costs",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/building_service_costs.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "fuel prices to buildings",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/fuel_prices_to_buildings.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "elec prices by sector",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/elec_prices_by_sector.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    },
+    {
+        "variable": "elec gen by gen tech and cooling tech",
+        "queryFile": "/global/homes/a/avdivitt/e3sm/diags/e3sm--gcam_analysis/workflow/e3sm_gcam_queries.xml",
+        "outputFile": "./output/gcam_csv/elec_gen_by_gen_tech_and_cooling_tech.csv",
+        "scenarios": ["control", "case1"],
+        "projectFiles": [
+            "./output/control.dat",
+            "./output/case1.dat"
+        ]
+    }
+]

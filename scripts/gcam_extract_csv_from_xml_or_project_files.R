@@ -1,3 +1,9 @@
+# do not run this in e3sm unified
+# need to load the R module first, then use Rscript to run this script from the command line
+
+message(paste0("Start time: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S")))
+
+require(devtools)
 library(dplyr)
 library(rgcam)
 library(rjson)
@@ -45,10 +51,10 @@ for (indexJSON in 1:numJSON)
         #                     If FALSE (default), projectFiles must already exist and queryFile is not needed.
         createProjectFiles = if (!is.null(inputs$createProjectFiles)) inputs$createProjectFiles else FALSE
         # queryFile: path to the XML query file containing the queries to run against the XML output.
-        #            Only required when createProjectFiles is TRUE. Defaults to Main_queries.xml.
-        queryFile = if (!is.null(inputs$queryFile)) inputs$queryFile else "Main_queries.xml"
-        # maxMemory: Java heap memory limit for createProjectFiles step. Defaults to '8g'.
-        maxMemory = if (!is.null(inputs$maxMemory)) inputs$maxMemory else "8g"
+        #            Only required when createProjectFiles is TRUE. Defaults to ../workflow/e3sm_gcam_queries.xml.
+        queryFile = if (!is.null(inputs$queryFile)) inputs$queryFile else "../workflow/e3sm_gcam_queries.xml"
+        # maxMemory: Java heap memory limit for createProjectFiles step. Defaults to '32g'.
+        maxMemory = if (!is.null(inputs$maxMemory)) inputs$maxMemory else "32g"
 
         # Check that scenarios and projectFiles arrays are the same length.
         if (length(scenarios) != length(projectFiles))
@@ -71,11 +77,21 @@ for (indexJSON in 1:numJSON)
             }
         }
 
-        # Check that the output directory exists before attempting to write.
+        # If createProjectFiles is TRUE but all project files already exist, warn and skip creation.
+        if (createProjectFiles && all(file.exists(projectFiles)))
+        {
+            message("Warning: project files already exist. Not creating new project files from model output. ",
+                    "To create new project files either delete/rename existing files or rename project files ",
+                    "in input json file.")
+            createProjectFiles = FALSE
+        }
+
+        # Check that the output directory exists before attempting to write; create it if not.
         outputDir = dirname(outputFile)
         if (!dir.exists(outputDir))
         {
-            stop(paste0("Error: output directory does not exist: '", outputDir, "'"))
+            message(paste0("Output directory does not exist: '", outputDir, "'. Creating it now..."))
+            dir.create(outputDir, recursive=TRUE)
         }
 
         # If creating project files, read the query file contents now.
@@ -108,6 +124,12 @@ for (indexJSON in 1:numJSON)
                 if (!file.exists(xmlFile))
                 {
                     stop(paste0("Error: XML file not found: '", xmlFile, "' (scenario '", scenario, "')"))
+                }
+                projectFileDir = dirname(projectFile)
+                if (!dir.exists(projectFileDir))
+                {
+                    message(paste0("Directory for project file does not exist: '", projectFileDir, "'. Creating it now..."))
+                    dir.create(projectFileDir, recursive=TRUE)
                 }
                 message(paste0("Creating project file '", projectFile, "' from '", xmlFile, "'..."))
                 conn = tryCatch(
@@ -172,3 +194,4 @@ for (indexJSON in 1:numJSON)
         message(paste0("  Written to: ", outputFile))
     }
 }
+message(paste0("End time: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S")))

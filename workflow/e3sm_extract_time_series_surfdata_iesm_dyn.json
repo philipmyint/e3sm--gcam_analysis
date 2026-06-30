@@ -1,0 +1,16 @@
+[
+    {
+        "simulation_path": "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/run",
+        "output_file": "./output/control_time_series_surfdata_iESM_dyn.dat",
+        "variables": ["PCT_NATVEG", "PCT_NAT_PFT", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "start_year": 2015,
+        "end_year": 2038
+    },
+    {
+        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026042816_v3_pr_test/run",
+        "output_file": "./output/case1_time_series_surfdata_iESM_dyn.dat",
+        "variables": ["PCT_NATVEG", "PCT_NAT_PFT", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "start_year": 2015,
+        "end_year": 2038
+    }
+]

@@ -135,8 +135,8 @@ def extract_spatial_data_from_netcdf_files(inputs):
     # Check that the output directory exists and the output file is writable before doing any expensive processing.
     output_dir = os.path.dirname(os.path.abspath(output_file))
     if not os.path.exists(output_dir):
-        print(f"Error: output directory does not exist: '{output_dir}'")
-        return
+        print(f"Output directory does not exist: '{output_dir}'. Creating it now...")
+        os.makedirs(output_dir)
     try:
         open(output_file, 'a').close()
     except OSError as e:
@@ -220,10 +220,20 @@ if __name__ == '__main__':
         with open(input_file) as f:
             inputs.extend(json.load(f))
 
-    # Process each dictionary to produce a list of smaller dictionaries, where each specifies data extraction options for a single NetCDF output file.
+    # Process each dictionary to produce a list of smaller dictionaries,
+    #    where each specifies data extraction options for a single NetCDF output file.
     list_of_inputs_for_each_output_file = []
     for index in range(len(inputs)):
         list_of_inputs_for_each_output_file.extend(process_inputs(inputs[index]))
+
+    # Check upfront whether any output files already exist; report all conflicts before exiting.
+    existing_files = [i['output_files'] for i in list_of_inputs_for_each_output_file if os.path.exists(i['output_files'])]
+    if existing_files:
+        for f in existing_files:
+            print(f"Error: output file already exists: '{f}'")
+        print("Error: some files in output_files already exist. To create new output_files either delete/rename existing files or "
+              "rename project files in input json file. No new files have been created")
+        sys.exit(1)
 
     # Create all output NetCDF files in parallel.
     with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
