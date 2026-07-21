@@ -3,14 +3,14 @@
         "input_file": "./output/gcam_csv/detailed_land_allocation.csv",
         "output_file": "./output/gcam_csv/detailed_land_allocation_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "landleaf": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
@@ -18,18 +18,19 @@
             "region",
             "basin",
             "landtype",
-            "management",
-            "year"
+            "water",
+            "fertilizer",
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
-        "call_modify_crop_names": true
+        "aggregate_function": "sum",
+        "call_modify_crop_names": false
     },
     {
         "input_file": "./output/gcam_csv/aggregated_land_allocation.csv",
         "output_file": "./output/gcam_csv/aggregated_land_allocation_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "landleaf": [
@@ -40,32 +41,33 @@
             "scenario",
             "region",
             "landtype",
-            "year"
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
-        "call_modify_crop_names": false
+        "aggregate_function": "sum",
+        "call_modify_crop_names": true
     },
     {
         "input_file": "./output/gcam_csv/co2_emissions_by_subsector.csv",
         "output_file": "./output/gcam_csv/co2_emissions_by_subsector_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
             "subsector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/co2_sequestration_by_tech.csv",
         "output_file": "./output/gcam_csv/co2_sequestration_by_tech_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
@@ -73,126 +75,139 @@
             "sector",
             "subsector",
             "technology",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/ag_production_by_subsector.csv",
         "output_file": "./output/gcam_csv/ag_production_by_subsector_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "technology": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
             "scenario",
             "region",
+            "basin",
             "sector",
-            "subsector",
-            "technology",
+            "landtype",
+            "water",
+            "fertilizer",
             "output",
-            "year"
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
-        "call_modify_crop_names": true
+        "aggregate_function": "sum",
+        "call_modify_crop_names": true,
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/ag_commodity_prices.csv",
         "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/purpose_grown_biomass_production.csv",
         "output_file": "./output/gcam_csv/purpose_grown_biomass_production_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/residue_biomass_production.csv",
         "output_file": "./output/gcam_csv/residue_biomass_production_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/msw_production.csv",
         "output_file": "./output/gcam_csv/msw_production_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "resource",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/regional_biomass_consumption.csv",
         "output_file": "./output/gcam_csv/regional_biomass_consumption_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "input`",
-            "year"
-        ]
+            "input",
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/meat_and_dairy_prices.csv",
         "output_file": "./output/gcam_csv/meat_and_dairy_prices_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/food_demand_prices.csv",
         "output_file": "./output/gcam_csv/food_demand_prices_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
@@ -200,15 +215,17 @@
             "gcam-consumer",
             "nodeinput",
             "input",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/food_demand.csv",
         "output_file": "./output/gcam_csv/food_demand_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
@@ -216,48 +233,53 @@
             "gcam-consumer",
             "nodeinput",
             "input",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/yield_scaler.csv",
         "output_file": "./output/gcam_csv/yield_scaler_processed.csv",
         "columns_to_drop": [
             "Unnamed: 0",
-            "Units",
             "subsector"
         ],
         "columns_to_split": {
             "technology": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
             "scenario",
             "region",
+            "basin",
             "sector",
             "landtype",
-            "basin",
-            "management",
-            "year"
+            "water",
+            "fertilizer",
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv",
         "call_modify_crop_names": true
     },
     {
         "input_file": "./output/gcam_csv/above_ground_carbon_density.csv",
         "output_file": "./output/gcam_csv/above_ground_carbon_density_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
-         "columns_to_split": {
+        "columns_to_split": {
             "landleaf": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
@@ -265,25 +287,27 @@
             "region",
             "basin",
             "landtype",
-            "basin",
-            "management",
-            "year"
+            "water",
+            "fertilizer",
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv",
         "call_modify_crop_names": true
     },
     {
         "input_file": "./output/gcam_csv/below_ground_carbon_density.csv",
         "output_file": "./output/gcam_csv/below_ground_carbon_density_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
-         "columns_to_split": {
+        "columns_to_split": {
             "landleaf": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
@@ -291,38 +315,42 @@
             "region",
             "basin",
             "landtype",
-            "basin",
-            "management",
-            "year"
+            "water",
+            "fertilizer",
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv",
         "call_modify_crop_names": true
     },
     {
         "input_file": "./output/gcam_csv/co2_prices.csv",
         "output_file": "./output/gcam_csv/co2_prices_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "market",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/profit_rate.csv",
         "output_file": "./output/gcam_csv/profit_rate_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "landleaf": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
@@ -330,50 +358,75 @@
             "region",
             "basin",
             "landtype",
-            "management",
-            "year"
+            "water",
+            "fertilizer",
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
-        "call_modify_crop_names": true
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/water_withdrawals_by_tech.csv",
         "output_file": "./output/gcam_csv/water_withdrawals_by_tech_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
+        "columns_to_split": {
+            "technology": [
+                "landtype",
+                "basin",
+                "water",
+                "fertilizer"
+            ]
+        },
         "key_columns": [
             "scenario",
             "region",
+            "basin",
             "sector",
             "subsector",
-            "technology",
-            "year"
-        ]
+            "landtype",
+            "water",
+            "fertilizer",
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/water_consumption_by_tech.csv",
         "output_file": "./output/gcam_csv/water_consumption_by_tech_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
+        "columns_to_split": {
+            "technology": [
+                "landtype",
+                "basin",
+                "water",
+                "fertilizer"
+            ]
+        },
         "key_columns": [
             "scenario",
             "region",
+            "basin",
             "sector",
             "subsector",
-            "technology",
-            "year"
-        ]
+            "landtype",
+            "water",
+            "fertilizer",
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/irrigation_water_withdrawals_by_crop_type_and_land_region.csv",
         "output_file": "./output/gcam_csv/irrigation_water_withdrawals_by_crop_type_and_land_region_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "subsector": [
@@ -388,17 +441,18 @@
             "basin",
             "landtype",
             "input",
-            "year"
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
-        "call_modify_crop_names": true
+        "aggregate_function": "sum",
+        "call_modify_crop_names": true,
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/irrigation_water_consumption_by_crop_type_and_land_region.csv",
         "output_file": "./output/gcam_csv/irrigation_water_consumption_by_crop_type_and_land_region_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "subsector": [
@@ -413,17 +467,18 @@
             "basin",
             "landtype",
             "input",
-            "year"
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
-        "call_modify_crop_names": true
+        "aggregate_function": "sum",
+        "call_modify_crop_names": true,
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/biophysical_water_demand_by_crop_type_and_land_region.csv",
         "output_file": "./output/gcam_csv/biophysical_water_demand_by_crop_type_and_land_region_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "columns_to_split": {
             "subsector": [
@@ -438,24 +493,26 @@
             "basin",
             "landtype",
             "input",
-            "year"
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
-        "call_modify_crop_names": true
+        "aggregate_function": "sum",
+        "call_modify_crop_names": true,
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/fertilizer_consumption_by_ag_tech.csv",
         "output_file": "./output/gcam_csv/fertilizer_consumption_by_ag_tech_processed.csv",
         "columns_to_drop": [
             "Unnamed: 0",
-            "Units",
             "subsector"
         ],
         "columns_to_split": {
             "technology": [
                 "landtype",
                 "basin",
-                "management"
+                "water",
+                "fertilizer"
             ]
         },
         "key_columns": [
@@ -463,119 +520,132 @@
             "region",
             "basin",
             "landtype",
-            "management",
+            "water",
+            "fertilizer",
             "input",
-            "year"
+            "year",
+            "units"
         ],
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "mean",
-        "call_modify_crop_names": true
+        "aggregate_function": "sum",
+        "call_modify_crop_names": true,
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/total_final_energy_by_sector.csv",
         "output_file": "./output/gcam_csv/total_final_energy_by_sector_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/final_energy_consumption_by_region_and_sector_and_fuel.csv",
         "output_file": "./output/gcam_csv/final_energy_consumption_by_region_and_sector_and_fuel_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
             "input",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/final_energy_prices.csv",
         "output_file": "./output/gcam_csv/final_energy_prices_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "fuel",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/building_final_energy_by_service_and_fuel.csv",
         "output_file": "./output/gcam_csv/building_final_energy_by_service_and_fuel_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
             "input",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/building_service_costs.csv",
         "output_file": "./output/gcam_csv/building_service_costs_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "sector",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/fuel_prices_to_buildings.csv",
         "output_file": "./output/gcam_csv/fuel_prices_to_buildings_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "fuel",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/elec_prices_by_sector.csv",
         "output_file": "./output/gcam_csv/elec_prices_by_sector_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
             "region",
             "fuel",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "aggregate_function": "area_weighted_mean",
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     },
     {
         "input_file": "./output/gcam_csv/elec_gen_by_gen_tech_and_cooling_tech.csv",
         "output_file": "./output/gcam_csv/elec_gen_by_gen_tech_and_cooling_tech_processed.csv",
         "columns_to_drop": [
-            "Unnamed: 0",
-            "Units"
+            "Unnamed: 0"
         ],
         "key_columns": [
             "scenario",
@@ -584,7 +654,9 @@
             "subsector",
             "technology",
             "output",
-            "year"
-        ]
+            "year",
+            "units"
+        ],
+        "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
     }
 ]

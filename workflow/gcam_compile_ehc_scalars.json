@@ -1,0 +1,12 @@
+[
+    {
+        "input_directories": [
+            "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/run",
+            "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026042816_v3_pr_test/run"
+        ],
+        "scenarios": ["control", "case1"],
+        "output_dir": "./output/gcam_csv",
+	"call_modify_crop_names": true,
+    "land_allocation_file": "./output/gcam_csv/detailed_land_allocation_processed.csv"
+    }
+]

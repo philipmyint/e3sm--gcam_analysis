@@ -15,6 +15,17 @@ shrubland_names = ['Shrubland', 'ProtectedShrubland']
 urban_names = ['UrbanLand']                     # These are constant.
 other_names = ['RockIceDesert', 'Tundra']       # These are constant.
 
+""" Unique sector values found in the ag_commodity_prices GCAM output. Used to detect ag-sector DataFrames. """
+ag_sectors = ['biomass', 'Corn', 'FiberCrop', 'FodderGrass', 'FodderHerb', 'Forest', 'Fruits', 'Legumes', 'MiscCrop',
+              'NutsSeeds', 'OilCrop', 'OilPalm', 'OtherGrain', 'Pasture', 'Rice', 'RootTuber', 'Soybean',
+              'SugarCrop', 'UnmanagedLand', 'Vegetables', 'Wheat']
+
+""" Dictionary of GCAM crop name mappings (keys = old names, values = ag_sectors) for adding area to certain dataframes. """
+ag_sector_mappings = {'biomass': 'biomass', 'biomassGrass': 'biomass', 'biomassTree': 'biomass', 'CornC4': 'Corn', 
+        'FodderHerbC4': 'FodderHerb', 'FruitsTree': 'Fruits', 'MiscCropC4': 'MiscCrop', 'MiscCropTree': 'MiscCrop', 'NutsSeedsTree': 'NutsSeeds',
+        'OilCropTree': 'OilCrop', 'OilPalmTree': 'OilPalm', 'OtherGrainC4': 'OtherGrain', 'SugarCropC4': 'SugarCrop',
+        'ProtectedUnmanagedForest': 'Forest', 'UnmanagedForest': 'Forest', 'ProtectedUnmanagedPasture': 'Pasture', 'UnmanagedPasture': 'Pasture',}
+
 """ Dictionary of GCAM land type groups and aggregations with modified/standardized crop names. """
 gcam_landtype_groups = {'forest': forest_names, 'pasture': pasture_names, 'grass': grassland_names, 'crop': crop_names,
         'other_arable': other_arable_names, 'shrub': shrubland_names, 'urban': urban_names, 'other': other_names}
@@ -84,7 +95,7 @@ gcam_basin_names_and_abbrevations = {
 'Mid_Atlantic_Basin': 'UsaCstE', 'South_Atlantic_Gulf_Basin': 'UsaCstSE'
 }
 
-def modify_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_crop_name='mean'):
+def modify_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_crop_name='area_weighted_mean'):
     """
     Applies the mappings in gcam_crop_mappings dictionary to produce a modified set of crop names in the given Pandas DataFrame.
     An aggregation followed by a mean or sum is performed if there happens to be more than one row that matches a value for the given set of columns.
@@ -92,25 +103,35 @@ def modify_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_crop_nam
     Parameters:
         df: DataFrame to modify.
         columns: Columns over which to perform the aggregation (group-by) operation.
-        mean_or_sum_if_more_than_one_row_for_crop_name: Specifies whether to calculate a mean or a sum after performing the aggregation.
+        mean_or_sum_if_more_than_one_row_for_crop_name: Specifies whether to calculate an area-weighted mean, a mean, or a sum after performing the aggregation.
 
     Returns:
         DataFrame with the crop names modified so that they belong to the modified common set.
     """
     df = df.replace(gcam_crop_mappings)
+    # Identify string columns that are not groupby keys; these cannot be aggregated numerically
+    # and must be saved and rejoined after groupby operations.
+    str_non_key = [c for c in df.columns if c not in columns and df[c].dtype == object]
+    str_first = df.groupby(columns)[str_non_key].first().reset_index() if str_non_key else None
+    df_numeric = df.drop(columns=str_non_key)
     if mean_or_sum_if_more_than_one_row_for_crop_name == 'mean':
-        mean_df = df.groupby(columns).mean().reset_index()
+        mean_df = df_numeric.groupby(columns).mean().reset_index()
         # Areas should be summed, not averaged, even in the 'mean' case.
         if 'area' in df.columns:
-            area_sum = df.groupby(columns)['area'].sum().reset_index()
+            area_sum = df_numeric.groupby(columns)['area'].sum().reset_index()
             # Replace/merge the area column in mean_df.
             mean_df = mean_df.drop(columns='area', errors='ignore').merge(area_sum, on=columns)
+        if str_first is not None:
+            mean_df = mean_df.merge(str_first, on=columns, how='left')
         return mean_df
     elif mean_or_sum_if_more_than_one_row_for_crop_name == 'sum':
-        return df.groupby(columns).sum().reset_index()
+        result = df_numeric.groupby(columns).sum().reset_index()
+        if str_first is not None:
+            result = result.merge(str_first, on=columns, how='left')
+        return result
     elif mean_or_sum_if_more_than_one_row_for_crop_name == 'area_weighted_mean':
         # Identify columns to be averaged (these are numeric, non-area columns that are not part of the aggregation operation).
-        numeric_cols = df.select_dtypes('number').columns.tolist()
+        numeric_cols = df_numeric.select_dtypes('number').columns.tolist()
         numeric_cols = [col for col in numeric_cols if col not in columns + ['area']]
 
         # Define a function to compute area-weighted mean for each group.
@@ -127,7 +148,10 @@ def modify_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_crop_nam
             return pd.Series(result)
 
         # Apply the weighted mean function to each group.
-        return df.groupby(columns).apply(weighted_mean).reset_index()
+        result = df_numeric.groupby(columns).apply(weighted_mean, include_groups=False).reset_index()
+        if str_first is not None:
+            result = result.merge(str_first, on=columns, how='left')
+        return result
     
 def produce_dataframe_for_landtype_group(df, category, category_label, value_label, 
                 landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns):
@@ -169,4 +193,137 @@ def produce_dataframe_for_landtype_group(df, category, category_label, value_lab
         df.loc[:, value_label] = df['area']*df[value_label]
         df = df.groupby(key_columns).sum().reset_index()
     df[category_label] = category
+    return df
+
+def add_areas_to_dataframe(df, df_land):
+    """
+    Adds areas from a processed detailed land allocation DataFrame as an extra 'area' column to df.
+    Merges on all columns common to df and df_land, excluding non-key columns ('value', 'area').
+    'sector' in df is treated as a placeholder and excluded from merge keys even if present in both.
+    If df has a 'market' column and no merge matches are found, falls back to matching region names
+    within the market text string.
+
+    Parameters:
+        df: DataFrame to add areas to (loaded from a CSV produced by
+            gcam_extract_csv_from_xml_or_project_files.R).
+        df_land: Processed detailed land allocation DataFrame. Must contain at minimum the columns
+                 'scenario', 'region', 'year', and 'value'. Additional key columns (e.g. 'basin',
+                 'landtype', and any management columns) are determined by the land allocation file
+                 and are used automatically as merge keys where present in both DataFrames.
+
+    Returns:
+        DataFrame with added 'area' and 'area_units' columns.
+    """
+    # Validate that df_land has the minimum columns needed for any merge path.
+    required_land_cols = ['scenario', 'region', 'year', 'value']
+    missing = [c for c in required_land_cols if c not in df_land.columns]
+    if missing:
+        print(f"Error: df_land is missing required columns: {missing}. Available: {list(df_land.columns)}")
+        return df
+
+    # Rename 'value' -> 'area' and 'units' -> 'area_units' in the land allocation DataFrame so
+    # that df's own 'units' column (for the value data) is not used as a merge key and is not
+    # overwritten. The land area units are carried through as a separate 'area_units' column.
+    rename_map = {}
+    if 'value' in df_land.columns:
+        rename_map['value'] = 'area'
+    if 'units' in df_land.columns:
+        rename_map['units'] = 'area_units'
+    area_df = df_land.rename(columns=rename_map) if rename_map else df_land.copy()
+
+    # Drop any existing 'area' or 'area_units' columns to avoid duplicates after merge.
+    for col in ['area', 'area_units']:
+        if col in df.columns:
+            df = df.drop(col, axis=1)
+
+    # Determine merge columns: all columns common to df and area_df, excluding non-key columns.
+    # 'units' is excluded so df's own units are preserved; area units come through as 'area_units'.
+    exclude_from_merge = {'area', 'area_units', 'value', 'units'}
+    merge_cols = [c for c in df.columns if c in area_df.columns and c not in exclude_from_merge]
+
+    has_area_units = 'area_units' in area_df.columns
+
+    # If the only merge columns are 'scenario' and 'year' and df has a 'market' column, fall back
+    # to matching region names within the market text string for a more specific area lookup.
+    # Otherwise merge on all common columns, summing areas for any many-to-one matches.
+    if set(merge_cols) == {'scenario', 'year'} and 'market' in df.columns:
+        regions = area_df['region'].unique()
+        agg_dict = {'area': 'sum'}
+        if has_area_units:
+            agg_dict['area_units'] = 'first'
+        area_by_region = area_df.groupby(['scenario', 'region', 'year']).agg(agg_dict).reset_index()
+
+        def get_area_from_market(row):
+            matching = [r for r in regions if r in str(row['market'])]
+            if not matching:
+                return 0
+            matched_region = max(matching, key=len)  # prefer the most specific match
+            mask = (
+                (area_by_region['scenario'] == row['scenario']) &
+                (area_by_region['region'] == matched_region) &
+                (area_by_region['year'] == row['year'])
+            )
+            result = area_by_region.loc[mask, 'area']
+            return result.sum() if not result.empty else 0
+
+        df['area'] = df.apply(get_area_from_market, axis=1)
+        if has_area_units:
+            df['area_units'] = area_df['area_units'].iloc[0] if not area_df.empty else ''
+    elif 'landtype' not in df.columns and 'sector' in df.columns and df['sector'].isin(ag_sectors).any():
+        # Apply crop name mappings first so that original crop names (e.g. 'CornC4') are standardized
+        # (e.g. 'Corn') to match the ag_sector values in df before grouping.
+        # Then aggregate df_land areas by (scenario, region, ag_sector, year),
+        # rename landtype -> sector, then include sector in the merge keys.
+        area_df_mapped = area_df.copy()
+        area_df_mapped['landtype'] = area_df_mapped['landtype'].replace(ag_sector_mappings)
+        agg_dict = {'area': 'sum'}
+        if has_area_units:
+            agg_dict['area_units'] = 'first'
+        area_by_sector = (area_df_mapped
+                          .groupby(['scenario', 'region', 'landtype', 'year'], as_index=False)
+                          .agg(agg_dict)
+                          .rename(columns={'landtype': 'sector'}))
+        sector_merge_cols = merge_cols + ['sector']
+        df = df.merge(area_by_sector, on=sector_merge_cols, how='left')
+    elif merge_cols:
+        agg_dict = {'area': 'sum'}
+        if has_area_units:
+            agg_dict['area_units'] = 'first'
+        area_summed = (area_df[merge_cols + list(agg_dict.keys())]
+                       .groupby(merge_cols, as_index=False)
+                       .agg(agg_dict))
+        df = df.merge(area_summed, on=merge_cols, how='left')
+
+        # Fallback: for rows that still have no area match (NaN), retry with a reduced set
+        # of merge keys that excludes any merge_col where the unmatched row has an empty
+        # string. This handles cases where df has less detail (e.g. water='') than df_land.
+        unmatched = df['area'].isna()
+        if unmatched.any():
+            empty_col_patterns = (df.loc[unmatched, merge_cols]
+                                  .apply(lambda row: tuple(c for c in merge_cols if row[c] == ''), axis=1)
+                                  .unique())
+            for empty_cols in empty_col_patterns:
+                if not empty_cols:
+                    continue
+                fallback_merge_cols = [c for c in merge_cols if c not in empty_cols]
+                if not fallback_merge_cols:
+                    continue
+                fallback_area = (area_df[fallback_merge_cols + list(agg_dict.keys())]
+                                 .groupby(fallback_merge_cols, as_index=False)
+                                 .agg(agg_dict))
+                pattern_mask = unmatched.copy()
+                for c in empty_cols:
+                    pattern_mask &= (df[c] == '')
+                if not pattern_mask.any():
+                    continue
+                fill_df = df.loc[pattern_mask, fallback_merge_cols].merge(
+                    fallback_area, on=fallback_merge_cols, how='left')
+                df.loc[pattern_mask, 'area'] = fill_df['area'].values
+                if has_area_units:
+                    if 'area_units' not in df.columns:
+                        df['area_units'] = None
+                    df.loc[pattern_mask, 'area_units'] = fill_df['area_units'].values
+                unmatched = df['area'].isna()
+
+    df['area'] = df['area'].fillna(0)
     return df

@@ -7,28 +7,35 @@ import time
 from utility_constants import MAX_PROCESSES
 from utility_dataframes import read_file_into_dataframe, write_dataframe_to_file
 from utility_functions import get_all_files_in_path
-from utility_gcam import modify_crop_names
+from utility_gcam import modify_crop_names, add_areas_to_dataframe
 
 def compile_ehc_scalars(inputs):
     """ 
     Processes and compiles the scalars files generated at run time by the E3SM human component (EHC) and subsequently gets passed into GCAM. 
-    The files are located in multiple directories into a single output file that gets written to a .dat or .csv file.
+    Writes two output files: one for vegetation scalars and one for soil scalars, each with a 'value' column and
+    optional 'area' and 'area_units' columns added from a processed land allocation file.
 
     Parameters:
         inputs: Dictionary with user-specified inputs for the directory paths, the name of the output file, whether we want to standardize the
-                crop names, and a list of scenario names, with each scenario in the list corresponding to one directory.
+                crop names, a land_allocation_file path, and a list of scenario names, with each scenario in the list
+                corresponding to one directory.
 
     Returns:
         N/A.
     """
     start_time = time.time()
     input_directories = inputs['input_directories']
-    output_file = inputs['output_file']
+    output_dir = inputs['output_dir']
     call_modify_crop_names = inputs.get('call_modify_crop_names', False)
     scenarios = inputs['scenarios']
     # file_root_names is an optional dict mapping scenario names to file root names.
     # Scenarios not present in the dict fall back to the default root name 'scalars'.
     file_root_names = inputs.get('file_root_names', {})
+    land_allocation_file = inputs.get('land_allocation_file', None)
+
+    # Derive output paths for vegetation and soil files from output_dir.
+    vegetation_output_file = os.path.join(output_dir, 'vegetation_scalars.csv')
+    soil_output_file = os.path.join(output_dir, 'soil_scalars.csv')
 
     # Check that input_directories and scenarios are the same length.
     if len(input_directories) != len(scenarios):
@@ -36,12 +43,13 @@ def compile_ehc_scalars(inputs):
               f"(length {len(scenarios)}) must be the same length.")
         return
 
-    # Check that the output file is writable before doing any processing.
-    try:
-        open(output_file, 'a').close()
-    except OSError as e:
-        print(f"Error: cannot write to output file '{output_file}': {e}")
-        return
+    # Check that both output files are writable before doing any processing.
+    for out_file in [vegetation_output_file, soil_output_file]:
+        try:
+            open(out_file, 'a').close()
+        except OSError as e:
+            print(f"Error: cannot write to output file '{out_file}': {e}")
+            return
 
     dataframes_for_all_scenarios = []
     for index, scenario in enumerate(scenarios):
@@ -98,14 +106,43 @@ def compile_ehc_scalars(inputs):
     df = df.sort_values(by=key_columns)
     df = df[key_columns + ['vegetation', 'soil']]
 
-    # Update original crop names to a common, standardized set of names. 
-    if call_modify_crop_names:
-        df = modify_crop_names(df, key_columns)
+    # Add areas from the detailed land allocation file before standardizing crop names,
+    # since the detailed land allocation file uses the original crop names.
+    if land_allocation_file is None:
+        print(f"Error: A 'land_allocation_file' must be specified in the JSON input")
+        print(f"Error: The detailed land allocation file ('detailed_land_allocation.csv') must be provided "
+              f"here (not the processed version), since it uses the original crop names.")
+        print(f"Error: The default 'land_allocation_file' is called 'detailed_land_allocation_processed.csv' "
+              f"and should be located in the 'output/gcam_csv/' directory.")
+        return
+    if not os.path.exists(land_allocation_file):
+        print(f"Error: land_allocation_file not found: '{land_allocation_file}'")
+        return
+    df_land = read_file_into_dataframe(land_allocation_file)
+    df = add_areas_to_dataframe(df, df_land)
 
-    write_dataframe_to_file(df, output_file)
+    # Standardize crop names after adding areas so the merge above uses original names.
+    if call_modify_crop_names:
+        df = modify_crop_names(df, key_columns, 'area_weighted_mean')
+
+    # Trailing columns present after add_areas (area and area_units if available).
+    trailing = [c for c in ['area', 'area_units'] if c in df.columns]
+
+    # Write vegetation scalars: rename vegetation -> value, add units column.
+    veg_df = df[key_columns + ['vegetation'] + trailing].rename(columns={'vegetation': 'value'}).copy()
+    veg_df['units'] = 'Unitless'
+    veg_df = veg_df[key_columns + ['value', 'units'] + trailing]
+    write_dataframe_to_file(veg_df, vegetation_output_file)
+
+    # Write soil scalars: rename soil -> value, add units column.
+    soil_df = df[key_columns + ['soil'] + trailing].rename(columns={'soil': 'value'}).copy()
+    soil_df['units'] = 'Unitless'
+    soil_df = soil_df[key_columns + ['value', 'units'] + trailing]
+    write_dataframe_to_file(soil_df, soil_output_file)
+
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print(f"Elapsed time processing/compiling the data for {output_file}: {elapsed_time:.2f} seconds")
+    print(f"Elapsed time processing/compiling the data for {vegetation_output_file} and {soil_output_file}: {elapsed_time:.2f} seconds")
 
 
 ###---------------Begin execution---------------###
