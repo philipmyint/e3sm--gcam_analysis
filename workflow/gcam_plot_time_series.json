@@ -1,0 +1,253 @@
+[
+    {
+        "output_file": "./output/gcam_csv/detailed_land_allocation_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "landtype"
+    },
+    {
+        "output_file": "./output/gcam_csv/aggregated_land_allocation_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "landtype"
+    },
+    {
+        "output_file": "./output/gcam_csv/co2_emissions_by_subsector_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "subsector"
+    },
+    {
+        "output_file": "./output/gcam_csv/co2_emissions_by_subsector_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "legend_num_columns": 1
+    },
+    {
+        "output_file": "./output/gcam_csv/co2_emissions_by_subsector_processed.csv",
+        "scenarios": ["control"],
+        "category_label": "subsector",
+        "categories": ["agricultural energy use", "construction energy use", "trn_aviation_intl", "refining"],
+        "regions": ["Global", "EU-15", "Japan", "India"],
+        "legend_x_offset": 1.45,
+        "legend_num_columns": 1,
+        "plot_directory": "./output/time_series_plots_gcam/individual_regions"
+    },
+    {
+        "output_file": "./output/gcam_csv/co2_sequestration_by_tech_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/ag_production_by_subsector_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "categories_to_exclude": ["UnmanagedLand", "Forest"],
+        "y_scale": "log",
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "categories_to_exclude": ["UnmanagedLand", "Forest"],
+        "plot_directory": "./output/time_series_plots_gcam/individual_percent_difference",
+        "plot_percent_difference": true,
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
+        "scenarios": ["control"],
+        "categories_to_exclude": ["UnmanagedLand", "Forest"],
+        "y_scale": "log",
+        "plot_directory": "./output/time_series_plots_gcam/individual_control_only",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
+        "scenarios": ["control"],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "regions": ["Global", "USA", "Brazil", "Canada"],
+        "legend_x_offset": 1.4,
+        "legend_num_columns": 1,
+        "y_scale": "log",
+        "plot_directory": "./output/time_series_plots_gcam/individual_regions",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/purpose_grown_biomass_production_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/residue_biomass_production_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/msw_production_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "resource"
+    },
+    {
+        "output_file": "./output/gcam_csv/regional_biomass_consumption_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/meat_and_dairy_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/food_demand_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "input",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/food_demand_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "input"
+    },
+    {
+        "output_file": "./output/gcam_csv/yield_scaler_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/above_ground_carbon_density_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "landtype",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/below_ground_carbon_density_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "landtype",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/co2_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "category_label": "market",
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/profit_rate_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "category_label": "landtype",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/water_withdrawals_by_tech_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/water_consumption_by_tech_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/irrigation_water_withdrawals_by_crop_type_and_land_region_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/irrigation_water_consumption_by_crop_type_and_land_region_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/biophysical_water_demand_by_crop_type_and_land_region_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/fertilizer_consumption_by_ag_tech_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/total_final_energy_by_sector_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/final_energy_consumption_by_region_and_sector_and_fuel_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/final_energy_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/building_final_energy_by_service_and_fuel_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/building_service_costs_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/fuel_prices_to_buildings_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/elec_prices_by_sector_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/elec_gen_by_gen_tech_and_cooling_tech_processed.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual"
+    },
+    {
+        "output_file": "./output/gcam_csv/soil_scalars.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/vegetation_scalars.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    }
+]

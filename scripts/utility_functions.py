@@ -166,15 +166,20 @@ def print_p_values(ttest, variable, p_value_threshold, p_value_file, output_file
         N/A.
     """
     if ttest.pvalue < p_value_threshold:
-        print(f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}, which is less than {p_value_threshold}')
+        line = f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}, which is less than {p_value_threshold}'
         if p_value_file:
             with open(p_value_file, 'a+') as f:
                 f.write(f'{variable} in {output_file_or_label}: {ttest.pvalue:.4e}\n')
     else:
-        print(f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}')
+        line = f'p-value of {variable} in {output_file_or_label}: {ttest.pvalue:.4e}'
         if p_value_file and not p_value_file_print_only_if_below_threshold:
             with open(p_value_file, 'a+') as f:
                 f.write(f'{variable} in {output_file_or_label}: {ttest.pvalue:.4e}\n')
+    if p_value_file:
+        with open(p_value_file + '.log', 'a+') as f:
+            f.write(line + '\n')
+    else:
+        print(line)
 
 def replace_inside_parentheses(text, replacement):
     """

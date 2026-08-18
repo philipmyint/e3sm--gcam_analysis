@@ -175,6 +175,11 @@ def produce_dataframe_for_landtype_group(df, category, category_label, value_lab
     landtypes = landtype_groups[category]
     df = df[df[category_label].isin(landtypes)]
 
+    # Infer groupby columns from the DataFrame when none are specified; exclude category_label so landtypes collapse into one group row.
+    if key_columns is None:
+        non_key = {value_label, 'area', 'units', 'area_units', category_label}
+        key_columns = [c for c in df.columns if c not in non_key]
+
     if mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'mean':
         landtypes_in_df = [x for x in landtypes if x in df[category_label].unique()]
         num_landtypes_in_df = len(landtypes_in_df)

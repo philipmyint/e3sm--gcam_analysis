@@ -330,8 +330,15 @@
         "columns_to_drop": [
             "Unnamed: 0"
         ],
+        "columns_to_split_on_substring": {
+            "market": {
+                "split_before": "CO2",
+                "new_columns": ["region", "market"]
+            }
+        },
         "key_columns": [
             "scenario",
+            "region",
             "market",
             "year",
             "units"

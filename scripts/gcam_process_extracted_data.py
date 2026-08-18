@@ -2,6 +2,7 @@ import json
 import multiprocessing
 import os
 import pandas as pd
+import re
 import sys
 import time
 from utility_constants import MAX_PROCESSES
@@ -23,7 +24,8 @@ def process_extracted_data(inputs):
     input_file = inputs['input_file']
     output_file = inputs['output_file']
     columns_to_drop = inputs.get('columns_to_drop', None) 
-    columns_to_split = inputs.get('columns_to_split', None) 
+    columns_to_split = inputs.get('columns_to_split', None)
+    columns_to_split_on_substring = inputs.get('columns_to_split_on_substring', None)
     key_columns = [c.lower() for c in inputs['key_columns']] if inputs.get('key_columns') else None
     aggregate_function = inputs.get('aggregate_function', "sum") 
     call_modify_crop_names = inputs.get('call_modify_crop_names', False)
@@ -99,6 +101,30 @@ def process_extracted_data(inputs):
                         df.loc[mask, col_name] = split_result.iloc[:, i].fillna('')
             # Rows without '_': the full value goes into the first new column.
             df.loc[~mask, new_columns[0]] = df.loc[~mask, column_to_split]
+
+    # Split each specified column on the first occurrence of a substring, placing text before it
+    # in the first new column and text from the substring onward in the second new column.
+    if columns_to_split_on_substring:
+        for col, spec in columns_to_split_on_substring.items():
+            col_lower = col.lower()
+            if col_lower not in df.columns:
+                print(f"Error: columns_to_split_on_substring column '{col}' not found in '{input_file}' "
+                      f"after lowercasing. Available columns: {list(df.columns)}")
+                return
+            split_before = spec['split_before']
+            new_columns = spec['new_columns']
+            pattern = re.compile(r'(?=' + re.escape(split_before) + r')')
+            parts = df[col_lower].str.split(pattern, n=1, expand=True)
+            # Drop before assigning new columns to avoid clobbering a new column that shares the source name.
+            df = df.drop(columns=[col_lower])
+            if parts.shape[1] == 1:
+                # Substring not found in any row; full value goes in first new column.
+                df[new_columns[0]] = parts[0]
+                for nc in new_columns[1:]:
+                    df[nc] = ''
+            else:
+                df[new_columns[0]] = parts[0]
+                df[new_columns[1]] = parts[1].fillna('')
 
     # Sort columns by a set of keys if specified to do so.
     if key_columns:

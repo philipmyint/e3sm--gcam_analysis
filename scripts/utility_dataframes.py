@@ -171,7 +171,7 @@ def read_file_into_dataframe(file_name, clean_up_df=False):
         DataFrame containing the contents of the file.
     """
     if file_name.endswith('.csv'):
-        df = pd.read_csv(file_name)
+        df = pd.read_csv(file_name, low_memory=False)
     else:
         df = pd.read_fwf(file_name)
     if clean_up_df:

@@ -7,6 +7,7 @@ import pandas as pd
 from scipy import stats
 import sys
 import time
+import warnings
 from utility_constants import *
 from utility_dataframes import perform_ttest, read_file_into_dataframe
 from utility_functions import check_is_list_of_lists, print_p_values, sort_file, transpose_scenarios_if_needed
@@ -15,7 +16,7 @@ from utility_plots import *
 
 """ Dictionary of default input values for time series plots. """
 default_inputs = {
-    'aggregation_type_in_each_year': 'area_weighted_mean',
+    'aggregation_type_in_each_year': 'sum',
     'category_label': 'sector',
     'end_year': 2100,
     'error_bars_alpha': 0.2,
@@ -33,7 +34,7 @@ default_inputs = {
     'marker_size': 6,
     'markers': markers_default,
     'multiplier': 1,
-    'mean_or_sum_if_more_than_one_row_in_same_landtype_group': 'area_weighted_mean',
+    'mean_or_sum_if_more_than_one_row_in_same_landtype_group': 'sum',
     'notify_scenarios_transposed': False,
     'p_value_file': 'p_values.dat',
     'p_value_file_print_only_if_below_threshold': True,
@@ -77,9 +78,13 @@ def process_inputs(inputs):
         Dictionary that completely specifies all plotting options. 
         If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
     """
-    # Check that the output file exists before trying to read it.
+    # Check that the output file exists and is non-empty before trying to read it.
     if not os.path.exists(inputs['output_file']):
-        raise FileNotFoundError(f"Error: output file not found: '{inputs['output_file']}'")
+        print(f"Warning: output file not found, skipping: '{inputs['output_file']}'")
+        return None
+    if os.path.getsize(inputs['output_file']) == 0:
+        print(f"Warning: output file is empty, skipping: '{inputs['output_file']}'")
+        return None
     df = read_file_into_dataframe(inputs['output_file'])
 
     # If the category label (e.g., sector or landtype) has not been specified, use the default value.
@@ -314,17 +319,17 @@ def plot_time_series(inputs):
                     df_this_category = df_this_scenario[df_this_scenario[category_label] == category]
                     
                 # The markers (symbols) on the plot will vary by category.
-                marker = markers[category_index]
+                marker = markers[category_index % len(markers)]
                 
                 if num_scenarios == 1 or (num_scenarios == 2 and plot_percent_difference):
                     # If we have 2 scenarios but plotting a percent difference, the reference scenario is not included, 
                     # so only one set of curves will appear on the plot. In this case, use the category index to set the line colors.
-                    line_color = plot_colors[category_index]
+                    line_color = plot_colors[category_index % len(plot_colors)]
                     if not legend_num_columns:
                         plot_options.update(zip(['legend_num_columns'], [1]))
                 else:
                     # Set the line colors based on the scenario if there is more than one scenario.
-                    line_color = plot_colors[scenario_index]
+                    line_color = plot_colors[scenario_index % len(plot_colors)]
                     if not legend_num_columns:
                         if plot_percent_difference:
                             plot_options.update(zip(['legend_num_columns'], [num_scenarios-1]))
@@ -339,7 +344,7 @@ def plot_time_series(inputs):
                         df_this_region = df_this_category
 
                     # The linestyles (e.g., solid, dotted, dashed) on the plot will vary by region.
-                    linestyle = linestyle_tuples[region_index][1]
+                    linestyle = linestyle_tuples[region_index % len(linestyle_tuples)][1]
 
                     # Retrieve the years for the x-axis in the time series plots.
                     x = df_this_region[year_label].unique()
@@ -348,15 +353,9 @@ def plot_time_series(inputs):
                     if aggregation_type_in_each_year == 'mean':
                         y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
                     elif aggregation_type_in_each_year == 'area_weighted_mean':
-                        y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum(), include_groups=False) * multiplier 
-                        if any(df_this_region.groupby(year_label)['area'].sum() == 0):
-                            if set_nan_to_zero:
-                                print('Fixing area-weighted mean calculation where total area is zero by setting value to zero instead of NaN.')
-                                y = y.fillna(0)
-                            else:
-                                statement = 'Area-weighted mean resulted in NaN because total area is zero for some years. ' + \
-                                      'No fix applied as set_nan_to_zero is False. Years with NaN values will not appear on the plot.'
-                                print(statement)
+                        y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum() if g['area'].sum() != 0 else float('nan'), include_groups=False) * multiplier 
+                        if set_nan_to_zero:
+                            y = y.fillna(0)
                     elif aggregation_type_in_each_year == 'sum':
                         y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
                         
@@ -417,18 +416,32 @@ def plot_time_series(inputs):
                         # Categories and regions between the current scenario and the control scenario are matched up before performing the t-test.
                         control_data = df[f'scen=0_cat={category_index}_reg={region_index}']
                         test_data = df[f'scen={scenario_index}_cat={category_index}_reg={region_index}']
-                        ttest = stats.ttest_ind(control_data, test_data)
-                        label = f'scenario={scenario}, category={category}, region={region}'
-                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+                        control_num = pd.to_numeric(control_data, errors='coerce').dropna()
+                        test_num = pd.to_numeric(test_data, errors='coerce').dropna()
+                        if len(control_num) >= 2 and len(test_num) >= 2:
+                            with warnings.catch_warnings(record=True) as w:
+                                warnings.simplefilter('always', RuntimeWarning)
+                                ttest = stats.ttest_ind(control_num, test_num)
+                                if w:
+                                    print(f'Warning (t-test) in {plot_name}: {w[0].message}')
+                            label = f'scenario={scenario}, category={category}, region={region}'
+                            print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
         elif num_scenarios == 1 and num_regions > 1:
             # If there is only one scenario, but multiple regions for that scenario, perform inter-regional t-tests for each category.
             for category_index, category in enumerate(categories):
                 for region_index in range(1, len(inputs['regions'][category])):
                     control_data = df[f'scen=0_cat={category_index}_reg=0']
                     test_data = df[f'scen=0_cat={category_index}_reg={region_index}']
-                    ttest = stats.ttest_ind(control_data, test_data)
-                    label = f'scenario={scenario}, category={category}, region={region}'
-                    print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+                    control_num = pd.to_numeric(control_data, errors='coerce').dropna()
+                    test_num = pd.to_numeric(test_data, errors='coerce').dropna()
+                    if len(control_num) >= 2 and len(test_num) >= 2:
+                        with warnings.catch_warnings(record=True) as w:
+                            warnings.simplefilter('always', RuntimeWarning)
+                            ttest = stats.ttest_ind(control_num, test_num)
+                            if w:
+                                print(f'Warning (t-test) in {plot_name}: {w[0].message}')
+                        label = f'scenario={scenario}, category={category}, region={region}'
+                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
 
     # Option 2: ensemble plots, in which the outputs are subdivided into groups of curves, where each group (ensemble) represents a set of scenarios.
     elif check_is_list_of_lists(scenarios) and plot_type == 'ensemble':
@@ -475,7 +488,7 @@ def plot_time_series(inputs):
                         if aggregation_type_in_each_year == 'mean':
                             y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
                         elif aggregation_type_in_each_year == 'area_weighted_mean':
-                            y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum(), include_groups=False) * multiplier
+                            y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g['area']).sum() / g['area'].sum() if g['area'].sum() != 0 else float('nan'), include_groups=False) * multiplier
                         elif aggregation_type_in_each_year == 'sum':
                             y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
 
@@ -499,14 +512,14 @@ def plot_time_series(inputs):
 
         for category_index, category in enumerate(categories):
             # Like in the case of individual plots, markers are determined by the category.
-            marker = markers[category_index]
+            marker = markers[category_index % len(markers)]
             columns = [column for column in df_all_time_series.columns if f'cat={category_index}' in column]
             df_this_category = df_all_time_series[columns]
             num_regions = len(inputs['regions'][category])
 
             for region_index, region in enumerate(inputs['regions'][category]):
                 # Like in the case of individual plots, markers are determined by the region.
-                linestyle = linestyle_tuples[region_index][1]
+                linestyle = linestyle_tuples[region_index % len(linestyle_tuples)][1]
                 columns = [column for column in  df_this_category.columns if f'reg={region_index}' in column]
                 df_this_region = df_this_category[columns]
 
@@ -514,10 +527,10 @@ def plot_time_series(inputs):
                     if num_scenario_sets == 1 or (num_scenario_sets == 2 and plot_percent_difference):
                         # If we have 2 scenarios but plotting a percent difference, the reference scenario is not included, 
                         # so only one set of curves will appear on the plot. In this case, use the category index to set the line colors.
-                        line_color = plot_colors[category_index]
+                        line_color = plot_colors[category_index % len(plot_colors)]
                     else:
                         # Set the line colors based on the scenario if there is more than one scenario.
-                        line_color = plot_colors[scenario_set_index]
+                        line_color = plot_colors[scenario_set_index % len(plot_colors)]
 
                     # Get all columns in the DataFrame (of the current category and region) that belong to the current scenario set.
                     columns = [column for column in df_this_region.columns if f'set={scenario_set_index}' in column]
@@ -575,16 +588,30 @@ def plot_time_series(inputs):
                         # Perform t-test to compare the entire time series in the first scenario set (assumed to be control) vs. other sets.
                         control_data = df_all_set_means[f'set=0_cat={category_index}_reg={region_index}']
                         test_data = df_all_set_means[f'set={scenario_set_index}_cat={category_index}_reg={region_index}']
-                        ttest = stats.ttest_ind(control_data, test_data)
-                        label = f'set={scenario_set_index}, category={category}, region={region}'
-                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+                        control_num = pd.to_numeric(control_data, errors='coerce').dropna()
+                        test_num = pd.to_numeric(test_data, errors='coerce').dropna()
+                        if len(control_num) >= 2 and len(test_num) >= 2:
+                            with warnings.catch_warnings(record=True) as w:
+                                warnings.simplefilter('always', RuntimeWarning)
+                                ttest = stats.ttest_ind(control_num, test_num)
+                                if w:
+                                    print(f'Warning (t-test) in {plot_name}: {w[0].message}')
+                            label = f'set={scenario_set_index}, category={category}, region={region}'
+                            print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
                     elif num_scenario_sets == 1 and num_regions > 1:
                         # If there is only one scenario set, but multiple regions for that set, perform inter-regional t-tests for each category.
                         control_data = df_all_set_means[f'set=0_cat={category_index}_reg=0']
                         test_data = df_all_set_means[f'set=0_cat={category_index}_reg={region_index}']
-                        ttest = stats.ttest_ind(control_data, test_data)
-                        label = f'category={category}, region={region}'
-                        print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+                        control_num = pd.to_numeric(control_data, errors='coerce').dropna()
+                        test_num = pd.to_numeric(test_data, errors='coerce').dropna()
+                        if len(control_num) >= 2 and len(test_num) >= 2:
+                            with warnings.catch_warnings(record=True) as w:
+                                warnings.simplefilter('always', RuntimeWarning)
+                                ttest = stats.ttest_ind(control_num, test_num)
+                                if w:
+                                    print(f'Warning (t-test) in {plot_name}: {w[0].message}')
+                            label = f'category={category}, region={region}'
+                            print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
 
                     # Perform a t-test to compare the control against the current data set at each time period (each year).
                     if num_scenario_sets > 1 and scenario_set_index > 0:
@@ -653,7 +680,9 @@ if __name__ == '__main__':
     start_time = time.time()
     list_of_inputs = []
     for index in range(len(inputs)):
-        list_of_inputs.append(process_inputs(inputs[index]))
+        result = process_inputs(inputs[index])
+        if result is not None:
+            list_of_inputs.append(result)
 
     # Delete all the p-value files before we do any calculations to start a fresh run.
     for inputs in list_of_inputs:
