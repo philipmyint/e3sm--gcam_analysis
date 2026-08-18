@@ -128,11 +128,16 @@ def get_all_files_in_path(path, file_name_substrings=None, file_extension=None):
         If both file_name_substrings and file_extension are None, then all files in the directory will be included in the list.
     """
     file_paths = []
+    seen_names = {}  # basename -> first full path seen, for duplicate detection
     for root, _, files in os.walk(path):
         for file in files:
             if not file_name_substrings or all([substring in file for substring in file_name_substrings]):
                 if not file_extension or file.endswith(file_extension):
                     file_path = os.path.join(root, file)
+                    if file in seen_names:
+                        print(f"Warning: duplicate filename '{file}' found at '{file_path}' and '{seen_names[file]}'; keeping the first.")
+                        continue
+                    seen_names[file] = file_path
                     file_paths.append(file_path)
     return file_paths
 
