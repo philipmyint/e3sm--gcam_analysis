@@ -59,6 +59,7 @@ def process_inputs(inputs):
         end_years = inputs['end_years'][file_index]
         inputs_for_this_output_file = {'simulation_path': inputs['simulation_path'], 'output_files': output_file, 'netcdf_substrings': netcdf_substrings}
         inputs_for_this_output_file.update({'variables': variables, 'start_years': start_years, 'end_years': end_years})
+        inputs_for_this_output_file['extra_dim_aggregation'] = inputs.get('extra_dim_aggregation', 'first')
         list_of_inputs.append(inputs_for_this_output_file)
     return list_of_inputs
 
@@ -99,6 +100,14 @@ def process_dataset(ds):
             ds[variable] = ds[variable].isel(lev=-1)
             ds[variable] *= mole_fraction_TO_ppm*MM_ATM/MM_CO2
             ds[variable].attrs['units'] = 'ppm'
+
+    # Convert remaining /s flux variables to /month, consistent with time series extraction.
+    avg_seconds_per_month = years_TO_s / years_TO_months
+    for variable in list(ds.data_vars):
+        units = ds[variable].attrs.get('units', '')
+        if '/s' in units:
+            ds[variable] = ds[variable] * avg_seconds_per_month
+            ds[variable].attrs['units'] = units.replace('/s', '/month')
 
     return ds
 
@@ -167,7 +176,21 @@ def extract_spatial_data_from_netcdf_files(inputs):
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.
     print(f"Opening {len(netcdf_files)} file(s) with xarray...")
     ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True, compat='no_conflicts')[variables]
-    
+
+    # For variables with extra dimensions beyond time/lat/lon/ncol (e.g. levgrnd for TSOI), select index 0 or average before computing annual means.
+    # CO2 lev selection is handled later in process_dataset.
+    _spatial_dims = {'time', 'lat', 'lon', 'ncol'}
+    extra_dim_aggregation = inputs.get('extra_dim_aggregation', 'first')
+    for variable in variables:
+        if 'lev' in ds[variable].dims and variable.startswith('CO2'):
+            pass
+        else:
+            for d in [dim for dim in ds[variable].dims if dim not in _spatial_dims]:
+                if extra_dim_aggregation == 'mean':
+                    ds[variable] = ds[variable].mean(dim=d)
+                else:
+                    ds[variable] = ds[variable].isel({d: 0})
+
     # Shift output back by one month to get rid of the extra month (January in the next year after end_year) that somehow gets added.
     ds['time'] = xr.CFTimeIndex(ds.get_index('time').shift(-1, 'ME'))
 

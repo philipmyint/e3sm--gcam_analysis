@@ -46,6 +46,7 @@ default_inputs = {
 }
 
 LANDFRAC_EPSILON = 1e-12
+EPSILON = 1e-12  # avoid division by zero in percent difference
 
 def process_inputs(inputs):
     """ 
@@ -230,7 +231,8 @@ def plot_spatial_data_eam(inputs, grid_file):
 
     # add the year range to the plot name, before the extension if there is one
     plot_root, plot_ext = os.path.splitext(plot_name)
-    plot_name = f'{plot_root}_{start_year}-{end_year}{plot_ext}'
+    _diff_tag = {'absolute_difference': '_abs_diff', 'percent_difference': '_pct_diff'}.get(plot_type, '')
+    plot_name = f'{plot_root}_{start_year}-{end_year}{_diff_tag}{plot_ext}'
  
     # Store the grid file in an uxarray Dataset.
     grid = ux.open_grid(grid_file)
@@ -289,9 +291,10 @@ def plot_spatial_data_eam(inputs, grid_file):
                     raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
 
                 # Create a temporary NetCDF file with data between only the start and end years.
+                # Include plot_type in the name to prevent collisions between abs_diff and pct_diff workers running in parallel.
                 ds = ds_full.sel(year=slice(start_year, end_year))[variable]
                 ds_full.close()
-                wfile = os.path.join(plot_directory, f'temp_{variable}_{file_index}_{file_set_index}.nc')
+                wfile = os.path.join(plot_directory, f'temp_{plot_type}_{variable}_{file_index}_{file_set_index}.nc')
                 ds.to_netcdf(wfile, 'w')
                 ds.close()
                 # Load the temporal aggregate as a plain xr.DataArray rather than a ux.UxDataArray.
@@ -331,17 +334,9 @@ def plot_spatial_data_eam(inputs, grid_file):
     xrDataArrays_for_statistics = []
     df = uxds.to_dataframe()
 
-    # If we have a single data set (but potentially multiple files in this set), take the mean over all files
-    # for each spatial coordinate. For a single file this is equivalent to just plotting that file's values directly.
-    if num_files_in_each_set == 1:
-        df = df.mean(axis=1)
-        plot_data = df.to_xarray()
-        uxDataArrays_to_plot.append(convert_xarray_to_uxarray(plot_data, grid, variable=variable))
-        xrDataArrays_for_statistics.append(plot_data)
-        print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
-    
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
-    elif num_file_sets == 2:
+    # Check this before the single-set case because num_files_in_each_set==1 is also true when there is 1 file per set.
+    if num_file_sets == 2:
         # Take the mean over all files for each lat/lon coordinate in each data set.
         columns_control_set = [column for column in df.columns if column.endswith(f'_0')]
         columns_test_set = [column for column in df.columns if column.endswith(f'_1')]
@@ -379,6 +374,15 @@ def plot_spatial_data_eam(inputs, grid_file):
             xrDataArrays_for_statistics.append(control_plot_data)
             xrDataArrays_for_statistics.append(test_plot_data)
             print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
+
+    # If we have a single data set (but potentially multiple files), take the mean over all files.
+    # For a single file this is equivalent to just plotting that file's values directly.
+    elif num_files_in_each_set == 1:
+        df = df.mean(axis=1)
+        plot_data = df.to_xarray()
+        uxDataArrays_to_plot.append(convert_xarray_to_uxarray(plot_data, grid, variable=variable))
+        xrDataArrays_for_statistics.append(plot_data)
+        print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
 
     # This is when there are more than three files listed in one input set, so differences don't make sense.
     else:
@@ -526,7 +530,8 @@ def plot_spatial_data_elm(inputs):
     width = inputs['width'] 
 
     plot_root, plot_ext = os.path.splitext(plot_name)
-    plot_name = f'{plot_root}_{start_year}-{end_year}{plot_ext}'
+    _diff_tag = {'absolute_difference': '_abs_diff', 'percent_difference': '_pct_diff'}.get(plot_type, '')
+    plot_name = f'{plot_root}_{start_year}-{end_year}{_diff_tag}{plot_ext}'
 
     # We either have individual plots, in which case there could be multiple files arranged like [[file1, file2, file3, ...]],
     # or we could have ensemble plots, in which case there are at most two data sets, but potentially multiple files in each of the sets.
@@ -622,27 +627,15 @@ def plot_spatial_data_elm(inputs):
     dataArrays_to_plot = []
     dataArrays_for_statistics = []
 
-    # If we have a single data set (but potentially multiple files in this set), take the mean over all files
-    # for each spatial coordinate. For a single file this is equivalent to just plotting that file's values directly.
-    if num_files_in_each_set == 1:
-        # Use xarray's mean to properly handle NaN values
-        da = xrds.to_array(dim='files').mean(dim='files')
-        # Get the data variable name (should be the original variable name)
-        da.name = variable
-        dataArrays_to_plot.append(da)
-        dataArrays_for_statistics.append(da)
-        print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
-
     # If we have two data sets, we can plot either the absolute difference, percent difference, or the two data sets separately.
-    elif num_file_sets == 2:
+    # Check this before the single-set case because num_files_in_each_set==1 is also true when there is 1 file per set.
+    if num_file_sets == 2:
         # Take the mean over all files for each lat/lon coordinate in each data set.
         # Extract and average each ensemble separately using xarray
         vars_control = [v for v in xrds.data_vars if v.endswith(f'_0')]
         vars_test = [v for v in xrds.data_vars if v.endswith(f'_1')]
         control_da = xrds[vars_control].to_array(dim='files').mean(dim='files')
         test_da = xrds[vars_test].to_array(dim='files').mean(dim='files')
-        df_control_set = control_da.to_pandas()
-        df_test_set = test_da.to_pandas()
 
         # If there is more than one file per data set (meaning that we have an ensemble) and we do not want separate plots,
         # we can compare the two data sets by performing a t-test at each individual lat/lon coordinate and later adding stippling.
@@ -651,8 +644,10 @@ def plot_spatial_data_elm(inputs):
             df = xrds.to_dataframe()
             da_pvalues = df.apply(perform_ttest, columns_set_1=vars_control, columns_set_2=vars_test, axis=1).fillna(1).to_xarray()
 
-        # Perform a t-test to compare the two spatial data sets as whole over all coordinates. Print the results to the console and to an output file.
-        ttest = stats.ttest_ind(df_control_set, df_test_set)
+        # Perform a global t-test comparing all grid-cell values. Flatten to 1D and drop NaN (land mask) before testing.
+        ctrl_flat = control_da.values.flatten()
+        test_flat = test_da.values.flatten()
+        ttest = stats.ttest_ind(ctrl_flat[np.isfinite(ctrl_flat)], test_flat[np.isfinite(test_flat)])
         print_p_values(ttest, variable, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
 
         # Plot either an absolute difference, percent difference, or the two data sets separately.
@@ -667,7 +662,7 @@ def plot_spatial_data_elm(inputs):
         elif plot_type == 'percent_difference':
             # Plot percent differences between the two data sets. Add a tiny number to avoid a divide-by-zero error. Take the absolute value
             # so that if the control is negative, while the test set is positive, we get a positive value for the percent difference.
-            percent_da = ((test_da - control_da)/(control_da.abs() + EPSILON))*100
+            percent_da = ((test_da - control_da)/(np.abs(control_da) + EPSILON))*100
             percent_da.name = variable
             dataArrays_to_plot.append(percent_da)
             dataArrays_for_statistics.append(percent_da)
@@ -682,6 +677,15 @@ def plot_spatial_data_elm(inputs):
             dataArrays_for_statistics.append(control_da)
             dataArrays_for_statistics.append(test_da)
             print(f"Calculating {plot_type} of {num_file_sets} ensembles with {num_files_in_each_set} files in each ensemble.")
+
+    # If we have a single data set (but potentially multiple files), take the mean over all files.
+    # For a single file this is equivalent to just plotting that file's values directly.
+    elif num_files_in_each_set == 1:
+        da = xrds.to_array(dim='files').mean(dim='files')
+        da.name = variable
+        dataArrays_to_plot.append(da)
+        dataArrays_for_statistics.append(da)
+        print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
 
     # this is when there are more than three files listed in one input set, so differences don't make sense
     else:
@@ -815,8 +819,9 @@ if __name__ == '__main__':
     try:
         with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
             pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs)
-    except ValueError as e:
+    except Exception as e:
         print(e)
+        sys.exit(1)
         sys.exit(1)
 
     # Sort all the p-value files alphabetically.

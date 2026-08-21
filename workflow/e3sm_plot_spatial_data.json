@@ -28,5 +28,47 @@
         "start_year": 2015,
         "end_year": 2020,
         "plot_type": "mean"
+    },
+    {
+        "netcdf_files": [
+            "./output/control_spatial_data_elm.nc",
+            "./output/case1_spatial_data_elm.nc"
+        ],
+        "plot_directory": "./output/spatial_plots/compare_elm",
+        "plot_type": "percent_difference",
+        "start_year": 2015,
+        "end_year": 2020
+    },
+    {
+        "netcdf_files": [
+            "./output/control_spatial_data_eam.nc",
+            "./output/case1_spatial_data_eam.nc"
+        ],
+        "plot_directory": "./output/spatial_plots/compare_eam",
+        "plot_type": "percent_difference",
+        "grid_file": "../e3sm--gcam_analysis/2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
+        "start_year": 2015,
+        "end_year": 2020
+    },
+    {
+        "netcdf_files": [
+            "./output/control_spatial_data_elm.nc",
+            "./output/case1_spatial_data_elm.nc"
+        ],
+        "plot_directory": "./output/spatial_plots/compare_elm",
+        "plot_type": "absolute_difference",
+        "start_year": 2015,
+        "end_year": 2020
+    },
+    {
+        "netcdf_files": [
+            "./output/control_spatial_data_eam.nc",
+            "./output/case1_spatial_data_eam.nc"
+        ],
+        "plot_directory": "./output/spatial_plots/compare_eam",
+        "plot_type": "absolute_difference",
+        "grid_file": "../e3sm--gcam_analysis/2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
+        "start_year": 2015,
+        "end_year": 2020
     }
 ]

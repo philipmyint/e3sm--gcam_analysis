@@ -5,7 +5,11 @@
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [
             ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
-            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC"],
+            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC",
+            "ACTUAL_IMMOB_P", "ACTUAL_IMMOB", "BTRAN", "CH4PROD", "CPOOL", "CWDC", "DEADSTEMC", "DENIT", "EFLX_LH_TOT", "FAREA_BURNED",
+            "FCH4", "FPG_P", "FPG", "FSDS", "FSH", "F_CO2_SOIL", "GROSS_NMIN", "GROSS_PMIN", "LEAFC", "NDEP_TO_SMINN", "NFIX_TO_SMINN",
+            "PLANT_NDEMAND", "PLANT_PDEMAND", "POTENTIAL_IMMOB_P", "POTENTIAL_IMMOB", "QRUNOFF", "QSOIL", "QVEGE", "QVEGT", "RAIN",
+            "SMINN_TO_PLANT", "SMINP_TO_PLANT", "SMIN_NO3_LEACHED", "SNOW", "TLAI", "TOTSOMN", "TOTSOMP", "TSOI", "TWS", "XR"],
             ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
         ],
         "start_years": 2015,
@@ -18,7 +22,11 @@
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [
             ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
-            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC"],
+            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC",
+            "ACTUAL_IMMOB_P", "ACTUAL_IMMOB", "BTRAN", "CH4PROD", "CPOOL", "CWDC", "DEADSTEMC", "DENIT", "EFLX_LH_TOT", "FAREA_BURNED",
+            "FCH4", "FPG_P", "FPG", "FSDS", "FSH", "F_CO2_SOIL", "GROSS_NMIN", "GROSS_PMIN", "LEAFC", "NDEP_TO_SMINN", "NFIX_TO_SMINN",
+            "PLANT_NDEMAND", "PLANT_PDEMAND", "POTENTIAL_IMMOB_P", "POTENTIAL_IMMOB", "QRUNOFF", "QSOIL", "QVEGE", "QVEGT", "RAIN",
+            "SMINN_TO_PLANT", "SMINP_TO_PLANT", "SMIN_NO3_LEACHED", "SNOW", "TLAI", "TOTSOMN", "TOTSOMP", "TSOI", "TWS", "XR"],
             ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
         ],
         "start_years": 2015,

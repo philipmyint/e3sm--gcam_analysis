@@ -112,7 +112,7 @@ def process_dataframe(df):
 
     return df
 
-def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type, region):
+def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type, region, extra_dim_aggregation='first'):
     """ 
     Extracts the specified variables from an E3SM-generated NetCDF h0 file into a Pandas DataFrame and performs the indicated lat/lon aggregation.
     Each NetCDF file contains simulation results for one month in a particular year from either EAM (atmosphere model) or ELM (land model). 
@@ -141,9 +141,17 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
     if variables_except_landunits_and_pfts:
         # For CO2 concentration variables that have a lev dimension, select only the surface level (index -1, i.e. the lowest/highest-pressure level)
         # before converting to a DataFrame, so that all variables share the same (time, ncol) dimensions.
+        # For any other variable with extra dimensions beyond time/lat/lon/ncol, select index 0 (e.g. surface soil for levgrnd).
+        _spatial_dims = {'time', 'lat', 'lon', 'ncol'}
         for variable in variables_except_landunits_and_pfts:
             if 'lev' in ds[variable].dims and variable.startswith('CO2'):
                 ds[variable] = ds[variable].isel(lev=-1)
+            else:
+                for d in [dim for dim in ds[variable].dims if dim not in _spatial_dims]:
+                    if extra_dim_aggregation == 'mean':
+                        ds[variable] = ds[variable].mean(dim=d)
+                    else:
+                        ds[variable] = ds[variable].isel({d: 0})
         df = ds[variables_except_landunits_and_pfts].to_dataframe()
         # Remove the time index since we do not use it.
         df = df.reset_index(level='time', drop=True)
@@ -152,6 +160,19 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         df.columns = add_lists_elementwise(df.columns, units, list2_are_units=True)
     if variables_landunits_and_pfts:
         df_landunits_and_pfts = ds[variables_landunits_and_pfts].to_dataframe()
+
+    def _per_row_spatial_values(arr, df_ref):
+        # Broadcast a per-gridcell array to one value per row of df_ref, aligned by lat/lon or ncol.
+        flat = arr.flatten()
+        if 'lat' in df_ref.index.names and 'lon' in df_ref.index.names:
+            la, lo = np.meshgrid(ds['lat'].values, ds['lon'].values, indexing='ij')
+            lookup = pd.Series(flat, index=pd.MultiIndex.from_arrays(
+                [la.flatten(), lo.flatten()], names=['lat', 'lon']))
+            extra = [n for n in df_ref.index.names if n not in ('lat', 'lon')]
+            idx = df_ref.index.droplevel(extra) if extra else df_ref.index
+            return lookup.reindex(idx).values
+        n_reps = len(df_ref) // len(flat)
+        return np.tile(flat, n_reps)
 
     # 9 land units: vegetation, crop, ice, multiple ice, lake, wetland, urban tbd, urban hd, urban md. Currently, we want only vegetation (index = 0).
     if 'PCT_LANDUNIT' in variables:
@@ -169,7 +190,7 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             df = df.to_frame()
             df = df.rename(columns={'PCT_LANDUNIT': 'FRAC_VEG_H0'})
         # Add a column for the area at each lat/lon coordinate to the overall DataFrame.
-        df['AREA_H0 (km^2)'] = areas/km2_TO_m2
+        df['AREA_H0 (km^2)'] = _per_row_spatial_values(areas / km2_TO_m2, df)
 
     # 17 PFTs in order: 1 bare, 8 tree, 3 shrub, 3 grass, 1 crop, 1 empty. These can be further aggregated into subgroups as follows:
     # Bare soil (index 0), forest (the 8 trees, indices 1--8); shrub (indices 9--11); grass (indices 12--14), crop (index 15). Ignore the empty PFT.
@@ -195,11 +216,14 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
 
         # First, multiply all variables in the DataFrame except for the areas by the grid cell areas at each lat/lon coordinate.
         columns_to_multipy_by_areas = [label for label in df.columns if 'AREA' not in label]
-        df[columns_to_multipy_by_areas] *= areas
+        df[columns_to_multipy_by_areas] = df[columns_to_multipy_by_areas].multiply(
+            _per_row_spatial_values(areas, df), axis=0)
         
         # For EAM variables that correspond specifically to land or non-land (ocean) quantities, multiply by the land or non-land fractions.
-        df[[label for label in df.columns if '_LND' in label]] *= landfrac
-        df[[label for label in df.columns if '_OCN' in label]] *= non_landfrac
+        df[[label for label in df.columns if '_LND' in label]] = df[[label for label in df.columns if '_LND' in label]].multiply(
+            _per_row_spatial_values(landfrac, df), axis=0)
+        df[[label for label in df.columns if '_OCN' in label]] = df[[label for label in df.columns if '_OCN' in label]].multiply(
+            _per_row_spatial_values(non_landfrac, df), axis=0)
 
         # Sum over all latitude/longitude coordinates to get an area-weighted sum for each variable.
         df = df.sum().to_frame().T
@@ -249,7 +273,7 @@ def _extract_netcdf_file_into_dataframe_star(args):
     return extract_netcdf_file_into_dataframe(*args)
 
 def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_substrings, variables, 
-                lat_lon_aggregation_types=None, regions=None, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False, max_processes=None):
+                lat_lon_aggregation_types=None, regions=None, extra_dim_aggregation_types=None, process_variables=True, start_year=2015, end_year=2100, write_to_csv=False, max_processes=None):
     """ 
     Extracts time series data from E3SM-generated NetCDF h0 files in a simulation directory into a Pandas DataFrame and writes it to an output file. 
     The NetCDF files can be of more than one type (e.g., one set generated from the ELM model and another set from the EAM model in E3SM).
@@ -294,6 +318,8 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         lat_lon_aggregation_types = ['area_weighted_mean_or_sum']*len(variables)
     if not regions:
         regions = [None]*len(variables)
+    if not extra_dim_aggregation_types:
+        extra_dim_aggregation_types = ['first']*len(variables)
 
     # Iterate over all NetCDF file types.
     for index in range(len(variables)):
@@ -322,7 +348,7 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
 
         # Use multiprocessing to extract data from all the files. Put the data from each file into DataFrame, store all such DataFrames in a list.
         arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
-                             [regions[index]]*len(netcdf_files)))
+                             [regions[index]]*len(netcdf_files), [extra_dim_aggregation_types[index]]*len(netcdf_files)))
         # Limit processes to reduce memory pressure. Use the user-specified value if provided, otherwise default to the smaller of 16 and half the available CPUs.
         if max_processes is None:
             max_processes = MAX_PROCESSES
