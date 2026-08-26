@@ -167,10 +167,11 @@ def extract_spatial_data_from_netcdf_files(inputs):
     with xr.open_dataset(netcdf_files[0], decode_times=False) as ds_check:
         missing_vars = [v for v in variables if v not in ds_check.data_vars]
     if missing_vars:
-        print(f"Error: the following variables were not found in '{netcdf_files[0]}': {missing_vars}")
-        with xr.open_dataset(netcdf_files[0], decode_times=False) as ds_check:
-            print(f"  Available variables: {list(ds_check.data_vars)}")
-        return
+        print(f"Warning: the following variables were not found in '{netcdf_files[0]}' and will be skipped: {missing_vars}")
+        variables = [v for v in variables if v not in missing_vars]
+        if not variables:
+            print(f"Warning: no valid variables remain. Skipping '{output_file}'.")
+            return
     print(f"Extracting {len(variables)} variable(s): {variables}")
 
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.

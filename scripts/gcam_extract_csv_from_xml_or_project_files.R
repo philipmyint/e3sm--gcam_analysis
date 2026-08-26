@@ -3,7 +3,7 @@
 
 message(paste0("Start time: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S")))
 
-require(devtools)
+#require(devtools)
 library(dplyr)
 library(rgcam)
 library(rjson)

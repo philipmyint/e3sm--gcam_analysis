@@ -235,10 +235,12 @@ def extract_time_series_from_netcdf_file(inputs):
     missing_vars = [v for v in variables if v not in ds.data_vars
                     and v not in ('PCT_NAT_PFT', 'PCT_NATVEG')]  # these may be added implicitly
     if missing_vars:
-        print(f"Error: the following variables were not found in {file}: {missing_vars}")
-        print(f"  Available variables: {list(ds.data_vars)}")
-        ds.close()
-        return
+        print(f"Warning: the following variables were not found in {file} and will be skipped: {missing_vars}")
+        variables = [v for v in variables if v not in missing_vars]
+        if not variables:
+            print(f"Warning: no valid variables remain. Skipping '{output_file}'.")
+            ds.close()
+            return
     print(f"Variables to extract ({len(variables)}): {variables}")
 
     # Check which years actually exist in the file.

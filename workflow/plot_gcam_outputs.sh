@@ -24,7 +24,7 @@ trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # First load the R module and make sure the needed libraries are installed.
-module load r
+module load R/4.3.3
 
 # perlmutter (and compy?) has the required R packages, but chrysalis does not
 # chrysalis also does not have the required system libraries to install the required R packages

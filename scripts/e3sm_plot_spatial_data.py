@@ -118,10 +118,13 @@ def process_inputs(inputs):
     # Check that all requested variables exist in the first NetCDF file.
     missing_vars = [v for v in variables if v not in ds]
     if missing_vars:
-        available = list(ds.keys())
-        ds.close()
-        raise KeyError(f"Error: the following variables were not found in '{netcdf_files_flat[0]}': {missing_vars}. "
-                       f"Available variables: {available}")
+        print(f"Warning: the following variables were not found in '{netcdf_files_flat[0]}' and will be skipped: {missing_vars}")
+        variables = [v for v in variables if v not in missing_vars]
+        inputs['variables'] = variables
+        if not variables:
+            print(f"Warning: no valid variables remain. Skipping '{inputs.get('plot_name', 'plot')}'.")
+            ds.close()
+            return []
 
     # For the plotting options that have not been specified in the inputs dictionary, add keys for them if necessary and use the default values.
     for key in default_inputs.keys():

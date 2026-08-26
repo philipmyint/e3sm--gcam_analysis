@@ -141,15 +141,15 @@ def set_figure_options(fig, ax, options):
         else:
             legend_x_offset = options.get('legend_x_offset', None)
             if not legend_x_offset:
-                if legend_num_columns == 1:
-                    legend_x_offset = 1.3
-                else:
-                    legend_x_offset = 1 + 0.45*legend_num_columns
+                legend_x_offset = 1.02
             plt.legend(prop={'size': options.get('legend_label_size', legend_label_size_default)}, 
-                   frameon=False, loc='center right', bbox_to_anchor=(legend_x_offset, 0.5), ncol=legend_num_columns)
+                   frameon=False, loc='center left', bbox_to_anchor=(legend_x_offset, 0.5), ncol=legend_num_columns)
             
     ax.set_xlabel(options['x_label'], fontsize=options.get('x_label_size', axis_label_size_default))
     ax.set_ylabel(options['y_label'], fontsize=options.get('y_label_size', axis_label_size_default))
+    title = options.get('title')
+    if title:
+        ax.set_title(fr'{title}', fontsize=options.get('title_size', axis_label_size_default))
 
     x_scale = options.get('x_scale', scale_default)
     if x_scale:

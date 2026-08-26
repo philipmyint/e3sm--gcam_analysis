@@ -331,23 +331,26 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         file_type_name = ', '.join(netcdf_substrings[index])
     
         # Open the first NetCDF file to check that all requested variables exist and to print their names and units before spawning the pool.
+        vars_to_use = variables[index]
         if netcdf_files:
             ds_check = xr.open_dataset(netcdf_files[0])
             missing_vars = [v for v in variables[index] if v not in ds_check.data_vars]
             if missing_vars:
-                print(f"Error: the following variables were not found in {os.path.basename(netcdf_files[0])}: {missing_vars}")
-                print(f"  Available variables: {list(ds_check.data_vars)}")
-                ds_check.close()
-                return
+                print(f"Warning: the following variables were not found in {os.path.basename(netcdf_files[0])} and will be skipped: {missing_vars}")
+                vars_to_use = [v for v in variables[index] if v not in missing_vars]
+                if not vars_to_use:
+                    print(f"Warning: no valid variables remain for file type {index+1}/{len(variables)} ({file_type_name}). Skipping.")
+                    ds_check.close()
+                    continue
             print(f"Variables to extract for file type {index+1}/{len(variables)} ({file_type_name}):")
-            for v in variables[index]:
+            for v in vars_to_use:
                 units = ds_check[v].attrs.get('units', 'no units')
                 long_name = ds_check[v].attrs.get('long_name', '')
                 print(f"  {v} ({units}){': ' + long_name if long_name else ''}")
             ds_check.close()
 
         # Use multiprocessing to extract data from all the files. Put the data from each file into DataFrame, store all such DataFrames in a list.
-        arguments = list(zip(netcdf_files, [variables[index]]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
+        arguments = list(zip(netcdf_files, [vars_to_use]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
                              [regions[index]]*len(netcdf_files), [extra_dim_aggregation_types[index]]*len(netcdf_files)))
         # Limit processes to reduce memory pressure. Use the user-specified value if provided, otherwise default to the smaller of 16 and half the available CPUs.
         if max_processes is None:

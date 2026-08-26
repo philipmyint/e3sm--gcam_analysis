@@ -413,7 +413,6 @@ if __name__ == '__main__':
             inputs.extend(json.load(f))
 
     # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
-    start_time = time.time()
     list_of_inputs = []
     for index in range(len(inputs)):
         list_of_inputs.append(process_inputs(inputs[index]))

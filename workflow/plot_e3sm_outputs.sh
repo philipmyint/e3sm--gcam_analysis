@@ -39,8 +39,8 @@ python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_h0.py" \
     "${SCRIPT_DIR}/e3sm_extract_time_series_h0.json"
 
 # extract time series of specified surfdata variables from E3SM outputs and write to text files
-python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_surfdata_esm_dyn.py" \
-    "${SCRIPT_DIR}/e3sm_extract_time_series_surfdata_esm_dyn.json"
+python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_surfdata_iesm_dyn.py" \
+    "${SCRIPT_DIR}/e3sm_extract_time_series_surfdata_iesm_dyn.json"
 
 # extract spatial data of specified H0 variables from E3SM outputs and write to netcdf files
 python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_spatial_data_h0.py" \
