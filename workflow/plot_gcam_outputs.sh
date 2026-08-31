@@ -75,8 +75,8 @@ python3 "${SCRIPT_DIR}/../scripts/gcam_process_extracted_data.py" \
     "${SCRIPT_DIR}/gcam_process_extracted_data.json"
 
 # process the ehc diagnostics into single variable csv files for plotting
-python3 "${SCRIPT_DIR}/../scripts/gcam_compile_ehc_scalars.py" \
-    "${SCRIPT_DIR}/gcam_compile_ehc_scalars.json"
+python3 "${SCRIPT_DIR}/../scripts/gcam_compile_ehc_feedbacks.py" \
+    "${SCRIPT_DIR}/gcam_compile_ehc_feedbacks.json"
 
 # plot time series of specified variables from GCAM outputs
 python3 "${SCRIPT_DIR}/../scripts/gcam_plot_time_series.py" \

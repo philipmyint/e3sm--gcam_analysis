@@ -243,5 +243,47 @@
         "plot_directory": "./output/time_series_plots_gcam/individual",
         "aggregation_type_in_each_year": "area_weighted_mean",
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/hdd_scalars.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/cdd_scalars.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/comm_heating_diag.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/comm_cooling_diag.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/resid_heating_diag.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/resid_cooling_diag.csv",
+        "scenarios": ["control", "case1"],
+        "plot_directory": "./output/time_series_plots_gcam/individual",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean"
     }
 ]
