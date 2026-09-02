@@ -1,5 +1,7 @@
 import geopandas as gpd
+import itertools
 import json
+import math
 from matplotlib import pyplot as plt
 import multiprocessing
 import os
@@ -15,35 +17,37 @@ from utility_plots import *
 
 """ Dictionary of default input values for spatial plots. """
 default_inputs = {
+    'aggregate_to_region': False,
     'basin_label': 'basin',
     'category_label': 'sector',
     'cbar_limits': None,
     'cbar_on': True,
     'cmap': 'viridis',
-    'end_year': 2090,
     'height': height_default,
     'key_columns': None,
     'landtype_groups': 'modified',
     'linewidth': 0.5,
     'multiplier': 1,
-    'mean_or_sum_for_time_aggregation': 'mean',
-    'mean_or_sum_if_more_than_one_row_in_same_landtype_group': 'area_weighted_mean',
-    'mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin': 'mean',
+    'aggregation_function': 'sum',
     'notify_scenarios_transposed': False,
     'p_value_file': 'p_values.dat',
     'p_value_file_print_only_if_below_threshold': True,
     'p_value_threshold': 0.05,
+    'plot_years': [2015, 2025, 2035, 2045],
+    'plot_years_ncols': 2,
+    'plot_categories': None,
+    'plot_categories_ncols': 2,
     'plot_directory': './',
-    'plot_type': 'absolute_difference',
+    'plot_type': 'mean',
     'produce_png': produce_png_default, 
     'region_label': 'region', 
     'scenario_label': 'scenario', 
     'scenario_sets': None,
     'shape_file_basin_label': 'glu_nm',
     'shape_file_region_label': 'reg_nm',
-    'start_year': 2070,
     'stippling_hatches': 'xxxx',
     'stippling_on': True,
+    'units': None,
     'use_latex': use_latex_default, 
     'value_label': 'value',
     'width': width_default,   
@@ -52,6 +56,15 @@ default_inputs = {
     'title_size': axis_label_size_default,
     'year_label': 'year'            
 }
+
+def _aggregate(df_rows, value_label, method):
+    if method == 'sum':
+        return df_rows[value_label].sum()
+    if method == 'area_weighted_mean':
+        total_area = df_rows['area'].sum()
+        return (df_rows[value_label] * df_rows['area']).sum() / total_area if total_area != 0 else 0.0
+    return df_rows[value_label].mean()
+
 
 def process_inputs(inputs):
     """ 
@@ -66,7 +79,11 @@ def process_inputs(inputs):
     """
     # Check that the output file and shape file exist before trying to read them.
     if not os.path.exists(inputs['output_file']):
-        raise FileNotFoundError(f"Error: output file not found: '{inputs['output_file']}'")
+        print(f"Warning: output file not found, skipping: '{inputs['output_file']}'")
+        return None
+    if os.path.getsize(inputs['output_file']) == 0:
+        print(f"Warning: output file is empty, skipping: '{inputs['output_file']}'")
+        return None
     if not os.path.exists(inputs['shape_file']):
         raise FileNotFoundError(f"Error: shape file not found: '{inputs['shape_file']}'")
     df = read_file_into_dataframe(inputs['output_file'])
@@ -80,16 +97,30 @@ def process_inputs(inputs):
 
     # If the list of categories (e.g., sectors or landtypes) have not been specified, populate the list with all categories except the excluded ones.
     if 'categories' not in inputs:
-        if category_label in df.columns:
+        if isinstance(category_label, list) and all(c in df.columns for c in category_label):
+            combos = df[category_label].drop_duplicates()
+            inputs['categories'] = list(combos.itertuples(index=False, name=None))
+            if 'categories_to_exclude' in inputs:
+                exclude = {tuple(e) if isinstance(e, list) else e for e in inputs['categories_to_exclude']}
+                inputs['categories'] = [c for c in inputs['categories'] if c not in exclude]
+        elif not isinstance(category_label, list) and category_label in df.columns:
             inputs['categories'] = list(df[category_label].unique())
             if 'categories_to_exclude' in inputs:
                 inputs['categories'] = [column for column in inputs['categories'] if column not in inputs['categories_to_exclude']]
         else:
             inputs['categories'] = 'All'
     categories = inputs['categories']
-    # If the user entered a string indicating a single category, put that string in a list.
-    if isinstance(categories, str):
+    # If categories is a dict keyed by column label, expand to the Cartesian product of the per-column value lists.
+    if isinstance(categories, dict) and isinstance(category_label, list):
+        per_column = [categories[col] for col in category_label]
+        categories = list(itertools.product(*per_column))
+        inputs['categories'] = categories
+    elif isinstance(categories, str):
         categories = [categories]
+        inputs['categories'] = categories
+    elif isinstance(category_label, list):
+        # Convert any list-type categories (from JSON) to tuples.
+        categories = [tuple(c) if isinstance(c, list) else c for c in categories]
         inputs['categories'] = categories
 
     # Create the plot directory if it does not already exist. By default, put the name of the file containing p-value results in this directory.
@@ -110,7 +141,33 @@ def process_inputs(inputs):
     if 'title' not in inputs:
         inputs['title'] = output_file_name
     if 'plot_name' not in inputs:
-        inputs['plot_name'] = os.path.join(inputs['plot_directory'], 'spatial_' + output_file_name)
+        # Build a descriptive default name from the key plot parameters; strip '_processed' from the file base.
+        file_base = output_file_name.replace('_processed', '').replace('processed_', '')
+        _plot_type_abbrevs = {'absolute_difference': 'abs_diff', 'percent_difference': 'pct_diff'}
+        _raw_plot_type = inputs.get('plot_type', default_inputs['plot_type'])
+        plot_type_str = _plot_type_abbrevs.get(_raw_plot_type, _raw_plot_type)
+
+        raw_scenarios = inputs.get('scenarios', None)
+        # Include scenario name only when there is no comparison (exactly one scenario).
+        if raw_scenarios is None or check_is_list_of_lists(raw_scenarios) or len(list(raw_scenarios)) != 1:
+            scen_part = None
+        else:
+            scen_part = str(list(raw_scenarios)[0]).replace(' ', '_')
+
+        plot_years_val = inputs.get('plot_years', default_inputs['plot_years'])
+        if plot_years_val is None:
+            time_part = 'all_years'
+        elif len(plot_years_val) == 1:
+            time_part = str(plot_years_val[0])
+        else:
+            time_part = f'{plot_years_val[0]}-{plot_years_val[-1]}'
+
+        name_parts = [f'spatial_{file_base}_{plot_type_str}']
+        if scen_part:
+            name_parts.append(scen_part)
+        name_parts.append(time_part)
+        name = '_'.join(name_parts)
+        inputs['plot_name'] = os.path.join(inputs['plot_directory'], name)
     elif 'plot_name' in inputs and '/' not in inputs['plot_name']:
         # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
         inputs['plot_name'] = os.path.join(inputs['plot_directory'], inputs['plot_name'])
@@ -144,9 +201,8 @@ def process_inputs(inputs):
         raise KeyError(f"Error: value_label '{value_label}' not found in '{inputs['output_file']}'. "
                        f"Available columns: {list(df.columns)}")
 
-    # If mean_or_sum_if_more_than_one_row_in_same_landtype_group is area_weighted_mean, check that the 'area' column exists.
-    if inputs['mean_or_sum_if_more_than_one_row_in_same_landtype_group'] == 'area_weighted_mean' and 'area' not in df.columns:
-        raise KeyError(f"Error: mean_or_sum_if_more_than_one_row_in_same_landtype_group is 'area_weighted_mean' "
+    if inputs['aggregation_function'] == 'area_weighted_mean' and 'area' not in df.columns:
+        raise KeyError(f"Error: aggregation_function is 'area_weighted_mean' "
                        f"but no 'area' column found in '{inputs['output_file']}'. "
                        f"Consider using 'mean' or 'sum' instead, or add area data using gcam_add_areas_to_files.py.")
 
@@ -164,12 +220,11 @@ def process_inputs(inputs):
             print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
                   f"and will produce empty/zero spatial plots: {missing_scenarios}")
 
-    # Verify the plot file is writable before doing any work.
+    # Verify the plot directory is writable before doing any work.
     plot_name = inputs['plot_name']
-    try:
-        open(plot_name, 'a').close()
-    except OSError as e:
-        raise OSError(f"Error: cannot write to plot file '{plot_name}': {e}")
+    plot_dir = os.path.dirname(plot_name) or '.'
+    if not os.access(plot_dir, os.W_OK):
+        raise OSError(f"Error: plot directory is not writable: '{plot_dir}'")
 
     return inputs
 
@@ -190,21 +245,19 @@ def plot_spatial_data(inputs):
     output_file = inputs['output_file']
     
     # Extract all other plotting options.
+    aggregate_to_region = inputs['aggregate_to_region']
     basin_label = inputs['basin_label']
     categories = inputs['categories']
     category_label = inputs['category_label']
     cbar_limits = inputs['cbar_limits']
     cbar_on = inputs['cbar_on']
     cmap_color = inputs['cmap']
-    end_year = inputs['end_year']
     height = inputs['height']
     key_columns = inputs['key_columns']
     landtype_groups = inputs['landtype_groups']
     linewidth = inputs['linewidth']
     multiplier = inputs['multiplier']
-    mean_or_sum_for_time_aggregation = inputs['mean_or_sum_for_time_aggregation']
-    mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs['mean_or_sum_if_more_than_one_row_in_same_landtype_group']
-    mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin = inputs['mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin']
+    aggregation_function = inputs['aggregation_function']
     p_value_file = inputs['p_value_file']
     p_value_file_print_only_if_below_threshold = inputs['p_value_file_print_only_if_below_threshold']
     p_value_threshold = inputs['p_value_threshold']
@@ -217,30 +270,39 @@ def plot_spatial_data(inputs):
     shape_file = inputs['shape_file']
     shape_file_basin_label = inputs['shape_file_basin_label']
     shape_file_region_label = inputs['shape_file_region_label']
-    start_year = inputs['start_year']
     stippling_hatches = inputs['stippling_hatches']
     stippling_on = inputs['stippling_on']
     title = inputs['title']
     title_size = inputs['title_size']
     use_latex = inputs['use_latex']
     value_label = inputs['value_label']
+    units = inputs.get('units', None)
     width = inputs['width']
     x_tick_label_size = inputs['x_tick_label_size']
     y_tick_label_size = inputs['y_tick_label_size']
     year_label = inputs['year_label']
 
-    # Set the plotting options. Add percent difference to the title if not already present.
-    if plot_type == 'percent_difference' and title and (f'%' not in title or 'percent' not in title):
-        title += rf' (\% difference)'
+    # Append type/units suffix to title; define units_str for panel titles.
+    if plot_type == 'percent_difference':
+        if title and '%' not in title and 'percent' not in title:
+            title += r' (\% difference)'
+        units_str = ' (%)'
+    elif plot_type == 'absolute_difference' and units:
+        title += f' ({units})'
+        units_str = f' ({units})'
+    else:
+        units_str = ''
     plot_options = dict(width=width, height=height, name=plot_name, produce_png=produce_png)
     plot_options.update(zip(['x_tick_label_size', 'y_tick_label_size', 'use_latex'], [x_tick_label_size, y_tick_label_size, use_latex]))
 
     # Use LaTeX fonts for figures and set font size of tick labels.
     setup_plot_params(plot_options)
 
-    # Read the data file into a Pandas DataFrame and select rows between the start and end years.
+    # Read the data file into a Pandas DataFrame and filter to the requested years if specified.
     df = read_file_into_dataframe(output_file)
-    df = df[(df[year_label] >= start_year) & (df[year_label] <= end_year)]
+    plot_years = inputs.get('plot_years', None)
+    if plot_years is not None:
+        df = df[df[year_label].isin(plot_years)]
     # Apply the multiplier to the value column (this could be used to change units, for example).
     df[value_label] *= multiplier
 
@@ -259,16 +321,25 @@ def plot_spatial_data(inputs):
         dataframes.append(df_all) 
         categories.remove('All')
     if any(item in landtype_groups for item in categories):
+        col = category_label if isinstance(category_label, str) else category_label[0]
         for landtype_group in landtype_groups:
             if landtype_group in categories:
-                df_this_landtype_group = produce_dataframe_for_landtype_group(df, landtype_group, category_label, 
-                    value_label, landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns)
+                # Only treat as a group if the sub-landtypes are actually present in the data.
+                if not df[col].isin(landtype_groups[landtype_group]).any():
+                    continue
+                df_this_landtype_group = produce_dataframe_for_landtype_group(df, landtype_group, category_label,
+                    value_label, landtype_groups, aggregation_function, key_columns)
                 dataframes.append(df_this_landtype_group)
                 categories.remove(landtype_group)
     if categories:
-        df = df[df[category_label].isin(categories)]
+        if isinstance(category_label, list):
+            df = df[df[category_label].apply(tuple, axis=1).isin(set(categories))]
+        else:
+            df = df[df[category_label].isin(categories)]
         dataframes.append(df)
     df = pd.concat(dataframes).reset_index()
+    if aggregate_to_region and basin_label in df.columns:
+        df = df.drop(columns=[basin_label])
 
     # Read the shape file into a GeoDataFrame from the GeoPandas library and get all regions in the file.
     gdf = gpd.read_file(shape_file)
@@ -294,6 +365,187 @@ def plot_spatial_data(inputs):
             scenarios_indices_this_set = [f'scen={index}_{i}' for i in range(num_scenarios_in_each_set)]
             scenario_columns.extend(scenarios_indices_this_set)
 
+    # If plot_years is set without plot_categories, produce one panel per year in a single multi-panel figure.
+    plot_categories = inputs.get('plot_categories', None)
+    if plot_years is not None and plot_categories is None:
+        ncols = inputs.get('plot_years_ncols') or len(plot_years)
+        nrows = math.ceil(len(plot_years) / ncols)
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
+        axes_flat = list(axes.flat) if hasattr(axes, 'flat') else [axes]
+        num_scenario_sets_local = len(scenarios[0]) if check_is_list_of_lists(scenarios) else 0
+        vmin, vmax = (cbar_limits[0], cbar_limits[1]) if cbar_limits else (None, None)
+
+        for panel_idx, year in enumerate(plot_years):
+            ax = axes_flat[panel_idx]
+            df_year = df[df[year_label] == year]
+            if df_year.empty:
+                print(f"Warning: year {year} not found in data. Skipping panel.")
+                ax.set_visible(False)
+                continue
+            gdf_panel = gdf.copy()
+            for col in scenario_columns:
+                gdf_panel[col] = float('nan')
+
+            for index, scenario in enumerate(scenario_list):
+                df_this_scenario = df_year[df_year[scenario_label] == scenario]
+                for region in regions:
+                    region_filter = gdf_panel[shape_file_region_label] == region
+                    if basin_label in df_this_scenario.columns:
+                        basins = gdf_panel[region_filter][shape_file_basin_label].unique()
+                        for basin in basins:
+                            basin_filter = gdf_panel[shape_file_basin_label] == basin
+                            if basin not in gcam_basin_names_and_abbrevations:
+                                gdf_panel.loc[region_filter & basin_filter, scenario_columns[index]] = 0
+                            else:
+                                basin_abbrv = gcam_basin_names_and_abbrevations[basin]
+                                df_rows = df_this_scenario[
+                                    (df_this_scenario[region_label] == region) &
+                                    (df_this_scenario[basin_label] == basin_abbrv)
+                                ]
+                                gdf_panel.loc[region_filter & basin_filter, scenario_columns[index]] = _aggregate(
+                                    df_rows, value_label, aggregation_function)
+                    else:
+                        df_rows = df_this_scenario[df_this_scenario[region_label] == region]
+                        gdf_panel.loc[region_filter, scenario_columns[index]] = _aggregate(
+                            df_rows, value_label, aggregation_function)
+
+            gdf_panel.fillna(0, inplace=True)
+
+            if len(scenario_list) == 1:
+                gdf_panel['plot'] = gdf_panel[scenario_columns[0]]
+            elif plot_type == 'mean':
+                gdf_panel['plot'] = gdf_panel[scenario_columns].mean(axis=1)
+            elif plot_type in ('absolute_difference', 'percent_difference'):
+                if not check_is_list_of_lists(scenarios):
+                    columns_control = [scenario_columns[0]]
+                    columns_test = scenario_columns[1:]
+                else:
+                    columns_control = [x for x in scenario_columns if x.startswith('scen=0')]
+                    columns_test = [x for x in scenario_columns if not x.startswith('scen=0')]
+                    if num_scenario_sets_local == 2:
+                        df_tmp = pd.DataFrame({c: gdf_panel[c] for c in columns_control + columns_test})
+                        gdf_panel['p_value'] = df_tmp.apply(
+                            perform_ttest, columns_set_1=columns_control, columns_set_2=columns_test, axis=1).fillna(1)
+                control_data = gdf_panel[columns_control].mean(axis=1)
+                test_data = gdf_panel[columns_test].mean(axis=1)
+                if plot_type == 'percent_difference':
+                    gdf_panel['plot'] = (test_data - control_data) / (control_data + EPSILON) * 100
+                else:
+                    gdf_panel['plot'] = test_data - control_data
+
+            panel_title = f'{year}{units_str}'
+            ax.set_title(panel_title, fontdict={'fontsize': title_size})
+            gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
+                           legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
+            if 'p_value' in gdf_panel.columns and stippling_on:
+                gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
+                    ax=ax, facecolor='none', color='none', hatch=stippling_hatches, linewidth=0)
+
+        for panel_idx in range(len(plot_years), nrows * ncols):
+            axes_flat[panel_idx].set_visible(False)
+
+        plot_options['name'] = plot_name
+        fig.set_size_inches(width * ncols, height * nrows)
+        save_figure(plot_name, fig, plot_options)
+        plt.close(fig)
+        print(f"Elapsed time for producing plot {plot_name}: {time.time() - start_time:.2f} seconds")
+        return
+
+    # If plot_categories is set, produce one file per year in plot_years with one panel per category.
+    if plot_categories is not None:
+        years_to_loop = plot_years if plot_years is not None else sorted(df[year_label].unique())
+        num_scenario_sets_local = len(scenarios[0]) if check_is_list_of_lists(scenarios) else 0
+        for year in years_to_loop:
+            df_year = df[df[year_label] == year]
+            if df_year.empty:
+                print(f"Warning: year {year} not found in data. Skipping.")
+                continue
+            ncols = inputs.get('plot_categories_ncols') or len(plot_categories)
+            nrows = math.ceil(len(plot_categories) / ncols)
+            fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
+            axes_flat = list(axes.flat) if hasattr(axes, 'flat') else [axes]
+            vmin, vmax = (cbar_limits[0], cbar_limits[1]) if cbar_limits else (None, None)
+
+            for panel_idx, category in enumerate(plot_categories):
+                ax = axes_flat[panel_idx]
+                if isinstance(category_label, list) and isinstance(category, (tuple, list)):
+                    df_cat = df_year[(df_year[category_label] == list(category)).all(axis=1)]
+                else:
+                    df_cat = df_year[df_year[category_label] == category]
+                if df_cat.empty:
+                    print(f"Warning: category '{category}' not found for year {year}. Skipping panel.")
+                    ax.set_visible(False)
+                    continue
+                gdf_panel = gdf.copy()
+                for col in scenario_columns:
+                    gdf_panel[col] = float('nan')
+
+                for index, scenario in enumerate(scenario_list):
+                    df_this_scenario = df_cat[df_cat[scenario_label] == scenario]
+                    for region in regions:
+                        region_filter = gdf_panel[shape_file_region_label] == region
+                        if basin_label in df_this_scenario.columns:
+                            basins = gdf_panel[region_filter][shape_file_basin_label].unique()
+                            for basin in basins:
+                                basin_filter = gdf_panel[shape_file_basin_label] == basin
+                                if basin not in gcam_basin_names_and_abbrevations:
+                                    gdf_panel.loc[region_filter & basin_filter, scenario_columns[index]] = 0
+                                else:
+                                    basin_abbrv = gcam_basin_names_and_abbrevations[basin]
+                                    df_rows = df_this_scenario[
+                                        (df_this_scenario[region_label] == region) &
+                                        (df_this_scenario[basin_label] == basin_abbrv)
+                                    ]
+                                    gdf_panel.loc[region_filter & basin_filter, scenario_columns[index]] = _aggregate(
+                                        df_rows, value_label, aggregation_function)
+                        else:
+                            df_rows = df_this_scenario[df_this_scenario[region_label] == region]
+                            gdf_panel.loc[region_filter, scenario_columns[index]] = _aggregate(
+                                df_rows, value_label, aggregation_function)
+
+                gdf_panel.fillna(0, inplace=True)
+
+                if len(scenario_list) == 1:
+                    gdf_panel['plot'] = gdf_panel[scenario_columns[0]]
+                elif plot_type == 'mean':
+                    gdf_panel['plot'] = gdf_panel[scenario_columns].mean(axis=1)
+                elif plot_type in ('absolute_difference', 'percent_difference'):
+                    if not check_is_list_of_lists(scenarios):
+                        columns_control = [scenario_columns[0]]
+                        columns_test = scenario_columns[1:]
+                    else:
+                        columns_control = [x for x in scenario_columns if x.startswith('scen=0')]
+                        columns_test = [x for x in scenario_columns if not x.startswith('scen=0')]
+                        if num_scenario_sets_local == 2:
+                            df_tmp = pd.DataFrame({c: gdf_panel[c] for c in columns_control + columns_test})
+                            gdf_panel['p_value'] = df_tmp.apply(
+                                perform_ttest, columns_set_1=columns_control, columns_set_2=columns_test, axis=1).fillna(1)
+                    control_data = gdf_panel[columns_control].mean(axis=1)
+                    test_data = gdf_panel[columns_test].mean(axis=1)
+                    if plot_type == 'percent_difference':
+                        gdf_panel['plot'] = (test_data - control_data) / (control_data + EPSILON) * 100
+                    else:
+                        gdf_panel['plot'] = test_data - control_data
+
+                panel_title = f'{category} ({year}){units_str}'
+                ax.set_title(panel_title, fontdict={'fontsize': title_size})
+                gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
+                               legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
+                if 'p_value' in gdf_panel.columns and stippling_on:
+                    gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
+                        ax=ax, facecolor='none', color='none', hatch=stippling_hatches, linewidth=0)
+
+            for panel_idx in range(len(plot_categories), nrows * ncols):
+                axes_flat[panel_idx].set_visible(False)
+
+            year_plot_name = f'{plot_name}_{year}'
+            plot_options['name'] = year_plot_name
+            fig.set_size_inches(width * ncols, height * nrows)
+            save_figure(year_plot_name, fig, plot_options)
+            plt.close(fig)
+            print(f"Elapsed time for producing plot {year_plot_name}: {time.time() - start_time:.2f} seconds")
+        return
+
     # For each scenario, region, and basin, calculate the mean or sum of all relevant categories over all years and put into the GeoDataFrame.
     for index, scenario in enumerate(scenario_list):
         df_this_scenario = df[df[scenario_label] == scenario]
@@ -310,31 +562,17 @@ def plot_spatial_data(inputs):
                     else:
                         # Basin names are fully written out in the GeoDataFrame (shape file), while they are abbreviated in the DataFrame (data file).
                         basin_abbrv = gcam_basin_names_and_abbrevations[basin]
-                        # Calculate the mean or sum of all relevant categories over all years for the current region and basin.
-                        if mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin == 'mean':
-                            df_grouped_by_year = \
-                            df_this_scenario[(df_this_scenario[region_label] == region) & \
-                                        (df_this_scenario[basin_label] == basin_abbrv)].groupby('year')[value_label].mean()
-                        elif mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin == 'sum':
-                            df_grouped_by_year = \
-                            df_this_scenario[(df_this_scenario[region_label] == region) & \
-                                        (df_this_scenario[basin_label] == basin_abbrv)].groupby('year')[value_label].sum()
-                        if mean_or_sum_for_time_aggregation == 'mean':
-                            gdf.loc[region_filter & basin_filter, scenario_columns[index]] = df_grouped_by_year.mean()
-                        elif mean_or_sum_for_time_aggregation == 'sum':
-                            gdf.loc[region_filter & basin_filter, scenario_columns[index]] = df_grouped_by_year.sum()
+                        df_rows = df_this_scenario[
+                            (df_this_scenario[region_label] == region) &
+                            (df_this_scenario[basin_label] == basin_abbrv)
+                        ]
+                        gdf.loc[region_filter & basin_filter, scenario_columns[index]] = _aggregate(
+                            df_rows, value_label, aggregation_function)
             else:
-                # If the DataFrame containing the data of interest does not provide basin-level information (only regions), calculate the mean or sum
-                # of all relevant categories over all years for the current region in the for-loop iteration. On the spatial plot, the displayed
-                # quantity will take on a uniform value over the entire region (over all basins that encompass that region).
-                if mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin == 'mean':
-                    df_grouped_by_year = df_this_scenario[df_this_scenario[region_label] == region].groupby('year')[value_label].mean()
-                elif mean_or_sum_if_more_than_one_row_in_same_region_and_or_basin == 'sum':
-                    df_grouped_by_year = df_this_scenario[df_this_scenario[region_label] == region].groupby('year')[value_label].sum()
-                if mean_or_sum_for_time_aggregation == 'mean':
-                    gdf.loc[region_filter, scenario_columns[index]] = df_grouped_by_year.mean()
-                elif mean_or_sum_for_time_aggregation == 'sum':
-                    gdf.loc[region_filter, scenario_columns[index]] = df_grouped_by_year.sum()
+                # Uniform value per region; all rows in region are aggregated together.
+                df_rows = df_this_scenario[df_this_scenario[region_label] == region]
+                gdf.loc[region_filter, scenario_columns[index]] = _aggregate(
+                    df_rows, value_label, aggregation_function)
     # Fill any missing values in the GeoDataFrame with 0.
     gdf.fillna(0, inplace=True)
 
@@ -415,7 +653,9 @@ if __name__ == '__main__':
     # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
     list_of_inputs = []
     for index in range(len(inputs)):
-        list_of_inputs.append(process_inputs(inputs[index]))
+        result = process_inputs(inputs[index])
+        if result is not None:
+            list_of_inputs.append(result)
 
     # Delete all the p-value files before we do any calculations to start a fresh run.
     for inputs in list_of_inputs:

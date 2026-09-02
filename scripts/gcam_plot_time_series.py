@@ -242,8 +242,13 @@ def process_inputs(inputs):
         else:
             inputs['categories'] = 'All'
     categories = inputs['categories']
+    # If categories is a dict keyed by column label, expand to the Cartesian product of the per-column value lists.
+    if isinstance(categories, dict) and isinstance(category_label, list):
+        per_column = [categories[col] for col in category_label]
+        categories = list(itertools.product(*per_column))
+        inputs['categories'] = categories
     # If the user entered a string indicating a single category, put that string in a list.
-    if isinstance(categories, str):
+    elif isinstance(categories, str):
         categories = [categories]
         inputs['categories'] = categories
     elif isinstance(category_label, list):

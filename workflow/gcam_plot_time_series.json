@@ -198,11 +198,13 @@
         "output_file": "./output/gcam_csv/building_final_energy_by_service_and_fuel_processed.csv",
         "scenarios": ["control", "case1"],
         "category_label": ["sector", "input"],
+        "categories": {"sector": ["comm cooling", "comm heating", "resid cooling", "resid heating"], "input": ["district heat", "delivered biomass", "delivered coal", "delivered gas", "elect_td_bld", "traditional biomass"]},
         "plot_directory": "./output/time_series_plots_gcam/individual"
     },
     {
         "output_file": "./output/gcam_csv/building_service_costs_processed.csv",
         "scenarios": ["control", "case1"],
+        "categories_to_exclude": ["comm others", "resid others"],
         "plot_directory": "./output/time_series_plots_gcam/individual",
         "aggregation_type_in_each_year": "area_weighted_mean"
     },

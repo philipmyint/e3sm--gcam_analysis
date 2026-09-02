@@ -81,3 +81,7 @@ python3 "${SCRIPT_DIR}/../scripts/gcam_compile_ehc_feedbacks.py" \
 # plot time series of specified variables from GCAM outputs
 python3 "${SCRIPT_DIR}/../scripts/gcam_plot_time_series.py" \
     "${SCRIPT_DIR}/gcam_plot_time_series.json"
+
+# plot spatial data of specified variables from GCAM outputs
+python3 "${SCRIPT_DIR}/../scripts/gcam_plot_spatial_data.py" \
+    "${SCRIPT_DIR}/gcam_plot_spatial_data.json"
