@@ -67,7 +67,7 @@ def process_extracted_data(inputs):
     df = df.sort_values(by='year')
 
     # For carbon-density files, replace 'None Specified' in the 'units' column with 'MgC/ha'.
-    if 'carbon-density' in input_file and 'units' in df.columns:
+    if 'carbon_density' in input_file and 'units' in df.columns:
         df.loc[df['units'] == 'None Specified', 'units'] = 'MgC/ha'
     
     # For scaler files, replace NA in the 'units' column with 'Unitless'.

@@ -175,28 +175,40 @@ def produce_dataframe_for_landtype_group(df, category, category_label, value_lab
     landtypes = landtype_groups[category]
     df = df[df[category_label].isin(landtypes)]
 
+    # Units are metadata, not a quantity to sum; save a single value (if consistent) and exclude them from the aggregation
+    # so they aren't concatenated together by sum().
+    saved_metadata = {}
+    for metadata_col in ('units', 'area_units'):
+        if metadata_col in df.columns:
+            unique_values = df[metadata_col].dropna().unique()
+            saved_metadata[metadata_col] = unique_values[0] if len(unique_values) == 1 else None
+    df = df.drop(columns=[c for c in saved_metadata if c in df.columns])
+
     # Infer groupby columns from the DataFrame when none are specified; exclude category_label so landtypes collapse into one group row.
     if key_columns is None:
-        non_key = {value_label, 'area', 'units', 'area_units', category_label}
+        non_key = {value_label, 'area', category_label}
         key_columns = [c for c in df.columns if c not in non_key]
 
+    # dropna=False so landtypes with no meaningful value in a key column (e.g., 'water'/'fertilizer' for non-crop landtypes) aren't dropped from the group.
     if mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'mean':
         landtypes_in_df = [x for x in landtypes if x in df[category_label].unique()]
         num_landtypes_in_df = len(landtypes_in_df)
-        df = df.groupby(key_columns).sum()
+        df = df.groupby(key_columns, dropna=False).sum()
         df.loc[:, value_label] /= num_landtypes_in_df
         df = df.reset_index()
     elif mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'sum':
-        df = df.groupby(key_columns).sum().reset_index()
+        df = df.groupby(key_columns, dropna=False).sum().reset_index()
     elif mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'area_weighted_mean':
         df.loc[:, value_label] = df['area']*df[value_label]
-        df = df.groupby(key_columns).sum()
+        df = df.groupby(key_columns, dropna=False).sum()
         total_area = df['area']
         df.loc[:, value_label] = df.loc[:, value_label].div(total_area, axis=0)
         df = df.reset_index()
     elif mean_or_sum_if_more_than_one_row_in_same_landtype_group == 'area_weighted_sum':
         df.loc[:, value_label] = df['area']*df[value_label]
-        df = df.groupby(key_columns).sum().reset_index()
+        df = df.groupby(key_columns, dropna=False).sum().reset_index()
+    for metadata_col, metadata_value in saved_metadata.items():
+        df[metadata_col] = metadata_value
     df[category_label] = category
     return df
 

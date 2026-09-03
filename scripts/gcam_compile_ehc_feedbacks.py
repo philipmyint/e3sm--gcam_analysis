@@ -361,7 +361,7 @@ def compile_scaled_hdd_cdd_diag(inputs):
 
     for col in value_columns:
         out_df = df[key_columns + [col] + trailing].rename(columns={col: 'value'}).copy()
-        out_df['units'] = 'Unitless'
+        out_df['units'] = 'degF/yr'
         out_df = out_df[key_columns + ['value', 'units'] + trailing]
         write_dataframe_to_file(out_df, output_files[col])
 

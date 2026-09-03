@@ -66,6 +66,18 @@ def _aggregate(df_rows, value_label, method):
     return df_rows[value_label].mean()
 
 
+def _panel_units_str(df_panel, plot_type, default_units_str):
+    """ Looks up the units for a single category panel, since different categories in the same file can have different units. """
+    if plot_type not in ('absolute_difference', 'mean', 'percent_difference') or 'units' not in df_panel.columns:
+        return default_units_str
+    panel_units = df_panel['units'].dropna().unique()
+    if len(panel_units) != 1:
+        return default_units_str
+    if plot_type == 'percent_difference':
+        return f' (% diff in {panel_units[0]})'
+    return f' ({panel_units[0]})'
+
+
 def process_inputs(inputs):
     """ 
     Processes a dictionary of inputs (keys are options, values are choices for those options) for creating spatial plots.
@@ -104,9 +116,11 @@ def process_inputs(inputs):
                 exclude = {tuple(e) if isinstance(e, list) else e for e in inputs['categories_to_exclude']}
                 inputs['categories'] = [c for c in inputs['categories'] if c not in exclude]
         elif not isinstance(category_label, list) and category_label in df.columns:
-            inputs['categories'] = list(df[category_label].unique())
             if 'categories_to_exclude' in inputs:
-                inputs['categories'] = [column for column in inputs['categories'] if column not in inputs['categories_to_exclude']]
+                inputs['categories'] = [column for column in df[category_label].unique() if column not in inputs['categories_to_exclude']]
+            else:
+                # No categories were excluded, so this is equivalent to aggregating over 'All' categories; label it as such.
+                inputs['categories'] = 'All'
         else:
             inputs['categories'] = 'All'
     categories = inputs['categories']
@@ -122,6 +136,46 @@ def process_inputs(inputs):
         # Convert any list-type categories (from JSON) to tuples.
         categories = [tuple(c) if isinstance(c, list) else c for c in categories]
         inputs['categories'] = categories
+
+    # If plot_categories is a dict keyed by column label, expand to the Cartesian product of the per-column value lists,
+    # producing one panel per combination of values across the category_label entries.
+    plot_categories = inputs.get('plot_categories')
+    if isinstance(plot_categories, dict) and isinstance(category_label, list):
+        per_column = [plot_categories[col] for col in category_label]
+        plot_categories = list(itertools.product(*per_column))
+        inputs['plot_categories'] = plot_categories
+
+    # Panel categories must also be available in the prepared data. This is needed
+    # when a panel requests an aggregate landtype group such as "crop".
+    if isinstance(plot_categories, list):
+        for category in plot_categories:
+            normalized_category = tuple(category) if isinstance(category_label, list) and isinstance(category, list) else category
+            if normalized_category not in categories:
+                categories.append(normalized_category)
+        inputs['categories'] = categories
+
+    # If units have not been specified explicitly, fall back to the 'units' column in the data file, if present.
+    # Filter to the selected categories first, since different categories in the same file can have different units.
+    if isinstance(category_label, list):
+        category_label_in_data = all(c in df.columns for c in category_label)
+    else:
+        category_label_in_data = category_label in df.columns
+    if 'units' not in inputs and 'units' in df.columns:
+        relevant_categories = plot_categories if plot_categories is not None else (categories if categories != 'All' else None)
+        df_units_source = pd.DataFrame()
+        if relevant_categories and category_label_in_data:
+            if isinstance(category_label, list):
+                mask = df[category_label].apply(tuple, axis=1).isin(set(relevant_categories))
+            else:
+                mask = df[category_label].isin(relevant_categories)
+            df_units_source = df[mask]
+        # Fall back to the whole file if none of the relevant categories matched (e.g., they are landtype group
+        # names like 'crop' that are aggregated from raw values rather than literal column values).
+        if df_units_source.empty:
+            df_units_source = df
+        data_units = df_units_source['units'].dropna().unique()
+        if len(data_units) == 1:
+            inputs['units'] = data_units[0]
 
     # Create the plot directory if it does not already exist. By default, put the name of the file containing p-value results in this directory.
     if 'plot_directory' not in inputs:
@@ -159,13 +213,32 @@ def process_inputs(inputs):
             time_part = 'all_years'
         elif len(plot_years_val) == 1:
             time_part = str(plot_years_val[0])
+        elif inputs.get('plot_categories') is not None:
+            time_part = None
         else:
             time_part = f'{plot_years_val[0]}-{plot_years_val[-1]}'
 
-        name_parts = [f'spatial_{file_base}_{plot_type_str}']
+        # For multi-year panel plots with a single selected category, include that category in the name.
+        # 'All' should only be included when it represents a real category dimension being aggregated over.
+        categories_val = inputs.get('categories')
+        if isinstance(category_label, list):
+            category_label_in_data = all(c in df.columns for c in category_label)
+        else:
+            category_label_in_data = category_label in df.columns
+        if (inputs.get('plot_categories') is None and isinstance(categories_val, list) and len(categories_val) == 1
+                and (categories_val[0] != 'All' or category_label_in_data)):
+            category_part = str(categories_val[0]).replace(' ', '_')
+        else:
+            category_part = None
+
+        name_parts = ['spatial', file_base]
+        if category_part:
+            name_parts.append(category_part)
+        name_parts.append(plot_type_str)
         if scen_part:
             name_parts.append(scen_part)
-        name_parts.append(time_part)
+        if time_part:
+            name_parts.append(time_part)
         name = '_'.join(name_parts)
         inputs['plot_name'] = os.path.join(inputs['plot_directory'], name)
     elif 'plot_name' in inputs and '/' not in inputs['plot_name']:
@@ -286,8 +359,8 @@ def plot_spatial_data(inputs):
     if plot_type == 'percent_difference':
         if title and '%' not in title and 'percent' not in title:
             title += r' (\% difference)'
-        units_str = ' (%)'
-    elif plot_type == 'absolute_difference' and units:
+        units_str = f' (% diff in {units})' if units else ' (%)'
+    elif plot_type in ('absolute_difference', 'mean') and units:
         title += f' ({units})'
         units_str = f' ({units})'
     else:
@@ -300,6 +373,12 @@ def plot_spatial_data(inputs):
 
     # Read the data file into a Pandas DataFrame and filter to the requested years if specified.
     df = read_file_into_dataframe(output_file)
+    # 'All' should only be shown in panel titles when it represents a real category dimension being aggregated over.
+    if isinstance(category_label, list):
+        category_label_in_data = all(c in df.columns for c in category_label)
+    else:
+        category_label_in_data = category_label in df.columns
+    selected_category = categories[0] if len(categories) == 1 and (categories[0] != 'All' or category_label_in_data) else None
     plot_years = inputs.get('plot_years', None)
     if plot_years is not None:
         df = df[df[year_label].isin(plot_years)]
@@ -343,6 +422,10 @@ def plot_spatial_data(inputs):
 
     # Read the shape file into a GeoDataFrame from the GeoPandas library and get all regions in the file.
     gdf = gpd.read_file(shape_file)
+    if basin_label not in df.columns:
+        # The data has no sub-region (basin) granularity, so merge the basin polygons into region-level
+        # polygons to avoid drawing meaningless sub-region boundary lines.
+        gdf = gdf.dissolve(by=shape_file_region_label).reset_index()
     regions = gdf[shape_file_region_label].unique()
 
     # For both the individual plots and ensemble plots, create a common variable called scenario_list that will contain a 1D list of all scenarios.
@@ -433,7 +516,7 @@ def plot_spatial_data(inputs):
                 else:
                     gdf_panel['plot'] = test_data - control_data
 
-            panel_title = f'{year}{units_str}'
+            panel_title = f'{selected_category} ({year}){units_str}' if selected_category is not None else f'{year}{units_str}'
             ax.set_title(panel_title, fontdict={'fontsize': title_size})
             gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
                            legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
@@ -527,7 +610,7 @@ def plot_spatial_data(inputs):
                     else:
                         gdf_panel['plot'] = test_data - control_data
 
-                panel_title = f'{category} ({year}){units_str}'
+                panel_title = f'{category} ({year}){_panel_units_str(df_cat, plot_type, units_str)}'
                 ax.set_title(panel_title, fontdict={'fontsize': title_size})
                 gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
                                legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
@@ -538,7 +621,7 @@ def plot_spatial_data(inputs):
             for panel_idx in range(len(plot_categories), nrows * ncols):
                 axes_flat[panel_idx].set_visible(False)
 
-            year_plot_name = f'{plot_name}_{year}'
+            year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else f'{plot_name}_{year}'
             plot_options['name'] = year_plot_name
             fig.set_size_inches(width * ncols, height * nrows)
             save_figure(year_plot_name, fig, plot_options)
