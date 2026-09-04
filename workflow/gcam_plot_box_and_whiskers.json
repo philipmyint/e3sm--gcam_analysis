@@ -1,0 +1,32 @@
+[
+    {
+        "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
+        "hue": "scenario",
+        "scenarios": ["control", "case1"],
+        "categories": ["biomass", "Corn", "Rice", "Soybean", "SugarCrop", "Wheat"],
+        "x_tick_labels": { "biomass": "Bioenergy crop" },
+        "y_scale": "linear",
+        "plot_directory": "./output/box_plots_gcam",
+        "aggregation_function": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/ag_commodity_prices_processed.csv",
+        "scenarios": ["control", "case1"],
+        "categories": ["biomass", "Corn", "Rice", "Soybean", "SugarCrop", "Wheat"],
+        "x_tick_labels": { "biomass": "Bioenergy crop" },
+        "plot_percent_difference": true,
+        "plot_directory": "./output/box_plots_gcam",
+        "aggregation_function": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/vegetation_scalars.csv",
+        "hue": "scenario",
+        "scenarios": ["control", "case1"],
+        "plot_years": [2025, 2035, 2045],
+        "category_label": "landtype",
+        "categories": ["BioenergyCrop", "crop", "forest", "shrub", "pasture", "grass"],
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "plot_directory": "./output/box_plots_gcam",
+        "aggregation_function": "area_weighted_mean"
+    }
+]

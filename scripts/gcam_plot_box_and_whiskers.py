@@ -1,5 +1,6 @@
 import itertools
 import json
+import math
 from matplotlib import pyplot as plt
 import multiprocessing
 import os
@@ -15,10 +16,10 @@ from utility_plots import *
 
 """ Dictionary of default input values for box plots (i.e., box-and-whisker plots). """
 default_inputs = {
+    'aggregation_function': 'sum',
     'basin_label': 'basin',
     'basins': None,
     'category_label': 'sector',
-    'end_year': 2100,
     'fill_boxes': True,
     'height': height_default,
     'hue': None,
@@ -32,24 +33,25 @@ default_inputs = {
     'linewidth': 1,
     'marker_size': 6,
     'multiplier': 1,
-    'mean_or_sum_if_more_than_one_row_in_same_landtype_group': 'area_weighted_mean',
     'notify_scenarios_transposed': False,
     'plot_colors': plot_colors_default,
     'plot_directory': './',
     'plot_percent_difference': False,
+    'plot_years': [2015, 2025, 2035, 2045],
+    'plot_years_ncols': 2,
     'plot_type': 'ensemble',
     'produce_png': produce_png_default, 
     'region_label': 'region', 
     'regions': ['Global'],
     'scenario_label': 'scenario', 
     'scenario_sets': None,
-    'start_year': 2015,
     'use_latex': use_latex_default, 
     'value_label': 'value',
     'width': width_default,   
     'x_label': None,
     'x_label_size': axis_label_size_default,
     'x_scale': None,           
+    'x_tick_labels': None,
     'x_tick_label_size': tick_label_size_default,   
     'y_label_size': axis_label_size_default,
     'y_limits': axis_limits_default,
@@ -71,7 +73,11 @@ def process_inputs(inputs):
     """
     # Check that the output file exists before trying to read it.
     if not os.path.exists(inputs['output_file']):
-        raise FileNotFoundError(f"Error: output file not found: '{inputs['output_file']}'")
+        print(f"Warning: output file not found, skipping: '{inputs['output_file']}'")
+        return None
+    if os.path.getsize(inputs['output_file']) == 0:
+        print(f"Warning: output file is empty, skipping: '{inputs['output_file']}'")
+        return None
     df = read_file_into_dataframe(inputs['output_file'])
 
     # If the category label (e.g., sector or landtype) has not been specified, use the default value.
@@ -108,10 +114,39 @@ def process_inputs(inputs):
         output_file_name = inputs['output_file'][:index_of_dot_csv]
     else:
         output_file_name = inputs['output_file'][index_of_last_backslash+1:index_of_dot_csv]
+    output_file_name = output_file_name.replace('_processed', '').replace('processed_', '')
     if 'y_label' not in inputs:
         inputs['y_label'] = output_file_name
     if 'plot_name' not in inputs:
-        inputs['plot_name'] = os.path.join(inputs['plot_directory'], 'box_plot_' + output_file_name)
+        scenarios = inputs.get('scenarios', None)
+        scenario_sets = inputs.get('scenario_sets', None)
+        if scenarios is None:
+            scenario_part = 'all_scenarios'
+        elif check_is_list_of_lists(scenarios):
+            num_scenario_sets = len(scenario_sets) if scenario_sets else len(scenarios[0])
+            if num_scenario_sets == 1:
+                scenario_part = str(scenario_sets[0] if scenario_sets else 'set0').replace(' ', '_')
+            elif inputs.get('plot_percent_difference', False):
+                scenario_part = 'pct_diff'
+            else:
+                scenario_part = 'comparison'
+        elif len(scenarios) == 1:
+            scenario_part = str(scenarios[0]).replace(' ', '_')
+        elif inputs.get('plot_percent_difference', False):
+            scenario_part = 'pct_diff'
+        else:
+            scenario_part = 'comparison'
+
+        plot_years = inputs.get('plot_years', default_inputs['plot_years'])
+        if plot_years is None:
+            year_part = 'all_years'
+        elif len(plot_years) == 1:
+            year_part = str(plot_years[0])
+        else:
+            year_part = f'{min(plot_years)}-{max(plot_years)}'
+
+        name = f'box_plot_{output_file_name}_{scenario_part}_{year_part}'
+        inputs['plot_name'] = os.path.join(inputs['plot_directory'], name)
     elif 'plot_name' in inputs and '/' not in inputs['plot_name']:
         # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
         inputs['plot_name'] = os.path.join(inputs['plot_directory'], inputs['plot_name'])
@@ -120,6 +155,11 @@ def process_inputs(inputs):
     for key in default_inputs.keys():
         if key not in inputs:
             inputs[key] = default_inputs[key]
+
+    if inputs['hue'] == 'scenario' and inputs['plot_percent_difference']:
+        print(f"Warning: skipping '{inputs['output_file']}' because hue='scenario' and "
+              "plot_percent_difference=True cannot be used together.")
+        return None
 
     # If the scenarios are specified as a list of lists (for ensemble plots), check if they need to be transposed.
     # Users can now specify scenarios in two formats:
@@ -145,9 +185,9 @@ def process_inputs(inputs):
         raise KeyError(f"Error: value_label '{value_label}' not found in '{inputs['output_file']}'. "
                        f"Available columns: {list(df.columns)}")
 
-    # If mean_or_sum is area_weighted_mean, check that the 'area' column exists.
-    if inputs['mean_or_sum_if_more_than_one_row_in_same_landtype_group'] == 'area_weighted_mean' and 'area' not in df.columns:
-        raise KeyError(f"Error: mean_or_sum_if_more_than_one_row_in_same_landtype_group is 'area_weighted_mean' "
+    # If aggregation_function is area_weighted_mean, check that the 'area' column exists.
+    if inputs['aggregation_function'] == 'area_weighted_mean' and 'area' not in df.columns:
+        raise KeyError(f"Error: aggregation_function is 'area_weighted_mean' "
                        f"but no 'area' column found in '{inputs['output_file']}'. "
                        f"Consider using 'mean' or 'sum' instead, or add area data using gcam_add_areas_to_files.py.")
 
@@ -175,12 +215,11 @@ def process_inputs(inputs):
             print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
                   f"and will produce empty plots: {missing_scenarios}")
 
-    # Verify the plot file is writable before doing any work.
+    # Verify the plot directory is writable before doing any work.
     plot_name = inputs['plot_name']
-    try:
-        open(plot_name, 'a').close()
-    except OSError as e:
-        raise OSError(f"Error: cannot write to plot file '{plot_name}': {e}")
+    plot_dir = os.path.dirname(plot_name) or '.'
+    if not os.access(plot_dir, os.W_OK):
+        raise OSError(f"Error: plot directory is not writable: '{plot_dir}'")
 
     return inputs
 
@@ -208,7 +247,6 @@ def plot_box_and_whiskers(inputs):
     basins = inputs['basins']
     categories = inputs['categories']
     category_label = inputs['category_label']
-    end_year = inputs['end_year']
     fill_boxes = inputs['fill_boxes']
     height = inputs['height']
     hue = inputs['hue']
@@ -222,10 +260,11 @@ def plot_box_and_whiskers(inputs):
     linewidth = inputs['linewidth']
     marker_size = inputs['marker_size']
     multiplier = inputs['multiplier']
-    mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs['mean_or_sum_if_more_than_one_row_in_same_landtype_group']
+    aggregation_function = inputs['aggregation_function']
     plot_colors = inputs['plot_colors']
     plot_name = inputs['plot_name']
     plot_percent_difference = inputs['plot_percent_difference']
+    plot_years = inputs['plot_years']
     plot_type = inputs['plot_type']
     produce_png = inputs['produce_png']
     region_label = inputs['region_label']
@@ -233,13 +272,13 @@ def plot_box_and_whiskers(inputs):
     scenario_label = inputs['scenario_label']
     scenario_sets = inputs['scenario_sets']
     scenarios = inputs['scenarios']
-    start_year = inputs['start_year']
     use_latex = inputs['use_latex']
     value_label = inputs['value_label']
     width = inputs['width']
     x_label = inputs['x_label']
     x_label_size = inputs['x_label_size']
     x_scale = inputs['x_scale']
+    x_tick_labels = inputs['x_tick_labels'] or {}
     x_tick_label_size = inputs['x_tick_label_size']
     x_variable = inputs.get('x_variable', category_label)
     y_label = inputs['y_label']
@@ -250,8 +289,6 @@ def plot_box_and_whiskers(inputs):
     year_label = inputs['year_label']
 
     # Set the plotting options.
-    if plot_percent_difference and (f'%' not in y_label or 'percent' not in y_label):
-        y_label += rf' (\% difference)'
     plot_options = dict(width=width, height=height, name=plot_name, x_label=x_label, y_label=fr'{y_label}')
     plot_options.update(zip(['x_scale', 'y_scale', 'y_limits', 'use_latex'], [x_scale, y_scale, y_limits, use_latex]))
     plot_options.update(zip(['x_tick_label_size', 'y_tick_label_size', 'legend_on'], [x_tick_label_size, y_tick_label_size, legend_on]))
@@ -262,11 +299,11 @@ def plot_box_and_whiskers(inputs):
     # Use LaTeX fonts for figures and set font size of tick labels.
     setup_plot_params(plot_options)
 
-    # Read the file, select rows between the start and end years, apply user-specified multiplier, create the figure and axis objects for the plot.
+    # Read the file, select requested years, and apply the user-specified multiplier.
     df = read_file_into_dataframe(output_file)
-    df = df[(df[year_label] >= start_year) & (df[year_label] <= end_year)]
+    if plot_years is not None:
+        df = df[df[year_label].isin(plot_years)]
     df[value_label] *= multiplier
-    fig, ax = plt.subplots(nrows=1, ncols=1)
 
     # Create and concatenate Pandas DataFrames for the regions and basins; 'Global' involving creating a copy of the entire DataFrame.
     dataframes = []
@@ -332,8 +369,10 @@ def plot_box_and_whiskers(inputs):
     if any(item in landtype_groups for item in categories):
         for landtype_group in landtype_groups:
             if landtype_group in categories:
+                if not df[category_label].isin(landtype_groups[landtype_group]).any():
+                    continue
                 df_this_landtype_group = produce_dataframe_for_landtype_group(df, landtype_group, category_label, 
-                    value_label, landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns)
+                    value_label, landtype_groups, aggregation_function, key_columns)
                 dataframes.append(df_this_landtype_group)
                 categories.remove(landtype_group)
     if categories:
@@ -341,37 +380,92 @@ def plot_box_and_whiskers(inputs):
         dataframes.append(df)
     df = pd.concat(dataframes).reset_index()
 
-    # Calculate a percent difference with respect to the first scenario or first scenario set as the reference.
-    if plot_percent_difference:
-        reference = df[df[scenario_label] == scenario_list[0]][value_label].to_numpy()
-        for scenario in scenario_list:
-            df.loc[df[scenario_label] == scenario, value_label] -= reference
-            df.loc[df[scenario_label] == scenario, value_label] *= 100/(reference + EPSILON)
-        # Delete the reference from the DataFrame.
-        df = df[df[scenario_label] != scenario_list[0]]
-        
-    # Depending on if the plot involves hues or not, set the number of colors in the palette to match the number of x-axis quantities in the box plot.
-    if hue:
-        num_x_variables = len(df[hue].unique())
-    else:
-        num_x_variables = len(df[x_variable].unique())
+    units_by_category = {}
+    if isinstance(category_label, str) and x_variable == category_label and 'units' in df.columns:
+        for category, group in df.groupby(category_label):
+            units = group['units'].dropna().unique()
+            if len(units) == 1 and '/' in units[0]:
+                units_by_category[str(category)] = units[0]
+        numerators = {unit.split('/', 1)[0] for unit in units_by_category.values()}
+        if units_by_category and len(numerators) == 1:
+            numerator = numerators.pop()
+            if numerator not in y_label:
+                y_label += f' (% diff in {numerator})' if plot_percent_difference else f' ({numerator})'
+                plot_options['y_label'] = fr'{y_label}'
+    units = df['units'].dropna().unique() if 'units' in df.columns else []
+    if not units_by_category and len(units) == 1 and units[0] not in y_label:
+        unit_label = f'% diff in {units[0]}' if plot_percent_difference else units[0]
+        y_label += f' ({unit_label})'
+        plot_options['y_label'] = fr'{y_label}'
 
-    if not plot_percent_difference:
-        palette = plot_colors[:num_x_variables]
-    else:
-        # When plotting a percent difference, offset the index by 1 because index 0 is for the now-deleted first scenario or scenario set (reference).
-        palette = plot_colors[1:num_x_variables+1]
-    
-    # If all boxes are of the same color (the 'hue' variable is None since the default color will be used for all boxes), we do not need a legend.
-    if hue:
-        sns.boxplot(df, x=x_variable, y=value_label, hue=hue, linewidth=linewidth, palette=palette, fliersize=marker_size, fill=fill_boxes)
-    else:
-        plot_options['legend_on'] = False
-        sns.boxplot(df, x=x_variable, y=value_label, legend=None, linewidth=linewidth, fliersize=marker_size, fill=fill_boxes)
+    years_to_plot = plot_years if plot_years is not None else sorted(df[year_label].unique())
+    ncols = inputs['plot_years_ncols'] or len(years_to_plot)
+    nrows = math.ceil(len(years_to_plot) / ncols)
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
+    axes_flat = list(axes.flat) if hasattr(axes, 'flat') else [axes]
 
-    # Finalize the box plot now that all x-axis variables have been processed.
+    for panel_idx, year in enumerate(years_to_plot):
+        ax = axes_flat[panel_idx]
+        df_year = df[df[year_label] == year].copy()
+        if df_year.empty:
+            print(f"Warning: year {year} not found in data. Skipping panel.")
+            ax.set_visible(False)
+            continue
+        if plot_percent_difference:
+            reference = df_year[df_year[scenario_label] == scenario_list[0]][value_label].to_numpy()
+            for scenario in scenario_list:
+                scenario_filter = df_year[scenario_label] == scenario
+                df_year.loc[scenario_filter, value_label] -= reference
+                df_year.loc[scenario_filter, value_label] *= 100 / (reference + EPSILON)
+            df_year = df_year[df_year[scenario_label] != scenario_list[0]]
+
+        if df_year.empty or not df_year[value_label].notna().any():
+            print(f"Warning: no plottable data for year {year}. Skipping panel.")
+            ax.set_visible(False)
+            continue
+
+        num_x_variables = len(df_year[hue].unique()) if hue else len(df_year[x_variable].unique())
+        palette = plot_colors[:num_x_variables] if not plot_percent_difference else plot_colors[1:num_x_variables + 1]
+        box_properties = {'edgecolor': 'black'} if fill_boxes else {'color': 'black'}
+        line_properties = {'color': 'black'}
+        flier_properties = {'markeredgecolor': 'black', 'markerfacecolor': 'none'}
+        if hue:
+            sns.boxplot(df_year, x=x_variable, y=value_label, hue=hue, ax=ax, linewidth=linewidth,
+                        palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
+                        whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
+                        flierprops=flier_properties)
+        else:
+            sns.boxplot(df_year, x=x_variable, y=value_label, hue=x_variable, ax=ax, legend=False, linewidth=linewidth,
+                        palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
+                        whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
+                        flierprops=flier_properties)
+        if units_by_category:
+            ticks = ax.get_xticks()
+            labels = [tick.get_text() for tick in ax.get_xticklabels()]
+            ax.set_xticks(ticks, labels=[
+                f"{x_tick_labels.get(label, label)} ({units_by_category[label].split('/', 1)[1]})"
+                if label in units_by_category else x_tick_labels.get(label, label)
+                for label in labels
+            ])
+        elif x_tick_labels:
+            ticks = ax.get_xticks()
+            labels = [tick.get_text() for tick in ax.get_xticklabels()]
+            ax.set_xticks(ticks, labels=[x_tick_labels.get(label, label) for label in labels])
+        plt.setp(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+        ax.set_title(f'{chr(ord("a") + panel_idx)}) {year}')
+        panel_options = plot_options.copy()
+        panel_options['legend_on'] = legend_on if hue else False
+        panel_options['y_label'] = ''
+        set_figure_options(fig, ax, panel_options)
+
+    for panel_idx in range(len(years_to_plot), nrows * ncols):
+        axes_flat[panel_idx].set_visible(False)
+
+    fig.set_size_inches(width * ncols, height * nrows)
+    fig.supylabel(plot_options['y_label'], fontsize=y_label_size)
+    fig.tight_layout(rect=(0.04, 0, 1, 1))
     plot_options['name'] = plot_name
-    set_figure_options(fig, ax, plot_options)
+    save_figure(plot_name, fig, plot_options)
 
     # Close the plot now that we are done with it. Record the elapsed time.
     plt.close(fig)
@@ -399,7 +493,9 @@ if __name__ == '__main__':
     # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
     list_of_inputs = []
     for index in range(len(inputs)):
-        list_of_inputs.append(process_inputs(inputs[index]))
+        result = process_inputs(inputs[index])
+        if result is not None:
+            list_of_inputs.append(result)
 
     # Create all of the box plots in parallel.
     with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:

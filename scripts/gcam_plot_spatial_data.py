@@ -516,7 +516,8 @@ def plot_spatial_data(inputs):
                 else:
                     gdf_panel['plot'] = test_data - control_data
 
-            panel_title = f'{selected_category} ({year}){units_str}' if selected_category is not None else f'{year}{units_str}'
+            title_text = f'{selected_category} ({year}){units_str}' if selected_category is not None else f'{year}{units_str}'
+            panel_title = f'{chr(ord("a") + panel_idx)}) {title_text}'
             ax.set_title(panel_title, fontdict={'fontsize': title_size})
             gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
                            legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
@@ -610,7 +611,7 @@ def plot_spatial_data(inputs):
                     else:
                         gdf_panel['plot'] = test_data - control_data
 
-                panel_title = f'{category} ({year}){_panel_units_str(df_cat, plot_type, units_str)}'
+                panel_title = f'{chr(ord("a") + panel_idx)}) {category} ({year}){_panel_units_str(df_cat, plot_type, units_str)}'
                 ax.set_title(panel_title, fontdict={'fontsize': title_size})
                 gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
                                legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
