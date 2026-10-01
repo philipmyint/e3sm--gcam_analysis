@@ -28,5 +28,13 @@
         "key_columns": ["scenario", "region", "basin", "year"],
         "plot_directory": "./output/box_plots_gcam",
         "aggregation_function": "area_weighted_mean"
+    },
+    {
+        "output_file": "./output/gcam_csv/building_final_energy_by_service_and_fuel_processed.csv",
+        "scenarios": ["control", "case1"],
+        "category_label": "sector",
+        "categories": ["comm cooling", "comm heating", "resid cooling", "resid heating"],
+        "plot_percent_difference": true,
+        "plot_directory": "./output/box_plots_gcam/"
     }
 ]

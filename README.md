@@ -37,6 +37,12 @@ Finally, run the e3sm and gcam plotting shell scripts:
 
 Note that the GCAM box and whisker plot has been tested on only a few variables, but it should work for many of them (but not necessarily all of them).
 
+These plotting shell scripts also include sbatch directives so that they can be submitted to the cluster for processing. The user can adjust these directives if desired. To submit to the cluster simply use:
+
+`sbatch ./plot_e3sm_outputs.sh`
+
+`sbatch ./plot_gcam_outputs.sh`
+
 There are many options for customizing the plots. So it is recommended to plot the default set and then if customization is desired then use the more detailed documentation to create the desired .json blocks in the plot scripts, or even to add variables or perform other processing on the data prior to plotting. For example, one powerful capability of these scripts is plotting ensembles, which requires proper specificatotion of model output files and scenarios/scenario_sets in the .json files.
 
 
