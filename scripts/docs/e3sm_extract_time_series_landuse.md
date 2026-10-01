@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Script Name:** `e3sm_extract_time_series_surfdata_iesm_dyn.py`
+**Script Name:** `e3sm_extract_time_series_landuse.py`
 
 **Purpose:** Extracts annual time series data from the E3SM Human Component (EHC) dynamically-generated land surface data file (`surfdata_iESM_dyn.nc`). This script specifically processes human-related land management activities including grazing and wood harvesting (various harvest types), aggregates data spatially, and outputs annual time series for global or regional analysis.
 
@@ -63,18 +63,18 @@ The script imports several utility modules that must be in the same directory or
 ### Command Line Execution
 
 ```bash
-python e3sm_extract_time_series_surfdata_iesm_dyn.py path/to/config.json
+python e3sm_extract_time_series_landuse.py path/to/config.json
 ```
 
 **Multiple Configuration Files:**
 ```bash
-python e3sm_extract_time_series_surfdata_iesm_dyn.py config1.json config2.json config3.json
+python e3sm_extract_time_series_landuse.py config1.json config2.json config3.json
 ```
 
 ### What the Script Does
 
 For each configuration block in the JSON file, the script:
-1. **Locates** the `surfdata_iESM_dyn.nc` file in simulation directory
+1. **Opens** the land use file given by `landuse_file` (e.g., `surfdata_iESM_dyn.nc`)
 2. **Extracts** specified variables for each year in the range
 3. **Processes** PFT (Plant Functional Type) data automatically
 4. **Converts** grazing/harvest fractions to areas (km²)
@@ -110,7 +110,7 @@ The **E3SM Human Component (EHC)** is a module within E3SM that represents human
 
 **File Location:**
 ```
-simulation_path/
+simulation_run_directory/
 └── surfdata_iESM_dyn.nc  (single file)
 ```
 
@@ -150,7 +150,7 @@ time = year values (e.g., 2015, 2016, ..., 2100)
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `simulation_path` | string | **Yes** | Path to E3SM simulation directory containing surfdata_iESM_dyn.nc |
+| `landuse_file` | string | **Yes** | Full path and name of the land use NetCDF file (e.g., surfdata_iESM_dyn.nc) |
 | `output_file` | string | **Yes** | Path/name for output time series file |
 | `variables` | list | **Yes** | Variables to extract from surfdata file |
 
@@ -169,26 +169,20 @@ time = year values (e.g., 2015, 2016, ..., 2100)
 
 ### Core Required Parameters
 
-#### `simulation_path`
-**Type:** String (directory path)  
+#### `landuse_file`
+**Type:** String (file path)  
 **Required:** Yes  
-**Description:** Complete path to directory containing the `surfdata_iESM_dyn.nc` file.
+**Description:** Full path and name of the land use NetCDF file, such as the `surfdata_iESM_dyn.nc` file in an E3SM simulation run directory or a land use time series input file.
 
 **Examples:**
 ```json
-"simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run"
+"landuse_file": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc"
+"landuse_file": "/global/cfs/cdirs/e3sm/inputdata/lnd/clm2/surfdata_map/landuse.timeseries_0.5x0.5_hist_50pfts_simyr1850-2015_c260205.nc"
 ```
 
 **Requirements:**
-- Must be valid directory path
-- Must contain `surfdata_iESM_dyn.nc` file
-- File must follow E3SM naming convention
-
-**File Location:**
-```
-simulation_path/
-└── surfdata_iESM_dyn.nc  ← Script looks for this exact filename
-```
+- Must be a valid path to an existing NetCDF file
+- File must have the same structure as `surfdata_iESM_dyn.nc` (annual `time` dimension, `AREA`, `LANDFRAC_PFT`, `PFTDATA_MASK`)
 
 ---
 
@@ -642,7 +636,7 @@ conus = [-125.25°, -66.25°] longitude, [23.25°, 54.75°] latitude
 
 ```json
 {
-    "simulation_path": "/path/to/simulation",
+    "landuse_file": "/path/to/simulation/run/surfdata_iESM_dyn.nc",
     "output_file": "./amazon_harvest.dat",
     "variables": ["HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
     "region": "amazon",
@@ -665,7 +659,7 @@ conus = [-125.25°, -66.25°] longitude, [23.25°, 54.75°] latitude
 
 ```json
 {
-    "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
+    "landuse_file": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc",
     "output_file": "./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730.dat",
     "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
     "start_year": 2015,
@@ -708,7 +702,7 @@ HARVEST_AREA (km^2)
 
 ```json
 {
-    "simulation_path": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run",
+    "landuse_file": "/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc",
     "output_file": "./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730_amazon.dat",
     "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
     "region": "amazon",
@@ -736,7 +730,7 @@ HARVEST_AREA (km^2)
 
 ```json
 {
-    "simulation_path": "/lcrc/group/e3sm/simulation/run",
+    "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
     "output_file": "./grazing_only.dat",
     "variables": ["GRAZING"],
     "start_year": 2015,
@@ -763,7 +757,7 @@ HARVEST_AREA (km^2)
 
 ```json
 {
-    "simulation_path": "/lcrc/group/e3sm/simulation/run",
+    "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
     "output_file": "./harvest_only.dat",
     "variables": ["HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
     "start_year": 2015,
@@ -789,7 +783,7 @@ HARVEST_AREA (km^2)
 
 ```json
 {
-    "simulation_path": "/lcrc/group/e3sm/simulation/run",
+    "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
     "output_file": "./test_surfdata.dat",
     "variables": ["GRAZING", "HARVEST_VH1"],
     "start_year": 2015,
@@ -811,7 +805,7 @@ HARVEST_AREA (km^2)
 
 ```json
 {
-    "simulation_path": "/lcrc/group/e3sm/simulation/run",
+    "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
     "output_file": "./harvest_grazing.csv",
     "variables": ["GRAZING", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
     "start_year": 2015,
@@ -834,14 +828,14 @@ HARVEST_AREA (km^2)
 ```json
 [
     {
-        "simulation_path": "/lcrc/group/e3sm/simulation/run",
+        "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
         "output_file": "./global_harvest_grazing.dat",
         "variables": ["GRAZING", "HARVEST_VH1", "HARVEST_VH2"],
         "start_year": 2015,
         "end_year": 2100
     },
     {
-        "simulation_path": "/lcrc/group/e3sm/simulation/run",
+        "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
         "output_file": "./amazon_harvest_grazing.dat",
         "variables": ["GRAZING", "HARVEST_VH1", "HARVEST_VH2"],
         "region": "amazon",
@@ -849,7 +843,7 @@ HARVEST_AREA (km^2)
         "end_year": 2100
     },
     {
-        "simulation_path": "/lcrc/group/e3sm/simulation/run",
+        "landuse_file": "/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc",
         "output_file": "./conus_harvest_grazing.dat",
         "variables": ["GRAZING", "HARVEST_VH1", "HARVEST_VH2"],
         "region": "conus",
@@ -944,20 +938,13 @@ FileNotFoundError: surfdata_iESM_dyn.nc
 ```
 
 **Causes:**
-- Incorrect `simulation_path`
+- Incorrect `landuse_file` path or file name
 - File doesn't exist
-- Wrong simulation directory
 
 **Solutions:**
 ```bash
-# Check directory exists
-ls -la /path/to/simulation/
-
-# Check for surfdata file
-ls /path/to/simulation/surfdata_iESM_dyn.nc
-
-# Verify exact filename
-# Must be: surfdata_iESM_dyn.nc
+# Check that the file given by landuse_file exists
+ls -la /path/to/simulation/run/surfdata_iESM_dyn.nc
 ```
 
 ---
@@ -1286,7 +1273,7 @@ print(f"Match: {np.allclose(calculated_total, reported_total)}")
     "comment": "Harvest and grazing for control simulation",
     "date_extracted": "2026-01-24",
     "simulation": "SSP245_ZATM_BGC_without_feedbacks",
-    "simulation_path": "/lcrc/group/e3sm/.../run",
+    "landuse_file": "/lcrc/group/e3sm/.../run/surfdata_iESM_dyn.nc",
     ...
 }
 ```
@@ -1303,7 +1290,7 @@ git commit -m "Add surfdata extraction configs for control simulation"
 
 ### Key Differences
 
-| Feature | e3sm_extract_time_series_h0.py | e3sm_extract_time_series_surfdata_iesm_dyn.py |
+| Feature | e3sm_extract_time_series_h0.py | e3sm_extract_time_series_landuse.py |
 |---------|-------------------------------|-----------------------------------------------|
 | **Input Files** | Multiple monthly NetCDF files (elm.h0.*, eam.h0.*) | Single NetCDF file (surfdata_iESM_dyn.nc) |
 | **Temporal Resolution** | Monthly | Annual |
@@ -1338,7 +1325,7 @@ git commit -m "Add surfdata extraction configs for control simulation"
    → Output: Monthly GPP, NPP, temperature, precipitation
 
 2. Extract human land management (annual):
-   python e3sm_extract_time_series_surfdata_iesm_dyn.py surfdata_config.json
+   python e3sm_extract_time_series_landuse.py surfdata_config.json
    → Output: Annual grazing, harvest areas
 
 3. Analyze together:
@@ -1360,7 +1347,7 @@ git commit -m "Add surfdata extraction configs for control simulation"
 2a. e3sm_extract_time_series_h0.py
     ↓ (Extract climate and carbon cycle - monthly)
     
-2b. e3sm_extract_time_series_surfdata_iesm_dyn.py  ← THIS SCRIPT
+2b. e3sm_extract_time_series_landuse.py  ← THIS SCRIPT
     ↓ (Extract harvest and grazing - annual)
     
 3. Combine analyses:
@@ -1470,7 +1457,7 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_extract_time_series_surfdata_iesm_dyn.py  
+**Script:** e3sm_extract_time_series_landuse.py  
 **Utility Modules:** utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py  
 **Documentation Version:** 1.0  
 **Last Updated:** January 2026  
@@ -1479,4 +1466,4 @@ For questions or issues:
 
 ---
 
-*This documentation provides comprehensive guidance for using the `e3sm_extract_time_series_surfdata_iesm_dyn.py` script to extract annual time series data of human land management activities (grazing and harvest) from E3SM-GCAM coupled simulation surface data files.*
+*This documentation provides comprehensive guidance for using the `e3sm_extract_time_series_landuse.py` script to extract annual time series data of human land management activities (grazing and harvest) from E3SM-GCAM coupled simulation surface data files.*

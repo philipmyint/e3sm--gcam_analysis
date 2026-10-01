@@ -19,6 +19,19 @@
 # Check that the correct grid scrip file is set in e3sm_plot_spatial_data.json for EAM spatial plots.
 #    The default grid file is set to the ne30pg2 grid file in this repository.
 
+# set some sbatch directives for optional job submission (sbatch plot_e3sm_outputs.sh)
+#SBATCH --job-name=plot_e3sm_outputs
+#SBATCH --output=plot_e3sm_outputs.out
+#SBATCH --error=plot_e3sm_outputs.err
+#SBATCH --time=01:00:00
+#SBATCH --qos=regular
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH -C cpu
+#SBATCH -A e3sm
+
+echo "Starting job at: $(date)"
+
 # First load the E3SM unified environment
 
 # Perlmutter (login or cpu nodes)
@@ -32,15 +45,21 @@ source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cp
 
 # Resolve the directory containing this script so JSON files are found
 # regardless of the working directory from which this script is called.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Under sbatch, the script is copied to a spool file, so BASH_SOURCE no longer
+# points here; use SLURM_SUBMIT_DIR (the sbatch submission directory) instead.
+if [[ -n "${SLURM_SUBMIT_DIR:-}" ]]; then
+    SCRIPT_DIR="${SLURM_SUBMIT_DIR}"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
 
 # extract time series of specified H0 variables from E3SM outputs and write to text files
 python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_h0.py" \
     "${SCRIPT_DIR}/e3sm_extract_time_series_h0.json"
 
 # extract time series of specified surfdata variables from E3SM outputs and write to text files
-python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_surfdata_iesm_dyn.py" \
-    "${SCRIPT_DIR}/e3sm_extract_time_series_surfdata_iesm_dyn.json"
+python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_landuse.py" \
+    "${SCRIPT_DIR}/e3sm_extract_time_series_landuse.json"
 
 # extract spatial data of specified H0 variables from E3SM outputs and write to netcdf files
 python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_spatial_data_h0.py" \
@@ -53,3 +72,5 @@ python3 "${SCRIPT_DIR}/../scripts/e3sm_plot_time_series.py" \
 # plot spatial data of specified H0 variables from E3SM outputs
 python3 "${SCRIPT_DIR}/../scripts/e3sm_plot_spatial_data.py" \
     "${SCRIPT_DIR}/e3sm_plot_spatial_data.json"
+
+echo "Finished job at: $(date)"

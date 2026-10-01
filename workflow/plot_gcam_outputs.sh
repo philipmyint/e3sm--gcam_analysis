@@ -1,4 +1,18 @@
 #!/bin/bash
+
+# set some sbatch directives for optional job submission (sbatch plot_gcam_outputs.sh)
+#SBATCH --job-name=plot_gcam_outputs
+#SBATCH --output=plot_gcam_outputs.out
+#SBATCH --error=plot_gcam_outputs.err
+#SBATCH --time=01:00:00
+#SBATCH --qos=regular
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH -C cpu
+#SBATCH -A e3sm
+
+echo "Starting job at: $(date)"
+
 set -e
 trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 
@@ -21,7 +35,13 @@ trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 
 # Resolve the directory containing this script so JSON files are found
 # regardless of the working directory from which this script is called.
-export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Under sbatch, the script is copied to a spool file, so BASH_SOURCE no longer
+# points here; use SLURM_SUBMIT_DIR (the sbatch submission directory) instead.
+if [[ -n "${SLURM_SUBMIT_DIR:-}" ]]; then
+    SCRIPT_DIR="${SLURM_SUBMIT_DIR}"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
 
 # First load the R module and make sure the needed libraries are installed.
 module load R/4.3.3
@@ -89,3 +109,5 @@ python3 "${SCRIPT_DIR}/../scripts/gcam_plot_spatial_data.py" \
 # plot box and whisker plots of specified variables from GCAM outputs
 python3 "${SCRIPT_DIR}/../scripts/gcam_plot_box_and_whiskers.py" \
     "${SCRIPT_DIR}/gcam_plot_box_and_whiskers.json"
+
+echo "Finished job at: $(date)"

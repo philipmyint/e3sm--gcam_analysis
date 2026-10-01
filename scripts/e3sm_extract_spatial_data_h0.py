@@ -39,14 +39,34 @@ def process_inputs(inputs):
     # If the user specified only a single value (string, integer, float, or a single-element list) for the other plotting options, assume that they
     # want to use that value for all of the variables.
     input_types_to_modify = ['netcdf_substrings', 'variables', 'start_years', 'end_years']
+
+    # Inputs given per output file must have either one entry (applied to all) or one entry per output file.
+    num_output_files = len(inputs['output_files'])
+    mismatched = {}
+    for input_type in input_types_to_modify:
+        value = inputs[input_type]
+        if isinstance(value, (str, int, float)):
+            continue
+        # A flat list of substrings/variables applies to all output files, so only a list of lists is checked.
+        if input_type in ['netcdf_substrings', 'variables'] and not (value and isinstance(value[0], list)):
+            continue
+        if len(value) not in (1, num_output_files):
+            mismatched[input_type] = len(value)
+    if mismatched:
+        print(f"Error: output_files has {num_output_files} entries, but the following inputs have a different number of entries "
+              f"(each must have 1 or {num_output_files}):")
+        for input_type, length in mismatched.items():
+            print(f"  {input_type}: {length}")
+        sys.exit(1)
+
     for input_type in input_types_to_modify:
         if isinstance(inputs[input_type], (str, int, float)):
             inputs[input_type] = [inputs[input_type]]
-        if len(inputs[input_type]) == 1:
-            inputs[input_type] = inputs[input_type]*len(inputs['output_files'])
-        # This processes 'netcdf_substrings' and 'variables' so that they are lists of lists.
+        # A flat list of substrings/variables applies to every output file, so wrap it before copying it per output file.
         if input_type in ['netcdf_substrings', 'variables'] and not isinstance(inputs[input_type][0], list):
-            inputs[input_type] = [inputs[input_type] for i in range(len(inputs[input_type]))]
+            inputs[input_type] = [inputs[input_type]]
+        if len(inputs[input_type]) == 1:
+            inputs[input_type] = inputs[input_type]*num_output_files
 
     # Now that the dictionary has been populated with complete data extraction options for each output file, separate it into a list of dictionaries,
     # where each of these smaller dictionaries contain the data extraction options for a single output file. Return this list of dictionaries.

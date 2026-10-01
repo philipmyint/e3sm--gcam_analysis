@@ -593,7 +593,7 @@ python e3sm_extract_time_series_h0.py config.json
 # Output: control_time_series.dat
 
 # Or extract surfdata time series
-python e3sm_extract_time_series_surfdata_iesm_dyn.py config.json
+python e3sm_extract_time_series_landuse.py config.json
 # Output: control_time_series_surfdata.dat
 ```
 

@@ -138,6 +138,9 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         if variable in variables:
             variables_except_landunits_and_pfts.remove(variable)
             variables_landunits_and_pfts.append(variable)
+    # PCT_CFT is handled separately to avoid broadcasting it against ltype and natpft.
+    if 'PCT_CFT' in variables:
+        variables_except_landunits_and_pfts.remove('PCT_CFT')
     if variables_except_landunits_and_pfts:
         # For CO2 concentration variables that have a lev dimension, select only the surface level (index -1, i.e. the lowest/highest-pressure level)
         # before converting to a DataFrame, so that all variables share the same (time, ncol) dimensions.
@@ -177,6 +180,9 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
     # 9 land units: vegetation, crop, ice, multiple ice, lake, wetland, urban tbd, urban hd, urban md. Currently, we want only vegetation (index = 0).
     if 'PCT_LANDUNIT' in variables:
         df_landunits_and_pfts = df_landunits_and_pfts.reset_index(level='ltype')
+        # The crop land unit (index 1) holds the total crop area when crops are resolved by PCT_CFT.
+        if 'PCT_CFT' in variables:
+            frac_crop = df_landunits_and_pfts[df_landunits_and_pfts['ltype'] == 1]['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
         df_landunits_and_pfts = df_landunits_and_pfts[df_landunits_and_pfts['ltype'] == 0].drop(columns=['ltype'])
         # Divide the vegetation percent by 100 to change it to a fraction and update the label accordingly. For each lat/lon, there could be many 
         # rows, corresponding to a different value of natpft (see below). The land unit fraction will be the same for all natpft values (same value 
@@ -189,6 +195,8 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             df = df_landunits_and_pfts['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
             df = df.to_frame()
             df = df.rename(columns={'PCT_LANDUNIT': 'FRAC_VEG_H0'})
+        if 'PCT_CFT' in variables:
+            df['FRAC_CROP_H0'] = frac_crop
         # Add a column for the area at each lat/lon coordinate to the overall DataFrame.
         df['AREA_H0 (km^2)'] = _per_row_spatial_values(areas / km2_TO_m2, df)
 
@@ -210,6 +218,15 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             df_this_pft = df_this_pft['PCT_NAT_PFT'].groupby(['lat', 'lon']).sum().fillna(0)/100
             # Add a column to the overall DataFrame to record the area of this PFT category (individual or subgroup) at each lat/lon coordinate.
             df[pft_label] = df['AREA_H0 (km^2)']*df['FRAC_VEG_H0']*df_this_pft      
+
+    # When crops are resolved by crop functional type (CFT), PCT_CFT gives the % of each CFT on the crop land unit.
+    if 'PCT_LANDUNIT' in variables and 'PCT_CFT' in variables:
+        df_cft = ds['PCT_CFT'].isel(time=0).to_dataframe()['PCT_CFT'].unstack('cft').fillna(0)/100
+        cft_areas = df_cft.multiply(df['AREA_H0 (km^2)']*df['FRAC_CROP_H0'], axis=0)
+        cft_areas.columns = [f'CFT_{cft}_AREA_H0 (km^2)' for cft in cft_areas.columns]
+        df = pd.concat([df, cft_areas], axis=1)
+        # The natpft crop PFT is empty in this case, so the total crop area comes from the CFTs.
+        df['CROP_AREA_H0 (km^2)'] = cft_areas.sum(axis=1)
     
     if lat_lon_aggregation_type == 'area_weighted_mean_or_sum':
         # Calculate an area-weighted mean or sum over all latitude/longitude coordinates for each variable.
@@ -299,6 +316,17 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
     Returns:
         N/A.
     """
+    # Each per-file-type input must have one entry for every NetCDF file type.
+    per_file_type_inputs = {'netcdf_substrings': netcdf_substrings, 'variables': variables,
+                            'lat_lon_aggregation_types': lat_lon_aggregation_types, 'regions': regions,
+                            'extra_dim_aggregation_types': extra_dim_aggregation_types}
+    lengths = {name: len(value) for name, value in per_file_type_inputs.items() if value}
+    if len(set(lengths.values())) > 1:
+        print("Error: the following inputs must have the same number of entries (one per NetCDF file type), but they differ:")
+        for name, length in lengths.items():
+            print(f"  {name}: {length}")
+        sys.exit(1)
+
     # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
     output_dir = os.path.dirname(os.path.abspath(output_file))
     if not os.path.exists(output_dir):

@@ -55,11 +55,11 @@ def find_gridcell_areas_in_netcdf_file(file, region=None, variables_to_keep=None
     elif 'eam.h0' in file:
         file_type = 'eam.h0'
         auxiliary_vars = ['area', 'LANDFRAC', 'OCNFRAC']
-    elif 'surfdata_iESM_dyn' in file:
-        file_type = 'surfdata_iESM_dyn'
+    elif 'surfdata_iESM_dyn' in file or 'landuse' in file:
+        file_type = 'landuse_timeseries'
         auxiliary_vars = ['AREA', 'LANDFRAC_PFT', 'PFTDATA_MASK']
     else:
-        file_type = 'surfdata_iESM_dyn'  # Default
+        file_type = 'landuse_timeseries'  # Default
         auxiliary_vars = ['AREA', 'LANDFRAC_PFT', 'PFTDATA_MASK']
 
     # Load the file into an xarray Dataset, dropping all variables that are neither auxiliary (needed for area/fraction calculations)
@@ -75,7 +75,7 @@ def find_gridcell_areas_in_netcdf_file(file, region=None, variables_to_keep=None
     # Employ method chaining to call the version of this function that assumes the ds has been loaded already
     return find_gridcell_areas_in_netcdf_file_ds(ds, region, file_type)
 
-def find_gridcell_areas_in_netcdf_file_ds(ds, region=None, file_type='surfdata_iESM_dyn'):
+def find_gridcell_areas_in_netcdf_file_ds(ds, region=None, file_type='landuse_timeseries'):
     """ 
     Obtains the grid cell areas of all latitude/longitude coordinates in an E3SM-generated (EAM or ELM or EHC) NetCDF file for the given region.
     This function assumes that the file has been pre-loaded into an xarray Dataset.
@@ -83,7 +83,7 @@ def find_gridcell_areas_in_netcdf_file_ds(ds, region=None, file_type='surfdata_i
     Parameters:
         ds: Pre-loaded xarray Dataset.
         region: String for the region of interest. If not specified or not recognized, then there will be no restrictions on the lat/lon coordinates. 
-        file_type: Type of file. Options include: 'elm.h0', 'eam.h0', or 'surfdata_iESM_dyn'.
+        file_type: Type of file. Options include: 'elm.h0', 'eam.h0', or 'landuse_timeseries'.
 
     Returns:
         NumPy array containing the grid cell areas of all coordinates in units of m^2 and an xarray Dataset containing data from the file.
@@ -108,7 +108,7 @@ def find_gridcell_areas_in_netcdf_file_ds(ds, region=None, file_type='surfdata_i
                 lat_bounds = lat_bounds + 90
             ds = ds.where((ds.lon >= lon_bounds[0]) & (ds.lon <= lon_bounds[1]), drop=True)
             ds = ds.where((ds.lat >= lat_bounds[0]) & (ds.lat <= lat_bounds[1]), drop=True)
-        elif file_type == 'surfdata_iESM_dyn':
+        elif file_type == 'landuse_timeseries':
             if ds.LONGXY.min() < 0:
                 lon_bounds = lon_bounds - 180
             if ds.LATIXY.max() > 90:
@@ -131,7 +131,7 @@ def find_gridcell_areas_in_netcdf_file_ds(ds, region=None, file_type='surfdata_i
         # Find the land and ocean fractions.
         variables = ['LANDFRAC', 'OCNFRAC']
         landfrac, non_landfrac = create_numpy_array_from_ds(ds, variables, [0]*len(variables))
-    elif file_type == 'surfdata_iESM_dyn':
+    elif file_type == 'landuse_timeseries':
         # Case where the NetCDF file is the land surface data file produced dynamically by the E3SM human component (EHC) model during run time.
         areas = create_numpy_array_from_ds(ds, ['AREA'], [0])
         variables = ['LANDFRAC_PFT', 'PFTDATA_MASK']

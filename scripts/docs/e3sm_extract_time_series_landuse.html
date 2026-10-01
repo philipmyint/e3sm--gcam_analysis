@@ -473,7 +473,7 @@ footer {
 <body>
     <div class="container"><h1 id="e3sm-surface-data-time-series-extraction-script-documentation">E3SM Surface Data Time Series Extraction Script Documentation</h1>
 <h2 id="overview">Overview</h2>
-<p><strong>Script Name:</strong> <code>e3sm_extract_time_series_surfdata_iesm_dyn.py</code></p>
+<p><strong>Script Name:</strong> <code>e3sm_extract_time_series_landuse.py</code></p>
 <p><strong>Purpose:</strong> Extracts annual time series data from the E3SM Human Component (EHC) dynamically-generated land surface data file (<code>surfdata_iESM_dyn.nc</code>). This script specifically processes human-related land management activities including grazing and wood harvesting (various harvest types), aggregates data spatially, and outputs annual time series for global or regional analysis.</p>
 <p><strong>Key Difference from h0 Script:</strong> Unlike <code>e3sm_extract_time_series_h0.py</code> which processes monthly ELM/EAM output files, this script processes a <strong>single NetCDF file</strong> containing time-varying land use data that is updated dynamically during E3SM-GCAM coupled simulations.</p>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
@@ -518,16 +518,16 @@ footer {
 <hr />
 <h2 id="basic-usage">Basic Usage</h2>
 <h3 id="command-line-execution">Command Line Execution</h3>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_surfdata_iesm_dyn.py<span class="w"> </span>path/to/config.json
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_landuse.py<span class="w"> </span>path/to/config.json
 </code></pre></div>
 
 <p><strong>Multiple Configuration Files:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_surfdata_iesm_dyn.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_landuse.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
 </code></pre></div>
 
 <h3 id="what-the-script-does">What the Script Does</h3>
 <p>For each configuration block in the JSON file, the script:<br />
-1. <strong>Locates</strong> the <code>surfdata_iESM_dyn.nc</code> file in simulation directory<br />
+1. <strong>Opens</strong> the land use file given by <code>landuse_file</code> (e.g., <code>surfdata_iESM_dyn.nc</code>)<br />
 2. <strong>Extracts</strong> specified variables for each year in the range<br />
 3. <strong>Processes</strong> PFT (Plant Functional Type) data automatically<br />
 4. <strong>Converts</strong> grazing/harvest fractions to areas (km²)<br />
@@ -555,7 +555,7 @@ footer {
 - <strong>Human activities</strong> (grazing, harvest)<br />
 - <strong>PFT distributions</strong> (plant functional types)</p>
 <p><strong>File Location:</strong></p>
-<div class="codehilite"><pre><span></span><code>simulation_path/
+<div class="codehilite"><pre><span></span><code>simulation_run_directory/
 └── surfdata_iESM_dyn.nc  (single file)
 </code></pre></div>
 
@@ -595,10 +595,10 @@ footer {
 </thead>
 <tbody>
 <tr>
-<td><code>simulation_path</code></td>
+<td><code>landuse_file</code></td>
 <td>string</td>
 <td><strong>Yes</strong></td>
-<td>Path to E3SM simulation directory containing surfdata_iESM_dyn.nc</td>
+<td>Full path and name of the land use NetCDF file (e.g., surfdata_iESM_dyn.nc)</td>
 </tr>
 <tr>
 <td><code>output_file</code></td>
@@ -664,22 +664,18 @@ footer {
 <hr />
 <h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
 <h3 id="core-required-parameters">Core Required Parameters</h3>
-<h4 id="simulation_path"><code>simulation_path</code></h4>
-<p><strong>Type:</strong> String (directory path)<br />
+<h4 id="landuse_file"><code>landuse_file</code></h4>
+<p><strong>Type:</strong> String (file path)<br />
 <strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Complete path to directory containing the <code>surfdata_iESM_dyn.nc</code> file.</p>
+<strong>Description:</strong> Full path and name of the land use NetCDF file, such as the <code>surfdata_iESM_dyn.nc</code> file in an E3SM simulation run directory or a land use time series input file.</p>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run&quot;</span>
+<div class="codehilite"><pre><span></span><code><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;</span>
+<span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/global/cfs/cdirs/e3sm/inputdata/lnd/clm2/surfdata_map/landuse.timeseries_0.5x0.5_hist_50pfts_simyr1850-2015_c260205.nc&quot;</span>
 </code></pre></div>
 
 <p><strong>Requirements:</strong><br />
-- Must be valid directory path<br />
-- Must contain <code>surfdata_iESM_dyn.nc</code> file<br />
-- File must follow E3SM naming convention</p>
-<p><strong>File Location:</strong></p>
-<div class="codehilite"><pre><span></span><code>simulation_path/
-└── surfdata_iESM_dyn.nc  ← Script looks for this exact filename
-</code></pre></div>
+- Must be a valid path to an existing NetCDF file<br />
+- File must have the same structure as <code>surfdata_iESM_dyn.nc</code> (annual <code>time</code> dimension, <code>AREA</code>, <code>LANDFRAC_PFT</code>, <code>PFTDATA_MASK</code>)</p>
 
 <hr />
 <h4 id="output_file"><code>output_file</code></h4>
@@ -1015,7 +1011,7 @@ Year 2051 → Excluded (&gt; end_year 2050)
 
 <h3 id="example-amazon-harvest-analysis">Example: Amazon Harvest Analysis</h3>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/simulation&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_harvest.dat&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span>
@@ -1032,7 +1028,7 @@ Year 2051 → Excluded (&gt; end_year 2050)
 <h3 id="example-1-global-grazing-and-harvest">Example 1: Global Grazing and Harvest</h3>
 <p><strong>Purpose:</strong> Extract all grazing and harvest activities globally</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730.dat&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
@@ -1069,7 +1065,7 @@ HARVEST_AREA (km^2)
 <h3 id="example-2-regional-analysis-amazon">Example 2: Regional Analysis (Amazon)</h3>
 <p><strong>Purpose:</strong> Focus on Amazon Basin grazing and harvest</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730_amazon.dat&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span>
@@ -1091,7 +1087,7 @@ HARVEST_AREA (km^2)
 <h3 id="example-3-grazing-only">Example 3: Grazing Only</h3>
 <p><strong>Purpose:</strong> Extract only grazing data (no harvest)</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./grazing_only.dat&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
@@ -1112,7 +1108,7 @@ HARVEST_AREA (km^2)
 <h3 id="example-4-harvest-only">Example 4: Harvest Only</h3>
 <p><strong>Purpose:</strong> Extract only harvest activities (no grazing)</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./harvest_only.dat&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
@@ -1132,7 +1128,7 @@ HARVEST_AREA (km^2)
 <h3 id="example-5-short-time-period-for-testing">Example 5: Short Time Period for Testing</h3>
 <p><strong>Purpose:</strong> Quick test with subset of data</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./test_surfdata.dat&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
@@ -1149,7 +1145,7 @@ HARVEST_AREA (km^2)
 <h3 id="example-6-csv-output">Example 6: CSV Output</h3>
 <p><strong>Purpose:</strong> Output in CSV format for easy import to other tools</p>
 <div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./harvest_grazing.csv&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
@@ -1167,14 +1163,14 @@ HARVEST_AREA (km^2)
 <p><strong>Purpose:</strong> Process multiple regions with one command</p>
 <div class="codehilite"><pre><span></span><code><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./global_harvest_grazing.dat&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">        </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_harvest_grazing.dat&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">        </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span>
@@ -1182,7 +1178,7 @@ HARVEST_AREA (km^2)
 <span class="w">        </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./conus_harvest_grazing.dat&quot;</span><span class="p">,</span>
 <span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
 <span class="w">        </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;conus&quot;</span><span class="p">,</span>
@@ -1256,18 +1252,11 @@ FOREST_AREA (km^2)
 </code></pre></div>
 
 <p><strong>Causes:</strong><br />
-- Incorrect <code>simulation_path</code><br />
-- File doesn't exist<br />
-- Wrong simulation directory</p>
+- Incorrect <code>landuse_file</code> path or file name<br />
+- File doesn't exist</p>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check directory exists</span>
-ls<span class="w"> </span>-la<span class="w"> </span>/path/to/simulation/
-
-<span class="c1"># Check for surfdata file</span>
-ls<span class="w"> </span>/path/to/simulation/surfdata_iESM_dyn.nc
-
-<span class="c1"># Verify exact filename</span>
-<span class="c1"># Must be: surfdata_iESM_dyn.nc</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check that the file given by landuse_file exists</span>
+ls<span class="w"> </span>-la<span class="w"> </span>/path/to/simulation/run/surfdata_iESM_dyn.nc
 </code></pre></div>
 
 <hr />
@@ -1547,7 +1536,7 @@ Script prints completion time</p>
 <span class="w">    </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Harvest and grazing for control simulation&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;date_extracted&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-01-24&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;simulation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSP245_ZATM_BGC_without_feedbacks&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/.../run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/.../run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="err">...</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1565,7 +1554,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <tr>
 <th>Feature</th>
 <th>e3sm_extract_time_series_h0.py</th>
-<th>e3sm_extract_time_series_surfdata_iesm_dyn.py</th>
+<th>e3sm_extract_time_series_landuse.py</th>
 </tr>
 </thead>
 <tbody>
@@ -1634,7 +1623,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <span class="w">   </span><span class="err">→</span><span class="w"> </span><span class="n">Output</span><span class="p">:</span><span class="w"> </span><span class="n">Monthly</span><span class="w"> </span><span class="n">GPP</span><span class="p">,</span><span class="w"> </span><span class="n">NPP</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">precipitation</span>
 
 <span class="mf">2.</span><span class="w"> </span><span class="n">Extract</span><span class="w"> </span><span class="n">human</span><span class="w"> </span><span class="n">land</span><span class="w"> </span><span class="n">management</span><span class="w"> </span><span class="p">(</span><span class="n">annual</span><span class="p">):</span>
-<span class="w">   </span><span class="n">python</span><span class="w"> </span><span class="n">e3sm_extract_time_series_surfdata_iesm_dyn</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="n">surfdata_config</span><span class="mf">.</span><span class="n">json</span>
+<span class="w">   </span><span class="n">python</span><span class="w"> </span><span class="n">e3sm_extract_time_series_landuse</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="n">surfdata_config</span><span class="mf">.</span><span class="n">json</span>
 <span class="w">   </span><span class="err">→</span><span class="w"> </span><span class="n">Output</span><span class="p">:</span><span class="w"> </span><span class="n">Annual</span><span class="w"> </span><span class="n">grazing</span><span class="p">,</span><span class="w"> </span><span class="n">harvest</span><span class="w"> </span><span class="n">areas</span>
 
 <span class="mf">3.</span><span class="w"> </span><span class="n">Analyze</span><span class="w"> </span><span class="kr">toget</span><span class="n">her</span><span class="p">:</span>
@@ -1652,7 +1641,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 <span class="mf">2</span><span class="n">a</span><span class="mf">.</span><span class="w"> </span><span class="n">e3sm_extract_time_series_h0</span><span class="mf">.</span><span class="n">py</span>
 <span class="w">    </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">climate</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">carbon</span><span class="w"> </span><span class="n">cycle</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">monthly</span><span class="p">)</span>
 
-<span class="mf">2</span><span class="n">b</span><span class="mf">.</span><span class="w"> </span><span class="n">e3sm_extract_time_series_surfdata_iesm_dyn</span><span class="mf">.</span><span class="n">py</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="n">SCRIPT</span>
+<span class="mf">2</span><span class="n">b</span><span class="mf">.</span><span class="w"> </span><span class="n">e3sm_extract_time_series_landuse</span><span class="mf">.</span><span class="n">py</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="n">SCRIPT</span>
 <span class="w">    </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">harvest</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">grazing</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">annual</span><span class="p">)</span>
 
 <span class="mf">3.</span><span class="w"> </span><span class="n">Combine</span><span class="w"> </span><span class="n">analyses</span><span class="p">:</span>
@@ -1853,17 +1842,17 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
 - <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
 <hr />
 <h2 id="version-information">Version Information</h2>
-<p><strong>Script:</strong> e3sm_extract_time_series_surfdata_iesm_dyn.py<br />
+<p><strong>Script:</strong> e3sm_extract_time_series_landuse.py<br />
 <strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py<br />
 <strong>Documentation Version:</strong> 1.0<br />
 <strong>Last Updated:</strong> January 2026<br />
 <strong>Python Version:</strong> 3.7+<br />
 <strong>xarray Version:</strong> 0.16+</p>
 <hr />
-<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_surfdata_iesm_dyn.py</code> script to extract annual time series data of human land management activities (grazing and harvest) from E3SM-GCAM coupled simulation surface data files.</em></p>
+<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_landuse.py</code> script to extract annual time series data of human land management activities (grazing and harvest) from E3SM-GCAM coupled simulation surface data files.</em></p>
         <footer>
             <p>E3SM Time Series Extraction Script Documentation (surfdata files)<br>
-            <strong>Script:</strong> e3sm_extract_time_series_surfdata_iesm_dyn.py<br>
+            <strong>Script:</strong> e3sm_extract_time_series_landuse.py<br>
             <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
         </footer>
     </div>

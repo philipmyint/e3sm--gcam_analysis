@@ -49,6 +49,10 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
         if 'PCT_NATVEG' not in variables:
             variables.append('PCT_NATVEG')        
 
+    # CFT areas require the crop land unit fraction.
+    if 'PCT_CFT' in variables and 'PCT_CROP' not in variables:
+        variables.append('PCT_CROP')
+
     # Convert the Dataset to create an overall DataFrame that stores all variables except those for land fractions and PFTs. 
     # Create a second DataFrame to store the land fractions and PFTs. 
     variables_except_pfts = variables.copy()
@@ -56,13 +60,14 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
     if 'PCT_NAT_PFT' in variables:
         variables_except_pfts.remove('PCT_NAT_PFT')
         variables_pfts.append('PCT_NAT_PFT')
+    # PCT_CFT is handled separately to avoid broadcasting it against the other variables.
+    if 'PCT_CFT' in variables:
+        variables_except_pfts.remove('PCT_CFT')
     if variables_except_pfts:
-        df = ds[variables_except_pfts].to_dataframe()
-        # Reduce the DataFrame to only the rows for the specific year of interest.
-        df = extract_dataframe_rows_for_given_year(df, year)
+        # Select the year before converting to a DataFrame to avoid materializing all years on every call.
+        df = ds[variables_except_pfts].sel(time=year).to_dataframe()
     if variables_pfts:
-        df_pfts = ds[variables_pfts].to_dataframe()
-        df_pfts = extract_dataframe_rows_for_given_year(df_pfts, year)
+        df_pfts = ds[variables_pfts].sel(time=year).to_dataframe()
         
     # Ensure df exists even if only PFT variables were requested.
     if not variables_except_pfts:
@@ -82,6 +87,15 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
             print(f'ERROR in year {year}: FRAC_VEG outside [0,1] range!')
             print(f'  min: {df["FRAC_VEG"].min():.6f}, max: {df["FRAC_VEG"].max():.6f}')
             raise ValueError(f'Invalid FRAC_VEG values in year {year}')
+
+    # Divide the crop land unit percent by 100 to change it to a fraction.
+    if 'PCT_CROP' in variables:
+        df['PCT_CROP'] = df['PCT_CROP'].fillna(0)/100
+        df = df.rename(columns={'PCT_CROP': 'FRAC_CROP'})
+        if (df['FRAC_CROP'] < -0.001).any() or (df['FRAC_CROP'] > 1.001).any():
+            print(f'ERROR in year {year}: FRAC_CROP outside [0,1] range!')
+            print(f'  min: {df["FRAC_CROP"].min():.6f}, max: {df["FRAC_CROP"].max():.6f}')
+            raise ValueError(f'Invalid FRAC_CROP values in year {year}')
         
     # Add a column for the area at each lat/lon coordinate to the overall DataFrame.
     df['AREA (km^2)'] = areas
@@ -128,6 +142,15 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
                 print(f'ERROR in year {year}: {col} too large: {max_val:.2e} km²')
                 raise ValueError(f'Invalid PFT area in year {year}')
 
+    # Crops are on their own land unit (PCT_CROP), split by crop functional type (PCT_CFT), rather than in PCT_NAT_PFT.
+    if 'FRAC_CROP' in df.columns:
+        df['CROP_AREA (km^2)'] = df['AREA (km^2)']*df['FRAC_CROP']
+    if 'PCT_CFT' in variables:
+        df_cft = ds['PCT_CFT'].sel(time=year).to_dataframe()['PCT_CFT'].unstack('cft').fillna(0)/100
+        cft_areas = df_cft.multiply(df['CROP_AREA (km^2)'], axis=0)
+        cft_areas.columns = [f'CFT_{cft}_AREA (km^2)' for cft in cft_areas.columns]
+        df = pd.concat([df, cft_areas], axis=1)
+
     # Convert the grazing and harvest variables from a unitless fraction into an area by multiplying with the area of the PFT aggregate subgroup.
     grazing_harvest_variables = ['GRAZING', 'HARVEST_SH1', 'HARVEST_SH2', 'HARVEST_SH3', 'HARVEST_VH1', 'HARVEST_VH2']
     pft_area_columns = ['GRASS_AREA (km^2)', 'FOREST_AREA (km^2)', 'FOREST_AREA (km^2)', 'FOREST_AREA (km^2)', 'FOREST_AREA (km^2)', 
@@ -148,8 +171,9 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
         df = move_columns_next_to_each_other_in_dataframe(df, harvest_variables[len(harvest_variables)-1], 'HARVEST_AREA (km^2)')
     
     # Sum over all latitude/longitude coordinates to get an area-weighted sum for each variable.
-    if 'FRAC_VEG' in df.columns:
-        df['FRAC_VEG'] *= df['AREA (km^2)']
+    for frac_column in ['FRAC_VEG', 'FRAC_CROP']:
+        if frac_column in df.columns:
+            df[frac_column] *= df['AREA (km^2)']
     
     # SAFETY: Check for inf/NaN before summing.
     if df.isin([np.inf, -np.inf]).any().any():
@@ -159,9 +183,10 @@ def extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region,
     
     df = df.sum(skipna=True).to_frame().T
 
-    # Vegetation fraction should be an area-weighted mean, and not an area-weighted sum, so we should divide its sum by the total area.
-    if 'FRAC_VEG' in df.columns:
-        df['FRAC_VEG'] /= np.sum(areas)
+    # To get global land unit fractions divide their area sums by the total land area.
+    for frac_column in ['FRAC_VEG', 'FRAC_CROP']:
+        if frac_column in df.columns:
+            df[frac_column] /= np.sum(areas)
 
     # Add year column.
     column_names_with_year_first = ['Year']
@@ -191,8 +216,8 @@ def extract_time_series_from_netcdf_file(inputs):
     # Start timing for this file.
     file_start_time = time.time()
     
-    # Extract all user selections, some being supplied with default choices. Calculate the total number of years. Set the path and name of the file.
-    simulation_path = inputs['simulation_path']
+    # Extract all user selections, some being supplied with default choices. landuse_file is the full path and name of the land use NetCDF file.
+    landuse_file = inputs['landuse_file']
     output_file = inputs['output_file']
     variables = inputs['variables']
     region = inputs.get('region', None)
@@ -200,7 +225,6 @@ def extract_time_series_from_netcdf_file(inputs):
     start_year = inputs.get('start_year', 2015)
     end_year = inputs.get('end_year', 2100)
     max_processes = inputs.get('max_processes', MAX_PROCESSES)
-    file = os.path.join(simulation_path, 'surfdata_iESM_dyn.nc')
     
     # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
     output_dir = os.path.dirname(os.path.abspath(output_file))
@@ -217,25 +241,25 @@ def extract_time_series_from_netcdf_file(inputs):
     # Prefilter to only load variables that are needed: the user-requested variables, those that may be added implicitly
     # for grazing/harvest calculations, and the auxiliary variables required for area/fraction calculations.
     # This reduces memory usage and I/O time by avoiding loading unnecessary variables from the file.
-    print(f"Loading {file}...")
+    print(f"Loading {landuse_file}...")
     auxiliary_vars = ['AREA', 'LANDFRAC_PFT', 'PFTDATA_MASK']
-    implicit_vars = ['PCT_NAT_PFT', 'PCT_NATVEG']
+    implicit_vars = ['PCT_NAT_PFT', 'PCT_NATVEG', 'PCT_CROP']
     vars_to_retain = set(variables) | set(auxiliary_vars) | set(implicit_vars)
-    all_vars_in_file = list(xr.open_dataset(file, decode_times=False).data_vars)
+    all_vars_in_file = list(xr.open_dataset(landuse_file, decode_times=False).data_vars)
     drop_vars = [v for v in all_vars_in_file if v not in vars_to_retain]
-    ds = xr.open_dataset(file, drop_variables=drop_vars)
+    ds = xr.open_dataset(landuse_file, drop_variables=drop_vars)
     # Drop duplicate 'time' coordinate values (e.g., that get generated during restarts), keeping the data that correspond to the last occurrence.
     ds = ds.drop_duplicates(dim='time', keep='last') 
     
     # Calculate grid cell areas, with regional filtering if needed
     print("Calculating grid cell areas...")
-    areas, ds, _, _ = find_gridcell_areas_in_netcdf_file_ds(ds, region=region, file_type='surfdata_iESM_dyn')
+    areas, ds, _, _ = find_gridcell_areas_in_netcdf_file_ds(ds, region=region, file_type='landuse_timeseries')
     
     # Check that all requested variables exist in the dataset before doing any per-year processing.
     missing_vars = [v for v in variables if v not in ds.data_vars
                     and v not in ('PCT_NAT_PFT', 'PCT_NATVEG')]  # these may be added implicitly
     if missing_vars:
-        print(f"Warning: the following variables were not found in {file} and will be skipped: {missing_vars}")
+        print(f"Warning: the following variables were not found in {landuse_file} and will be skipped: {missing_vars}")
         variables = [v for v in variables if v not in missing_vars]
         if not variables:
             print(f"Warning: no valid variables remain. Skipping '{output_file}'.")
@@ -244,7 +268,7 @@ def extract_time_series_from_netcdf_file(inputs):
     print(f"Variables to extract ({len(variables)}): {variables}")
 
     # Check which years actually exist in the file.
-    print(f'Checking available years in {file}...')
+    print(f'Checking available years in {landuse_file}...')
     if 'YEAR' in ds:
         available_years = sorted([int(y) for y in ds['YEAR'].values])
     else:
@@ -274,7 +298,7 @@ def extract_time_series_from_netcdf_file(inputs):
     print(f"Processing {num_years} years sequentially...")
     dataframes_for_each_year = []
     for i, year in enumerate(years_to_process, 1):
-        print(f" {file}: Processing year {year} [{i}/{num_years}]...")
+        print(f" {landuse_file}: Processing year {year} [{i}/{num_years}]...")
         df = extract_netcdf_file_into_dataframe_single_year(ds, areas, variables, region, year)
         dataframes_for_each_year.append(df)
 
@@ -308,7 +332,7 @@ if __name__ == '__main__':
     # Run this script together with the input JSON file(s) on the command line.
     start_time_total = time.time()
     if len(sys.argv) < 2:
-        print('Usage: python e3sm_extract_time_series_surfdata_iesm_dyn.py `path/to/json/input/file(s)\'')
+        print('Usage: python e3sm_extract_time_series_landuse.py `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries. Each block in a JSON file represents one time series output file.

@@ -1057,7 +1057,7 @@ print(f"✓ Data properly sorted: {is_sorted}")
 
 ### Related E3SM Scripts
 
-**`e3sm_extract_time_series_surfdata_iesm_dyn.py`**
+**`e3sm_extract_time_series_landuse.py`**
 - Extracts land surface data from E3SM
 - Creates analogous area data for E3SM analysis
 

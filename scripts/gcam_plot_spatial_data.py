@@ -516,10 +516,15 @@ def plot_spatial_data(inputs):
                 else:
                     gdf_panel['plot'] = test_data - control_data
 
+            # If plotting a percent difference and no colorbar limits are specified, cap this panel's own scale at -100/100 if its max exceeds 100 percent.
+            panel_vmin, panel_vmax = vmin, vmax
+            if plot_type == 'percent_difference' and not cbar_limits and gdf_panel['plot'].abs().max() > 100:
+                panel_vmin, panel_vmax = -100, 100
+
             title_text = f'{selected_category} ({year}){units_str}' if selected_category is not None else f'{year}{units_str}'
             panel_title = f'{chr(ord("a") + panel_idx)}) {title_text}'
             ax.set_title(panel_title, fontdict={'fontsize': title_size})
-            gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
+            gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                            legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
             if 'p_value' in gdf_panel.columns and stippling_on:
                 gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
@@ -611,9 +616,14 @@ def plot_spatial_data(inputs):
                     else:
                         gdf_panel['plot'] = test_data - control_data
 
+                # If plotting a percent difference and no colorbar limits are specified, cap this panel's own scale at -100/100 if its max exceeds 100 percent.
+                panel_vmin, panel_vmax = vmin, vmax
+                if plot_type == 'percent_difference' and not cbar_limits and gdf_panel['plot'].abs().max() > 100:
+                    panel_vmin, panel_vmax = -100, 100
+
                 panel_title = f'{chr(ord("a") + panel_idx)}) {category} ({year}){_panel_units_str(df_cat, plot_type, units_str)}'
                 ax.set_title(panel_title, fontdict={'fontsize': title_size})
-                gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax,
+                gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                                legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
                 if 'p_value' in gdf_panel.columns and stippling_on:
                     gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
@@ -699,7 +709,10 @@ def plot_spatial_data(inputs):
         vmin, vmax = cbar_limits[0], cbar_limits[1]
     else:
         vmin, vmax = None, None
-        
+        # If plotting a percent difference and no colorbar limits are specified, set them to be -100 and 100 percent if the max exceeds 100 percent.
+        if plot_type == 'percent_difference' and gdf['plot'].abs().max() > 100:
+            vmin, vmax = -100, 100
+
     # Generate the plot and optionally add stippling to indicate statistically significant differences at individual regions and/or basins.
     gdf.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=vmin, vmax=vmax, legend_kwds={"shrink": .5}, edgecolor='k', linewidth=linewidth)
     if 'p_value' in gdf.columns and stippling_on:
