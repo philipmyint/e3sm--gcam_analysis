@@ -123,6 +123,9 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         variables: List of variables that we want to extract from the NetCDF file.
         lat_lon_aggregation_type: String that indicates how we want to perform the aggregation over the lat/lon coordinates to form the time series.
         region: String for the region of interest. If not specified or not recognized, then there will be no restrictions on the lat/lon coordinates.
+        extra_dim_aggregation: How to collapse variable dimensions beyond time and horizontal space. Use 'first' to select index 0 or 'mean' to
+                               average over each extra dimension. CO2 variables with a lev dimension are handled separately by selecting the
+                               surface level.
 
     Returns:
         DataFrame containing one column for each of the variables, plus year and month columns.
@@ -138,13 +141,15 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         if variable in variables:
             variables_except_landunits_and_pfts.remove(variable)
             variables_landunits_and_pfts.append(variable)
-    # PCT_CFT is handled separately to avoid broadcasting it against ltype and natpft.
+    # PCT_CFT gives crop functional type percentages on the crop land unit. Handle it separately from ordinary variables
+    # and from PCT_NAT_PFT so xarray does not broadcast crop types against land-unit or natural-PFT dimensions.
     if 'PCT_CFT' in variables:
         variables_except_landunits_and_pfts.remove('PCT_CFT')
     if variables_except_landunits_and_pfts:
         # For CO2 concentration variables that have a lev dimension, select only the surface level (index -1, i.e. the lowest/highest-pressure level)
         # before converting to a DataFrame, so that all variables share the same (time, ncol) dimensions.
-        # For any other variable with extra dimensions beyond time/lat/lon/ncol, select index 0 (e.g. surface soil for levgrnd).
+        # For any other variable with extra dimensions beyond time/lat/lon/ncol, collapse each extra dimension according to extra_dim_aggregation:
+        # select index 0 by default (e.g., surface soil for levgrnd), or average across the dimension when extra_dim_aggregation is 'mean'.
         _spatial_dims = {'time', 'lat', 'lon', 'ncol'}
         for variable in variables_except_landunits_and_pfts:
             if 'lev' in ds[variable].dims and variable.startswith('CO2'):
@@ -165,7 +170,8 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         df_landunits_and_pfts = ds[variables_landunits_and_pfts].to_dataframe()
 
     def _per_row_spatial_values(arr, df_ref):
-        # Broadcast a per-gridcell array to one value per row of df_ref, aligned by lat/lon or ncol.
+        # Return one area/fraction value for each DataFrame row. For lat/lon-indexed data, align by coordinate;
+        # otherwise assume ncol-style row ordering and repeat the flattened gridcell values.
         flat = arr.flatten()
         if 'lat' in df_ref.index.names and 'lon' in df_ref.index.names:
             la, lo = np.meshgrid(ds['lat'].values, ds['lon'].values, indexing='ij')
@@ -177,10 +183,11 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
         n_reps = len(df_ref) // len(flat)
         return np.tile(flat, n_reps)
 
-    # 9 land units: vegetation, crop, ice, multiple ice, lake, wetland, urban tbd, urban hd, urban md. Currently, we want only vegetation (index = 0).
+    # 9 land units: vegetation, crop, ice, multiple ice, lake, wetland, urban tbd, urban hd, urban md.
+    # Use vegetation (index 0) for natural PFT areas, and crop (index 1) for CFT areas when PCT_CFT is requested.
     if 'PCT_LANDUNIT' in variables:
         df_landunits_and_pfts = df_landunits_and_pfts.reset_index(level='ltype')
-        # The crop land unit (index 1) holds the total crop area when crops are resolved by PCT_CFT.
+        # The crop land unit (index 1) provides the crop-land fraction needed to turn PCT_CFT percentages into areas.
         if 'PCT_CFT' in variables:
             frac_crop = df_landunits_and_pfts[df_landunits_and_pfts['ltype'] == 1]['PCT_LANDUNIT'].groupby(['lat', 'lon']).mean().fillna(0)/100
         df_landunits_and_pfts = df_landunits_and_pfts[df_landunits_and_pfts['ltype'] == 0].drop(columns=['ltype'])
@@ -219,13 +226,13 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
             # Add a column to the overall DataFrame to record the area of this PFT category (individual or subgroup) at each lat/lon coordinate.
             df[pft_label] = df['AREA_H0 (km^2)']*df['FRAC_VEG_H0']*df_this_pft      
 
-    # When crops are resolved by crop functional type (CFT), PCT_CFT gives the % of each CFT on the crop land unit.
+    # When crops are resolved by crop functional type (CFT), PCT_CFT gives the percent of each CFT on the crop land unit.
+    # Convert those percentages to areas and use their sum as the total crop area, since the natural-PFT crop slot is empty.
     if 'PCT_LANDUNIT' in variables and 'PCT_CFT' in variables:
         df_cft = ds['PCT_CFT'].isel(time=0).to_dataframe()['PCT_CFT'].unstack('cft').fillna(0)/100
         cft_areas = df_cft.multiply(df['AREA_H0 (km^2)']*df['FRAC_CROP_H0'], axis=0)
         cft_areas.columns = [f'CFT_{cft}_AREA_H0 (km^2)' for cft in cft_areas.columns]
         df = pd.concat([df, cft_areas], axis=1)
-        # The natpft crop PFT is empty in this case, so the total crop area comes from the CFTs.
         df['CROP_AREA_H0 (km^2)'] = cft_areas.sum(axis=1)
     
     if lat_lon_aggregation_type == 'area_weighted_mean_or_sum':
@@ -247,7 +254,7 @@ def extract_netcdf_file_into_dataframe(file, variables, lat_lon_aggregation_type
 
         # Variables that are not fluxes and stocks (so that they are not per-area quantities), should be global area-weighted means
         # rather than area-weighted sums, and therefore we need to divide these sums (which were computed a few lines above) by the total area.
-        # Temperature variables are examples of such non-flux/stock variables.
+        # Temperature variables are examples of such non-flux/non-stock variables.
         columns_for_means = [label for label in columns_to_multipy_by_areas 
                              if not check_substrings_in_string(['/m^2', '/m2'], label, all_or_any='any')]
         # LND and OCN refer to certain types of EAM output for which we need to multiply the total grid cell areas by the land or non-land fractions.
@@ -307,16 +314,18 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
                            for each type of NetCDF file. Current options include 'area_weighted_mean_or_sum', 'mean', and 'sum'.
         regions: List of strings for the region of interest. If not specified or not recognized, then there will be no restrictions on the 
                  lat/lon coordinates (the entire globe will be used). 
+        extra_dim_aggregation_types: List of strings, one per NetCDF file type, controlling how variables with extra non-spatial dimensions are
+                           collapsed before spatial aggregation. Current options are 'first' and 'mean'. If omitted, 'first' is used.
         process_variables: Boolean indicating if further processing is to be done on the outputs in the DataFrame. This includes adding new variables
                            not in the NetCDF files (e.g., total precipitation, mole fraction CO2) or changing the units (e.g., Pg instead of g).
         start_year: First year in the extracted time series data.
         end_year: Last year in the extracted time series data.
-        max_processes: Maximum number of parallel processes to use. If not specified, defaults to the smaller of 16 and half the available CPUs.
+        max_processes: Maximum number of parallel processes to use. If not specified, defaults to all available CPUs minus one, with a minimum of one.
 
     Returns:
         N/A.
     """
-    # Each per-file-type input must have one entry for every NetCDF file type.
+    # Each per-file-type input must have one entry for every NetCDF file type, including optional aggregation choices.
     per_file_type_inputs = {'netcdf_substrings': netcdf_substrings, 'variables': variables,
                             'lat_lon_aggregation_types': lat_lon_aggregation_types, 'regions': regions,
                             'extra_dim_aggregation_types': extra_dim_aggregation_types}
@@ -380,9 +389,10 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         # Use multiprocessing to extract data from all the files. Put the data from each file into DataFrame, store all such DataFrames in a list.
         arguments = list(zip(netcdf_files, [vars_to_use]*len(netcdf_files), [lat_lon_aggregation_types[index]]*len(netcdf_files), 
                              [regions[index]]*len(netcdf_files), [extra_dim_aggregation_types[index]]*len(netcdf_files)))
-        # Limit processes to reduce memory pressure. Use the user-specified value if provided, otherwise default to the smaller of 16 and half the available CPUs.
+        # Use the user-specified process count if provided; otherwise use the shared default.
         if max_processes is None:
             max_processes = MAX_PROCESSES
+        max_processes = validate_max_processes(max_processes)
         print(f"Processing file type {index+1}/{len(variables)} ({file_type_name}): {len(netcdf_files)} files using {max_processes} processes...")
         start_time_pool = time.time()
         # Use imap_unordered so that results are returned and appended as each worker finishes, rather than waiting for all workers to complete.
@@ -438,25 +448,41 @@ if __name__ == '__main__':
 
     # Run this script together with the input JSON file(s) on the command line.
     start_time_total = time.time()
-    if len(sys.argv) < 2:
-        print('Usage: python e3sm_extract_time_series_h0.py `path/to/json/input/file(s)\'')
+    overwrite = False
+    input_files = []
+    for arg in sys.argv[1:]:
+        if arg == '--overwrite':
+            overwrite = True
+        elif arg in ['-h', '--help']:
+            print('Usage: python e3sm_extract_time_series_h0.py [--overwrite] `path/to/json/input/file(s)\'')
+            sys.exit()
+        elif arg.startswith('-'):
+            print(f"Error: unknown option: '{arg}'")
+            print('Usage: python e3sm_extract_time_series_h0.py [--overwrite] `path/to/json/input/file(s)\'')
+            sys.exit(1)
+        else:
+            input_files.append(arg)
+
+    if not input_files:
+        print('Usage: python e3sm_extract_time_series_h0.py [--overwrite] `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries. Each block in a JSON file represents one time series output file.
     list_of_inputs = []
-    for index in range(1, len(sys.argv)):
-        input_file = sys.argv[index]
+    for input_file in input_files:
         with open(input_file) as f:
             list_of_inputs.extend(json.load(f))
             
-    # Check upfront whether any output files already exist; report all conflicts before exiting.
-    existing_files = [i['output_file'] for i in list_of_inputs if os.path.exists(i['output_file'])]
-    if existing_files:
-        for f in existing_files:
-            print(f"Error: output file already exists: '{f}'")
-        print("Error: some files in output_file already exist. To create new output_files either delete/rename existing files or "
-              "rename project files in input json file. No new files have been created")
-        sys.exit(1)
+    # Check upfront whether any output files already exist; report all conflicts before exiting unless overwrite was requested.
+    if not overwrite:
+        existing_files = [i['output_file'] for i in list_of_inputs if os.path.exists(i['output_file'])]
+        if existing_files:
+            for f in existing_files:
+                print(f"Error: output file already exists: '{f}'")
+            print("Error: some files in output_file already exist. To create new output_files either delete/rename existing files or "
+                  "rename project files in input json file. No new files have been created")
+            print("Use --overwrite to replace existing output files.")
+            sys.exit(1)
 
     # Produce the output files one at a time.
     for inputs in list_of_inputs:

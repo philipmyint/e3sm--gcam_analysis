@@ -161,7 +161,7 @@ Year  Month  GPP (PgC/month)
 ### Hardcoded Parameters (Edit in Script)
 
 #### 1. `files`
-**Type:** List of strings  
+**Type:** List of strings
 **Description:** Paths to base time series files (.dat or .csv).
 
 **Location in Script:**
@@ -200,7 +200,7 @@ files = [
 ---
 
 #### 2. `num_files_in_each_set`
-**Type:** List of integers  
+**Type:** List of integers
 **Description:** Total number of ensemble members (including base file) for each base file.
 
 **Location in Script:**
@@ -229,7 +229,7 @@ num_files_in_each_set = [20]
 ---
 
 #### 3. Base Multiplier Range (Inside Function)
-**Type:** Float range  
+**Type:** Float range
 **Description:** Range for systematic base multipliers.
 
 **Location in Script:**
@@ -261,7 +261,7 @@ base_multipliers = np.linspace(0.98, 1.02, num_synthetic_sets_in_ensemble)
 ---
 
 #### 4. Random Multiplier Range (Inside Function)
-**Type:** Float range  
+**Type:** Float range
 **Description:** Range for random temporal perturbations.
 
 **Location in Script:**
@@ -329,7 +329,7 @@ for index in range(4):  # 4 synthetic members
     # Combined multiplier for each timestep
     multipliers = base_multipliers[index] + random_multipliers
     # Example: [1.005, 1.028, 1.017, ..., 1.061]
-    
+
     # Apply to all data columns
     df_new[columns] = df[columns].multiply(multipliers, axis='index')
 ```
@@ -468,11 +468,11 @@ def produce_synthetic_time_series(inputs):
     num_synthetic_sets_in_ensemble = inputs[1] - 1
     df = read_file_into_dataframe(file)
     columns = [column for column in df.columns if column not in ['Year', 'Month']]
-    
+
     # Change these lines:
     base_multipliers = np.linspace(1.005, 1.015, num_synthetic_sets_in_ensemble)  # 0.5% to 1.5%
     random_multipliers = np.random.uniform(low=-0.005, high=0.005, size=len(df))  # ±0.5%
-    
+
     for index in range(len(base_multipliers)):
         ...
 ```
@@ -745,7 +745,7 @@ project/
 def produce_synthetic_time_series(inputs):
     # Add at beginning:
     np.random.seed(42)  # Fixed seed
-    
+
     start_time = time.time()
     file = inputs[0]
     ...
@@ -805,18 +805,11 @@ MemoryError: Unable to allocate array
 **Solutions:**
 
 1. **Reduce parallel processing:**
-```python
-# Instead of all CPUs:
-with multiprocessing.Pool(processes=4) as pool:  # Use only 4
-    pool.map(produce_synthetic_time_series, inputs)
+```bash
+python e3sm_produce_synthetic_time_series.py --max-processes 4
 ```
 
-2. **Process sequentially:**
-```python
-# Replace parallel loop:
-for inp in inputs:
-    produce_synthetic_time_series(inp)
-```
+2. **Process sequentially:** use `--max-processes 1`.
 
 3. **Reduce ensemble size:**
 ```python
@@ -1057,7 +1050,7 @@ Synthetic #3: 0.992 × base  → uniform 0.8% decrease everywhere
 
 ### Normal Distribution Random Perturbations
 
-**Current:** Uniform distribution  
+**Current:** Uniform distribution
 **Modification:** Normal (Gaussian) distribution
 
 ```python
@@ -1074,7 +1067,7 @@ random_multipliers = np.random.normal(loc=0.0, scale=0.01, size=len(df))
 
 ### Variable-Specific Perturbations
 
-**Current:** Same perturbation for all variables  
+**Current:** Same perturbation for all variables
 **Modification:** Different perturbation per variable
 
 ```python
@@ -1085,16 +1078,16 @@ def produce_synthetic_time_series(inputs):
     df = read_file_into_dataframe(file)
     columns = [column for column in df.columns if column not in ['Year', 'Month']]
     base_multipliers = np.linspace(1.02, 1.05, num_synthetic_sets_in_ensemble)
-    
+
     for index in range(len(base_multipliers)):
         df_new = df.copy()
-        
+
         # Different random perturbation for each column
         for column in columns:
             random_multipliers = np.random.uniform(low=-0.02, high=0.02, size=len(df))
             multipliers = base_multipliers[index] + random_multipliers
             df_new[column] = df[column] * multipliers
-        
+
         # Save file...
 ```
 
@@ -1102,7 +1095,7 @@ def produce_synthetic_time_series(inputs):
 
 ### Autocorrelated Random Perturbations
 
-**Current:** Independent random at each timestep  
+**Current:** Independent random at each timestep
 **Modification:** Temporally correlated (more realistic)
 
 ```python
@@ -1137,30 +1130,30 @@ def produce_synthetic_time_series(inputs):
     num_synthetic_sets_in_ensemble = inputs[1] - 1
     df = read_file_into_dataframe(file)
     columns = [column for column in df.columns if column not in ['Year', 'Month']]
-    
+
     # Custom: Conservative perturbations
     base_multipliers = np.linspace(1.005, 1.015, num_synthetic_sets_in_ensemble)
     random_multipliers = np.random.uniform(low=-0.005, high=0.005, size=len(df))
-    
+
     for index in range(len(base_multipliers)):
         df_new = df
         multipliers = base_multipliers[index] + random_multipliers
         df_new[columns] = df[columns].multiply(multipliers, axis='index')
-        
+
         if file.endswith('.csv'):
             new_file = file.replace('.csv', f'_{index+2}.csv')
             df_new.to_csv(new_file, index=False)
         else:
             new_file = file.replace('.dat', f'_{index+2}.dat')
             write_dataframe_to_fwf(new_file, df_new)
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time for {file}: {elapsed_time:.2f} seconds")
 
 if __name__ == '__main__':
     start_time = time.time()
-    
+
     # Configuration
     files = [
         "./control_time_series.dat",
@@ -1168,12 +1161,12 @@ if __name__ == '__main__':
         "./regional_time_series.csv"
     ]
     num_files_in_each_set = [10, 10, 5]  # Different sizes
-    
+
     inputs = list(zip(files, num_files_in_each_set))
-    
+
     with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
         pool.map(produce_synthetic_time_series, inputs)
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Total time: {elapsed_time:.2f} seconds")
@@ -1200,10 +1193,10 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_produce_synthetic_time_series.py  
-**Documentation Version:** 1.0  
-**Last Updated:** January 2026  
-**Python Version:** 3.7+  
+**Script:** e3sm_produce_synthetic_time_series.py
+**Documentation Version:** 1.0
+**Last Updated:** January 2026
+**Python Version:** 3.7+
 **Dependencies:** numpy, pandas, multiprocessing, utility_dataframes
 
 ---

@@ -114,6 +114,7 @@ python e3sm_plot_spatial_data.py elm_config.json eam_config.json
 | `time_calculation` | string | No | `'mean'` | `'mean'` or `'sum'` for temporal aggregation |
 | `grid_file` | string | No | `None` | **Required for EAM**, grid file path |
 | `netcdf_file_sets` | list | No | Auto-generated | Labels for ensemble file sets |
+| `max_processes` | integer | No | `MAX_PROCESSES` | Maximum parallel workers. Defaults to all available CPUs minus one, with a minimum of one. |
 
 **Plot Type Options:**
 - `'absolute_difference'` - Scenario minus control (default)
@@ -373,7 +374,7 @@ GPP in Scenario: 1.234e-04
 
 **What:** Tests if means differ at each individual gridcell
 
-**When:** 
+**When:**
 - Nested list configuration (ensemble)
 - ≥2 members per ensemble
 - **ELM data only** (too slow for EAM unstructured grid)
@@ -571,7 +572,7 @@ Same as Example 1, but for Full feedback scenario
 ```json
 {
     "netcdf_files": [
-        "./control_spatial_data_elm.nc", 
+        "./control_spatial_data_elm.nc",
         "./full_feedback_spatial_data_elm.nc"
     ],
     "plot_directory": "./spatial_plots/elm_full_feedback_minus_control_individual_absolute_difference",
@@ -603,7 +604,7 @@ Same as Example 1, but for Full feedback scenario
 ```json
 {
     "netcdf_files": [
-        "./control_spatial_data_elm.nc", 
+        "./control_spatial_data_elm.nc",
         "./full_feedback_spatial_data_elm.nc"
     ],
     "plot_directory": "./spatial_plots/elm_full_feedback_minus_control_individual_percent_difference",
@@ -656,7 +657,7 @@ For each gridcell:
 
 **No statistical testing** (no comparison being made)
 
-**Use case:** 
+**Use case:**
 - Visualizing ensemble mean without needing control comparison
 - Showing average pattern across realizations
 - Publication plot of ensemble mean alone
@@ -790,7 +791,7 @@ Same as Example 9, but for Full feedback scenario
 ```json
 {
     "netcdf_files": [
-        "./control_spatial_data_eam.nc", 
+        "./control_spatial_data_eam.nc",
         "./full_feedback_spatial_data_eam.nc"
     ],
     "plot_directory": "./spatial_plots/eam_full_feedback_minus_control_individual_absolute_difference",
@@ -814,7 +815,7 @@ Same as Example 9, but for Full feedback scenario
 ```json
 {
     "netcdf_files": [
-        "./control_spatial_data_eam.nc", 
+        "./control_spatial_data_eam.nc",
         "./full_feedback_spatial_data_eam.nc"
     ],
     "plot_directory": "./spatial_plots/eam_full_feedback_minus_control_individual_percent_difference",
@@ -1148,10 +1149,10 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_plot_spatial_data.py  
-**Documentation Version:** 2.0  
-**Last Updated:** January 2026  
-**Python Version:** 3.7+  
+**Script:** e3sm_plot_spatial_data.py
+**Documentation Version:** 2.0
+**Last Updated:** January 2026
+**Python Version:** 3.7+
 **Dependencies:** xarray, uxarray, cartopy, matplotlib, scipy, numpy, pandas
 
 ---

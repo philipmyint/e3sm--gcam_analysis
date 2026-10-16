@@ -1,486 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Time Series Extraction Script Documentation (surfdata files)</title>
-    <style>/* 
- * Documentation Stylesheet for GCAM Synthetic Data Generation Script
- * A modern, colorful design with good readability
- */
-
-/* ===== ROOT VARIABLES ===== */
-:root {
-    /* Color Palette */
-    --primary-blue: #2563eb;
-    --primary-blue-light: #3b82f6;
-    --primary-blue-dark: #1e40af;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    --accent-purple: #8b5cf6;
-    --accent-red: #ef4444;
-    
-    /* Background Colors */
-    --bg-main: #f8fafc;
-    --bg-code: #1e293b;
-    --bg-code-inline: #e2e8f0;
-    --bg-table-header: #1e40af;
-    --bg-table-row-even: #f1f5f9;
-    --bg-table-row-odd: #ffffff;
-    --bg-note: #fef3c7;
-    --bg-warning: #fee2e2;
-    --bg-info: #dbeafe;
-    --bg-success: #d1fae5;
-    
-    /* Text Colors */
-    --text-main: #1e293b;
-    --text-secondary: #64748b;
-    --text-code: #e2e8f0;
-    --text-link: #2563eb;
-    --text-link-hover: #1e40af;
-    
-    /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-dark: #94a3b8;
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-}
-
-/* ===== BASE STYLES ===== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
-    color: var(--text-main);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: var(--spacing-xl) var(--spacing-md);
-    font-size: 16px;
-}
-
-/* Main Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    padding: var(--spacing-2xl);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1 {
-    font-size: 2.5rem;
-    color: var(--primary-blue-dark);
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 4px solid var(--primary-blue);
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-h2 {
-    font-size: 2rem;
-    color: var(--primary-blue);
-    margin-top: var(--spacing-2xl);
-    margin-bottom: var(--spacing-lg);
-    padding-left: var(--spacing-md);
-    border-left: 5px solid var(--accent-green);
-    font-weight: 600;
-}
-
-h3 {
-    font-size: 1.5rem;
-    color: var(--primary-blue-dark);
-    margin-top: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-}
-
-h3::before {
-    content: "▸";
-    color: var(--accent-orange);
-    margin-right: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-h4 {
-    font-size: 1.25rem;
-    color: var(--accent-purple);
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-sm);
-    font-weight: 600;
-}
-
-p {
-    margin-bottom: var(--spacing-md);
-    color: var(--text-main);
-}
-
-/* ===== LINKS ===== */
-a {
-    color: var(--text-link);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-a:hover {
-    color: var(--text-link-hover);
-    border-bottom-color: var(--text-link-hover);
-}
-
-/* ===== LISTS ===== */
-ul, ol {
-    margin-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-}
-
-li {
-    margin-bottom: var(--spacing-sm);
-    padding-left: var(--spacing-sm);
-}
-
-ul li::marker {
-    color: var(--accent-green);
-    font-size: 1.2em;
-}
-
-ol li::marker {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
-/* ===== CODE BLOCKS ===== */
-code {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--bg-code-inline);
-    color: var(--accent-red);
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-pre {
-    background: var(--bg-code);
-    color: var(--text-code);
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: var(--spacing-lg) 0;
-    border-left: 4px solid var(--accent-green);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-pre code {
-    background: transparent;
-    color: var(--text-code);
-    padding: 0;
-    font-size: 0.95em;
-    line-height: 1.5;
-}
-
-/* ===== TABLES ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: var(--spacing-xl) 0;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-thead {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
-    color: white;
-}
-
-th {
-    padding: var(--spacing-md);
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.05em;
-    border-bottom: 3px solid var(--accent-orange);
-}
-
-td {
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-light);
-}
-
-tbody tr:nth-child(even) {
-    background: var(--bg-table-row-even);
-}
-
-tbody tr:nth-child(odd) {
-    background: var(--bg-table-row-odd);
-}
-
-tbody tr:hover {
-    background: #e0f2fe;
-    transform: scale(1.01);
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ===== BLOCKQUOTES ===== */
-blockquote {
-    margin: var(--spacing-lg) 0;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--primary-blue-dark);
-}
-
-/* ===== HORIZONTAL RULES ===== */
-hr {
-    border: none;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
-    margin: var(--spacing-2xl) 0;
-    border-radius: 2px;
-}
-
-/* ===== SPECIAL BOXES ===== */
-.note {
-    background: var(--bg-note);
-    border-left: 5px solid var(--accent-orange);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.warning {
-    background: var(--bg-warning);
-    border-left: 5px solid var(--accent-red);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.info {
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.success {
-    background: var(--bg-success);
-    border-left: 5px solid var(--accent-green);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-/* ===== BADGES ===== */
-.badge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 600;
-    margin: 0 var(--spacing-xs);
-}
-
-.badge-required {
-    background: var(--accent-red);
-    color: white;
-}
-
-.badge-optional {
-    background: var(--accent-green);
-    color: white;
-}
-
-.badge-default {
-    background: var(--primary-blue);
-    color: white;
-}
-
-/* ===== STRONG & EM ===== */
-strong {
-    color: var(--primary-blue-dark);
-    font-weight: 700;
-}
-
-em {
-    color: var(--accent-purple);
-    font-style: italic;
-}
-
-/* ===== IMAGES ===== */
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: var(--spacing-lg) 0;
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-table-row-even);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--accent-purple) 100%);
-}
-
-/* ===== PRINT STYLES ===== */
-@media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-    
-    .container {
-        box-shadow: none;
-        max-width: 100%;
-    }
-    
-    h1, h2, h3 {
-        page-break-after: avoid;
-    }
-    
-    pre, table {
-        page-break-inside: avoid;
-    }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    body {
-        padding: var(--spacing-md) var(--spacing-sm);
-        font-size: 14px;
-    }
-    
-    .container {
-        padding: var(--spacing-lg);
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.25rem;
-    }
-    
-    table {
-        font-size: 0.9em;
-    }
-    
-    th, td {
-        padding: var(--spacing-sm);
-    }
-}
-
-/* ===== ADDITIONAL UTILITY CLASSES ===== */
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.margin-top-lg {
-    margin-top: var(--spacing-2xl);
-}
-
-.margin-bottom-lg {
-    margin-bottom: var(--spacing-2xl);
-}
-
-.highlight {
-    background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
-    padding: 0 var(--spacing-xs);
-    border-radius: 3px;
-}
-
-/* ===== SECTION DIVIDERS ===== */
-.section-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: var(--spacing-2xl) 0;
-}
-
-.section-divider::before,
-.section-divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 2px solid var(--border-medium);
-}
-
-.section-divider::before {
-    margin-right: var(--spacing-md);
-}
-
-.section-divider::after {
-    margin-left: var(--spacing-md);
-}
-
-/* ===== FOOTER ===== */
-footer {
-    margin-top: var(--spacing-2xl);
-    padding-top: var(--spacing-lg);
-    border-top: 2px solid var(--border-light);
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E3SM Surface Data Time Series Extraction Script Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; background: #f8fafc; margin: 0; }
+.container { max-width: 980px; margin: 0 auto; padding: 2rem; background: #ffffff; }
+h1, h2, h3, h4 { color: #1f2937; line-height: 1.25; }
+a { color: #2563eb; }
+code { background: #eef2ff; padding: 0.1rem 0.25rem; border-radius: 4px; }
+pre { background: #111827; color: #f9fafb; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+pre code { background: transparent; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #d1d5db; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem; color: #475569; }
 </style>
 </head>
 <body>
-    <div class="container"><h1 id="e3sm-surface-data-time-series-extraction-script-documentation">E3SM Surface Data Time Series Extraction Script Documentation</h1>
-<h2 id="overview">Overview</h2>
+<div class="container">
+<h1>E3SM Surface Data Time Series Extraction Script Documentation</h1>
+<h2>Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_extract_time_series_landuse.py</code></p>
 <p><strong>Purpose:</strong> Extracts annual time series data from the E3SM Human Component (EHC) dynamically-generated land surface data file (<code>surfdata_iESM_dyn.nc</code>). This script specifically processes human-related land management activities including grazing and wood harvesting (various harvest types), aggregates data spatially, and outputs annual time series for global or regional analysis.</p>
 <p><strong>Key Difference from h0 Script:</strong> Unlike <code>e3sm_extract_time_series_h0.py</code> which processes monthly ELM/EAM output files, this script processes a <strong>single NetCDF file</strong> containing time-varying land use data that is updated dynamically during E3SM-GCAM coupled simulations.</p>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
-<hr />
-<h2 id="table-of-contents">Table of Contents</h2>
-<ol>
+<hr>
+<h2>Table of Contents</h2>
+<ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
@@ -495,50 +44,50 @@ footer {
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#best-practices">Best Practices</a></li>
 <li><a href="#comparison-with-h0-extraction-script">Comparison with h0 Extraction Script</a></li>
-</ol>
-<hr />
-<h2 id="installation-requirements">Installation &amp; Requirements</h2>
-<h3 id="required-python-libraries">Required Python Libraries</h3>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>xarray<span class="w"> </span>netCDF4<span class="w"> </span>multiprocessing
-</code></pre></div>
-
-<h3 id="required-utility-modules">Required Utility Modules</h3>
-<p>The script imports several utility modules that must be in the same directory or Python path:<br />
-- <code>utility_constants</code> - Physical constants (conversion factors)<br />
-- <code>utility_dataframes</code> - DataFrame manipulation functions<br />
-- <code>utility_functions</code> - General utility functions<br />
-- <code>utility_e3sm_netcdf</code> - E3SM-specific NetCDF handling functions</p>
-<h3 id="system-requirements">System Requirements</h3>
+</ul>
+<hr>
+<h2>Installation &amp; Requirements</h2>
+<h3>Required Python Libraries</h3>
+<pre><code>pip install pandas numpy xarray netCDF4 multiprocessing</code></pre>
+<h3>Required Utility Modules</h3>
+<p>The script imports several utility modules that must be in the same directory or Python path:</p>
+<ul>
+<li><code>utility_constants</code> - Physical constants (conversion factors)</li>
+<li><code>utility_dataframes</code> - DataFrame manipulation functions</li>
+<li><code>utility_functions</code> - General utility functions</li>
+<li><code>utility_e3sm_netcdf</code> - E3SM-specific NetCDF handling functions</li>
+</ul>
+<h3>System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
 <li>Sufficient RAM for NetCDF file processing (4+ GB recommended)</li>
 <li>Access to E3SM simulation output directories</li>
 </ul>
-<hr />
-<h2 id="basic-usage">Basic Usage</h2>
-<h3 id="command-line-execution">Command Line Execution</h3>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_landuse.py<span class="w"> </span>path/to/config.json
-</code></pre></div>
-
+<hr>
+<h2>Basic Usage</h2>
+<h3>Command Line Execution</h3>
+<pre><code>python e3sm_extract_time_series_landuse.py path/to/config.json</code></pre>
+<p>By default, the script will stop before writing if any configured output file already exists. Add <code>--overwrite</code> to replace existing outputs:</p>
+<pre><code>python e3sm_extract_time_series_landuse.py --overwrite path/to/config.json</code></pre>
 <p><strong>Multiple Configuration Files:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_landuse.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
-</code></pre></div>
-
-<h3 id="what-the-script-does">What the Script Does</h3>
-<p>For each configuration block in the JSON file, the script:<br />
-1. <strong>Opens</strong> the land use file given by <code>landuse_file</code> (e.g., <code>surfdata_iESM_dyn.nc</code>)<br />
-2. <strong>Extracts</strong> specified variables for each year in the range<br />
-3. <strong>Processes</strong> PFT (Plant Functional Type) data automatically<br />
-4. <strong>Converts</strong> grazing/harvest fractions to areas (km²)<br />
-5. <strong>Aggregates</strong> spatially (area-weighted sum over lat/lon)<br />
-6. <strong>Filters</strong> by region (optional - global, Amazon, CONUS, etc.)<br />
-7. <strong>Calculates</strong> total harvest from individual harvest types<br />
-8. <strong>Outputs</strong> annual time series to formatted text file<br />
-9. <strong>Uses</strong> parallel processing (one process per year)</p>
-<hr />
-<h2 id="e3sm-human-component-background">E3SM Human Component Background</h2>
-<h3 id="the-e3sm-human-component-ehc">The E3SM Human Component (EHC)</h3>
+<pre><code>python e3sm_extract_time_series_landuse.py config1.json config2.json config3.json</code></pre>
+<h3>What the Script Does</h3>
+<p>For each configuration block in the JSON file, the script:</p>
+<ul>
+<li><strong>Opens</strong> the land use file given by <code>landuse_file</code> (e.g., <code>surfdata_iESM_dyn.nc</code>)</li>
+<li><strong>Extracts</strong> specified variables for each year in the range</li>
+<li><strong>Processes</strong> PFT (Plant Functional Type) data automatically</li>
+<li><strong>Converts</strong> grazing/harvest fractions to areas (km²)</li>
+<li><strong>Aggregates</strong> spatially (area-weighted sum over lat/lon)</li>
+<li><strong>Filters</strong> by region (optional - global, Amazon, CONUS, etc.)</li>
+<li><strong>Calculates</strong> total harvest from individual harvest types</li>
+<li><strong>Outputs</strong> annual time series to formatted text file</li>
+<li><strong>Uses</strong> parallel processing across multiple configured landuse files; each individual file is processed year-by-year inside one worker</li>
+</ul>
+<hr>
+<h2>E3SM Human Component Background</h2>
+<h3>The E3SM Human Component (EHC)</h3>
 <p>The <strong>E3SM Human Component (EHC)</strong> is a module within E3SM that represents human activities affecting the land surface, particularly in E3SM-GCAM coupled simulations. The EHC:</p>
 <ul>
 <li><strong>Bridges</strong> E3SM (Earth system model) and GCAM (integrated assessment model)</li>
@@ -546,504 +95,382 @@ footer {
 <li><strong>Tracks</strong> human land management activities</li>
 <li><strong>Generates</strong> <code>surfdata_iESM_dyn.nc</code> file at runtime</li>
 </ul>
-<h3 id="the-surfdata_iesm_dynnc-file">The surfdata_iESM_dyn.nc File</h3>
+<h3>The surfdata_iESM_dyn.nc File</h3>
 <p><strong>Purpose:</strong> Land surface data file dynamically updated during E3SM-GCAM coupled runs</p>
-<p><strong>Key Characteristics:</strong><br />
-- <strong>Single file</strong> (not monthly like h0 files)<br />
-- <strong>Multi-year</strong> (contains data for all simulation years)<br />
-- <strong>Annual data</strong> (one timestep per year)<br />
-- <strong>Human activities</strong> (grazing, harvest)<br />
-- <strong>PFT distributions</strong> (plant functional types)</p>
+<p><strong>Key Characteristics:</strong></p>
+<ul>
+<li><strong>Single file</strong> (not monthly like h0 files)</li>
+<li><strong>Multi-year</strong> (contains data for all simulation years)</li>
+<li><strong>Annual data</strong> (one timestep per year)</li>
+<li><strong>Human activities</strong> (grazing, harvest)</li>
+<li><strong>PFT distributions</strong> (plant functional types)</li>
+</ul>
 <p><strong>File Location:</strong></p>
-<div class="codehilite"><pre><span></span><code>simulation_run_directory/
-└── surfdata_iESM_dyn.nc  (single file)
-</code></pre></div>
-
+<pre><code>simulation_run_directory/
+└── surfdata_iESM_dyn.nc  (single file)</code></pre>
 <p><strong>Typical Size:</strong> 1-5 GB (depending on simulation length)</p>
 <p><strong>Time Dimension:</strong></p>
-<div class="codehilite"><pre><span></span><code>time = year values (e.g., 2015, 2016, ..., 2100)
-</code></pre></div>
-
-<h3 id="human-land-management-variables">Human Land Management Variables</h3>
-<p><strong>Grazing:</strong><br />
-- <code>GRAZING</code> - Fraction of grassland grazed by livestock<br />
-- Units: Dimensionless fraction (0-1)<br />
-- Converted to area (km²) by script</p>
-<p><strong>Wood Harvesting:</strong><br />
-- <code>HARVEST_VH1</code> - Very heavy harvest intensity 1<br />
-- <code>HARVEST_VH2</code> - Very heavy harvest intensity 2<br />
-- <code>HARVEST_SH1</code> - Secondary heavy harvest intensity 1<br />
-- <code>HARVEST_SH2</code> - Secondary heavy harvest intensity 2<br />
-- <code>HARVEST_SH3</code> - Secondary heavy harvest intensity 3<br />
-- Units: Dimensionless fractions (0-1)<br />
-- Converted to forest area (km²) by script</p>
-<p><strong>Land Cover:</strong><br />
-- <code>PCT_NATVEG</code> - Percent natural vegetation<br />
-- <code>PCT_NAT_PFT</code> - Percent of each plant functional type<br />
-- Used to calculate PFT areas</p>
-<hr />
-<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
-<h3 id="required-parameters">Required Parameters</h3>
+<pre><code>time = year values (e.g., 2015, 2016, ..., 2100)</code></pre>
+<h3>Human Land Management Variables</h3>
+<p><strong>Grazing:</strong></p>
+<ul>
+<li><code>GRAZING</code> - Fraction of grassland grazed by livestock</li>
+<li>Units: Dimensionless fraction (0-1)</li>
+<li>Converted to area (km²) by script</li>
+</ul>
+<p><strong>Wood Harvesting:</strong></p>
+<ul>
+<li><code>HARVEST_VH1</code> - Very heavy harvest intensity 1</li>
+<li><code>HARVEST_VH2</code> - Very heavy harvest intensity 2</li>
+<li><code>HARVEST_SH1</code> - Secondary heavy harvest intensity 1</li>
+<li><code>HARVEST_SH2</code> - Secondary heavy harvest intensity 2</li>
+<li><code>HARVEST_SH3</code> - Secondary heavy harvest intensity 3</li>
+<li>Units: Dimensionless fractions (0-1)</li>
+<li>Converted to forest area (km²) by script</li>
+</ul>
+<p><strong>Land Cover:</strong></p>
+<ul>
+<li><code>PCT_NATVEG</code> - Percent natural vegetation</li>
+<li><code>PCT_NAT_PFT</code> - Percent of each plant functional type</li>
+<li>Used to calculate PFT areas</li>
+</ul>
+<hr>
+<h2>Complete Parameter Reference Table</h2>
+<h3>Required Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>landuse_file</code></td>
-<td>string</td>
-<td><strong>Yes</strong></td>
-<td>Full path and name of the land use NetCDF file (e.g., surfdata_iESM_dyn.nc)</td>
-</tr>
-<tr>
-<td><code>output_file</code></td>
-<td>string</td>
-<td><strong>Yes</strong></td>
-<td>Path/name for output time series file</td>
-</tr>
-<tr>
-<td><code>variables</code></td>
-<td>list</td>
-<td><strong>Yes</strong></td>
-<td>Variables to extract from surfdata file</td>
-</tr>
-</tbody>
-</table>
-<h3 id="optional-parameters">Optional Parameters</h3>
+<tr><td><code>landuse_file</code></td><td>string</td><td><strong>Yes</strong></td><td>Full path and name of the land use NetCDF file (e.g., surfdata_iESM_dyn.nc)</td></tr>
+<tr><td><code>output_file</code></td><td>string</td><td><strong>Yes</strong></td><td>Path/name for output time series file</td></tr>
+<tr><td><code>variables</code></td><td>list</td><td><strong>Yes</strong></td><td>Variables to extract from surfdata file</td></tr>
+</tbody></table>
+<h3>Optional Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Possible Values</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Possible Values</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>region</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>None</code> (global)</td>
-<td>Region name or <code>None</code></td>
-<td>Geographic region to extract</td>
-</tr>
-<tr>
-<td><code>start_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2015</code></td>
-<td>Any year</td>
-<td>First year to extract</td>
-</tr>
-<tr>
-<td><code>end_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2100</code></td>
-<td>Any year</td>
-<td>Last year to extract</td>
-</tr>
-<tr>
-<td><code>write_to_csv</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td><code>true</code>, <code>false</code></td>
-<td>Output as CSV instead of fixed-width</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
-<h3 id="core-required-parameters">Core Required Parameters</h3>
-<h4 id="landuse_file"><code>landuse_file</code></h4>
-<p><strong>Type:</strong> String (file path)<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Full path and name of the land use NetCDF file, such as the <code>surfdata_iESM_dyn.nc</code> file in an E3SM simulation run directory or a land use time series input file.</p>
+<tr><td><code>region</code></td><td>string</td><td>No</td><td><code>None</code> (global)</td><td>Region name or <code>None</code></td><td>Geographic region to extract</td></tr>
+<tr><td><code>start_year</code></td><td>integer</td><td>No</td><td><code>2015</code></td><td>Any year</td><td>First year to extract</td></tr>
+<tr><td><code>end_year</code></td><td>integer</td><td>No</td><td><code>2100</code></td><td>Any year</td><td>Last year to extract</td></tr>
+<tr><td><code>write_to_csv</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td><code>true</code>, <code>false</code></td><td>Output as CSV instead of fixed-width</td></tr>
+<tr><td><code>max_processes</code></td><td>integer</td><td>No</td><td><code>MAX_PROCESSES</code></td><td>Positive integer</td><td>Maximum number of landuse files to process concurrently. Defaults to all available CPUs minus one, with a minimum of one.</td></tr>
+</tbody></table>
+<hr>
+<h2>Detailed Parameter Descriptions</h2>
+<h3>Core Required Parameters</h3>
+<h4><code>landuse_file</code></h4>
+<p><strong>Type:</strong> String (file path) <strong>Required:</strong> Yes <strong>Description:</strong> Full path and name of the land use NetCDF file, such as the <code>surfdata_iESM_dyn.nc</code> file in an E3SM simulation run directory or a land use time series input file.</p>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;</span>
-<span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/global/cfs/cdirs/e3sm/inputdata/lnd/clm2/surfdata_map/landuse.timeseries_0.5x0.5_hist_50pfts_simyr1850-2015_c260205.nc&quot;</span>
-</code></pre></div>
-
-<p><strong>Requirements:</strong><br />
-- Must be a valid path to an existing NetCDF file<br />
-- File must have the same structure as <code>surfdata_iESM_dyn.nc</code> (annual <code>time</code> dimension, <code>AREA</code>, <code>LANDFRAC_PFT</code>, <code>PFTDATA_MASK</code>)</p>
-
-<hr />
-<h4 id="output_file"><code>output_file</code></h4>
-<p><strong>Type:</strong> String (file path)<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Path and filename for output time series data.</p>
+<pre><code>&quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;
+&quot;landuse_file&quot;: &quot;/global/cfs/cdirs/e3sm/inputdata/lnd/clm2/surfdata_map/landuse.timeseries_0.5x0.5_hist_50pfts_simyr1850-2015_c260205.nc&quot;</code></pre>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Must be a valid path to an existing NetCDF file</li>
+<li>File must have the same structure as <code>surfdata_iESM_dyn.nc</code> (annual <code>time</code> dimension, <code>AREA</code>, <code>LANDFRAC_PFT</code>, <code>PFTDATA_MASK</code>)</li>
+</ul>
+<hr>
+<h4><code>output_file</code></h4>
+<p><strong>Type:</strong> String (file path) <strong>Required:</strong> Yes <strong>Description:</strong> Path and filename for output time series data.</p>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730.dat&quot;</span>
-<span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/amazon_harvest_grazing.csv&quot;</span>
-</code></pre></div>
-
-<p><strong>File Formats:</strong><br />
-- <strong>Fixed-width (.dat)</strong> - Default, human-readable, aligned columns<br />
-- <strong>CSV (.csv)</strong> - If filename ends in .csv or <code>write_to_csv: true</code></p>
+<pre><code>&quot;output_file&quot;: &quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730.dat&quot;
+&quot;output_file&quot;: &quot;./output/amazon_harvest_grazing.csv&quot;</code></pre>
+<p><strong>File Formats:</strong></p>
+<ul>
+<li><strong>Fixed-width (.dat)</strong> - Default, human-readable, aligned columns</li>
+<li><strong>CSV (.csv)</strong> - If filename ends in .csv or <code>write_to_csv: true</code></li>
+</ul>
 <p><strong>Output Structure:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2)  ...
+<pre><code>Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2)  ...
 2015    0.6234        1234.56                567.89                2345.67
 2016    0.6198        1289.34                578.12                2401.23
-...
-</code></pre></div>
-
-<hr />
-<h4 id="variables"><code>variables</code></h4>
-<p><strong>Type:</strong> List of strings<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Variables to extract from surfdata_iESM_dyn.nc file.</p>
+...</code></pre>
+<hr>
+<h4><code>variables</code></h4>
+<p><strong>Type:</strong> List of strings <strong>Required:</strong> Yes <strong>Description:</strong> Variables to extract from surfdata_iESM_dyn.nc file.</p>
 <p><strong>Format:</strong> Simple list (not nested like in h0 script)</p>
 <p><strong>Common Usage:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;]</code></pre>
 <p><strong>Available Variables:</strong></p>
-<p><strong>Human Management:</strong><br />
-- <code>GRAZING</code> - Grazing fraction on grasslands<br />
-- <code>HARVEST_VH1</code> - Very heavy harvest 1<br />
-- <code>HARVEST_VH2</code> - Very heavy harvest 2<br />
-- <code>HARVEST_SH1</code> - Secondary heavy harvest 1<br />
-- <code>HARVEST_SH2</code> - Secondary heavy harvest 2<br />
-- <code>HARVEST_SH3</code> - Secondary heavy harvest 3</p>
-<p><strong>Land Cover (Automatically included if needed):</strong><br />
-- <code>PCT_NATVEG</code> - Natural vegetation percent<br />
-- <code>PCT_NAT_PFT</code> - PFT percentages</p>
+<p><strong>Human Management:</strong></p>
+<ul>
+<li><code>GRAZING</code> - Grazing fraction on grasslands</li>
+<li><code>HARVEST_VH1</code> - Very heavy harvest 1</li>
+<li><code>HARVEST_VH2</code> - Very heavy harvest 2</li>
+<li><code>HARVEST_SH1</code> - Secondary heavy harvest 1</li>
+<li><code>HARVEST_SH2</code> - Secondary heavy harvest 2</li>
+<li><code>HARVEST_SH3</code> - Secondary heavy harvest 3</li>
+</ul>
+<p><strong>Land Cover (Automatically included if needed):</strong></p>
+<ul>
+<li><code>PCT_NATVEG</code> - Natural vegetation percent</li>
+<li><code>PCT_NAT_PFT</code> - PFT percentages</li>
+</ul>
 <p><strong>Note:</strong> If you request grazing or harvest variables, the script automatically includes <code>PCT_NATVEG</code> and <code>PCT_NAT_PFT</code> to calculate areas.</p>
-<hr />
-<h3 id="optional-parameters_1">Optional Parameters</h3>
-<h4 id="region"><code>region</code></h4>
-<p><strong>Type:</strong> String or <code>None</code><br />
-<strong>Required:</strong> No<br />
-<strong>Default:</strong> <code>None</code> (global - no filtering)<br />
-<strong>Possible Values:</strong> Region names or <code>None</code></p>
+<hr>
+<h3>Optional Parameters</h3>
+<h4><code>max_processes</code></h4>
+<p><strong>Type:</strong> Integer <strong>Required:</strong> No <strong>Default:</strong> <code>MAX_PROCESSES</code> from <code>utility_constants.py</code></p>
+<p><strong>Description:</strong> Caps the number of landuse files processed at the same time when the JSON contains multiple configuration blocks. Processing within a single landuse file is sequential by year because the earlier per-year multiprocessing path is intentionally disabled.</p>
+<p><strong>Example:</strong></p>
+<pre><code>&quot;max_processes&quot;: 4</code></pre>
+<h4><code>region</code></h4>
+<p><strong>Type:</strong> String or <code>None</code> <strong>Required:</strong> No <strong>Default:</strong> <code>None</code> (global - no filtering) <strong>Possible Values:</strong> Region names or <code>None</code></p>
 <p><strong>Description:</strong> Geographic region to filter data extraction.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span>
-</code></pre></div>
-
+<pre><code>&quot;region&quot;: &quot;amazon&quot;</code></pre>
 <p><strong>Available Regions:</strong></p>
-<p><strong>North America:</strong><br />
-- <code>"noam"</code> - North America<br />
-- <code>"bona"</code> - Boreal North America<br />
-- <code>"tena"</code> - Temperate North America<br />
-- <code>"conus"</code> - Continental United States<br />
-- <code>"columbia"</code> - Columbia River watershed<br />
-- <code>"ceam"</code> - Central America</p>
-<p><strong>South America:</strong><br />
-- <code>"soam"</code> - South America<br />
-- <code>"nhsa"</code> - Northern Hemisphere South America<br />
-- <code>"shsa"</code> - Southern Hemisphere South America<br />
-- <code>"amazon"</code> - Amazon Basin</p>
-<p><strong>Europe/Middle East:</strong><br />
-- <code>"euro"</code> - Europe<br />
-- <code>"mide"</code> - Middle East</p>
-<p><strong>Africa:</strong><br />
-- <code>"afrc"</code> - Africa<br />
-- <code>"nhaf"</code> - Northern Hemisphere Africa<br />
-- <code>"shaf"</code> - Southern Hemisphere Africa</p>
-<p><strong>Asia:</strong><br />
-- <code>"asia"</code> - Asia<br />
-- <code>"boas"</code> - Boreal Asia<br />
-- <code>"ceas"</code> - Central Asia<br />
-- <code>"seas"</code> - Southeast Asia<br />
-- <code>"eqas"</code> - Equatorial Asia</p>
-<p><strong>Australia:</strong><br />
-- <code>"aust"</code> - Australia</p>
+<p><strong>North America:</strong></p>
+<ul>
+<li><code>&quot;noam&quot;</code> - North America</li>
+<li><code>&quot;bona&quot;</code> - Boreal North America</li>
+<li><code>&quot;tena&quot;</code> - Temperate North America</li>
+<li><code>&quot;conus&quot;</code> - Continental United States</li>
+<li><code>&quot;columbia&quot;</code> - Columbia River watershed</li>
+<li><code>&quot;ceam&quot;</code> - Central America</li>
+</ul>
+<p><strong>South America:</strong></p>
+<ul>
+<li><code>&quot;soam&quot;</code> - South America</li>
+<li><code>&quot;nhsa&quot;</code> - Northern Hemisphere South America</li>
+<li><code>&quot;shsa&quot;</code> - Southern Hemisphere South America</li>
+<li><code>&quot;amazon&quot;</code> - Amazon Basin</li>
+</ul>
+<p><strong>Europe/Middle East:</strong></p>
+<ul>
+<li><code>&quot;euro&quot;</code> - Europe</li>
+<li><code>&quot;mide&quot;</code> - Middle East</li>
+</ul>
+<p><strong>Africa:</strong></p>
+<ul>
+<li><code>&quot;afrc&quot;</code> - Africa</li>
+<li><code>&quot;nhaf&quot;</code> - Northern Hemisphere Africa</li>
+<li><code>&quot;shaf&quot;</code> - Southern Hemisphere Africa</li>
+</ul>
+<p><strong>Asia:</strong></p>
+<ul>
+<li><code>&quot;asia&quot;</code> - Asia</li>
+<li><code>&quot;boas&quot;</code> - Boreal Asia</li>
+<li><code>&quot;ceas&quot;</code> - Central Asia</li>
+<li><code>&quot;seas&quot;</code> - Southeast Asia</li>
+<li><code>&quot;eqas&quot;</code> - Equatorial Asia</li>
+</ul>
+<p><strong>Australia:</strong></p>
+<ul>
+<li><code>&quot;aust&quot;</code> - Australia</li>
+</ul>
 <p><strong>Usage:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Global (default)</span>
-<span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<pre><code>// Global (default)
+&quot;region&quot;: null
 
-<span class="c1">// Amazon only</span>
-<span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span>
-</code></pre></div>
-
-<hr />
-<h4 id="start_year-and-end_year"><code>start_year</code> and <code>end_year</code></h4>
-<p><strong>Type:</strong> Integer<br />
-<strong>Required:</strong> No<br />
-<strong>Defaults:</strong> <code>start_year: 2015</code>, <code>end_year: 2100</code></p>
+// Amazon only
+&quot;region&quot;: &quot;amazon&quot;</code></pre>
+<hr>
+<h4><code>start_year</code> and <code>end_year</code></h4>
+<p><strong>Type:</strong> Integer <strong>Required:</strong> No <strong>Defaults:</strong> <code>start_year: 2015</code>, <code>end_year: 2100</code></p>
 <p><strong>Description:</strong> Year range for time series extraction.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2050</span>
-</code></pre></div>
-
-<p><strong>Usage:</strong><br />
-- Extracts data only for years within this range<br />
-- Reduces processing time for subset analysis<br />
-- Useful for specific time periods</p>
+<pre><code>&quot;start_year&quot;: 2020,
+&quot;end_year&quot;: 2050</code></pre>
+<p><strong>Usage:</strong></p>
+<ul>
+<li>Extracts data only for years within this range</li>
+<li>Reduces processing time for subset analysis</li>
+<li>Useful for specific time periods</li>
+</ul>
 <p><strong>Data Selection:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year 2019 → Excluded (&lt; start_year 2020)
+<pre><code>Year 2019 → Excluded (&lt; start_year 2020)
 Year 2020 → Included
 Year 2050 → Included
-Year 2051 → Excluded (&gt; end_year 2050)
-</code></pre></div>
-
-<hr />
-<h4 id="write_to_csv"><code>write_to_csv</code></h4>
-<p><strong>Type:</strong> Boolean<br />
-<strong>Required:</strong> No<br />
-<strong>Default:</strong> <code>false</code></p>
+Year 2051 → Excluded (&gt; end_year 2050)</code></pre>
+<hr>
+<h4><code>write_to_csv</code></h4>
+<p><strong>Type:</strong> Boolean <strong>Required:</strong> No <strong>Default:</strong> <code>false</code></p>
 <p><strong>Description:</strong> Force output to CSV format.</p>
-<p><strong>Behavior:</strong><br />
-- <code>false</code> → Fixed-width format (.dat)<br />
-- <code>true</code> → CSV format<br />
-- Automatically <code>true</code> if <code>output_file</code> ends in <code>.csv</code></p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li><code>false</code> → Fixed-width format (.dat)</li>
+<li><code>true</code> → CSV format</li>
+<li>Automatically <code>true</code> if <code>output_file</code> ends in <code>.csv</code></li>
+</ul>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;write_to_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</code></pre></div>
-
+<pre><code>&quot;write_to_csv&quot;: true</code></pre>
 <p><strong>Comparison:</strong></p>
 <p><strong>Fixed-width (.dat):</strong></p>
-<div class="codehilite"><pre><span></span><code>Year  FRAC_VEG  GRAZING_AREA (km^2)
+<pre><code>Year  FRAC_VEG  GRAZING_AREA (km^2)
 2015    0.6234        1234.56
-2016    0.6198        1289.34
-</code></pre></div>
-
+2016    0.6198        1289.34</code></pre>
 <p><strong>CSV (.csv):</strong></p>
-<div class="codehilite"><pre><span></span><code>Year,FRAC_VEG,GRAZING_AREA (km^2)
+<pre><code>Year,FRAC_VEG,GRAZING_AREA (km^2)
 2015,0.6234,1234.56
-2016,0.6198,1289.34
-</code></pre></div>
-
-<hr />
-<h2 id="available-variables">Available Variables</h2>
-<h3 id="direct-extraction-variables">Direct Extraction Variables</h3>
+2016,0.6198,1289.34</code></pre>
+<hr>
+<h2>Available Variables</h2>
+<h3>Direct Extraction Variables</h3>
 <p>These are variables that exist directly in the surfdata_iESM_dyn.nc file:</p>
-<h4 id="grazing">Grazing</h4>
-<p><strong>Variable:</strong> <code>GRAZING</code><br />
-<strong>Original Units:</strong> Dimensionless fraction (0-1)<br />
-<strong>Output Units:</strong> km² (after processing)<br />
-<strong>Description:</strong> Fraction of grassland area used for livestock grazing<br />
-<strong>Output Column:</strong> <code>GRAZING_AREA (km^2)</code></p>
+<h4>Grazing</h4>
+<p><strong>Variable:</strong> <code>GRAZING</code> <strong>Original Units:</strong> Dimensionless fraction (0-1) <strong>Output Units:</strong> km² (after processing) <strong>Description:</strong> Fraction of grassland area used for livestock grazing <strong>Output Column:</strong> <code>GRAZING_AREA (km^2)</code></p>
 <p><strong>Calculation:</strong></p>
-<div class="codehilite"><pre><span></span><code>GRAZING_AREA (km²) = GRAZING × GRASS_AREA (km²)
-</code></pre></div>
-
-<h4 id="wood-harvesting">Wood Harvesting</h4>
-<p><strong>Variable:</strong> <code>HARVEST_VH1</code><br />
-<strong>Original Units:</strong> Dimensionless fraction (0-1)<br />
-<strong>Output Units:</strong> km² (after processing)<br />
-<strong>Description:</strong> Very heavy harvest intensity 1 - fraction of forest harvested<br />
-<strong>Output Column:</strong> <code>HARVEST_VH1_AREA (km^2)</code></p>
-<p><strong>Variable:</strong> <code>HARVEST_VH2</code><br />
-<strong>Original Units:</strong> Dimensionless fraction (0-1)<br />
-<strong>Output Units:</strong> km² (after processing)<br />
-<strong>Description:</strong> Very heavy harvest intensity 2 - fraction of forest harvested<br />
-<strong>Output Column:</strong> <code>HARVEST_VH2_AREA (km^2)</code></p>
-<p><strong>Variable:</strong> <code>HARVEST_SH1</code><br />
-<strong>Original Units:</strong> Dimensionless fraction (0-1)<br />
-<strong>Output Units:</strong> km² (after processing)<br />
-<strong>Description:</strong> Secondary heavy harvest 1 - fraction of forest harvested<br />
-<strong>Output Column:</strong> <code>HARVEST_SH1_AREA (km^2)</code></p>
-<p><strong>Variable:</strong> <code>HARVEST_SH2</code><br />
-<strong>Original Units:</strong> Dimensionless fraction (0-1)<br />
-<strong>Output Units:</strong> km² (after processing)<br />
-<strong>Description:</strong> Secondary heavy harvest 2 - fraction of forest harvested<br />
-<strong>Output Column:</strong> <code>HARVEST_SH2_AREA (km^2)</code></p>
-<p><strong>Variable:</strong> <code>HARVEST_SH3</code><br />
-<strong>Original Units:</strong> Dimensionless fraction (0-1)<br />
-<strong>Output Units:</strong> km² (after processing)<br />
-<strong>Description:</strong> Secondary heavy harvest 3 - fraction of forest harvested<br />
-<strong>Output Column:</strong> <code>HARVEST_SH3_AREA (km^2)</code></p>
+<pre><code>GRAZING_AREA (km²) = GRAZING × GRASS_AREA (km²)</code></pre>
+<h4>Wood Harvesting</h4>
+<p><strong>Variable:</strong> <code>HARVEST_VH1</code> <strong>Original Units:</strong> Dimensionless fraction (0-1) <strong>Output Units:</strong> km² (after processing) <strong>Description:</strong> Very heavy harvest intensity 1 - fraction of forest harvested <strong>Output Column:</strong> <code>HARVEST_VH1_AREA (km^2)</code></p>
+<p><strong>Variable:</strong> <code>HARVEST_VH2</code> <strong>Original Units:</strong> Dimensionless fraction (0-1) <strong>Output Units:</strong> km² (after processing) <strong>Description:</strong> Very heavy harvest intensity 2 - fraction of forest harvested <strong>Output Column:</strong> <code>HARVEST_VH2_AREA (km^2)</code></p>
+<p><strong>Variable:</strong> <code>HARVEST_SH1</code> <strong>Original Units:</strong> Dimensionless fraction (0-1) <strong>Output Units:</strong> km² (after processing) <strong>Description:</strong> Secondary heavy harvest 1 - fraction of forest harvested <strong>Output Column:</strong> <code>HARVEST_SH1_AREA (km^2)</code></p>
+<p><strong>Variable:</strong> <code>HARVEST_SH2</code> <strong>Original Units:</strong> Dimensionless fraction (0-1) <strong>Output Units:</strong> km² (after processing) <strong>Description:</strong> Secondary heavy harvest 2 - fraction of forest harvested <strong>Output Column:</strong> <code>HARVEST_SH2_AREA (km^2)</code></p>
+<p><strong>Variable:</strong> <code>HARVEST_SH3</code> <strong>Original Units:</strong> Dimensionless fraction (0-1) <strong>Output Units:</strong> km² (after processing) <strong>Description:</strong> Secondary heavy harvest 3 - fraction of forest harvested <strong>Output Column:</strong> <code>HARVEST_SH3_AREA (km^2)</code></p>
 <p><strong>Harvest Calculation:</strong></p>
-<div class="codehilite"><pre><span></span><code>HARVEST_*_AREA (km²) = HARVEST_* × FOREST_AREA (km²)
-</code></pre></div>
-
-<h4 id="vegetation-cover">Vegetation Cover</h4>
-<p><strong>Variable:</strong> <code>PCT_NATVEG</code><br />
-<strong>Original Units:</strong> Percent (0-100)<br />
-<strong>Output Units:</strong> Fraction (0-1)<br />
-<strong>Description:</strong> Percentage of grid cell covered by natural vegetation<br />
-<strong>Output Column:</strong> <code>FRAC_VEG</code></p>
-<p><strong>Variable:</strong> <code>PCT_NAT_PFT</code><br />
-<strong>Original Units:</strong> Percent (0-100)<br />
-<strong>Output Units:</strong> km² (individual PFT areas)<br />
-<strong>Description:</strong> Percentage of each plant functional type<br />
-<strong>Output Columns:</strong> Individual and aggregated PFT areas</p>
-<hr />
-<h3 id="derived-variables">Derived Variables</h3>
+<pre><code>HARVEST_*_AREA (km²) = HARVEST_* × FOREST_AREA (km²)</code></pre>
+<h4>Vegetation Cover</h4>
+<p><strong>Variable:</strong> <code>PCT_NATVEG</code> <strong>Original Units:</strong> Percent (0-100) <strong>Output Units:</strong> Fraction (0-1) <strong>Description:</strong> Percentage of grid cell covered by natural vegetation <strong>Output Column:</strong> <code>FRAC_VEG</code></p>
+<p><strong>Variable:</strong> <code>PCT_NAT_PFT</code> <strong>Original Units:</strong> Percent (0-100) <strong>Output Units:</strong> km² (individual PFT areas) <strong>Description:</strong> Percentage of each plant functional type <strong>Output Columns:</strong> Individual and aggregated PFT areas</p>
+<hr>
+<h3>Derived Variables</h3>
 <p>These are calculated by the script from other variables:</p>
-<h4 id="total-harvest-area">Total Harvest Area</h4>
-<p><strong>Variable:</strong> Automatically created<br />
-<strong>Output Column:</strong> <code>HARVEST_AREA (km^2)</code><br />
-<strong>Description:</strong> Total forest area harvested (sum of all harvest types)</p>
+<h4>Total Harvest Area</h4>
+<p><strong>Variable:</strong> Automatically created <strong>Output Column:</strong> <code>HARVEST_AREA (km^2)</code> <strong>Description:</strong> Total forest area harvested (sum of all harvest types)</p>
 <p><strong>Calculation:</strong></p>
-<div class="codehilite"><pre><span></span><code>HARVEST_AREA (km²) = HARVEST_VH1_AREA + HARVEST_VH2_AREA + 
-                      HARVEST_SH1_AREA + HARVEST_SH2_AREA + HARVEST_SH3_AREA
-</code></pre></div>
-
-<h4 id="grid-cell-area">Grid Cell Area</h4>
-<p><strong>Variable:</strong> Automatically included<br />
-<strong>Output Column:</strong> <code>AREA (km^2)</code><br />
-<strong>Description:</strong> Total grid cell area</p>
-<h4 id="pft-areas">PFT Areas</h4>
-<p><strong>Variables:</strong> Automatically calculated when PCT_NAT_PFT requested<br />
-<strong>Output Columns:</strong><br />
-- Individual PFTs: <code>PFT_1_AREA (km^2)</code> through <code>PFT_16_AREA (km^2)</code><br />
-- Aggregated groups:<br />
-  - <code>BARE_AREA (km^2)</code> - Bare soil<br />
-  - <code>FOREST_AREA (km^2)</code> - All tree PFTs (1-8)<br />
-  - <code>SHRUB_AREA (km^2)</code> - All shrub PFTs (9-11)<br />
-  - <code>GRASS_AREA (km^2)</code> - All grass PFTs (12-14)<br />
-  - <code>CROP_AREA (km^2)</code> - Crop PFT (15)</p>
+<pre><code>HARVEST_AREA (km²) = HARVEST_VH1_AREA + HARVEST_VH2_AREA +
+                      HARVEST_SH1_AREA + HARVEST_SH2_AREA + HARVEST_SH3_AREA</code></pre>
+<h4>Grid Cell Area</h4>
+<p><strong>Variable:</strong> Automatically included <strong>Output Column:</strong> <code>AREA (km^2)</code> <strong>Description:</strong> Total grid cell area</p>
+<h4>PFT Areas</h4>
+<p><strong>Variables:</strong> Automatically calculated when PCT_NAT_PFT requested <strong>Output Columns:</strong></p>
+<ul>
+<li>Individual PFTs: <code>PFT_1_AREA (km^2)</code> through <code>PFT_16_AREA (km^2)</code></li>
+<li>Aggregated groups:</li>
+<li><code>BARE_AREA (km^2)</code> - Bare soil</li>
+<li><code>FOREST_AREA (km^2)</code> - All tree PFTs (1-8)</li>
+<li><code>SHRUB_AREA (km^2)</code> - All shrub PFTs (9-11)</li>
+<li><code>GRASS_AREA (km^2)</code> - All grass PFTs (12-14)</li>
+<li><code>CROP_AREA (km^2)</code> - Crop PFT (15)</li>
+</ul>
 <p><strong>17 PFTs in E3SM:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="mi">0</span><span class="o">:</span><span class="w">      </span><span class="n">Bare</span><span class="w"> </span><span class="n">soil</span>
-<span class="mi">1</span><span class="o">-</span><span class="mi">8</span><span class="o">:</span><span class="w">    </span><span class="n">Trees</span><span class="w"> </span><span class="o">(</span><span class="mi">8</span><span class="w"> </span><span class="n">types</span><span class="o">)</span>
-<span class="mi">9</span><span class="o">-</span><span class="mi">11</span><span class="o">:</span><span class="w">   </span><span class="n">Shrubs</span><span class="w"> </span><span class="o">(</span><span class="mi">3</span><span class="w"> </span><span class="n">types</span><span class="o">)</span>
-<span class="mi">12</span><span class="o">-</span><span class="mi">14</span><span class="o">:</span><span class="w">  </span><span class="n">Grasses</span><span class="w"> </span><span class="o">(</span><span class="mi">3</span><span class="w"> </span><span class="n">types</span><span class="o">)</span>
-<span class="mi">15</span><span class="o">:</span><span class="w">     </span><span class="n">Crop</span>
-<span class="mi">16</span><span class="o">:</span><span class="w">     </span><span class="n">Empty</span><span class="w"> </span><span class="o">(</span><span class="n">ignored</span><span class="o">)</span>
-</code></pre></div>
-
+<pre><code>0:      Bare soil
+1-8:    Trees (8 types)
+9-11:   Shrubs (3 types)
+12-14:  Grasses (3 types)
+15:     Crop
+16:     Empty (ignored)</code></pre>
 <p><strong>Calculation:</strong></p>
-<div class="codehilite"><pre><span></span><code>PFT_AREA (km²) = AREA (km²) × FRAC_VEG × PFT_fraction
-</code></pre></div>
-
-<hr />
-<h2 id="variable-processing">Variable Processing</h2>
-<h3 id="automatic-processing-steps">Automatic Processing Steps</h3>
+<pre><code>PFT_AREA (km²) = AREA (km²) × FRAC_VEG × PFT_fraction</code></pre>
+<hr>
+<h2>Variable Processing</h2>
+<h3>Automatic Processing Steps</h3>
 <p>The script performs several automatic processing steps:</p>
-<h4 id="1-pft-data-inclusion">1. PFT Data Inclusion</h4>
+<h4>1. PFT Data Inclusion</h4>
 <p><strong>Automatic Action:</strong> If any grazing or harvest variable is requested, script automatically includes <code>PCT_NAT_PFT</code> and <code>PCT_NATVEG</code></p>
 <p><strong>Reason:</strong> Needed to convert fractions to areas</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// You specify:</span>
-<span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">]</span>
+<pre><code>// You specify:
+&quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;]
 
-<span class="c1">// Script automatically adds:</span>
-<span class="c1">// - PCT_NATVEG</span>
-<span class="c1">// - PCT_NAT_PFT</span>
-</code></pre></div>
-
-<hr />
-<h4 id="2-duplicate-time-value-removal">2. Duplicate Time Value Removal</h4>
+// Script automatically adds:
+// - PCT_NATVEG
+// - PCT_NAT_PFT</code></pre>
+<hr>
+<h4>2. Duplicate Time Value Removal</h4>
 <p><strong>Processing:</strong> Removes duplicate time coordinate values, keeping last occurrence</p>
 <p><strong>Reason:</strong> Simulation restarts can create duplicate time entries</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Before</span><span class="o">:</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="mi">2015</span><span class="o">,</span><span class="w"> </span><span class="mi">2016</span><span class="o">,</span><span class="w"> </span><span class="mi">2016</span><span class="o">*,</span><span class="w"> </span><span class="mi">2017</span><span class="o">]</span><span class="w">  </span><span class="o">(*</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">restart</span><span class="o">)</span>
-<span class="n">After</span><span class="o">:</span><span class="w">  </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="mi">2015</span><span class="o">,</span><span class="w"> </span><span class="mi">2016</span><span class="o">,</span><span class="w"> </span><span class="mi">2017</span><span class="o">]</span>
-</code></pre></div>
-
-<hr />
-<h4 id="3-vegetation-fraction-calculation">3. Vegetation Fraction Calculation</h4>
+<pre><code>Before: time = [2015, 2016, 2016*, 2017]  (* from restart)
+After:  time = [2015, 2016, 2017]</code></pre>
+<hr>
+<h4>3. Vegetation Fraction Calculation</h4>
 <p><strong>Input:</strong> <code>PCT_NATVEG</code> (percent, 0-100)</p>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">FRAC_VEG</span> <span class="o">=</span> <span class="n">PCT_NATVEG</span> <span class="o">/</span> <span class="mi">100</span>
-</code></pre></div>
-
+<pre><code>FRAC_VEG = PCT_NATVEG / 100</code></pre>
 <p><strong>Output:</strong> <code>FRAC_VEG</code> (fraction, 0-1)</p>
-<hr />
-<h4 id="4-pft-area-calculation">4. PFT Area Calculation</h4>
+<hr>
+<h4>4. PFT Area Calculation</h4>
 <p><strong>For Each PFT:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">PFT_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="err">×</span> <span class="n">FRAC_VEG</span> <span class="err">×</span> <span class="p">(</span><span class="n">PCT_NAT_PFT</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>PFT_AREA (km²) = AREA (km²) × FRAC_VEG × (PCT_NAT_PFT / 100)</code></pre>
 <p><strong>Aggregated Groups:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">FOREST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="nb">sum</span> <span class="n">of</span> <span class="n">PFTs</span> <span class="mi">1</span><span class="o">-</span><span class="mi">8</span>
-<span class="n">SHRUB_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="nb">sum</span> <span class="n">of</span> <span class="n">PFTs</span> <span class="mi">9</span><span class="o">-</span><span class="mi">11</span>
-<span class="n">GRASS_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="nb">sum</span> <span class="n">of</span> <span class="n">PFTs</span> <span class="mi">12</span><span class="o">-</span><span class="mi">14</span>
-</code></pre></div>
-
-<hr />
-<h4 id="5-grazing-area-conversion">5. Grazing Area Conversion</h4>
+<pre><code>FOREST_AREA (km²) = sum of PFTs 1-8
+SHRUB_AREA (km²) = sum of PFTs 9-11
+GRASS_AREA (km²) = sum of PFTs 12-14</code></pre>
+<hr>
+<h4>5. Grazing Area Conversion</h4>
 <p><strong>Input:</strong> <code>GRAZING</code> (fraction, 0-1)</p>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">GRAZING_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">GRAZING</span> <span class="err">×</span> <span class="n">GRASS_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>GRAZING_AREA (km²) = GRAZING × GRASS_AREA (km²)</code></pre>
 <p><strong>Reason:</strong> Grazing only occurs on grasslands</p>
 <p><strong>Output:</strong> <code>GRAZING_AREA (km^2)</code> column</p>
-<hr />
-<h4 id="6-harvest-area-conversion">6. Harvest Area Conversion</h4>
+<hr>
+<h4>6. Harvest Area Conversion</h4>
 <p><strong>Input:</strong> <code>HARVEST_*</code> variables (fractions, 0-1)</p>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">HARVEST_VH1_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">HARVEST_VH1</span> <span class="err">×</span> <span class="n">FOREST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span>
-<span class="n">HARVEST_VH2_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">HARVEST_VH2</span> <span class="err">×</span> <span class="n">FOREST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span>
-<span class="n">HARVEST_SH1_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">HARVEST_SH1</span> <span class="err">×</span> <span class="n">FOREST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span>
-<span class="n">HARVEST_SH2_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">HARVEST_SH2</span> <span class="err">×</span> <span class="n">FOREST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span>
-<span class="n">HARVEST_SH3_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="n">HARVEST_SH3</span> <span class="err">×</span> <span class="n">FOREST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>HARVEST_VH1_AREA (km²) = HARVEST_VH1 × FOREST_AREA (km²)
+HARVEST_VH2_AREA (km²) = HARVEST_VH2 × FOREST_AREA (km²)
+HARVEST_SH1_AREA (km²) = HARVEST_SH1 × FOREST_AREA (km²)
+HARVEST_SH2_AREA (km²) = HARVEST_SH2 × FOREST_AREA (km²)
+HARVEST_SH3_AREA (km²) = HARVEST_SH3 × FOREST_AREA (km²)</code></pre>
 <p><strong>Reason:</strong> Harvesting only occurs on forests</p>
 <p><strong>Output:</strong> Individual <code>HARVEST_*_AREA (km^2)</code> columns</p>
-<hr />
-<h4 id="7-total-harvest-calculation">7. Total Harvest Calculation</h4>
+<hr>
+<h4>7. Total Harvest Calculation</h4>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">HARVEST_AREA</span> <span class="p">(</span><span class="n">km</span><span class="err">²</span><span class="p">)</span> <span class="o">=</span> <span class="nb">sum</span> <span class="n">of</span> <span class="nb">all</span> <span class="n">HARVEST_</span><span class="o">*</span><span class="n">_AREA</span> <span class="n">columns</span> <span class="n">present</span>
-</code></pre></div>
-
+<pre><code>HARVEST_AREA (km²) = sum of all HARVEST_*_AREA columns present</code></pre>
 <p><strong>Output:</strong> <code>HARVEST_AREA (km^2)</code> column (placed after individual harvest columns)</p>
-<hr />
-<h4 id="8-spatial-aggregation">8. Spatial Aggregation</h4>
-<p><strong>For All Variables:</strong><br />
-- Sum over all latitude/longitude coordinates<br />
-- Creates global or regional totals</p>
-<p><strong>For FRAC_VEG:</strong><br />
-- Calculate area-weighted mean<br />
-- Formula: <code>Σ(FRAC_VEG × AREA) / Σ(AREA)</code></p>
-<hr />
-<h2 id="regional-analysis">Regional Analysis</h2>
-<h3 id="how-regional-filtering-works">How Regional Filtering Works</h3>
-<ol>
+<hr>
+<h4>8. Spatial Aggregation</h4>
+<p><strong>For All Variables:</strong></p>
+<ul>
+<li>Sum over all latitude/longitude coordinates</li>
+<li>Creates global or regional totals</li>
+</ul>
+<p><strong>For FRAC_VEG:</strong></p>
+<ul>
+<li>Calculate area-weighted mean</li>
+<li>Formula: <code>Σ(FRAC_VEG × AREA) / Σ(AREA)</code></li>
+</ul>
+<hr>
+<h2>Regional Analysis</h2>
+<h3>How Regional Filtering Works</h3>
+<ul>
 <li><strong>Load NetCDF file</strong></li>
-<li><strong>Apply regional bounds</strong> (if region specified)<br />
-   - Filter gridcells outside lat/lon bounding box</li>
+<li><strong>Apply regional bounds</strong> (if region specified)</li>
+<li>Filter gridcells outside lat/lon bounding box</li>
 <li><strong>Process data</strong> for regional gridcells only</li>
 <li><strong>Aggregate</strong> over regional gridcells</li>
-</ol>
-<h3 id="regional-bounds">Regional Bounds</h3>
+</ul>
+<h3>Regional Bounds</h3>
 <p>Defined by lat/lon bounding boxes in <code>utility_e3sm_netcdf.py</code>:</p>
 <p><strong>Example Regions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">amazon</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">85</span><span class="err">°</span><span class="p">,</span> <span class="o">-</span><span class="mi">35</span><span class="err">°</span><span class="p">]</span> <span class="n">longitude</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">25</span><span class="err">°</span><span class="p">,</span> <span class="mi">15</span><span class="err">°</span><span class="p">]</span> <span class="n">latitude</span>
-<span class="n">conus</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">125.25</span><span class="err">°</span><span class="p">,</span> <span class="o">-</span><span class="mf">66.25</span><span class="err">°</span><span class="p">]</span> <span class="n">longitude</span><span class="p">,</span> <span class="p">[</span><span class="mf">23.25</span><span class="err">°</span><span class="p">,</span> <span class="mf">54.75</span><span class="err">°</span><span class="p">]</span> <span class="n">latitude</span>
-</code></pre></div>
-
-<h3 id="example-amazon-harvest-analysis">Example: Amazon Harvest Analysis</h3>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_harvest.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Output:</strong><br />
-- Harvest areas for Amazon Basin only<br />
-- Regional totals (not global)</p>
-<hr />
-<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
-<h3 id="example-1-global-grazing-and-harvest">Example 1: Global Grazing and Harvest</h3>
+<pre><code>amazon = [-85°, -35°] longitude, [-25°, 15°] latitude
+conus = [-125.25°, -66.25°] longitude, [23.25°, 54.75°] latitude</code></pre>
+<h3>Example: Amazon Harvest Analysis</h3>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/path/to/simulation/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./amazon_harvest.dat&quot;,
+    &quot;variables&quot;: [&quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+    &quot;region&quot;: &quot;amazon&quot;,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>Output:</strong></p>
+<ul>
+<li>Harvest areas for Amazon Basin only</li>
+<li>Regional totals (not global)</li>
+</ul>
+<hr>
+<h2>JSON Configuration Examples</h2>
+<h3>Example 1: Global Grazing and Harvest</h3>
 <p><strong>Purpose:</strong> Extract all grazing and harvest activities globally</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Extracts grazing on grasslands<br />
-- Extracts all 5 harvest types on forests<br />
-- Calculates total harvest area automatically<br />
-- Global aggregation (no regional filtering)<br />
-- 86 years of annual data (2015-2100)</p>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730.dat&quot;,
+    &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Extracts grazing on grasslands</li>
+<li>Extracts all 5 harvest types on forests</li>
+<li>Calculates total harvest area automatically</li>
+<li>Global aggregation (no regional filtering)</li>
+<li>86 years of annual data (2015-2100)</li>
+</ul>
 <p><strong>Output Columns:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year
+<pre><code>Year
 FRAC_VEG
 AREA (km^2)
 PFT_1_AREA (km^2) ... PFT_16_AREA (km^2)
@@ -1058,182 +485,186 @@ HARVEST_SH2_AREA (km^2)
 HARVEST_SH3_AREA (km^2)
 HARVEST_VH1_AREA (km^2)
 HARVEST_VH2_AREA (km^2)
-HARVEST_AREA (km^2)
-</code></pre></div>
-
-<hr />
-<h3 id="example-2-regional-analysis-amazon">Example 2: Regional Analysis (Amazon)</h3>
+HARVEST_AREA (km^2)</code></pre>
+<hr>
+<h3>Example 2: Regional Analysis (Amazon)</h3>
 <p><strong>Purpose:</strong> Focus on Amazon Basin grazing and harvest</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730_amazon.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Filters to Amazon Basin coordinates<br />
-- Extracts grazing and harvest for Amazon only<br />
-- Regional totals (not global)<br />
-- Same variables as Example 1, but for Amazon</p>
-<p><strong>Use Case:</strong><br />
-- Analyzing deforestation in Amazon<br />
-- Tracking agricultural expansion<br />
-- Regional land use impacts</p>
-<hr />
-<h3 id="example-3-grazing-only">Example 3: Grazing Only</h3>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./../2025_DiVittorio_et_al_e3sm/control_time_series_surfdata_iESM_dyn_20240730_amazon.dat&quot;,
+    &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+    &quot;region&quot;: &quot;amazon&quot;,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Filters to Amazon Basin coordinates</li>
+<li>Extracts grazing and harvest for Amazon only</li>
+<li>Regional totals (not global)</li>
+<li>Same variables as Example 1, but for Amazon</li>
+</ul>
+<p><strong>Use Case:</strong></p>
+<ul>
+<li>Analyzing deforestation in Amazon</li>
+<li>Tracking agricultural expansion</li>
+<li>Regional land use impacts</li>
+</ul>
+<hr>
+<h3>Example 3: Grazing Only</h3>
 <p><strong>Purpose:</strong> Extract only grazing data (no harvest)</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./grazing_only.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Extracts grazing fraction<br />
-- Automatically includes PCT_NAT_PFT and PCT_NATVEG<br />
-- Calculates grass area<br />
-- Converts grazing to area (km²)</p>
-<p><strong>Output Focus:</strong><br />
-- <code>GRAZING_AREA (km^2)</code><br />
-- <code>GRASS_AREA (km^2)</code><br />
-- PFT areas included for context</p>
-<hr />
-<h3 id="example-4-harvest-only">Example 4: Harvest Only</h3>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./grazing_only.dat&quot;,
+    &quot;variables&quot;: [&quot;GRAZING&quot;],
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Extracts grazing fraction</li>
+<li>Automatically includes PCT_NAT_PFT and PCT_NATVEG</li>
+<li>Calculates grass area</li>
+<li>Converts grazing to area (km²)</li>
+</ul>
+<p><strong>Output Focus:</strong></p>
+<ul>
+<li><code>GRAZING_AREA (km^2)</code></li>
+<li><code>GRASS_AREA (km^2)</code></li>
+<li>PFT areas included for context</li>
+</ul>
+<hr>
+<h3>Example 4: Harvest Only</h3>
 <p><strong>Purpose:</strong> Extract only harvest activities (no grazing)</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./harvest_only.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Extracts all 5 harvest types<br />
-- Calculates total harvest automatically<br />
-- Converts to forest area harvested (km²)</p>
-<p><strong>Output Focus:</strong><br />
-- Individual harvest areas<br />
-- <code>HARVEST_AREA (km^2)</code> (total)<br />
-- <code>FOREST_AREA (km^2)</code> for context</p>
-<hr />
-<h3 id="example-5-short-time-period-for-testing">Example 5: Short Time Period for Testing</h3>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./harvest_only.dat&quot;,
+    &quot;variables&quot;: [&quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Extracts all 5 harvest types</li>
+<li>Calculates total harvest automatically</li>
+<li>Converts to forest area harvested (km²)</li>
+</ul>
+<p><strong>Output Focus:</strong></p>
+<ul>
+<li>Individual harvest areas</li>
+<li><code>HARVEST_AREA (km^2)</code> (total)</li>
+<li><code>FOREST_AREA (km^2)</code> for context</li>
+</ul>
+<hr>
+<h3>Example 5: Short Time Period for Testing</h3>
 <p><strong>Purpose:</strong> Quick test with subset of data</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./test_surfdata.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Only 6 years of data (2015-2020)<br />
-- Fast execution for testing<br />
-- Verify configuration before full run<br />
-- Two representative variables</p>
-<hr />
-<h3 id="example-6-csv-output">Example 6: CSV Output</h3>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./test_surfdata.dat&quot;,
+    &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;],
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2020
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Only 6 years of data (2015-2020)</li>
+<li>Fast execution for testing</li>
+<li>Verify configuration before full run</li>
+<li>Two representative variables</li>
+</ul>
+<hr>
+<h3>Example 6: CSV Output</h3>
 <p><strong>Purpose:</strong> Output in CSV format for easy import to other tools</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./harvest_grazing.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;write_to_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Same as Example 1 but CSV output<br />
-- Comma-separated values<br />
-- Easy import to Excel, R, Python pandas</p>
-<hr />
-<h3 id="example-7-multiple-regions-in-one-json">Example 7: Multiple Regions in One JSON</h3>
+<pre><code>{
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+    &quot;output_file&quot;: &quot;./harvest_grazing.csv&quot;,
+    &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100,
+    &quot;write_to_csv&quot;: true
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Same as Example 1 but CSV output</li>
+<li>Comma-separated values</li>
+<li>Easy import to Excel, R, Python pandas</li>
+</ul>
+<hr>
+<h3>Example 7: Multiple Regions in One JSON</h3>
 <p><strong>Purpose:</strong> Process multiple regions with one command</p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./global_harvest_grazing.dat&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_harvest_grazing.dat&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./conus_harvest_grazing.dat&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;conus&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Processes three configurations in one run<br />
-- Global, Amazon, and CONUS analyses<br />
-- Efficient batch processing</p>
-<hr />
-<h2 id="output-files">Output Files</h2>
-<h3 id="fixed-width-format-dat">Fixed-Width Format (.dat)</h3>
+<pre><code>[
+    {
+        &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+        &quot;output_file&quot;: &quot;./global_harvest_grazing.dat&quot;,
+        &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+        &quot;start_year&quot;: 2015,
+        &quot;end_year&quot;: 2100
+    },
+    {
+        &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+        &quot;output_file&quot;: &quot;./amazon_harvest_grazing.dat&quot;,
+        &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+        &quot;region&quot;: &quot;amazon&quot;,
+        &quot;start_year&quot;: 2015,
+        &quot;end_year&quot;: 2100
+    },
+    {
+        &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/simulation/run/surfdata_iESM_dyn.nc&quot;,
+        &quot;output_file&quot;: &quot;./conus_harvest_grazing.dat&quot;,
+        &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;],
+        &quot;region&quot;: &quot;conus&quot;,
+        &quot;start_year&quot;: 2015,
+        &quot;end_year&quot;: 2100
+    }
+]</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Processes three configurations in one run</li>
+<li>Global, Amazon, and CONUS analyses</li>
+<li>Efficient batch processing</li>
+</ul>
+<hr>
+<h2>Output Files</h2>
+<h3>Fixed-Width Format (.dat)</h3>
 <p><strong>Default format</strong> - Human-readable with aligned columns</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2)
+<pre><code>Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2)
 2015    0.6234        1234.56                567.89                2345.67
 2016    0.6198        1289.34                578.12                2401.23
-2017    0.6175        1301.45                589.34                2456.78
-</code></pre></div>
-
-<p><strong>Characteristics:</strong><br />
-- Spaces used for padding<br />
-- Columns aligned<br />
-- Easy to read<br />
-- Standard for E3SM analysis</p>
-<hr />
-<h3 id="csv-format-csv">CSV Format (.csv)</h3>
+2017    0.6175        1301.45                589.34                2456.78</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Spaces used for padding</li>
+<li>Columns aligned</li>
+<li>Easy to read</li>
+<li>Standard for E3SM analysis</li>
+</ul>
+<hr>
+<h3>CSV Format (.csv)</h3>
 <p><strong>Optional format</strong> - Machine-readable</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year,FRAC_VEG,GRAZING_AREA (km^2),HARVEST_VH1_AREA (km^2),HARVEST_AREA (km^2)
+<pre><code>Year,FRAC_VEG,GRAZING_AREA (km^2),HARVEST_VH1_AREA (km^2),HARVEST_AREA (km^2)
 2015,0.6234,1234.56,567.89,2345.67
 2016,0.6198,1289.34,578.12,2401.23
-2017,0.6175,1301.45,589.34,2456.78
-</code></pre></div>
-
-<p><strong>Characteristics:</strong><br />
-- Comma-separated<br />
-- Smaller file size<br />
-- Easy import to Excel, pandas, R</p>
-<hr />
-<h3 id="output-structure">Output Structure</h3>
-<p><strong>Temporal Organization:</strong><br />
-- One row per year<br />
-- Sorted by Year<br />
-- Annual time series (not monthly)</p>
+2017,0.6175,1301.45,589.34,2456.78</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Comma-separated</li>
+<li>Smaller file size</li>
+<li>Easy import to Excel, pandas, R</li>
+</ul>
+<hr>
+<h3>Output Structure</h3>
+<p><strong>Temporal Organization:</strong></p>
+<ul>
+<li>One row per year</li>
+<li>Sorted by Year</li>
+<li>Annual time series (not monthly)</li>
+</ul>
 <p><strong>Column Organization:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="n">Year</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">FRAC_VEG</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">AREA</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">PFT</span><span class="w"> </span><span class="n">areas</span><span class="p">...]</span><span class="w"> </span><span class="p">[</span><span class="n">Grazing</span><span class="w"> </span><span class="n">area</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="n">Harvest</span><span class="w"> </span><span class="n">areas</span><span class="p">...]</span><span class="w"> </span><span class="p">[</span><span class="n">Total</span><span class="w"> </span><span class="n">harvest</span><span class="p">]</span>
-</code></pre></div>
-
+<pre><code>[Year] [FRAC_VEG] [AREA] [PFT areas...] [Grazing area] [Harvest areas...] [Total harvest]</code></pre>
 <p><strong>Column Headers:</strong></p>
-<div class="codehilite"><pre><span></span><code>Variable_name (units)
+<pre><code>Variable_name (units)
 
 Examples:
 Year
@@ -1241,155 +672,141 @@ FRAC_VEG
 GRAZING_AREA (km^2)
 HARVEST_VH1_AREA (km^2)
 HARVEST_AREA (km^2)
-FOREST_AREA (km^2)
-</code></pre></div>
-
-<hr />
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="issue-1-file-not-found">Issue 1: File Not Found</h3>
+FOREST_AREA (km^2)</code></pre>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Issue 1: File Not Found</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">FileNotFoundError</span><span class="o">:</span><span class="w"> </span><span class="n">surfdata_iESM_dyn</span><span class="o">.</span><span class="na">nc</span>
-</code></pre></div>
-
-<p><strong>Causes:</strong><br />
-- Incorrect <code>landuse_file</code> path or file name<br />
-- File doesn't exist</p>
+<pre><code>FileNotFoundError: surfdata_iESM_dyn.nc</code></pre>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Incorrect <code>landuse_file</code> path or file name</li>
+<li>File doesn&#x27;t exist</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check that the file given by landuse_file exists</span>
-ls<span class="w"> </span>-la<span class="w"> </span>/path/to/simulation/run/surfdata_iESM_dyn.nc
-</code></pre></div>
-
-<hr />
-<h3 id="issue-2-variable-not-found">Issue 2: Variable Not Found</h3>
+<pre><code># Check that the file given by landuse_file exists
+ls -la /path/to/simulation/run/surfdata_iESM_dyn.nc</code></pre>
+<hr>
+<h3>Issue 2: Variable Not Found</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code>KeyError: &#39;VARIABLE_NAME&#39;
-</code></pre></div>
-
-<p><strong>Causes:</strong><br />
-- Variable not in surfdata file<br />
-- Typo in variable name<br />
-- File doesn't contain requested variable</p>
+<pre><code>KeyError: &#x27;VARIABLE_NAME&#x27;</code></pre>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Variable not in surfdata file</li>
+<li>Typo in variable name</li>
+<li>File doesn&#x27;t contain requested variable</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check what variables are in file</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;surfdata_iESM_dyn.nc&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">))</span>
+<pre><code># Check what variables are in file
+import xarray as xr
+ds = xr.open_dataset(&#x27;surfdata_iESM_dyn.nc&#x27;)
+print(list(ds.data_vars))
 
-<span class="c1"># Common variables:</span>
-<span class="c1"># GRAZING, HARVEST_VH1, HARVEST_VH2, HARVEST_SH1, HARVEST_SH2, HARVEST_SH3</span>
-<span class="c1"># PCT_NATVEG, PCT_NAT_PFT</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-3-memory-error">Issue 3: Memory Error</h3>
+# Common variables:
+# GRAZING, HARVEST_VH1, HARVEST_VH2, HARVEST_SH1, HARVEST_SH2, HARVEST_SH3
+# PCT_NATVEG, PCT_NAT_PFT</code></pre>
+<hr>
+<h3>Issue 3: Memory Error</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code>MemoryError
-</code></pre></div>
-
-<p><strong>Causes:</strong><br />
-- Large surfdata file<br />
-- Long time series<br />
-- Many variables<br />
-- Insufficient RAM</p>
-<p><strong>Solutions:</strong><br />
-1. <strong>Reduce year range:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2050</span><span class="w">  </span><span class="c1">// Instead of 2100</span>
-</code></pre></div>
-
-<ol start="2">
+<pre><code>MemoryError</code></pre>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Large surfdata file</li>
+<li>Long time series</li>
+<li>Many variables</li>
+<li>Insufficient RAM</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li><strong>Reduce year range:</strong></li>
+</ul>
+<pre><code>&quot;start_year&quot;: 2015,
+&quot;end_year&quot;: 2050  // Instead of 2100</code></pre>
+<ul>
 <li><strong>Process fewer variables:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// Instead of all harvest types</span>
-</code></pre></div>
+</ul>
+<pre><code>&quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;]  // Instead of all harvest types</code></pre>
+<ul>
+<li><strong>Run on larger memory machine</strong></li>
+</ul>
+<ul>
+<li><strong>Process in chunks:</strong></li>
+</ul>
+<pre><code>// Config 1
+{&quot;start_year&quot;: 2015, &quot;end_year&quot;: 2050}
 
-<ol start="3">
-<li>
-<p><strong>Run on larger memory machine</strong></p>
-</li>
-<li>
-<p><strong>Process in chunks:</strong></p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Config 1</span>
-<span class="p">{</span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2050</span><span class="p">}</span>
-
-<span class="c1">// Config 2</span>
-<span class="p">{</span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2051</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-4-duplicate-time-values">Issue 4: Duplicate Time Values</h3>
+// Config 2
+{&quot;start_year&quot;: 2051, &quot;end_year&quot;: 2100}</code></pre>
+<hr>
+<h3>Issue 4: Duplicate Time Values</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Warning</span><span class="o">:</span><span class="w"> </span><span class="n">Duplicate</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="n">found</span>
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- Simulation restarts create duplicate time entries<br />
-- Script handles this automatically</p>
-<p><strong>Behavior:</strong><br />
-- Script removes duplicates, keeping last occurrence<br />
-- No user action needed<br />
-- Informational warning only</p>
-<hr />
-<h3 id="issue-5-slow-execution">Issue 5: Slow Execution</h3>
+<pre><code>Warning: Duplicate time values found</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li>Simulation restarts create duplicate time entries</li>
+<li>Script handles this automatically</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Script removes duplicates, keeping last occurrence</li>
+<li>No user action needed</li>
+<li>Informational warning only</li>
+</ul>
+<hr>
+<h3>Issue 5: Slow Execution</h3>
 <p><strong>Symptom:</strong> Script taking longer than expected</p>
-<p><strong>Causes:</strong><br />
-- Large surfdata file<br />
-- Many years to process<br />
-- Limited CPU cores</p>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Large surfdata file</li>
+<li>Many years to process</li>
+<li>Limited CPU cores</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<ol>
-<li>
-<p><strong>Parallel processing (already built-in):</strong><br />
-Script automatically uses all CPU cores</p>
-</li>
-<li>
-<p><strong>Reduce year range:</strong></p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2080</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="w">  </span><span class="c1">// Only 21 years</span>
-</code></pre></div>
-
-<ol start="3">
-<li>
-<p><strong>Run on HPC:</strong><br />
-Use high-performance computing cluster</p>
-</li>
-<li>
-<p><strong>Monitor progress:</strong><br />
-Script prints completion time</p>
-</li>
-</ol>
-<p><strong>Typical Timing:</strong><br />
-- 86 years, 6 variables: 30-120 seconds<br />
-- Depends on file size and CPU count</p>
-<hr />
-<h3 id="issue-6-regional-bounds-error">Issue 6: Regional Bounds Error</h3>
+<ul>
+<li><strong>Parallel processing across files (already built-in):</strong></li>
+</ul>
+<p>The script can process multiple configured landuse files concurrently. It uses <code>MAX_PROCESSES</code> by default, which is all available CPUs minus one with a minimum of one, and can be capped with <code>max_processes</code>.</p>
+<ul>
+<li><strong>Reduce year range:</strong></li>
+</ul>
+<pre><code>&quot;start_year&quot;: 2080,
+&quot;end_year&quot;: 2100  // Only 21 years</code></pre>
+<ul>
+<li><strong>Run on HPC:</strong></li>
+</ul>
+<p>Use high-performance computing cluster</p>
+<ul>
+<li><strong>Monitor progress:</strong></li>
+</ul>
+<p>Script prints completion time</p>
+<p><strong>Typical Timing:</strong></p>
+<ul>
+<li>86 years, 6 variables: 30-120 seconds</li>
+<li>Depends on file size and CPU count</li>
+</ul>
+<hr>
+<h3>Issue 6: Regional Bounds Error</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Did</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">recognize</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">selected</span><span class="w"> </span><span class="n">region</span><span class="o">!</span>
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- Region name typo<br />
-- Region not in predefined list</p>
+<pre><code>Did not recognize the selected region!</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li>Region name typo</li>
+<li>Region not in predefined list</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Check spelling (case-sensitive)</span>
-<span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;amazon&quot;</span><span class="w">  </span><span class="c1">// Correct</span>
-<span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;Amazon&quot;</span><span class="w">  </span><span class="c1">// Wrong</span>
+<pre><code>// Check spelling (case-sensitive)
+&quot;region&quot;: &quot;amazon&quot;  // Correct
+&quot;region&quot;: &quot;Amazon&quot;  // Wrong
 
-<span class="c1">// Use null for global</span>
-<span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+// Use null for global
+&quot;region&quot;: null
 
-<span class="c1">// Check available regions in utility_e3sm_netcdf.py</span>
-</code></pre></div>
-
-<hr />
-<h2 id="best-practices">Best Practices</h2>
-<h3 id="1-directory-organization">1. Directory Organization</h3>
+// Check available regions in utility_e3sm_netcdf.py</code></pre>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Directory Organization</h3>
 <p><strong>Recommended Structure:</strong></p>
-<div class="codehilite"><pre><span></span><code>project/
+<pre><code>project/
 ├── simulations/
 │   ├── control/
 │   │   └── run/
@@ -1406,455 +823,271 @@ Script prints completion time</p>
 ├── configs/
 │   └── surfdata_extraction_configs.json
 └── analysis/
-    └── scripts/
-</code></pre></div>
-
-<hr />
-<h3 id="2-configuration-file-organization">2. Configuration File Organization</h3>
+    └── scripts/</code></pre>
+<hr>
+<h3>2. Configuration File Organization</h3>
 <p><strong>Use descriptive names:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">configs</span><span class="o">/</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">global_harvest_grazing_extraction</span><span class="p">.</span><span class="n">json</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">regional_amazon_extraction</span><span class="p">.</span><span class="n">json</span>
-<span class="err">└──</span><span class="w"> </span><span class="n">testing_2015_2020</span><span class="p">.</span><span class="n">json</span>
-</code></pre></div>
-
+<pre><code>configs/
+├── global_harvest_grazing_extraction.json
+├── regional_amazon_extraction.json
+└── testing_2015_2020.json</code></pre>
 <p><strong>Group related extractions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;control_global.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;control_amazon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario_global.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario_amazon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="3-testing-strategy">3. Testing Strategy</h3>
+<pre><code>[
+    {&quot;output_file&quot;: &quot;control_global.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;control_amazon.dat&quot;, &quot;region&quot;: &quot;amazon&quot;, ...},
+    {&quot;output_file&quot;: &quot;scenario_global.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;scenario_amazon.dat&quot;, &quot;region&quot;: &quot;amazon&quot;, ...}
+]</code></pre>
+<hr>
+<h3>3. Testing Strategy</h3>
 <p><strong>Start small:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2016</span><span class="p">,</span><span class="w">  </span><span class="c1">// Just 2 years</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// One variable</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2016,  // Just 2 years
+    &quot;variables&quot;: [&quot;GRAZING&quot;]  // One variable
+}</code></pre>
 <p><strong>Then scale up:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="p">,</span><span class="w">  </span><span class="c1">// Full range</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="4-variable-selection">4. Variable Selection</h3>
+<pre><code>{
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100,  // Full range
+    &quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;, ...]
+}</code></pre>
+<hr>
+<h3>4. Variable Selection</h3>
 <p><strong>All human activities (comprehensive):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [&quot;GRAZING&quot;, &quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;]</code></pre>
 <p><strong>Grazing focus:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GRAZING&quot;</span><span class="p">]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [&quot;GRAZING&quot;]</code></pre>
 <p><strong>Harvest focus:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HARVEST_SH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_SH3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [&quot;HARVEST_SH1&quot;, &quot;HARVEST_SH2&quot;, &quot;HARVEST_SH3&quot;, &quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;]</code></pre>
 <p><strong>Simplified (only major harvest):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HARVEST_VH1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HARVEST_VH2&quot;</span><span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="5-regional-vs-global">5. Regional vs Global</h3>
-<p><strong>When to use global:</strong><br />
-- Earth system scale analysis<br />
-- Total land use impacts<br />
-- Global harvest/grazing trends</p>
-<p><strong>When to use regional:</strong><br />
-- Hotspot analysis (Amazon deforestation)<br />
-- Regional impacts (CONUS agriculture)<br />
-- Policy-relevant scales</p>
+<pre><code>&quot;variables&quot;: [&quot;HARVEST_VH1&quot;, &quot;HARVEST_VH2&quot;]</code></pre>
+<hr>
+<h3>5. Regional vs Global</h3>
+<p><strong>When to use global:</strong></p>
+<ul>
+<li>Earth system scale analysis</li>
+<li>Total land use impacts</li>
+<li>Global harvest/grazing trends</li>
+</ul>
+<p><strong>When to use regional:</strong></p>
+<ul>
+<li>Hotspot analysis (Amazon deforestation)</li>
+<li>Regional impacts (CONUS agriculture)</li>
+<li>Policy-relevant scales</li>
+</ul>
 <p><strong>Multiple regions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;global.dat&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;conus.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;region&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;conus&quot;</span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="6-performance-optimization">6. Performance Optimization</h3>
-<p><strong>Parallel processing:</strong><br />
-- Script uses all CPU cores automatically<br />
-- One process per year<br />
-- Scales well with more cores</p>
+<pre><code>[
+    {&quot;output_file&quot;: &quot;global.dat&quot;},
+    {&quot;output_file&quot;: &quot;amazon.dat&quot;, &quot;region&quot;: &quot;amazon&quot;},
+    {&quot;output_file&quot;: &quot;conus.dat&quot;, &quot;region&quot;: &quot;conus&quot;}
+]</code></pre>
+<hr>
+<h3>6. Performance Optimization</h3>
+<p><strong>Parallel processing:</strong></p>
+<ul>
+<li>Script can process multiple configured landuse files concurrently</li>
+<li>A single landuse file is processed sequentially by year</li>
+<li>Use <code>max_processes</code> to cap concurrent workers</li>
+</ul>
 <p><strong>Efficient configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Good: One JSON with multiple outputs</span>
-<span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">}</span>
-<span class="p">]</span>
+<pre><code>// Good: One JSON with multiple outputs
+[
+    {&quot;output_file&quot;: &quot;control.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;scenario.dat&quot;, ...}
+]
 
-<span class="c1">// Less efficient: Multiple script calls</span>
-<span class="err">py</span><span class="kc">t</span><span class="err">ho</span><span class="kc">n</span><span class="w"> </span><span class="err">scrip</span><span class="kc">t</span><span class="err">.py</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ig</span><span class="mf">1.</span><span class="err">jso</span><span class="kc">n</span>
-<span class="err">py</span><span class="kc">t</span><span class="err">ho</span><span class="kc">n</span><span class="w"> </span><span class="err">scrip</span><span class="kc">t</span><span class="err">.py</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ig</span><span class="mf">2.</span><span class="err">jso</span><span class="kc">n</span>
-</code></pre></div>
-
-<hr />
-<h3 id="7-data-validation">7. Data Validation</h3>
+// Less efficient: Multiple script calls
+python script.py config1.json
+python script.py config2.json</code></pre>
+<hr>
+<h3>7. Data Validation</h3>
 <p><strong>After extraction, verify:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<pre><code>import pandas as pd
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;output.csv&#39;</span><span class="p">)</span>  <span class="c1"># or read_fwf for .dat</span>
+df = pd.read_csv(&#x27;output.csv&#x27;)  # or read_fwf for .dat
 
-<span class="c1"># Check dimensions</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="c1"># Expected: 86 rows for 2015-2100</span>
+# Check dimensions
+print(f&quot;Shape: {df.shape}&quot;)
+# Expected: 86 rows for 2015-2100
 
-<span class="c1"># Check for missing values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+# Check for missing values
+print(df.isnull().sum())
 
-<span class="c1"># Check value ranges</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+# Check value ranges
+print(df.describe())
 
-<span class="c1"># Verify temporal continuity</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-<span class="c1"># Should be consecutive years</span>
-</code></pre></div>
-
+# Verify temporal continuity
+print(df[&#x27;Year&#x27;].head(10))
+# Should be consecutive years</code></pre>
 <p><strong>Check totals:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Total harvest should equal sum of individual harvests</span>
-<span class="n">harvest_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;HARVEST_&#39;</span> <span class="ow">in</span> <span class="n">col</span> <span class="ow">and</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;HARVEST_AREA (km^2)&#39;</span><span class="p">]</span>
-<span class="n">calculated_total</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">harvest_cols</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">reported_total</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;HARVEST_AREA (km^2)&#39;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Match: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">calculated_total</span><span class="p">,</span><span class="w"> </span><span class="n">reported_total</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h3 id="8-reproducibility">8. Reproducibility</h3>
+<pre><code># Total harvest should equal sum of individual harvests
+harvest_cols = [col for col in df.columns if &#x27;HARVEST_&#x27; in col and col != &#x27;HARVEST_AREA (km^2)&#x27;]
+calculated_total = df[harvest_cols].sum(axis=1)
+reported_total = df[&#x27;HARVEST_AREA (km^2)&#x27;]
+print(f&quot;Match: {np.allclose(calculated_total, reported_total)}&quot;)</code></pre>
+<hr>
+<h3>8. Reproducibility</h3>
 <p><strong>Document your extraction:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Harvest and grazing for control simulation&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;date_extracted&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-01-24&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;simulation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSP245_ZATM_BGC_without_feedbacks&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;landuse_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/.../run/surfdata_iESM_dyn.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="err">...</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;comment&quot;: &quot;Harvest and grazing for control simulation&quot;,
+    &quot;date_extracted&quot;: &quot;2026-01-24&quot;,
+    &quot;simulation&quot;: &quot;SSP245_ZATM_BGC_without_feedbacks&quot;,
+    &quot;landuse_file&quot;: &quot;/lcrc/group/e3sm/.../run/surfdata_iESM_dyn.nc&quot;,
+    ...
+}</code></pre>
 <p><strong>Version control configurations:</strong></p>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>configs/
-git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Add surfdata extraction configs for control simulation&quot;</span>
-</code></pre></div>
-
-<hr />
-<h2 id="comparison-with-h0-extraction-script">Comparison with h0 Extraction Script</h2>
-<h3 id="key-differences">Key Differences</h3>
+<pre><code>git add configs/
+git commit -m &quot;Add surfdata extraction configs for control simulation&quot;</code></pre>
+<hr>
+<h2>Comparison with h0 Extraction Script</h2>
+<h3>Key Differences</h3>
 <table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>e3sm_extract_time_series_h0.py</th>
-<th>e3sm_extract_time_series_landuse.py</th>
-</tr>
-</thead>
+<thead><tr><th>Feature</th><th>e3sm_extract_time_series_h0.py</th><th>e3sm_extract_time_series_landuse.py</th></tr></thead>
 <tbody>
-<tr>
-<td><strong>Input Files</strong></td>
-<td>Multiple monthly NetCDF files (elm.h0.<em>, eam.h0.</em>)</td>
-<td>Single NetCDF file (surfdata_iESM_dyn.nc)</td>
-</tr>
-<tr>
-<td><strong>Temporal Resolution</strong></td>
-<td>Monthly</td>
-<td>Annual</td>
-</tr>
-<tr>
-<td><strong>Variables</strong></td>
-<td>Climate, carbon cycle (100+ available)</td>
-<td>Human land management (6 main variables)</td>
-</tr>
-<tr>
-<td><strong>File Type Config</strong></td>
-<td><code>netcdf_substrings</code> (nested list)</td>
-<td>Not needed (always surfdata file)</td>
-</tr>
-<tr>
-<td><strong>Variables Config</strong></td>
-<td><code>variables</code> (nested list, one per file type)</td>
-<td><code>variables</code> (simple list)</td>
-</tr>
-<tr>
-<td><strong>Aggregation Config</strong></td>
-<td><code>lat_lon_aggregation_types</code> parameter</td>
-<td>Always area-weighted sum</td>
-</tr>
-<tr>
-<td><strong>Processing</strong></td>
-<td>Optional (<code>process_variables</code>)</td>
-<td>Automatic (always converts fractions to areas)</td>
-</tr>
-<tr>
-<td><strong>Parallel Processing</strong></td>
-<td>One process per file (per month per file type)</td>
-<td>One process per year</td>
-</tr>
-<tr>
-<td><strong>Output Frequency</strong></td>
-<td>Monthly rows</td>
-<td>Annual rows</td>
-</tr>
-</tbody>
-</table>
-<h3 id="when-to-use-each-script">When to Use Each Script</h3>
-<p><strong>Use h0 script when:</strong><br />
-- Need climate variables (temperature, precipitation)<br />
-- Need carbon cycle fluxes (GPP, NPP, NBP)<br />
-- Need monthly resolution<br />
-- Analyzing atmosphere or land model outputs</p>
-<p><strong>Use surfdata script when:</strong><br />
-- Need human land management data<br />
-- Need grazing information<br />
-- Need wood harvest information<br />
-- Analyzing E3SM-GCAM coupled simulations<br />
-- Annual resolution sufficient</p>
-<h3 id="example-workflow-using-both-scripts">Example Workflow Using Both Scripts</h3>
-<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">Extract</span><span class="w"> </span><span class="n">climate</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">carbon</span><span class="w"> </span><span class="n">cycle</span><span class="w"> </span><span class="p">(</span><span class="n">monthly</span><span class="p">):</span>
-<span class="w">   </span><span class="n">python</span><span class="w"> </span><span class="n">e3sm_extract_time_series_h0</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="n">h0_config</span><span class="mf">.</span><span class="n">json</span>
-<span class="w">   </span><span class="err">→</span><span class="w"> </span><span class="n">Output</span><span class="p">:</span><span class="w"> </span><span class="n">Monthly</span><span class="w"> </span><span class="n">GPP</span><span class="p">,</span><span class="w"> </span><span class="n">NPP</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">precipitation</span>
+<tr><td><strong>Input Files</strong></td><td>Multiple monthly NetCDF files (elm.h0.*, eam.h0.*)</td><td>Single NetCDF file (surfdata_iESM_dyn.nc)</td></tr>
+<tr><td><strong>Temporal Resolution</strong></td><td>Monthly</td><td>Annual</td></tr>
+<tr><td><strong>Variables</strong></td><td>Climate, carbon cycle (100+ available)</td><td>Human land management (6 main variables)</td></tr>
+<tr><td><strong>File Type Config</strong></td><td><code>netcdf_substrings</code> (nested list)</td><td>Not needed (always surfdata file)</td></tr>
+<tr><td><strong>Variables Config</strong></td><td><code>variables</code> (nested list, one per file type)</td><td><code>variables</code> (simple list)</td></tr>
+<tr><td><strong>Aggregation Config</strong></td><td><code>lat_lon_aggregation_types</code> parameter</td><td>Always area-weighted sum</td></tr>
+<tr><td><strong>Processing</strong></td><td>Optional (<code>process_variables</code>)</td><td>Automatic (always converts fractions to areas)</td></tr>
+<tr><td><strong>Parallel Processing</strong></td><td>One process per file (per month per file type)</td><td>One process per year</td></tr>
+<tr><td><strong>Output Frequency</strong></td><td>Monthly rows</td><td>Annual rows</td></tr>
+</tbody></table>
+<h3>When to Use Each Script</h3>
+<p><strong>Use h0 script when:</strong></p>
+<ul>
+<li>Need climate variables (temperature, precipitation)</li>
+<li>Need carbon cycle fluxes (GPP, NPP, NBP)</li>
+<li>Need monthly resolution</li>
+<li>Analyzing atmosphere or land model outputs</li>
+</ul>
+<p><strong>Use surfdata script when:</strong></p>
+<ul>
+<li>Need human land management data</li>
+<li>Need grazing information</li>
+<li>Need wood harvest information</li>
+<li>Analyzing E3SM-GCAM coupled simulations</li>
+<li>Annual resolution sufficient</li>
+</ul>
+<h3>Example Workflow Using Both Scripts</h3>
+<pre><code>1. Extract climate and carbon cycle (monthly):
+   python e3sm_extract_time_series_h0.py h0_config.json
+   → Output: Monthly GPP, NPP, temperature, precipitation
 
-<span class="mf">2.</span><span class="w"> </span><span class="n">Extract</span><span class="w"> </span><span class="n">human</span><span class="w"> </span><span class="n">land</span><span class="w"> </span><span class="n">management</span><span class="w"> </span><span class="p">(</span><span class="n">annual</span><span class="p">):</span>
-<span class="w">   </span><span class="n">python</span><span class="w"> </span><span class="n">e3sm_extract_time_series_landuse</span><span class="mf">.</span><span class="n">py</span><span class="w"> </span><span class="n">surfdata_config</span><span class="mf">.</span><span class="n">json</span>
-<span class="w">   </span><span class="err">→</span><span class="w"> </span><span class="n">Output</span><span class="p">:</span><span class="w"> </span><span class="n">Annual</span><span class="w"> </span><span class="n">grazing</span><span class="p">,</span><span class="w"> </span><span class="n">harvest</span><span class="w"> </span><span class="n">areas</span>
+2. Extract human land management (annual):
+   python e3sm_extract_time_series_landuse.py surfdata_config.json
+   → Output: Annual grazing, harvest areas
 
-<span class="mf">3.</span><span class="w"> </span><span class="n">Analyze</span><span class="w"> </span><span class="kr">toget</span><span class="n">her</span><span class="p">:</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Monthly</span><span class="w"> </span><span class="n">climate</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">carbon</span><span class="w"> </span><span class="n">dynamics</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Annual</span><span class="w"> </span><span class="n">human</span><span class="w"> </span><span class="n">activities</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Correlate</span><span class="w"> </span><span class="n">human</span><span class="w"> </span><span class="n">activities</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">ecosystem</span><span class="w"> </span><span class="n">responses</span>
-</code></pre></div>
+3. Analyze together:
+   - Monthly climate and carbon dynamics
+   - Annual human activities
+   - Correlate human activities with ecosystem responses</code></pre>
+<hr>
+<h2>Integration with Other Scripts</h2>
+<h3>Typical E3SM-GCAM Analysis Workflow</h3>
+<pre><code>1. Run E3SM-GCAM coupled simulation
+   ↓ (Produces surfdata_iESM_dyn.nc + monthly h0 files)
 
-<hr />
-<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
-<h3 id="typical-e3sm-gcam-analysis-workflow">Typical E3SM-GCAM Analysis Workflow</h3>
-<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="kr">Run</span><span class="w"> </span><span class="n">E3SM</span><span class="o">-</span><span class="n">GCAM</span><span class="w"> </span><span class="n">coupled</span><span class="w"> </span><span class="n">simulation</span>
-<span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Produces</span><span class="w"> </span><span class="n">surfdata_iESM_dyn</span><span class="mf">.</span><span class="n">nc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">monthly</span><span class="w"> </span><span class="n">h0</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
+2a. e3sm_extract_time_series_h0.py
+    ↓ (Extract climate and carbon cycle - monthly)
 
-<span class="mf">2</span><span class="n">a</span><span class="mf">.</span><span class="w"> </span><span class="n">e3sm_extract_time_series_h0</span><span class="mf">.</span><span class="n">py</span>
-<span class="w">    </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">climate</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">carbon</span><span class="w"> </span><span class="n">cycle</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">monthly</span><span class="p">)</span>
+2b. e3sm_extract_time_series_landuse.py  ← THIS SCRIPT
+    ↓ (Extract harvest and grazing - annual)
 
-<span class="mf">2</span><span class="n">b</span><span class="mf">.</span><span class="w"> </span><span class="n">e3sm_extract_time_series_landuse</span><span class="mf">.</span><span class="n">py</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="n">SCRIPT</span>
-<span class="w">    </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extract</span><span class="w"> </span><span class="n">harvest</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">grazing</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">annual</span><span class="p">)</span>
-
-<span class="mf">3.</span><span class="w"> </span><span class="n">Combine</span><span class="w"> </span><span class="n">analyses</span><span class="p">:</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Plot</span><span class="w"> </span><span class="n">harvest</span><span class="w"> </span><span class="n">trends</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">time</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Correlate</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">carbon</span><span class="w"> </span><span class="n">cycle</span><span class="w"> </span><span class="n">changes</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Compare</span><span class="w"> </span><span class="n">regional</span><span class="w"> </span><span class="n">impacts</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="nb">Val</span><span class="n">idate</span><span class="w"> </span><span class="n">coupling</span><span class="w"> </span><span class="n">between</span><span class="w"> </span><span class="n">E3SM</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">GCAM</span>
-</code></pre></div>
-
-<h3 id="downstream-analysis">Downstream Analysis</h3>
+3. Combine analyses:
+   - Plot harvest trends over time
+   - Correlate with carbon cycle changes
+   - Compare regional impacts
+   - Validate coupling between E3SM and GCAM</code></pre>
+<h3>Downstream Analysis</h3>
 <p><strong>Time Series Plotting:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<pre><code>import pandas as pd
+import matplotlib.pyplot as plt
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;harvest_grazing.csv&#39;</span><span class="p">)</span>
+df = pd.read_csv(&#x27;harvest_grazing.csv&#x27;)
 
-<span class="c1"># Plot total harvest over time</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;HARVEST_AREA (km^2)&#39;</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Year&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Total Harvest Area (km²)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Global Forest Harvest&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
-
+# Plot total harvest over time
+plt.plot(df[&#x27;Year&#x27;], df[&#x27;HARVEST_AREA (km^2)&#x27;])
+plt.xlabel(&#x27;Year&#x27;)
+plt.ylabel(&#x27;Total Harvest Area (km²)&#x27;)
+plt.title(&#x27;Global Forest Harvest&#x27;)
+plt.show()</code></pre>
 <p><strong>Regional Comparison:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Load global and regional data</span>
-<span class="n">df_global</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;global_harvest.csv&#39;</span><span class="p">)</span>
-<span class="n">df_amazon</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;amazon_harvest.csv&#39;</span><span class="p">)</span>
+<pre><code># Load global and regional data
+df_global = pd.read_csv(&#x27;global_harvest.csv&#x27;)
+df_amazon = pd.read_csv(&#x27;amazon_harvest.csv&#x27;)
 
-<span class="c1"># Calculate Amazon fraction</span>
-<span class="n">amazon_fraction</span> <span class="o">=</span> <span class="n">df_amazon</span><span class="p">[</span><span class="s1">&#39;HARVEST_AREA (km^2)&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df_global</span><span class="p">[</span><span class="s1">&#39;HARVEST_AREA (km^2)&#39;</span><span class="p">]</span>
+# Calculate Amazon fraction
+amazon_fraction = df_amazon[&#x27;HARVEST_AREA (km^2)&#x27;] / df_global[&#x27;HARVEST_AREA (km^2)&#x27;]
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_global</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">],</span> <span class="n">amazon_fraction</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Year&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amazon </span><span class="si">% o</span><span class="s1">f Global Harvest&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
-
+plt.plot(df_global[&#x27;Year&#x27;], amazon_fraction * 100)
+plt.xlabel(&#x27;Year&#x27;)
+plt.ylabel(&#x27;Amazon % of Global Harvest&#x27;)
+plt.show()</code></pre>
 <p><strong>Statistical Analysis:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<pre><code>from scipy import stats
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;harvest_grazing.csv&#39;</span><span class="p">)</span>
+df = pd.read_csv(&#x27;harvest_grazing.csv&#x27;)
 
-<span class="c1"># Test for trend</span>
-<span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span>
-    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;HARVEST_AREA (km^2)&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Harvest trend: </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> km²/year, p=</span><span class="si">{</span><span class="n">p_value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h2 id="appendix-complete-variable-reference">Appendix: Complete Variable Reference</h2>
-<h3 id="available-in-surfdata_iesm_dynnc">Available in surfdata_iESM_dyn.nc</h3>
+# Test for trend
+slope, intercept, r_value, p_value, std_err = stats.linregress(
+    df[&#x27;Year&#x27;], df[&#x27;HARVEST_AREA (km^2)&#x27;]
+)
+print(f&quot;Harvest trend: {slope:.2f} km²/year, p={p_value:.4f}&quot;)</code></pre>
+<hr>
+<h2>Appendix: Complete Variable Reference</h2>
+<h3>Available in surfdata_iESM_dyn.nc</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Units</th>
-<th>Description</th>
-<th>Output After Processing</th>
-</tr>
-</thead>
+<thead><tr><th>Variable</th><th>Units</th><th>Description</th><th>Output After Processing</th></tr></thead>
 <tbody>
-<tr>
-<td><code>GRAZING</code></td>
-<td>Fraction (0-1)</td>
-<td>Grazing intensity on grasslands</td>
-<td><code>GRAZING_AREA (km^2)</code></td>
-</tr>
-<tr>
-<td><code>HARVEST_VH1</code></td>
-<td>Fraction (0-1)</td>
-<td>Very heavy harvest intensity 1</td>
-<td><code>HARVEST_VH1_AREA (km^2)</code></td>
-</tr>
-<tr>
-<td><code>HARVEST_VH2</code></td>
-<td>Fraction (0-1)</td>
-<td>Very heavy harvest intensity 2</td>
-<td><code>HARVEST_VH2_AREA (km^2)</code></td>
-</tr>
-<tr>
-<td><code>HARVEST_SH1</code></td>
-<td>Fraction (0-1)</td>
-<td>Secondary heavy harvest 1</td>
-<td><code>HARVEST_SH1_AREA (km^2)</code></td>
-</tr>
-<tr>
-<td><code>HARVEST_SH2</code></td>
-<td>Fraction (0-1)</td>
-<td>Secondary heavy harvest 2</td>
-<td><code>HARVEST_SH2_AREA (km^2)</code></td>
-</tr>
-<tr>
-<td><code>HARVEST_SH3</code></td>
-<td>Fraction (0-1)</td>
-<td>Secondary heavy harvest 3</td>
-<td><code>HARVEST_SH3_AREA (km^2)</code></td>
-</tr>
-<tr>
-<td><code>PCT_NATVEG</code></td>
-<td>Percent (0-100)</td>
-<td>Natural vegetation cover</td>
-<td><code>FRAC_VEG</code> (fraction, 0-1)</td>
-</tr>
-<tr>
-<td><code>PCT_NAT_PFT</code></td>
-<td>Percent (0-100)</td>
-<td>PFT percentages</td>
-<td>Individual and aggregated PFT areas</td>
-</tr>
-</tbody>
-</table>
-<h3 id="automatically-generated-output-columns">Automatically Generated Output Columns</h3>
+<tr><td><code>GRAZING</code></td><td>Fraction (0-1)</td><td>Grazing intensity on grasslands</td><td><code>GRAZING_AREA (km^2)</code></td></tr>
+<tr><td><code>HARVEST_VH1</code></td><td>Fraction (0-1)</td><td>Very heavy harvest intensity 1</td><td><code>HARVEST_VH1_AREA (km^2)</code></td></tr>
+<tr><td><code>HARVEST_VH2</code></td><td>Fraction (0-1)</td><td>Very heavy harvest intensity 2</td><td><code>HARVEST_VH2_AREA (km^2)</code></td></tr>
+<tr><td><code>HARVEST_SH1</code></td><td>Fraction (0-1)</td><td>Secondary heavy harvest 1</td><td><code>HARVEST_SH1_AREA (km^2)</code></td></tr>
+<tr><td><code>HARVEST_SH2</code></td><td>Fraction (0-1)</td><td>Secondary heavy harvest 2</td><td><code>HARVEST_SH2_AREA (km^2)</code></td></tr>
+<tr><td><code>HARVEST_SH3</code></td><td>Fraction (0-1)</td><td>Secondary heavy harvest 3</td><td><code>HARVEST_SH3_AREA (km^2)</code></td></tr>
+<tr><td><code>PCT_NATVEG</code></td><td>Percent (0-100)</td><td>Natural vegetation cover</td><td><code>FRAC_VEG</code> (fraction, 0-1)</td></tr>
+<tr><td><code>PCT_NAT_PFT</code></td><td>Percent (0-100)</td><td>PFT percentages</td><td>Individual and aggregated PFT areas</td></tr>
+</tbody></table>
+<h3>Automatically Generated Output Columns</h3>
 <table>
-<thead>
-<tr>
-<th>Column</th>
-<th>Units</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Column</th><th>Units</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>Year</code></td>
-<td>Year</td>
-<td>Year of data</td>
-</tr>
-<tr>
-<td><code>FRAC_VEG</code></td>
-<td>Fraction (0-1)</td>
-<td>Vegetation fraction (area-weighted mean)</td>
-</tr>
-<tr>
-<td><code>AREA (km^2)</code></td>
-<td>km²</td>
-<td>Total gridcell area (global or regional sum)</td>
-</tr>
-<tr>
-<td><code>PFT_1_AREA (km^2)</code> ... <code>PFT_16_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Individual PFT areas</td>
-</tr>
-<tr>
-<td><code>BARE_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Bare soil area</td>
-</tr>
-<tr>
-<td><code>FOREST_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Total forest area (PFTs 1-8)</td>
-</tr>
-<tr>
-<td><code>SHRUB_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Total shrub area (PFTs 9-11)</td>
-</tr>
-<tr>
-<td><code>GRASS_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Total grass area (PFTs 12-14)</td>
-</tr>
-<tr>
-<td><code>CROP_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Crop area (PFT 15)</td>
-</tr>
-<tr>
-<td><code>GRAZING_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Grazed grassland area</td>
-</tr>
-<tr>
-<td><code>HARVEST_*_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Harvested forest area by type</td>
-</tr>
-<tr>
-<td><code>HARVEST_AREA (km^2)</code></td>
-<td>km²</td>
-<td>Total harvested area (sum of all types)</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="references">References</h2>
+<tr><td><code>Year</code></td><td>Year</td><td>Year of data</td></tr>
+<tr><td><code>FRAC_VEG</code></td><td>Fraction (0-1)</td><td>Vegetation fraction (area-weighted mean)</td></tr>
+<tr><td><code>AREA (km^2)</code></td><td>km²</td><td>Total gridcell area (global or regional sum)</td></tr>
+<tr><td><code>PFT_1_AREA (km^2)</code> ... <code>PFT_16_AREA (km^2)</code></td><td>km²</td><td>Individual PFT areas</td></tr>
+<tr><td><code>BARE_AREA (km^2)</code></td><td>km²</td><td>Bare soil area</td></tr>
+<tr><td><code>FOREST_AREA (km^2)</code></td><td>km²</td><td>Total forest area (PFTs 1-8)</td></tr>
+<tr><td><code>SHRUB_AREA (km^2)</code></td><td>km²</td><td>Total shrub area (PFTs 9-11)</td></tr>
+<tr><td><code>GRASS_AREA (km^2)</code></td><td>km²</td><td>Total grass area (PFTs 12-14)</td></tr>
+<tr><td><code>CROP_AREA (km^2)</code></td><td>km²</td><td>Crop area (PFT 15)</td></tr>
+<tr><td><code>GRAZING_AREA (km^2)</code></td><td>km²</td><td>Grazed grassland area</td></tr>
+<tr><td><code>HARVEST_*_AREA (km^2)</code></td><td>km²</td><td>Harvested forest area by type</td></tr>
+<tr><td><code>HARVEST_AREA (km^2)</code></td><td>km²</td><td>Total harvested area (sum of all types)</td></tr>
+</tbody></table>
+<hr>
+<h2>References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
-<li>E3SM-GCAM Coupling: DiVittorio et al. (2025). "E3SM-GCAM coupling methodology and applications." <em>Journal of Advances in Modeling Earth Systems</em>. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
+<li>E3SM-GCAM Coupling: DiVittorio et al. (2025). &quot;E3SM-GCAM coupling methodology and applications.&quot; *Journal of Advances in Modeling Earth Systems*. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 <li>xarray Documentation: <a href="https://xarray.pydata.org/">https://xarray.pydata.org/</a></li>
 </ul>
-<hr />
-<h2 id="contact">Contact</h2>
-<p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
-- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
-<hr />
-<h2 id="version-information">Version Information</h2>
-<p><strong>Script:</strong> e3sm_extract_time_series_landuse.py<br />
-<strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py<br />
-<strong>Documentation Version:</strong> 1.0<br />
-<strong>Last Updated:</strong> January 2026<br />
-<strong>Python Version:</strong> 3.7+<br />
-<strong>xarray Version:</strong> 0.16+</p>
-<hr />
-<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_landuse.py</code> script to extract annual time series data of human land management activities (grazing and harvest) from E3SM-GCAM coupled simulation surface data files.</em></p>
-        <footer>
-            <p>E3SM Time Series Extraction Script Documentation (surfdata files)<br>
-            <strong>Script:</strong> e3sm_extract_time_series_landuse.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
-        </footer>
-    </div>
+<hr>
+<h2>Contact</h2>
+<p>For questions or issues:</p>
+<ul>
+<li><strong>Philip Myint</strong>: myint1@llnl.gov</li>
+<li><strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</li>
+</ul>
+<hr>
+<h2>Version Information</h2>
+<p><strong>Script:</strong> e3sm_extract_time_series_landuse.py <strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py <strong>Documentation Version:</strong> 1.0 <strong>Last Updated:</strong> January 2026 <strong>Python Version:</strong> 3.7+ <strong>xarray Version:</strong> 0.16+</p>
+<hr>
+<p>*This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_landuse.py</code> script to extract annual time series data of human land management activities (grazing and harvest) from E3SM-GCAM coupled simulation surface data files.*</p>
+</div>
 </body>
 </html>

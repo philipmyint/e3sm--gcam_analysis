@@ -141,12 +141,10 @@ synthetic_GPP = 10.0 × 1.015 = 10.15 gC/m²/s
 
 ### Parallel Processing
 
-The script uses Python's multiprocessing to create synthetic ensembles in parallel:
+The script uses Python's multiprocessing to create synthetic ensembles in parallel. By default it uses `MAX_PROCESSES`, which is all available CPUs minus one with a minimum of one. Use `--max-processes N` to cap the worker count:
 
-```python
-# Process multiple base files simultaneously
-with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
-    pool.map(produce_synthetic_spatial_data, inputs)
+```bash
+python e3sm_produce_synthetic_spatial_data.py --max-processes 4
 ```
 
 **Efficiency:**
@@ -161,7 +159,7 @@ with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
 ### Hardcoded Parameters (Edit in Script)
 
 #### 1. `files`
-**Type:** List of strings  
+**Type:** List of strings
 **Description:** Paths to base spatial NetCDF files from which to generate synthetic ensembles.
 
 **Location in Script:**
@@ -195,7 +193,7 @@ files = [
 ---
 
 #### 2. `num_files_in_each_set`
-**Type:** List of integers  
+**Type:** List of integers
 **Description:** Total number of ensemble members (including base file) for each base file.
 
 **Location in Script:**
@@ -224,7 +222,7 @@ num_files_in_each_set = [20]
 ---
 
 #### 3. Random Multiplier Range (Inside Function)
-**Type:** Float range  
+**Type:** Float range
 **Description:** Range for random perturbations.
 
 **Location in Script:**
@@ -413,11 +411,11 @@ def produce_synthetic_spatial_data(inputs):
     start_time = time.time()
     file = inputs[0]
     num_synthetic_sets_in_ensemble = inputs[1] - 1
-    
+
     # Change this line:
     random_multipliers = np.random.uniform(low=0.995, high=1.005, size=num_synthetic_sets_in_ensemble)
     # Now ±0.5% instead of ±2%
-    
+
     for index in range(len(random_multipliers)):
         ...
 ```
@@ -523,7 +521,7 @@ python e3sm_extract_spatial_data_h0.py config.json
 # Generate synthetic members
 python e3sm_produce_synthetic_spatial_data.py
 
-# Output: 
+# Output:
 #   control_spatial_data_elm.nc (base)
 #   control_spatial_data_elm_2.nc (synthetic)
 #   control_spatial_data_elm_3.nc (synthetic)
@@ -557,7 +555,7 @@ python gcam_plot_spatial_data.py plot_config.json
 ```json
 {
     "scenarios": [
-        ["control_elm.nc", "control_elm_2.nc", "control_elm_3.nc", 
+        ["control_elm.nc", "control_elm_2.nc", "control_elm_3.nc",
          "control_elm_4.nc", "control_elm_5.nc"],
         ["scenario_elm.nc", "scenario_elm_2.nc", "scenario_elm_3.nc",
          "scenario_elm_4.nc", "scenario_elm_5.nc"]
@@ -677,7 +675,7 @@ Purpose: Statistical significance testing for Figure 3
 def produce_synthetic_spatial_data(inputs):
     # Add this at the beginning:
     np.random.seed(42)  # Fixed seed for reproducibility
-    
+
     start_time = time.time()
     file = inputs[0]
     ...
@@ -741,18 +739,11 @@ MemoryError: Unable to allocate array
 **Solutions:**
 
 1. **Reduce parallel processing:**
-```python
-# Instead of all CPUs:
-with multiprocessing.Pool(processes=4) as pool:  # Use only 4 cores
-    pool.map(produce_synthetic_spatial_data, inputs)
+```bash
+python e3sm_produce_synthetic_spatial_data.py --max-processes 4
 ```
 
-2. **Process files sequentially:**
-```python
-# Replace parallel processing with loop:
-for inp in inputs:
-    produce_synthetic_spatial_data(inp)
-```
+2. **Process files sequentially:** use `--max-processes 1`.
 
 3. **Reduce ensemble size:**
 ```python
@@ -873,16 +864,16 @@ def produce_synthetic_spatial_data(inputs):
     start_time = time.time()
     file = inputs[0]
     num_synthetic_sets_in_ensemble = inputs[1] - 1
-    
+
     for index in range(num_synthetic_sets_in_ensemble):
         ds = xr.open_dataset(file)
         variables = ds.data_vars
-        
+
         # Different multiplier for each variable
         for variable in variables:
             random_multiplier = np.random.uniform(low=0.99, high=1.02)
             ds[variable] *= random_multiplier
-        
+
         new_file = file.replace('.nc', f'_{index+2}.nc')
         ds.to_netcdf(new_file, mode='w')
 ```
@@ -963,7 +954,7 @@ def produce_synthetic_spatial_data(inputs):
 
 ### Spatially-Varying Perturbations
 
-**Current:** Same multiplier for all gridcells  
+**Current:** Same multiplier for all gridcells
 **Modification:** Different multiplier per gridcell
 
 ```python
@@ -971,18 +962,18 @@ def produce_synthetic_spatial_data(inputs):
     start_time = time.time()
     file = inputs[0]
     num_synthetic_sets_in_ensemble = inputs[1] - 1
-    
+
     ds = xr.open_dataset(file)
-    
+
     for index in range(num_synthetic_sets_in_ensemble):
         ds_synthetic = ds.copy(deep=True)
-        
+
         for variable in ds.data_vars:
             # Create spatial field of random multipliers
             shape = ds[variable].shape
             random_field = np.random.uniform(low=0.99, high=1.02, size=shape)
             ds_synthetic[variable] = ds[variable] * random_field
-        
+
         new_file = file.replace('.nc', f'_{index+2}.nc')
         ds_synthetic.to_netcdf(new_file, mode='w')
 ```
@@ -991,7 +982,7 @@ def produce_synthetic_spatial_data(inputs):
 
 ### Normal Distribution Perturbations
 
-**Current:** Uniform distribution  
+**Current:** Uniform distribution
 **Modification:** Normal (Gaussian) distribution
 
 ```python
@@ -1022,7 +1013,7 @@ def produce_synthetic_spatial_data(inputs):
     file = inputs[0]
     num_synthetic_sets_in_ensemble = inputs[1] - 1
     random_multipliers = np.random.uniform(low=0.99, high=1.02, size=num_synthetic_sets_in_ensemble)
-    
+
     for index in range(len(random_multipliers)):
         ds = xr.open_dataset(file)
         variables = ds.data_vars
@@ -1030,14 +1021,14 @@ def produce_synthetic_spatial_data(inputs):
             ds[variable] *= random_multipliers[index]
         new_file = file.replace('.nc', f'_{index+2}.nc')
         ds.to_netcdf(new_file, mode='w')
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time for {file}: {elapsed_time:.2f} seconds")
 
 if __name__ == '__main__':
     start_time = time.time()
-    
+
     # Configuration
     files = [
         "./control_elm.nc",
@@ -1045,12 +1036,12 @@ if __name__ == '__main__':
         "./scenario_elm.nc"
     ]
     num_files_in_each_set = [10, 10, 10]  # 10 members each
-    
+
     inputs = list(zip(files, num_files_in_each_set))
-    
+
     with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
         pool.map(produce_synthetic_spatial_data, inputs)
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Total time: {elapsed_time:.2f} seconds")
@@ -1077,10 +1068,10 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_produce_synthetic_spatial_data.py  
-**Documentation Version:** 1.0  
-**Last Updated:** January 2026  
-**Python Version:** 3.7+  
+**Script:** e3sm_produce_synthetic_spatial_data.py
+**Documentation Version:** 1.0
+**Last Updated:** January 2026
+**Python Version:** 3.7+
 **Dependencies:** numpy, xarray, multiprocessing
 
 ---

@@ -63,6 +63,12 @@ The script imports several utility modules that must be in the same directory or
 python e3sm_extract_time_series_h0.py path/to/config.json
 ```
 
+By default, the script will stop before writing if any configured output file already exists. Add `--overwrite` to replace existing outputs:
+
+```bash
+python e3sm_extract_time_series_h0.py --overwrite path/to/config.json
+```
+
 **Multiple Configuration Files:**
 ```bash
 python e3sm_extract_time_series_h0.py config1.json config2.json config3.json
@@ -155,6 +161,8 @@ eam.h0.2015-01.nc    # EAM output for January 2015
 | `start_year` | integer | No | `2015` | Any year | First year to extract |
 | `end_year` | integer | No | `2100` | Any year | Last year to extract |
 | `write_to_csv` | boolean | No | `false` | `true`, `false` | Output as CSV instead of fixed-width |
+| `extra_dim_aggregation_types` | list | No | `["first"]` | `"first"`, `"mean"` | How to collapse non-spatial dimensions other than `time`, `lat`, `lon`, and `ncol`. CO2 concentration variables with `lev` select the surface level separately. |
+| `max_processes` | integer | No | `MAX_PROCESSES` | Positive integer | Maximum parallel workers. Defaults to all available CPUs minus one, with a minimum of one. |
 
 ---
 
@@ -163,8 +171,8 @@ eam.h0.2015-01.nc    # EAM output for January 2015
 ### Core Required Parameters
 
 #### `simulation_path`
-**Type:** String (directory path)  
-**Required:** Yes  
+**Type:** String (directory path)
+**Required:** Yes
 **Description:** Complete path to directory containing E3SM NetCDF output files.
 
 **Examples:**
@@ -191,8 +199,8 @@ simulation_path/
 ---
 
 #### `output_file`
-**Type:** String (file path)  
-**Required:** Yes  
+**Type:** String (file path)
+**Required:** Yes
 **Description:** Path and filename for output time series data.
 
 **Examples:**
@@ -216,8 +224,8 @@ Year  Month  GPP (PgC/month)  NPP (PgC/month)  TREFHT (K)  ...
 ---
 
 #### `netcdf_substrings`
-**Type:** Nested list of strings  
-**Required:** Yes  
+**Type:** Nested list of strings
+**Required:** Yes
 **Description:** Identifies different types of NetCDF files by substrings in filenames.
 
 **Format:** List of lists, where each inner list contains substrings for one file type.
@@ -247,8 +255,8 @@ Year  Month  GPP (PgC/month)  NPP (PgC/month)  TREFHT (K)  ...
 ---
 
 #### `variables`
-**Type:** Nested list of strings  
-**Required:** Yes  
+**Type:** Nested list of strings
+**Required:** Yes
 **Description:** Variables to extract from each NetCDF file type.
 
 **Format:** List of lists, where each inner list corresponds to one file type in `netcdf_substrings`.
@@ -298,10 +306,37 @@ variables[i] = variables to extract from netcdf_substrings[i] files
 
 ### Optional Parameters
 
+#### `extra_dim_aggregation_types`
+**Type:** List of strings
+**Required:** No
+**Default:** `["first"]` for all file types
+**Possible Values:** `"first"`, `"mean"`
+
+**Description:** Controls what happens when a requested variable has dimensions beyond time and horizontal space. For example, soil or vertical-level variables may include dimensions such as `levgrnd`. The default, `"first"`, selects index 0 along each extra dimension. `"mean"` averages over each extra dimension before the script converts the data to a DataFrame.
+
+CO2 concentration variables whose names start with `CO2` and include a `lev` dimension are special-cased: the script selects the surface level (`lev=-1`) before unit conversion.
+
+**Example:**
+```json
+"extra_dim_aggregation_types": ["first", "mean"]
+```
+
+#### `max_processes`
+**Type:** Integer
+**Required:** No
+**Default:** `MAX_PROCESSES` from `utility_constants.py`
+
+**Description:** Caps the number of worker processes used to extract monthly files. `MAX_PROCESSES` defaults to all available CPUs minus one, with a minimum of one.
+
+**Example:**
+```json
+"max_processes": 8
+```
+
 #### `lat_lon_aggregation_types`
-**Type:** List of strings  
-**Required:** No  
-**Default:** `["area_weighted_mean_or_sum"]` for all file types  
+**Type:** List of strings
+**Required:** No
+**Default:** `["area_weighted_mean_or_sum"]` for all file types
 **Possible Values:** `"area_weighted_mean_or_sum"`, `"mean"`, `"sum"`
 
 **Description:** How to aggregate data spatially across lat/lon grid.
@@ -338,9 +373,9 @@ variables[i] = variables to extract from netcdf_substrings[i] files
 ---
 
 #### `regions`
-**Type:** List of strings or `None`  
-**Required:** No  
-**Default:** `[None]` (global - no filtering)  
+**Type:** List of strings or `None`
+**Required:** No
+**Default:** `[None]` (global - no filtering)
 **Possible Values:** Region names (see below) or `None`
 
 **Description:** Geographic regions to filter data extraction.
@@ -402,9 +437,9 @@ conus = [-125.25°, -66.25°] longitude, [23.25°, 54.75°] latitude
 ---
 
 #### `process_variables`
-**Type:** Boolean  
-**Required:** No  
-**Default:** `true`  
+**Type:** Boolean
+**Required:** No
+**Default:** `true`
 **Possible Values:** `true`, `false`
 
 **Description:** Whether to apply post-processing to extracted variables.
@@ -431,8 +466,8 @@ See [Variable Processing](#variable-processing) section.
 ---
 
 #### `start_year` and `end_year`
-**Type:** Integer  
-**Required:** No  
+**Type:** Integer
+**Required:** No
 **Defaults:** `start_year: 2015`, `end_year: 2100`
 
 **Description:** Year range for time series extraction.
@@ -459,8 +494,8 @@ elm.h0.2051-01.nc  → Excluded (year 2051 > end_year 2050)
 ---
 
 #### `write_to_csv`
-**Type:** Boolean  
-**Required:** No  
+**Type:** Boolean
+**Required:** No
 **Default:** `false`
 
 **Description:** Force output to CSV format.
@@ -1180,8 +1215,8 @@ MemoryError
 
 **Solutions:**
 
-1. **Use multiprocessing (already built-in):**
-Script automatically uses all CPU cores
+1. **Tune multiprocessing (already built-in):**
+By default the script uses `MAX_PROCESSES`, which is all available CPUs minus one with a minimum of one. Set `max_processes` in the JSON to cap worker count when memory or filesystem contention is the bottleneck.
 
 2. **Reduce year range:**
 ```json
@@ -1377,7 +1412,8 @@ configs/
 ### 6. Performance Optimization
 
 **Parallel processing:**
-- Script uses all CPU cores automatically
+- Script uses `MAX_PROCESSES` by default, which is all available CPUs minus one with a minimum of one
+- Use `max_processes` to cap concurrent workers
 - Process multiple output files in one run
 
 **Efficient configuration:**
@@ -1449,10 +1485,10 @@ git commit -m "Add extraction configs for control simulation"
 ```
 1. Run E3SM simulation
    ↓ (Produces NetCDF h0 files)
-   
+
 2. e3sm_extract_time_series_h0.py  ← THIS SCRIPT
    ↓ (Extracts time series from NetCDF)
-   
+
 3. Further analysis scripts:
    - Time series plotting
    - Statistical analysis
@@ -1565,11 +1601,11 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_extract_time_series_h0.py  
-**Utility Modules:** utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py  
-**Documentation Version:** 1.0  
-**Last Updated:** January 2026  
-**Python Version:** 3.7+  
+**Script:** e3sm_extract_time_series_h0.py
+**Utility Modules:** utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py
+**Documentation Version:** 1.0
+**Last Updated:** January 2026
+**Python Version:** 3.7+
 **xarray Version:** 0.16+
 
 ---

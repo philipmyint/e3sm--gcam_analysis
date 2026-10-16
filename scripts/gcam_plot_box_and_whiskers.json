@@ -3,9 +3,10 @@
         "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
         "scenarios": ["Control"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "aggregation_function": "area_weighted_mean",
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_ag_commodity_no_hue.pdf",
+        "plot_name": "box_plot_ag_commodity_prices_control.pdf",
         "use_latex": true
     },
     {
@@ -14,9 +15,10 @@
         "scenarios": ["Control"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
         "regions": ["Global", "USA", "Brazil", "Canada"],
+        "aggregation_function": "area_weighted_mean",
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_ag_commodity_hue_region.pdf",
+        "plot_name": "box_plot_ag_commodity_prices_by_region.pdf",
         "use_latex": true
     },
     {
@@ -25,61 +27,38 @@
         "scenarios": ["Control", "Full feedback"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
         "regions": ["USA", "Brazil", "Canada"],
+        "aggregation_function": "area_weighted_mean",
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_ag_commodity_hue_scenario.pdf",
+        "plot_name": "box_plot_ag_commodity_prices_by_scenario.pdf",
         "use_latex": true
     },
     {
         "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
-        "x_variable": "scenario",
-        "hue": "sector",
         "scenarios": ["Control", "Full feedback"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
         "regions": ["USA", "Brazil", "Canada"],
-        "y_scale": "log",
-        "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_ag_commodity_hue_sector.pdf",
-        "use_latex": true
-    },
-    {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
-        "hue": "scenario",
-        "scenarios": ["Control", "Full feedback"],
-        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
-        "regions": ["USA", "Brazil", "Canada"],
+        "aggregation_function": "area_weighted_mean",
         "plot_percent_difference": true,
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_ag_commodity_percent_difference.pdf",
+        "plot_name": "box_plot_ag_commodity_prices_percent_difference.pdf",
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
         "hue": "scenario",
-        "scenarios": ["Control", "Full feedback"],
-        "categories": ["crop", "BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
-        "regions": ["USA", "Brazil", "Canada"],
-        "key_columns": ["scenario", "region", "year"],
-        "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_ag_commodity_landtype_groups.pdf",
-        "y_scale": "log",
-        "use_latex": true
-    },
-    {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
-        "hue": "scenario",
-        "scenarios": ["Control", "Full feedback"],
+        "scenarios": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
         "category_label": "landtype",
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
         "regions": ["USA", "Brazil", "Canada"],
-        "value_label": "vegetation",
+        "aggregation_function": "area_weighted_mean",
         "y_label": "vegetation scalars",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_scalars_vegetation.pdf",
+        "plot_name": "box_plot_vegetation_scalars_by_scenario.pdf",
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
         "hue": "scenario",
         "scenarios": ["Control", "Full feedback"],
         "category_label": "landtype",
@@ -87,14 +66,14 @@
         "key_columns": ["scenario", "region", "basin", "year"],
         "regions": ["UsaPacNW", "UsaCstNE", "Caribbean"],
         "region_label": "basin",
-        "value_label": "vegetation",
+        "aggregation_function": "area_weighted_mean",
         "y_label": "vegetation scalars",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
-        "plot_name": "box_plot_scalars_vegetation_landtype_groups_basin.pdf",
+        "plot_name": "box_plot_vegetation_scalars_landtype_groups_by_basin.pdf",
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars_ensemble.csv",
         "hue": "scenario",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
@@ -104,15 +83,14 @@
         "category_label": "landtype",
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "key_columns": ["scenario", "region", "basin", "year"],
-        "value_label": "vegetation",
+        "aggregation_function": "area_weighted_mean",
         "y_label": "vegetation scalars",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
-        "plot_name": "box_plot_scalars_vegetation.pdf",
+        "plot_name": "box_plot_vegetation_scalars_ensemble.pdf",
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback_ensemble.csv",
-        "hue": "scenario",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars_ensemble.csv",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
             ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
@@ -121,12 +99,12 @@
         "category_label": "landtype",
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "key_columns": ["scenario", "region", "basin", "year"],
-        "value_label": "vegetation",
+        "aggregation_function": "area_weighted_mean",
         "y_label": "vegetation scalars",
-        "plot_percent_difference": true, 
+        "plot_percent_difference": true,
         "y_limits": [-20, 100],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
-        "plot_name": "box_plot_scalars_vegetation_percent_difference.pdf",
+        "plot_name": "box_plot_vegetation_scalars_ensemble_percent_difference.pdf",
         "use_latex": true
     },
     {
@@ -141,16 +119,15 @@
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "key_columns": ["scenario", "region", "basin", "year"],
         "region_label": "region",
-        "y_label": "Global land area (thousands km$^2$)",
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
+        "aggregation_function": "sum",
+        "y_label": "Global land area",
         "y_limits": [0.1, 3000],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
-        "plot_name": "box_plot_land_allocation.pdf",
+        "plot_name": "box_plot_land_allocation_ensemble.pdf",
         "use_latex": true
     },
     {
         "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_processed_original_crop_names_ensemble.csv",
-        "hue": "scenario",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
             ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
@@ -161,12 +138,12 @@
         "key_columns": ["scenario", "region", "basin", "year"],
         "region_label": "region",
         "landtype_groups": "original",
+        "aggregation_function": "sum",
         "y_label": "Global land area",
-        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "sum",
         "plot_percent_difference": true,
         "y_limits": [-20, 100],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
-        "plot_name": "box_plot_land_allocation_percent_difference.pdf",
+        "plot_name": "box_plot_land_allocation_ensemble_percent_difference.pdf",
         "use_latex": true
     }
 ]

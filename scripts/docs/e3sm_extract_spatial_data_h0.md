@@ -64,6 +64,12 @@ The script imports several utility modules that must be in the same directory or
 python e3sm_extract_spatial_data_h0.py path/to/config.json
 ```
 
+By default, the script will stop before writing if any configured output file already exists. Add `--overwrite` to replace existing outputs:
+
+```bash
+python e3sm_extract_spatial_data_h0.py --overwrite path/to/config.json
+```
+
 **Multiple Configuration Files:**
 ```bash
 python e3sm_extract_spatial_data_h0.py config1.json config2.json config3.json
@@ -150,7 +156,8 @@ ds = xr.open_mfdataset(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `max_processes` | integer | `MAX_PROCESSES` | Maximum number of parallel worker processes. Useful on HPC clusters to limit memory pressure or filesystem contention. Defaults to the lesser of 16 or half the available CPU cores. |
+| `extra_dim_aggregation` | string | `"first"` | How to collapse non-spatial dimensions other than `time`, `lat`, `lon`, and `ncol`. Use `"first"` to select index 0 or `"mean"` to average. CO2 concentration variables with `lev` select the surface level separately. |
+| `max_processes` | integer | `MAX_PROCESSES` | Maximum number of parallel worker processes. Useful on HPC clusters to limit memory pressure or filesystem contention. Defaults to all available CPUs minus one, with a minimum of one. |
 
 ---
 
@@ -159,8 +166,8 @@ ds = xr.open_mfdataset(
 ### Core Required Parameters
 
 #### `simulation_path`
-**Type:** String (directory path)  
-**Required:** Yes  
+**Type:** String (directory path)
+**Required:** Yes
 **Description:** Complete path to directory containing E3SM NetCDF h0 output files.
 
 **Examples:**
@@ -187,8 +194,8 @@ simulation_path/
 ---
 
 #### `output_files`
-**Type:** String OR List of strings  
-**Required:** Yes  
+**Type:** String OR List of strings
+**Required:** Yes
 **Description:** Path(s) to output NetCDF file(s). Can be a single file or list of files.
 
 **Format 1 - Single Output File:**
@@ -222,8 +229,8 @@ If you provide a single string, the script converts it to a list:
 ---
 
 #### `netcdf_substrings`
-**Type:** Nested list of strings OR list of strings  
-**Required:** Yes  
+**Type:** Nested list of strings OR list of strings
+**Required:** Yes
 **Description:** Identifies different types of NetCDF files by substrings in filenames.
 
 **Format:** List of lists, where each inner list contains substrings for one file type.
@@ -257,8 +264,8 @@ If you provide a single string, the script converts it to a list:
 ---
 
 #### `variables`
-**Type:** Nested list of strings OR list of strings  
-**Required:** Yes  
+**Type:** Nested list of strings OR list of strings
+**Required:** Yes
 **Description:** Variables to extract from each NetCDF file type.
 
 **Format:** List of lists, where each inner list corresponds to one file type.
@@ -314,8 +321,8 @@ variables[i] = variables to extract from netcdf_substrings[i] files
 ---
 
 #### `start_years`
-**Type:** Integer OR List of integers  
-**Required:** Yes  
+**Type:** Integer OR List of integers
+**Required:** Yes
 **Description:** First year(s) for time period to extract.
 
 **Format 1 - Single Value (Applied to All):**
@@ -346,8 +353,8 @@ variables[i] = variables to extract from netcdf_substrings[i] files
 ---
 
 #### `end_years`
-**Type:** Integer OR List of integers  
-**Required:** Yes  
+**Type:** Integer OR List of integers
+**Required:** Yes
 **Description:** Last year(s) for time period to extract.
 
 **Format 1 - Single Value (Applied to All):**
@@ -382,14 +389,27 @@ start_years = 2085, end_years = 2090
 ---
 
 #### `max_processes`
-**Type:** Integer  
-**Required:** No  
-**Default:** `MAX_PROCESSES` (lesser of 16 or half the available CPU cores, defined in `utility_constants.py`)  
+**Type:** Integer
+**Required:** No
+**Default:** `MAX_PROCESSES` (all available CPUs minus one, with a minimum of one, defined in `utility_constants.py`)
 **Description:** Controls the maximum number of parallel worker processes used when extracting data from multiple output files simultaneously. On HPC clusters with shared filesystems (e.g., Lustre on Chrysalis), too many concurrent processes can cause filesystem contention or excessive memory usage. Reducing `max_processes` can help in those situations.
 
 **Example:**
 ```json
 "max_processes": 8
+```
+
+#### `extra_dim_aggregation`
+**Type:** String
+**Required:** No
+**Default:** `"first"`
+**Possible Values:** `"first"`, `"mean"`
+
+**Description:** Controls how requested variables with extra dimensions are collapsed before annual means are written. `"first"` selects index 0 along each non-spatial extra dimension. `"mean"` averages across those dimensions. CO2 concentration variables with a `lev` dimension are handled separately by selecting the surface level (`lev=-1`).
+
+**Example:**
+```json
+"extra_dim_aggregation": "mean"
 ```
 
 ---

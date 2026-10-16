@@ -100,6 +100,7 @@ python e3sm_plot_time_series.py config1.json config2.json
 | `start_year` | integer | No | `2015` | First year to plot |
 | `end_year` | integer | No | `2100` | Last year to plot |
 | `use_latex` | boolean | No | `false` | Use LaTeX fonts |
+| `max_processes` | integer | No | `MAX_PROCESSES` | Maximum parallel workers. Defaults to all available CPUs minus one, with a minimum of one. |
 
 ### Visual Customization
 
@@ -375,7 +376,7 @@ Each row groups all ensemble members for one scenario together:
 
 **Structure:**
 - Row 1: All Control files
-- Row 2: All Full feedback files  
+- Row 2: All Full feedback files
 - Row 3: All Scenario files
 - Easy to see which files belong to each scenario
 
@@ -426,9 +427,9 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        "./control_time_series.dat", 
+        "./control_time_series.dat",
         "./full_feedback_time_series.dat",
-        "./ag_scaling_time_series.dat", 
+        "./ag_scaling_time_series.dat",
         "./carbon_scaling_time_series.dat"
     ],
     "output_labels": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
@@ -466,7 +467,7 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        "./control_time_series.dat", 
+        "./control_time_series.dat",
         "./control_time_series_amazon.dat"
     ],
     "output_labels": ["Control (Global)", "Control (Amazon)"],
@@ -508,9 +509,9 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        "./control_time_series.dat", 
+        "./control_time_series.dat",
         "./full_feedback_time_series.dat",
-        "./ag_scaling_time_series.dat", 
+        "./ag_scaling_time_series.dat",
         "./carbon_scaling_time_series.dat"
     ],
     "output_labels": ["Control", "Full feedback", "Ag scaling", "Carbon scaling"],
@@ -661,7 +662,7 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        "./control_time_series_surfdata_iESM_dyn_20240730.dat", 
+        "./control_time_series_surfdata_iESM_dyn_20240730.dat",
         "./full_feedback_time_series_surfdata_iESM_dyn_20240730.dat"
     ],
     "output_labels": ["Control", "Full feedback"],
@@ -690,15 +691,15 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        "./control_surfdata_20240730.dat", 
+        "./control_surfdata_20240730.dat",
         "./feedback_surfdata_20240730.dat",
-        "./control_surfdata_20240820.dat", 
+        "./control_surfdata_20240820.dat",
         "./feedback_surfdata_20240820.dat"
     ],
     "output_labels": [
-        "Control (20240730)", 
-        "Full feedback (20240730)", 
-        "Control (20240820)", 
+        "Control (20240730)",
+        "Full feedback (20240730)",
+        "Control (20240820)",
         "Full feedback (20240820)"
     ],
     "plot_directory": "./time_series_plots/surfdata_0730_vs_0820/"
@@ -725,9 +726,9 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        ["./control_surfdata.dat", "./control_surfdata_2.dat", "./control_surfdata_3.dat", 
+        ["./control_surfdata.dat", "./control_surfdata_2.dat", "./control_surfdata_3.dat",
          "./control_surfdata_4.dat", "./control_surfdata_5.dat"],
-        ["./feedback_surfdata.dat", "./feedback_surfdata_2.dat", "./feedback_surfdata_3.dat", 
+        ["./feedback_surfdata.dat", "./feedback_surfdata_2.dat", "./feedback_surfdata_3.dat",
          "./feedback_surfdata_4.dat", "./feedback_surfdata_5.dat"]
     ],
     "output_labels": ["Control", "Full feedback"],
@@ -756,9 +757,9 @@ The script automatically detects which organization you're using by comparing:
 ```json
 {
     "output_files": [
-        ["./control_surfdata.dat", "./control_surfdata_2.dat", "./control_surfdata_3.dat", 
+        ["./control_surfdata.dat", "./control_surfdata_2.dat", "./control_surfdata_3.dat",
          "./control_surfdata_4.dat", "./control_surfdata_5.dat"],
-        ["./feedback_surfdata.dat", "./feedback_surfdata_2.dat", "./feedback_surfdata_3.dat", 
+        ["./feedback_surfdata.dat", "./feedback_surfdata_2.dat", "./feedback_surfdata_3.dat",
          "./feedback_surfdata_4.dat", "./feedback_surfdata_5.dat"]
     ],
     "output_labels": ["Control", "Full feedback"],
@@ -1180,10 +1181,10 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_plot_time_series.py  
-**Documentation Version:** 2.0  
-**Last Updated:** January 2026  
-**Python Version:** 3.7+  
+**Script:** e3sm_plot_time_series.py
+**Documentation Version:** 2.0
+**Last Updated:** January 2026
+**Python Version:** 3.7+
 **Dependencies:** pandas, numpy, matplotlib, scipy
 
 ---

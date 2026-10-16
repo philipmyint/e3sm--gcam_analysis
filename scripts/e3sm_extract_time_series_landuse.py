@@ -224,7 +224,6 @@ def extract_time_series_from_netcdf_file(inputs):
     write_to_csv = inputs.get('write_to_csv', False)
     start_year = inputs.get('start_year', 2015)
     end_year = inputs.get('end_year', 2100)
-    max_processes = inputs.get('max_processes', MAX_PROCESSES)
     
     # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
     output_dir = os.path.dirname(os.path.abspath(output_file))
@@ -282,9 +281,9 @@ def extract_time_series_from_netcdf_file(inputs):
     
     num_years = len(years_to_process)
 
-    # Use multiprocessing to extract data from the file for each individual year. 
-    # Put the data from each year into DataFrame and store all such DataFrames in a list.
-    # TODO: Currently multiprocessing is not working properly, so processing sequentially instead.
+    # Historical per-year multiprocessing attempt. This is intentionally disabled because
+    # sharing an open xarray Dataset across worker processes has been unreliable.
+    # The active code below processes years sequentially within this one landuse file.
     '''
     arguments = list(zip([ds]*num_years, [areas]*num_years, [variables]*num_years, 
                      [region]*num_years, years_to_process))
@@ -295,6 +294,7 @@ def extract_time_series_from_netcdf_file(inputs):
     ds.close()
     '''
 
+    # Process each year sequentially within this landuse file.
     print(f"Processing {num_years} years sequentially...")
     dataframes_for_each_year = []
     for i, year in enumerate(years_to_process, 1):
@@ -331,27 +331,50 @@ if __name__ == '__main__':
 
     # Run this script together with the input JSON file(s) on the command line.
     start_time_total = time.time()
-    if len(sys.argv) < 2:
-        print('Usage: python e3sm_extract_time_series_landuse.py `path/to/json/input/file(s)\'')
+    overwrite = False
+    input_files = []
+    for arg in sys.argv[1:]:
+        if arg == '--overwrite':
+            overwrite = True
+        elif arg in ['-h', '--help']:
+            print('Usage: python e3sm_extract_time_series_landuse.py [--overwrite] `path/to/json/input/file(s)\'')
+            sys.exit()
+        elif arg.startswith('-'):
+            print(f"Error: unknown option: '{arg}'")
+            print('Usage: python e3sm_extract_time_series_landuse.py [--overwrite] `path/to/json/input/file(s)\'')
+            sys.exit(1)
+        else:
+            input_files.append(arg)
+
+    if not input_files:
+        print('Usage: python e3sm_extract_time_series_landuse.py [--overwrite] `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries. Each block in a JSON file represents one time series output file.
     list_of_inputs = []
-    for index in range(1, len(sys.argv)):
-        input_file = sys.argv[index]
+    for input_file in input_files:
         with open(input_file) as f:
             list_of_inputs.extend(json.load(f))
 
-    # Check upfront whether any output files already exist; report all conflicts before exiting.
-    existing_files = [i['output_file'] for i in list_of_inputs if os.path.exists(i['output_file'])]
-    if existing_files:
-        for f in existing_files:
-            print(f"Error: output file already exists: '{f}'")
-        print("Error: some files in output_file already exist. To create new output_files either delete/rename existing files or "
-              "rename project files in input json file. No new files have been created")
+    # Check upfront whether any output files already exist; report all conflicts before exiting unless overwrite was requested.
+    if not overwrite:
+        existing_files = [i['output_file'] for i in list_of_inputs if os.path.exists(i['output_file'])]
+        if existing_files:
+            for f in existing_files:
+                print(f"Error: output file already exists: '{f}'")
+            print("Error: some files in output_file already exist. To create new output_files either delete/rename existing files or "
+                  "rename project files in input json file. No new files have been created")
+            print("Use --overwrite to replace existing output files.")
+            sys.exit(1)
+
+    try:
+        max_processes = get_max_processes_from_inputs(list_of_inputs, MAX_PROCESSES)
+    except ValueError as e:
+        print(f"Error: {e}")
         sys.exit(1)
 
-    # Process multiple files in parallel using multiprocessing.
+    # Multiprocessing is applied across JSON blocks/landuse files, not across years within a file.
+    # The max_processes value caps how many landuse files are processed at the same time.
     print(f"\nProcessing {len(list_of_inputs)} file(s)...")
 
     if len(list_of_inputs) == 1:
@@ -359,7 +382,7 @@ if __name__ == '__main__':
         extract_time_series_from_netcdf_file(list_of_inputs[0])
     else:
         # Multiple files: process them in parallel.
-        num_processes = min(MAX_PROCESSES, len(list_of_inputs))
+        num_processes = min(max_processes, len(list_of_inputs))
         with multiprocessing.Pool(processes=num_processes) as pool:
             pool.map(extract_time_series_from_netcdf_file, list_of_inputs)
     

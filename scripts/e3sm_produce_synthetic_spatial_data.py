@@ -1,7 +1,10 @@
 import multiprocessing
 import numpy as np
+import sys
 import time
 import xarray as xr
+from utility_constants import MAX_PROCESSES
+from utility_functions import validate_max_processes
 
 def produce_synthetic_spatial_data(inputs):
     """ 
@@ -36,6 +39,23 @@ if __name__ == '__main__':
 
     # The ensemble will consist of a total of len(files)*num_files_in_each_set data sets.
     start_time = time.time()
+    max_processes = MAX_PROCESSES
+    args = sys.argv[1:]
+    while args:
+        arg = args.pop(0)
+        if arg == '--max-processes':
+            if not args:
+                print("Error: --max-processes requires a positive integer")
+                sys.exit(1)
+            max_processes = validate_max_processes(args.pop(0))
+        elif arg in ['-h', '--help']:
+            print('Usage: python e3sm_produce_synthetic_spatial_data.py [--max-processes N]')
+            sys.exit()
+        else:
+            print(f"Error: unknown option: '{arg}'")
+            print('Usage: python e3sm_produce_synthetic_spatial_data.py [--max-processes N]')
+            sys.exit(1)
+
     files = ["./../2025_DiVittorio_et_al_e3sm/control_spatial_data_elm.nc", 
              "./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_elm.nc", 
              "./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_elm.nc"]
@@ -45,8 +65,10 @@ if __name__ == '__main__':
     num_files_in_each_set = [5]*len(files)
     inputs = list(zip(files, num_files_in_each_set))
 
+    num_processes = min(max_processes, max(1, len(inputs)))
+
     # Produce each set in parallel.
-    with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
+    with multiprocessing.Pool(processes=num_processes) as pool:
         pool.map(produce_synthetic_spatial_data, inputs)
     
     # Print the total execution time needed to produce all the sets.

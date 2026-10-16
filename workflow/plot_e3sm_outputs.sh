@@ -32,16 +32,50 @@
 
 echo "Starting job at: $(date)"
 
-# First load the E3SM unified environment
+MACHINE="perlmutter"
 
-# Perlmutter (login or cpu nodes)
-source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
+# Parse optional command-line arguments. The --machine flag selects a known
+# E3SM unified environment to source; with no flag, default to Perlmutter.
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --machine)
+            MACHINE="${2:-}"
+            if [[ -z "${MACHINE}" ]]; then
+                echo "ERROR: --machine requires one of: perlmutter, compy, chrysalis" >&2
+                exit 1
+            fi
+            shift 2
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--machine perlmutter|compy|chrysalis]"
+            echo "Default: --machine perlmutter"
+            exit 0
+            ;;
+        *)
+            echo "ERROR: unknown option: $1" >&2
+            echo "Usage: $0 [--machine perlmutter|compy|chrysalis]" >&2
+            exit 1
+            ;;
+    esac
+done
 
-# compy
-#source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
-
-# chrysalis
-#source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh
+# Load the E3SM unified environment for the selected machine.
+case "${MACHINE}" in
+    perlmutter)
+        source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
+        ;;
+    compy)
+        source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
+        ;;
+    chrysalis)
+        source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh
+        ;;
+    *)
+        echo "ERROR: unknown machine: ${MACHINE}" >&2
+        echo "Valid machines: perlmutter, compy, chrysalis" >&2
+        exit 1
+        ;;
+esac
 
 # Resolve the directory containing this script so JSON files are found
 # regardless of the working directory from which this script is called.

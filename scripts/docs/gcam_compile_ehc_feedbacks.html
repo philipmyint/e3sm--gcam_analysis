@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCAM EHC Feedback Compilation</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; background: #f8fafc; margin: 0; }
+.container { max-width: 980px; margin: 0 auto; padding: 2rem; background: #ffffff; }
+h1, h2, h3, h4 { color: #1f2937; line-height: 1.25; }
+a { color: #2563eb; }
+code { background: #eef2ff; padding: 0.1rem 0.25rem; border-radius: 4px; }
+pre { background: #111827; color: #f9fafb; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+pre code { background: transparent; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #d1d5db; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem; color: #475569; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>GCAM EHC Feedback Compilation</h1>
+<p><strong>Script:</strong> <code>gcam_compile_ehc_feedbacks.py</code></p>
+<h2>Overview</h2>
+<p><code>gcam_compile_ehc_feedbacks.py</code> compiles CSV files written by the E3SM Human Component (EHC) into the standard long-table format used by the GCAM plotting scripts.</p>
+<p>The script can compile three EHC output families:</p>
+<table>
+<thead><tr><th><code>file_type</code></th><th>Input files</th><th>Output files</th></tr></thead>
+<tbody>
+<tr><td><code>scalars</code></td><td><code>scalars_&lt;year&gt;.csv</code></td><td><code>vegetation_scalars.csv</code>, <code>soil_scalars.csv</code></td></tr>
+<tr><td><code>hdd_cdd_scalars</code></td><td><code>hdd_cdd_scalars_&lt;year&gt;.csv</code></td><td><code>hdd_scalars.csv</code>, <code>cdd_scalars.csv</code></td></tr>
+<tr><td><code>scaled_hdd_cdd_diag</code></td><td><code>scaled_hdd_cdd_diag&lt;year&gt;.csv</code></td><td><code>comm_heating_diag.csv</code>, <code>comm_cooling_diag.csv</code>, <code>resid_heating_diag.csv</code>, <code>resid_cooling_diag.csv</code></td></tr>
+</tbody></table>
+<p>All output files use a common plotting shape:</p>
+<pre><code>scenario, region, year, value, units</code></pre>
+<p>Vegetation and soil scalar outputs also include <code>basin</code> and <code>landtype</code>. Files can include <code>area</code> and <code>area_units</code> when a processed land allocation file is supplied.</p>
+<h2>Usage</h2>
+<pre><code>python gcam_compile_ehc_feedbacks.py path/to/config.json</code></pre>
+<p>Multiple JSON files can be supplied:</p>
+<pre><code>python gcam_compile_ehc_feedbacks.py config1.json config2.json</code></pre>
+<p>Each configuration block is processed according to its <code>file_type</code>. If <code>file_type</code> is omitted or set to <code>all</code>, the script attempts all supported EHC feedback families.</p>
+<h2>Parameters</h2>
+<table>
+<thead><tr><th>Parameter</th><th>Required</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>input_directories</code></td><td>Yes</td><td>One directory per scenario. Each directory is scanned for CSV files matching the selected file root.</td></tr>
+<tr><td><code>scenarios</code></td><td>Yes</td><td>Scenario labels, in the same order as <code>input_directories</code>.</td></tr>
+<tr><td><code>output_dir</code></td><td>Yes</td><td>Directory where compiled CSV files are written.</td></tr>
+<tr><td><code>file_type</code></td><td>No</td><td>One of <code>all</code>, <code>scalars</code>, <code>hdd_cdd_scalars</code>, <code>scaled_hdd_cdd_diag</code>, or a list of those values. Default is <code>all</code>.</td></tr>
+<tr><td><code>file_root_names</code></td><td>No</td><td>Optional dictionary mapping scenario names to custom file prefixes.</td></tr>
+<tr><td><code>call_modify_crop_names</code></td><td>No</td><td>If true, standardize vegetation/soil landtype names after area metadata is added.</td></tr>
+<tr><td><code>land_allocation_file</code></td><td>Required for <code>scalars</code>; optional for HDD/CDD files</td><td>Processed detailed land allocation file used to add <code>area</code> and <code>area_units</code>.</td></tr>
+<tr><td><code>max_processes</code></td><td>No</td><td>Maximum parallel workers. Defaults to <code>MAX_PROCESSES</code>, which is all available CPUs minus one, with a minimum of one.</td></tr>
+</tbody></table>
+<h2>Scalars</h2>
+<p>For <code>file_type: &quot;scalars&quot;</code>, each input row is expected to include:</p>
+<pre><code>year, region, landtype_basin, vegetation, soil</code></pre>
+<p>The script splits <code>landtype_basin</code> into <code>landtype</code> and <code>basin</code>, adds the scenario label, adds area metadata from <code>land_allocation_file</code>, optionally standardizes crop names, and writes two output files:</p>
+<pre><code>vegetation_scalars.csv
+soil_scalars.csv</code></pre>
+<p>Each output has a single numeric <code>value</code> column, so plotting JSON can use the default <code>value_label: &quot;value&quot;</code>.</p>
+<h2>HDD/CDD Scalars</h2>
+<p>For <code>file_type: &quot;hdd_cdd_scalars&quot;</code>, input files are expected to include:</p>
+<pre><code>year, region, hdd, cdd</code></pre>
+<p>The outputs are regional scalar tables:</p>
+<pre><code>hdd_scalars.csv
+cdd_scalars.csv</code></pre>
+<p>These files do not have <code>landtype</code>, <code>basin</code>, or <code>sector</code> columns. Spatial and time-series plots can use them directly. Box plots need an explicit <code>x_variable</code>, such as <code>&quot;scenario&quot;</code> or <code>&quot;region&quot;</code>.</p>
+<h2>Scaled HDD/CDD Diagnostics</h2>
+<p>For <code>file_type: &quot;scaled_hdd_cdd_diag&quot;</code>, the year is read from the filename, such as <code>scaled_hdd_cdd_diag2025.csv</code>. Each input file is expected to include:</p>
+<pre><code>region, comm_heating, comm_cooling, resid_heating, resid_cooling</code></pre>
+<p>The outputs are:</p>
+<pre><code>comm_heating_diag.csv
+comm_cooling_diag.csv
+resid_heating_diag.csv
+resid_cooling_diag.csv</code></pre>
+<h2>Example</h2>
+<pre><code>[
+    {
+        &quot;input_directories&quot;: [
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/ag_scaling&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/carbon_scaling&quot;
+        ],
+        &quot;scenarios&quot;: [
+            &quot;Control&quot;,
+            &quot;Full feedback&quot;,
+            &quot;Ag scaling&quot;,
+            &quot;Carbon scaling&quot;
+        ],
+        &quot;output_dir&quot;: &quot;./../2025_DiVittorio_et_al_gcam&quot;,
+        &quot;file_type&quot;: &quot;scalars&quot;,
+        &quot;call_modify_crop_names&quot;: true,
+        &quot;land_allocation_file&quot;: &quot;./../2025_DiVittorio_et_al_gcam/land_allocation_processed_original_crop_names.csv&quot;
+    }
+]</code></pre>
+<h2>Workflow Notes</h2>
+<p>Run <code>gcam_process_extracted_data.py</code> first to create the processed land allocation file. The scalar compiler needs the original crop-name version of that file because EHC scalar inputs still use original GCAM crop names when area metadata is attached.</p>
+<p>Run <code>gcam_produce_synthetic_data.py</code> after this script if synthetic ensemble versions are needed. For scalar outputs, the synthetic script now reads <code>vegetation_scalars.csv</code> and <code>soil_scalars.csv</code>, producing <code>vegetation_scalars_ensemble.csv</code> and <code>soil_scalars_ensemble.csv</code>.</p>
+</div>
+</body>
+</html>

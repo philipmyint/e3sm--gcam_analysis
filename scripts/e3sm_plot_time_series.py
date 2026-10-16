@@ -10,7 +10,7 @@ import sys
 import time
 from utility_constants import *
 from utility_dataframes import get_columns_without_units_in_dataframe, get_matching_column_in_dataframe, perform_ttest, read_file_into_dataframe
-from utility_functions import check_is_list_of_lists, check_substrings_in_list, print_p_values, replace_inside_parentheses, sort_file
+from utility_functions import check_is_list_of_lists, check_substrings_in_list, get_max_processes_from_inputs, print_p_values, replace_inside_parentheses, sort_file
 from utility_functions import transpose_scenarios_if_needed
 from utility_plots import *
 
@@ -352,17 +352,29 @@ def read_file_set_into_single_variable_dataframe(output_files, file_set_index, v
     return df, columns
 
 def add_year_range_to_plot_name(plot_name, variable, start_year, end_year, suffix=None):
-    """Return a plot name with year tags inserted after the variable name."""
+    """
+    Return a plot name with year tags inserted after the variable name.
+
+    Examples:
+        plots/time_series_ZCO2.png -> plots/time_series_ZCO2_2015-2100.png
+        plots/time_series_ZCO2.png with suffix='monthly' -> plots/time_series_ZCO2_2015-2100_monthly.png
+        plots/co2_plot.png -> plots/co2_plot_2015-2100.png when the variable name is not in the filename
+    """
     year_tag = f"{start_year}-{end_year}"
+
+    # Split the path so the directory and file extension are preserved while only the filename stem is modified.
     directory, filename = os.path.split(plot_name)
     stem, extension = os.path.splitext(filename)
 
+    # If the variable name is already part of the filename, insert the year range immediately after it.
+    # Otherwise, append the year range to the end of the stem.
     if variable in stem:
         insert_index = stem.find(variable) + len(variable)
         stem = f"{stem[:insert_index]}_{year_tag}{stem[insert_index:]}"
     else:
         stem = f"{stem}_{year_tag}"
 
+    # Add an optional plot-type suffix, such as monthly or seasons, before restoring the extension.
     if suffix:
         stem = f"{stem}_{suffix}"
 
@@ -814,18 +826,23 @@ if __name__ == '__main__':
         list_of_inputs.extend(process_inputs(inputs[index]))
 
     # Delete all the p-value files before we do any calculations to start a fresh run.
-    for inputs in list_of_inputs:
-        file = inputs['p_value_file']
+    for input_options in list_of_inputs:
+        file = input_options['p_value_file']
         if os.path.exists(file): 
             os.remove(file)
 
+    # Use any max_processes value requested in the inputs, otherwise use the default.
+    # Do not start more worker processes than there are independent plotting jobs.
+    max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
+    num_processes = min(max_processes, max(1, len(list_of_inputs)))
+
     # Create all of the times series plots in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+    with multiprocessing.Pool(processes=num_processes) as pool:
         pool.map(plot_time_series, list_of_inputs)
 
     # Sort all the p-value files alphabetically.
-    for inputs in list_of_inputs:
-        file = inputs['p_value_file']
+    for input_options in list_of_inputs:
+        file = input_options['p_value_file']
         if os.path.exists(file): 
             sort_file(file)
     

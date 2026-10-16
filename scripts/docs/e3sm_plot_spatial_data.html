@@ -1,496 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Spatial Data Plotting Script Documentation</title>
-    <style>/* 
- * Documentation Stylesheet for GCAM Synthetic Data Generation Script
- * A modern, colorful design with good readability
- */
-
-/* ===== ROOT VARIABLES ===== */
-:root {
-    /* Color Palette */
-    --primary-blue: #2563eb;
-    --primary-blue-light: #3b82f6;
-    --primary-blue-dark: #1e40af;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    --accent-purple: #8b5cf6;
-    --accent-red: #ef4444;
-    
-    /* Background Colors */
-    --bg-main: #f8fafc;
-    --bg-code: #1e293b;
-    --bg-code-inline: #e2e8f0;
-    --bg-table-header: #1e40af;
-    --bg-table-row-even: #f1f5f9;
-    --bg-table-row-odd: #ffffff;
-    --bg-note: #fef3c7;
-    --bg-warning: #fee2e2;
-    --bg-info: #dbeafe;
-    --bg-success: #d1fae5;
-    
-    /* Text Colors */
-    --text-main: #1e293b;
-    --text-secondary: #64748b;
-    --text-code: #e2e8f0;
-    --text-link: #2563eb;
-    --text-link-hover: #1e40af;
-    
-    /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-dark: #94a3b8;
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-}
-
-/* ===== BASE STYLES ===== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
-    color: var(--text-main);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: var(--spacing-xl) var(--spacing-md);
-    font-size: 16px;
-}
-
-/* Main Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    padding: var(--spacing-2xl);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1 {
-    font-size: 2.5rem;
-    color: var(--primary-blue-dark);
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 4px solid var(--primary-blue);
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-h2 {
-    font-size: 2rem;
-    color: var(--primary-blue);
-    margin-top: var(--spacing-2xl);
-    margin-bottom: var(--spacing-lg);
-    padding-left: var(--spacing-md);
-    border-left: 5px solid var(--accent-green);
-    font-weight: 600;
-}
-
-h3 {
-    font-size: 1.5rem;
-    color: var(--primary-blue-dark);
-    margin-top: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-}
-
-h3::before {
-    content: "▸";
-    color: var(--accent-orange);
-    margin-right: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-h4 {
-    font-size: 1.25rem;
-    color: var(--accent-purple);
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-sm);
-    font-weight: 600;
-}
-
-p {
-    margin-bottom: var(--spacing-md);
-    color: var(--text-main);
-}
-
-/* ===== LINKS ===== */
-a {
-    color: var(--text-link);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-a:hover {
-    color: var(--text-link-hover);
-    border-bottom-color: var(--text-link-hover);
-}
-
-/* ===== LISTS ===== */
-ul, ol {
-    margin-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-}
-
-li {
-    margin-bottom: var(--spacing-sm);
-    padding-left: var(--spacing-sm);
-}
-
-ul li::marker {
-    color: var(--accent-green);
-    font-size: 1.2em;
-}
-
-ol li::marker {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
-/* ===== CODE BLOCKS ===== */
-code {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--bg-code-inline);
-    color: var(--accent-red);
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-pre {
-    background: var(--bg-code);
-    color: var(--text-code);
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: var(--spacing-lg) 0;
-    border-left: 4px solid var(--accent-green);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-pre code {
-    background: transparent;
-    color: var(--text-code);
-    padding: 0;
-    font-size: 0.95em;
-    line-height: 1.5;
-}
-
-/* ===== TABLES ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: var(--spacing-xl) 0;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-thead {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
-    color: white;
-}
-
-th {
-    padding: var(--spacing-md);
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.05em;
-    border-bottom: 3px solid var(--accent-orange);
-}
-
-td {
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-light);
-}
-
-tbody tr:nth-child(even) {
-    background: var(--bg-table-row-even);
-}
-
-tbody tr:nth-child(odd) {
-    background: var(--bg-table-row-odd);
-}
-
-tbody tr:hover {
-    background: #e0f2fe;
-    transform: scale(1.01);
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ===== BLOCKQUOTES ===== */
-blockquote {
-    margin: var(--spacing-lg) 0;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--primary-blue-dark);
-}
-
-/* ===== HORIZONTAL RULES ===== */
-hr {
-    border: none;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
-    margin: var(--spacing-2xl) 0;
-    border-radius: 2px;
-}
-
-/* ===== SPECIAL BOXES ===== */
-.note {
-    background: var(--bg-note);
-    border-left: 5px solid var(--accent-orange);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.warning {
-    background: var(--bg-warning);
-    border-left: 5px solid var(--accent-red);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.info {
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.success {
-    background: var(--bg-success);
-    border-left: 5px solid var(--accent-green);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-/* ===== BADGES ===== */
-.badge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 600;
-    margin: 0 var(--spacing-xs);
-}
-
-.badge-required {
-    background: var(--accent-red);
-    color: white;
-}
-
-.badge-optional {
-    background: var(--accent-green);
-    color: white;
-}
-
-.badge-default {
-    background: var(--primary-blue);
-    color: white;
-}
-
-/* ===== STRONG & EM ===== */
-strong {
-    color: var(--primary-blue-dark);
-    font-weight: 700;
-}
-
-em {
-    color: var(--accent-purple);
-    font-style: italic;
-}
-
-/* ===== IMAGES ===== */
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: var(--spacing-lg) 0;
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-table-row-even);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--accent-purple) 100%);
-}
-
-/* ===== PRINT STYLES ===== */
-@media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-    
-    .container {
-        box-shadow: none;
-        max-width: 100%;
-    }
-    
-    h1, h2, h3 {
-        page-break-after: avoid;
-    }
-    
-    pre, table {
-        page-break-inside: avoid;
-    }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    body {
-        padding: var(--spacing-md) var(--spacing-sm);
-        font-size: 14px;
-    }
-    
-    .container {
-        padding: var(--spacing-lg);
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.25rem;
-    }
-    
-    table {
-        font-size: 0.9em;
-    }
-    
-    th, td {
-        padding: var(--spacing-sm);
-    }
-}
-
-/* ===== ADDITIONAL UTILITY CLASSES ===== */
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.margin-top-lg {
-    margin-top: var(--spacing-2xl);
-}
-
-.margin-bottom-lg {
-    margin-bottom: var(--spacing-2xl);
-}
-
-.highlight {
-    background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
-    padding: 0 var(--spacing-xs);
-    border-radius: 3px;
-}
-
-/* ===== SECTION DIVIDERS ===== */
-.section-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: var(--spacing-2xl) 0;
-}
-
-.section-divider::before,
-.section-divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 2px solid var(--border-medium);
-}
-
-.section-divider::before {
-    margin-right: var(--spacing-md);
-}
-
-.section-divider::after {
-    margin-left: var(--spacing-md);
-}
-
-/* ===== FOOTER ===== */
-footer {
-    margin-top: var(--spacing-2xl);
-    padding-top: var(--spacing-lg);
-    border-top: 2px solid var(--border-light);
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E3SM Spatial Data Plotting Script Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; background: #f8fafc; margin: 0; }
+.container { max-width: 980px; margin: 0 auto; padding: 2rem; background: #ffffff; }
+h1, h2, h3, h4 { color: #1f2937; line-height: 1.25; }
+a { color: #2563eb; }
+code { background: #eef2ff; padding: 0.1rem 0.25rem; border-radius: 4px; }
+pre { background: #111827; color: #f9fafb; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+pre code { background: transparent; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #d1d5db; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem; color: #475569; }
 </style>
 </head>
 <body>
-    <div class="container"><h1 id="e3sm-spatial-data-plotting-script-documentation">E3SM Spatial Data Plotting Script Documentation</h1>
-<h2 id="overview">Overview</h2>
+<div class="container">
+<h1>E3SM Spatial Data Plotting Script Documentation</h1>
+<h2>Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_plot_spatial_data.py</code></p>
 <p><strong>Purpose:</strong> Creates publication-quality spatial (map) plots from E3SM NetCDF data files with support for absolute differences, percent differences, means, sums, ensemble analysis, statistical significance testing (stippling), and separate visualizations for different scenarios.</p>
-<p><strong>Key Capabilities:</strong><br />
-- Global and regional spatial maps<br />
-- Absolute and percent difference plots<br />
-- Mean or sum across multiple individual files<br />
-- Ensemble mean with statistical significance stippling<br />
-- Separate plots for individual scenarios or ensemble members<br />
-- Support for both ELM (structured grid) and EAM (unstructured grid)<br />
-- Customizable colormaps and projections<br />
-- Statistical significance testing (aggregated and per-gridcell)<br />
-- Parallel processing for efficiency<br />
-- Flexible ensemble file organization</p>
+<p><strong>Key Capabilities:</strong></p>
+<ul>
+<li>Global and regional spatial maps</li>
+<li>Absolute and percent difference plots</li>
+<li>Mean or sum across multiple individual files</li>
+<li>Ensemble mean with statistical significance stippling</li>
+<li>Separate plots for individual scenarios or ensemble members</li>
+<li>Support for both ELM (structured grid) and EAM (unstructured grid)</li>
+<li>Customizable colormaps and projections</li>
+<li>Statistical significance testing (aggregated and per-gridcell)</li>
+<li>Parallel processing for efficiency</li>
+<li>Flexible ensemble file organization</li>
+</ul>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
-<hr />
-<h2 id="table-of-contents">Table of Contents</h2>
-<ol>
+<hr>
+<h2>Table of Contents</h2>
+<ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
@@ -504,14 +55,12 @@ footer {
 <li><a href="#output-files">Output Files</a></li>
 <li><a href="#best-practices">Best Practices</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
-</ol>
-<hr />
-<h2 id="installation-requirements">Installation &amp; Requirements</h2>
-<h3 id="required-python-libraries">Required Python Libraries</h3>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>xarray<span class="w"> </span>uxarray<span class="w"> </span>cartopy<span class="w"> </span>matplotlib<span class="w"> </span>scipy<span class="w"> </span>numpy<span class="w"> </span>pandas<span class="w"> </span>multiprocessing
-</code></pre></div>
-
-<h3 id="required-utility-modules">Required Utility Modules</h3>
+</ul>
+<hr>
+<h2>Installation &amp; Requirements</h2>
+<h3>Required Python Libraries</h3>
+<pre><code>pip install xarray uxarray cartopy matplotlib scipy numpy pandas multiprocessing</code></pre>
+<h3>Required Utility Modules</h3>
 <ul>
 <li><code>utility_constants</code> - Physical constants</li>
 <li><code>utility_dataframes</code> - DataFrame operations (t-tests)</li>
@@ -519,1051 +68,809 @@ footer {
 <li><code>utility_plots</code> - Plotting defaults and functions</li>
 <li><code>utility_xarray</code> - xarray/uxarray operations</li>
 </ul>
-<h3 id="additional-requirements">Additional Requirements</h3>
+<h3>Additional Requirements</h3>
 <ul>
 <li><strong>For EAM plots:</strong> Grid file (unstructured mesh, e.g., <code>ne30pg2_scrip_c20191218.nc</code>)</li>
 <li><strong>For ELM plots:</strong> No additional files needed (structured lat/lon grid)</li>
 </ul>
-<hr />
-<h2 id="basic-usage">Basic Usage</h2>
-<h3 id="command-line-execution">Command Line Execution</h3>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_plot_spatial_data.py<span class="w"> </span>config.json
-</code></pre></div>
-
+<hr>
+<h2>Basic Usage</h2>
+<h3>Command Line Execution</h3>
+<pre><code>python e3sm_plot_spatial_data.py config.json</code></pre>
 <p><strong>Multiple Configuration Files:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_plot_spatial_data.py<span class="w"> </span>elm_config.json<span class="w"> </span>eam_config.json
-</code></pre></div>
-
-<h3 id="what-the-script-does">What the Script Does</h3>
-<ol>
+<pre><code>python e3sm_plot_spatial_data.py elm_config.json eam_config.json</code></pre>
+<h3>What the Script Does</h3>
+<ul>
 <li>Reads JSON configuration file(s)</li>
 <li>Loads NetCDF spatial data files (from <code>e3sm_extract_spatial_data_h0.py</code>)</li>
 <li>Calculates temporal means/sums/differences over specified years</li>
 <li>Performs statistical testing (aggregated and per-gridcell)</li>
-<li>Creates spatial maps with:<br />
-   - Coastlines<br />
-   - Colorbars<br />
-   - Statistical annotations (min, mean, median, max, std)<br />
-   - Stippling for significance (ELM only)</li>
+<li>Creates spatial maps with:</li>
+<li>Coastlines</li>
+<li>Colorbars</li>
+<li>Statistical annotations (min, mean, median, max, std)</li>
+<li>Stippling for significance (ELM only)</li>
 <li>Saves plots as PDF or PNG</li>
 <li>Outputs p-value files</li>
-</ol>
-<hr />
-<h2 id="complete-parameter-reference">Complete Parameter Reference</h2>
-<h3 id="required-parameters">Required Parameters</h3>
+</ul>
+<hr>
+<h2>Complete Parameter Reference</h2>
+<h3>Required Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>netcdf_files</code></td>
-<td>string/list/nested list</td>
-<td><strong>Yes</strong></td>
-<td>-</td>
-<td>NetCDF file path(s)</td>
-</tr>
-<tr>
-<td><code>plot_directory</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'./'</code></td>
-<td>Output directory for plots</td>
-</tr>
-</tbody>
-</table>
-<h3 id="core-optional-parameters">Core Optional Parameters</h3>
+<tr><td><code>netcdf_files</code></td><td>string/list/nested list</td><td><strong>Yes</strong></td><td>-</td><td>NetCDF file path(s)</td></tr>
+<tr><td><code>plot_directory</code></td><td>string</td><td>No</td><td><code>&#x27;./&#x27;</code></td><td>Output directory for plots</td></tr>
+</tbody></table>
+<h3>Core Optional Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>variables</code></td>
-<td>list or <code>'all'</code></td>
-<td>No</td>
-<td><code>'all'</code></td>
-<td>Variables to plot</td>
-</tr>
-<tr>
-<td><code>plot_type</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'absolute_difference'</code></td>
-<td>Plot type (see below)</td>
-</tr>
-<tr>
-<td><code>start_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2071</code></td>
-<td>First year for temporal averaging</td>
-</tr>
-<tr>
-<td><code>end_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2090</code></td>
-<td>Last year for temporal averaging</td>
-</tr>
-<tr>
-<td><code>time_calculation</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'mean'</code></td>
-<td><code>'mean'</code> or <code>'sum'</code> for temporal aggregation</td>
-</tr>
-<tr>
-<td><code>grid_file</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>None</code></td>
-<td><strong>Required for EAM</strong>, grid file path</td>
-</tr>
-<tr>
-<td><code>netcdf_file_sets</code></td>
-<td>list</td>
-<td>No</td>
-<td>Auto-generated</td>
-<td>Labels for ensemble file sets</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Plot Type Options:</strong><br />
-- <code>'absolute_difference'</code> - Scenario minus control (default)<br />
-- <code>'percent_difference'</code> - (Scenario - Control) / Control × 100<br />
-- <code>'separate_plots'</code> - Individual plots for each scenario/ensemble<br />
-- <code>'mean'</code> - Mean across multiple individual files<br />
-- <code>'sum'</code> - Sum across multiple individual files</p>
-<h3 id="visual-customization">Visual Customization</h3>
+<tr><td><code>variables</code></td><td>list or <code>&#x27;all&#x27;</code></td><td>No</td><td><code>&#x27;all&#x27;</code></td><td>Variables to plot</td></tr>
+<tr><td><code>plot_type</code></td><td>string</td><td>No</td><td><code>&#x27;absolute_difference&#x27;</code></td><td>Plot type (see below)</td></tr>
+<tr><td><code>start_year</code></td><td>integer</td><td>No</td><td><code>2071</code></td><td>First year for temporal averaging</td></tr>
+<tr><td><code>end_year</code></td><td>integer</td><td>No</td><td><code>2090</code></td><td>Last year for temporal averaging</td></tr>
+<tr><td><code>time_calculation</code></td><td>string</td><td>No</td><td><code>&#x27;mean&#x27;</code></td><td><code>&#x27;mean&#x27;</code> or <code>&#x27;sum&#x27;</code> for temporal aggregation</td></tr>
+<tr><td><code>grid_file</code></td><td>string</td><td>No</td><td><code>None</code></td><td><strong>Required for EAM</strong>, grid file path</td></tr>
+<tr><td><code>netcdf_file_sets</code></td><td>list</td><td>No</td><td>Auto-generated</td><td>Labels for ensemble file sets</td></tr>
+<tr><td><code>max_processes</code></td><td>integer</td><td>No</td><td><code>MAX_PROCESSES</code></td><td>Maximum parallel workers. Defaults to all available CPUs minus one, with a minimum of one.</td></tr>
+</tbody></table>
+<p><strong>Plot Type Options:</strong></p>
+<ul>
+<li><code>&#x27;absolute_difference&#x27;</code> - Scenario minus control (default)</li>
+<li><code>&#x27;percent_difference&#x27;</code> - (Scenario - Control) / Control × 100</li>
+<li><code>&#x27;separate_plots&#x27;</code> - Individual plots for each scenario/ensemble</li>
+<li><code>&#x27;mean&#x27;</code> - Mean across multiple individual files</li>
+<li><code>&#x27;sum&#x27;</code> - Sum across multiple individual files</li>
+</ul>
+<h3>Visual Customization</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>width</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>10</code></td>
-<td>Figure width (inches)</td>
-</tr>
-<tr>
-<td><code>height</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>8</code></td>
-<td>Figure height (inches)</td>
-</tr>
-<tr>
-<td><code>cmap</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'bwr'</code></td>
-<td>Colormap (blue-white-red)</td>
-</tr>
-<tr>
-<td><code>projection</code></td>
-<td>cartopy projection</td>
-<td>No</td>
-<td><code>Robinson</code></td>
-<td>Map projection</td>
-</tr>
-<tr>
-<td><code>use_latex</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Use LaTeX fonts</td>
-</tr>
-<tr>
-<td><code>produce_png</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Output PNG instead of PDF</td>
-</tr>
-<tr>
-<td><code>title_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>24</code></td>
-<td>Title font size</td>
-</tr>
-<tr>
-<td><code>statistics_panel_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>14</code></td>
-<td>Statistics text size</td>
-</tr>
-</tbody>
-</table>
-<h3 id="colorbar-parameters">Colorbar Parameters</h3>
+<tr><td><code>width</code></td><td>float</td><td>No</td><td><code>10</code></td><td>Figure width (inches)</td></tr>
+<tr><td><code>height</code></td><td>float</td><td>No</td><td><code>8</code></td><td>Figure height (inches)</td></tr>
+<tr><td><code>cmap</code></td><td>string</td><td>No</td><td><code>&#x27;bwr&#x27;</code></td><td>Colormap (blue-white-red)</td></tr>
+<tr><td><code>projection</code></td><td>cartopy projection</td><td>No</td><td><code>Robinson</code></td><td>Map projection</td></tr>
+<tr><td><code>use_latex</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Use LaTeX fonts</td></tr>
+<tr><td><code>produce_png</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Output PNG instead of PDF</td></tr>
+<tr><td><code>title_size</code></td><td>integer</td><td>No</td><td><code>24</code></td><td>Title font size</td></tr>
+<tr><td><code>statistics_panel_size</code></td><td>integer</td><td>No</td><td><code>14</code></td><td>Statistics text size</td></tr>
+</tbody></table>
+<h3>Colorbar Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>cbar_on</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>true</code></td>
-<td>Show colorbar</td>
-</tr>
-<tr>
-<td><code>cbar_limits</code></td>
-<td>list <code>[min, max]</code></td>
-<td>No</td>
-<td><code>None</code></td>
-<td>Colorbar limits (auto if None)</td>
-</tr>
-<tr>
-<td><code>cbar_label_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>20</code></td>
-<td>Colorbar tick label size</td>
-</tr>
-<tr>
-<td><code>cbar_x_offset</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>0.06</code></td>
-<td>Colorbar horizontal offset</td>
-</tr>
-</tbody>
-</table>
-<h3 id="stippling-parameters-statistical-significance">Stippling Parameters (Statistical Significance)</h3>
+<tr><td><code>cbar_on</code></td><td>boolean</td><td>No</td><td><code>true</code></td><td>Show colorbar</td></tr>
+<tr><td><code>cbar_limits</code></td><td>list <code>[min, max]</code></td><td>No</td><td><code>None</code></td><td>Colorbar limits (auto if None)</td></tr>
+<tr><td><code>cbar_label_size</code></td><td>integer</td><td>No</td><td><code>20</code></td><td>Colorbar tick label size</td></tr>
+<tr><td><code>cbar_x_offset</code></td><td>float</td><td>No</td><td><code>0.06</code></td><td>Colorbar horizontal offset</td></tr>
+</tbody></table>
+<h3>Stippling Parameters (Statistical Significance)</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>stippling_on</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Enable stippling</td>
-</tr>
-<tr>
-<td><code>stippling_hatches</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'xxxx'</code></td>
-<td>Hatch pattern (e.g., <code>'///'</code>, <code>'xxx'</code>)</td>
-</tr>
-<tr>
-<td><code>stippling_std_multiple</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>2</code></td>
-<td>Std deviation multiple for stippling</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Stippling Behavior:</strong><br />
-- <strong>Ensemble data (≥2 members per set):</strong> Stipples where p &lt; threshold (ELM only)<br />
-- <strong>Single dataset:</strong> Stipples where |value| &gt; mean ± N×std</p>
-<h3 id="statistical-testing-parameters">Statistical Testing Parameters</h3>
+<tr><td><code>stippling_on</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Enable stippling</td></tr>
+<tr><td><code>stippling_hatches</code></td><td>string</td><td>No</td><td><code>&#x27;xxxx&#x27;</code></td><td>Hatch pattern (e.g., <code>&#x27;///&#x27;</code>, <code>&#x27;xxx&#x27;</code>)</td></tr>
+<tr><td><code>stippling_std_multiple</code></td><td>float</td><td>No</td><td><code>2</code></td><td>Std deviation multiple for stippling</td></tr>
+</tbody></table>
+<p><strong>Stippling Behavior:</strong></p>
+<ul>
+<li><strong>Ensemble data (≥2 members per set):</strong> Stipples where p &lt; threshold (ELM only)</li>
+<li><strong>Single dataset:</strong> Stipples where |value| &gt; mean ± N×std</li>
+</ul>
+<h3>Statistical Testing Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>p_value_threshold</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>0.05</code></td>
-<td>Significance threshold</td>
-</tr>
-<tr>
-<td><code>p_value_file</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'p_values.dat'</code></td>
-<td>Output file for p-values</td>
-</tr>
-<tr>
-<td><code>p_value_file_print_only_if_below_threshold</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>true</code></td>
-<td>Only print significant p-values</td>
-</tr>
-</tbody>
-</table>
-<h3 id="advanced-parameters">Advanced Parameters</h3>
+<tr><td><code>p_value_threshold</code></td><td>float</td><td>No</td><td><code>0.05</code></td><td>Significance threshold</td></tr>
+<tr><td><code>p_value_file</code></td><td>string</td><td>No</td><td><code>&#x27;p_values.dat&#x27;</code></td><td>Output file for p-values</td></tr>
+<tr><td><code>p_value_file_print_only_if_below_threshold</code></td><td>boolean</td><td>No</td><td><code>true</code></td><td>Only print significant p-values</td></tr>
+</tbody></table>
+<h3>Advanced Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>multiplier</code></td>
-<td>float/dict</td>
-<td>No</td>
-<td><code>1</code></td>
-<td>Scale data values</td>
-</tr>
-<tr>
-<td><code>plot_name</code></td>
-<td>dict</td>
-<td>No</td>
-<td>Auto-generated</td>
-<td>Custom plot filenames per variable</td>
-</tr>
-<tr>
-<td><code>title</code></td>
-<td>dict</td>
-<td>No</td>
-<td>Auto-generated</td>
-<td>Custom titles per variable</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="plot-types-explained">Plot Types Explained</h2>
-<h3 id="1-absolute-difference-plot_type-absolute_difference">1. Absolute Difference (<code>plot_type: "absolute_difference"</code>)</h3>
+<tr><td><code>multiplier</code></td><td>float/dict</td><td>No</td><td><code>1</code></td><td>Scale data values</td></tr>
+<tr><td><code>plot_name</code></td><td>dict</td><td>No</td><td>Auto-generated</td><td>Custom plot filenames per variable</td></tr>
+<tr><td><code>title</code></td><td>dict</td><td>No</td><td>Auto-generated</td><td>Custom titles per variable</td></tr>
+</tbody></table>
+<hr>
+<h2>Plot Types Explained</h2>
+<h3>1. Absolute Difference (<code>plot_type: &quot;absolute_difference&quot;</code>)</h3>
 <p><strong>Description:</strong> Shows scenario minus control in original units</p>
-<p><strong>When to Use:</strong><br />
-- Comparing two scenarios/ensembles<br />
-- Want actual magnitude of changes<br />
-- Variables where absolute change is meaningful</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Comparing two scenarios/ensembles</li>
+<li>Want actual magnitude of changes</li>
+<li>Variables where absolute change is meaningful</li>
+</ul>
 <p><strong>Requirements:</strong> Exactly 2 files/ensembles</p>
 <p><strong>Formula:</strong></p>
-<div class="codehilite"><pre><span></span><code>Difference = Scenario - Control
-</code></pre></div>
-
-<hr />
-<h3 id="2-percent-difference-plot_type-percent_difference">2. Percent Difference (<code>plot_type: "percent_difference"</code>)</h3>
+<pre><code>Difference = Scenario - Control</code></pre>
+<hr>
+<h3>2. Percent Difference (<code>plot_type: &quot;percent_difference&quot;</code>)</h3>
 <p><strong>Description:</strong> Shows percent change relative to control</p>
-<p><strong>When to Use:</strong><br />
-- Emphasizing relative changes<br />
-- Variables with widely varying magnitudes<br />
-- Comparing fractional impacts</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Emphasizing relative changes</li>
+<li>Variables with widely varying magnitudes</li>
+<li>Comparing fractional impacts</li>
+</ul>
 <p><strong>Requirements:</strong> Exactly 2 files/ensembles</p>
 <p><strong>Formula:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c">% Difference = (Scenario - Control) / |Control| × 100</span>
-</code></pre></div>
-
+<pre><code>% Difference = (Scenario - Control) / |Control| × 100</code></pre>
 <p><strong>Auto-limits:</strong> Sets colorbar to [-100, 100]% if max exceeds 100%</p>
-<hr />
-<h3 id="3-separate-plots-plot_type-separate_plots">3. Separate Plots (<code>plot_type: "separate_plots"</code>)</h3>
+<hr>
+<h3>3. Separate Plots (<code>plot_type: &quot;separate_plots&quot;</code>)</h3>
 <p><strong>Description:</strong> Creates individual maps for each scenario or ensemble</p>
-<p><strong>When to Use:</strong><br />
-- Want to see absolute values for each scenario<br />
-- Side-by-side comparison in publications<br />
-- Showing spatial patterns individually</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Want to see absolute values for each scenario</li>
+<li>Side-by-side comparison in publications</li>
+<li>Showing spatial patterns individually</li>
+</ul>
 <p><strong>Works with:</strong> Any number of files/ensembles</p>
-<p><strong>Output:</strong><br />
-- Individual plots: One map per file<br />
-- Ensemble plots: One ensemble mean map per set</p>
-<hr />
-<h3 id="4-mean-plot_type-mean">4. Mean (<code>plot_type: "mean"</code>)</h3>
+<p><strong>Output:</strong></p>
+<ul>
+<li>Individual plots: One map per file</li>
+<li>Ensemble plots: One ensemble mean map per set</li>
+</ul>
+<hr>
+<h3>4. Mean (<code>plot_type: &quot;mean&quot;</code>)</h3>
 <p><strong>Description:</strong> Averages across multiple individual files</p>
-<p><strong>When to Use:</strong><br />
-- Multiple files from same scenario (e.g., ensemble members)<br />
-- Want to see average spatial pattern<br />
-- Reducing noise across realizations</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Multiple files from same scenario (e.g., ensemble members)</li>
+<li>Want to see average spatial pattern</li>
+<li>Reducing noise across realizations</li>
+</ul>
 <p><strong>Requirements:</strong> Simple list of files (not nested)</p>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code>Mean = (File1 + File2 + ... + FileN) / N
-</code></pre></div>
-
+<pre><code>Mean = (File1 + File2 + ... + FileN) / N</code></pre>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;file1.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file5.nc&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mean&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [&quot;file1.nc&quot;, &quot;file2.nc&quot;, &quot;file3.nc&quot;, &quot;file4.nc&quot;, &quot;file5.nc&quot;],
+    &quot;plot_type&quot;: &quot;mean&quot;
+}</code></pre>
 <p><strong>Output:</strong> Single map showing average across all 5 files</p>
-<hr />
-<h3 id="5-sum-plot_type-sum">5. Sum (<code>plot_type: "sum"</code>)</h3>
+<hr>
+<h3>5. Sum (<code>plot_type: &quot;sum&quot;</code>)</h3>
 <p><strong>Description:</strong> Sums across multiple individual files</p>
-<p><strong>When to Use:</strong><br />
-- Variables that should be aggregated (e.g., precipitation components)<br />
-- Combining related variables<br />
-- Total fluxes across ensemble</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Variables that should be aggregated (e.g., precipitation components)</li>
+<li>Combining related variables</li>
+<li>Total fluxes across ensemble</li>
+</ul>
 <p><strong>Requirements:</strong> Simple list of files (not nested)</p>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code>Sum = File1 + File2 + ... + FileN
-</code></pre></div>
-
+<pre><code>Sum = File1 + File2 + ... + FileN</code></pre>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;precip_conv.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;precip_large.nc&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;PRECIP&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [&quot;precip_conv.nc&quot;, &quot;precip_large.nc&quot;],
+    &quot;plot_type&quot;: &quot;sum&quot;,
+    &quot;variables&quot;: [&quot;PRECIP&quot;]
+}</code></pre>
 <p><strong>Output:</strong> Single map showing total precipitation (convective + large-scale)</p>
-<hr />
-<h2 id="individual-vs-ensemble-plots">Individual vs Ensemble Plots</h2>
-<h3 id="individual-plots-simple-list">Individual Plots (Simple List)</h3>
+<hr>
+<h2>Individual vs Ensemble Plots</h2>
+<h3>Individual Plots (Simple List)</h3>
 <p><strong>Structure:</strong> Flat list of files</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;file1.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file3.nc&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Processing Options:</strong><br />
-- <strong>2 files + <code>absolute_difference</code>:</strong> Shows difference<br />
-- <strong>2 files + <code>percent_difference</code>:</strong> Shows % difference<br />
-- <strong>N files + <code>separate_plots</code>:</strong> Shows N individual maps<br />
-- <strong>N files + <code>mean</code>:</strong> Shows average across N files<br />
-- <strong>N files + <code>sum</code>:</strong> Shows sum across N files</p>
+<pre><code>{
+    &quot;netcdf_files&quot;: [&quot;file1.nc&quot;, &quot;file2.nc&quot;, &quot;file3.nc&quot;]
+}</code></pre>
+<p><strong>Processing Options:</strong></p>
+<ul>
+<li><strong>2 files + <code>absolute_difference</code>:</strong> Shows difference</li>
+<li><strong>2 files + <code>percent_difference</code>:</strong> Shows % difference</li>
+<li><strong>N files + <code>separate_plots</code>:</strong> Shows N individual maps</li>
+<li><strong>N files + <code>mean</code>:</strong> Shows average across N files</li>
+<li><strong>N files + <code>sum</code>:</strong> Shows sum across N files</li>
+</ul>
 <p><strong>Statistical Testing:</strong> Aggregated only (when differencing)</p>
 <p><strong>No per-gridcell testing</strong> (no ensemble structure)</p>
-<hr />
-<h3 id="ensemble-plots-nested-list">Ensemble Plots (Nested List)</h3>
+<hr>
+<h3>Ensemble Plots (Nested List)</h3>
 <p><strong>Structure:</strong> List of lists (rows = file sets)</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;ctrl.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ctrl_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ctrl_3.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;scen.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scen_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scen_3.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;ctrl.nc&quot;, &quot;ctrl_2.nc&quot;, &quot;ctrl_3.nc&quot;],
+        [&quot;scen.nc&quot;, &quot;scen_2.nc&quot;, &quot;scen_3.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Scenario&quot;]
+}</code></pre>
 <p><strong>Limitation:</strong> Currently limited to <strong>exactly 2 ensembles</strong></p>
-<p><strong>Processing:</strong><br />
-- Calculates ensemble mean for each set<br />
-- Then applies plot_type (absolute_difference, percent_difference, separate_plots)</p>
-<p><strong>Statistical Testing:</strong><br />
-- Aggregated across all gridcells<br />
-- Per-gridcell (ELM only) with stippling</p>
-<p><strong>Requirements for stippling:</strong><br />
-- Nested list structure<br />
-- ≥2 members per ensemble<br />
-- ELM data only<br />
-- <code>stippling_on: true</code></p>
-<hr />
-<h2 id="statistical-testing-explained">Statistical Testing Explained</h2>
+<p><strong>Processing:</strong></p>
+<ul>
+<li>Calculates ensemble mean for each set</li>
+<li>Then applies plot_type (absolute_difference, percent_difference, separate_plots)</li>
+</ul>
+<p><strong>Statistical Testing:</strong></p>
+<ul>
+<li>Aggregated across all gridcells</li>
+<li>Per-gridcell (ELM only) with stippling</li>
+</ul>
+<p><strong>Requirements for stippling:</strong></p>
+<ul>
+<li>Nested list structure</li>
+<li>≥2 members per ensemble</li>
+<li>ELM data only</li>
+<li><code>stippling_on: true</code></li>
+</ul>
+<hr>
+<h2>Statistical Testing Explained</h2>
 <p>The script performs <strong>two types of statistical tests</strong>:</p>
-<h3 id="1-aggregated-t-test-always-performed-when-comparing">1. Aggregated t-test (Always Performed When Comparing)</h3>
+<h3>1. Aggregated t-test (Always Performed When Comparing)</h3>
 <p><strong>What:</strong> Tests if means differ across all gridcells combined</p>
 <p><strong>When:</strong> Both individual and ensemble configurations with 2 files/sets</p>
-<p><strong>How:</strong><br />
-- Takes all gridcell values for first file/ensemble<br />
-- Takes all gridcell values for second file/ensemble<br />
-- Performs two-sample t-test<br />
-- Records p-value in file</p>
+<p><strong>How:</strong></p>
+<ul>
+<li>Takes all gridcell values for first file/ensemble</li>
+<li>Takes all gridcell values for second file/ensemble</li>
+<li>Performs two-sample t-test</li>
+<li>Records p-value in file</li>
+</ul>
 <p><strong>Example Output:</strong></p>
-<div class="codehilite"><pre><span></span><code>p_values.dat:
-GPP in Scenario: 1.234e-04
-</code></pre></div>
-
+<pre><code>p_values.dat:
+GPP in Scenario: 1.234e-04</code></pre>
 <p><strong>Interpretation:</strong> Scenario is significantly different from Control globally</p>
-<hr />
-<h3 id="2-per-gridcell-t-test-ensemble-only-elm-only">2. Per-Gridcell t-test (Ensemble Only, ELM Only)</h3>
+<hr>
+<h3>2. Per-Gridcell t-test (Ensemble Only, ELM Only)</h3>
 <p><strong>What:</strong> Tests if means differ at each individual gridcell</p>
-<p><strong>When:</strong> <br />
-- Nested list configuration (ensemble)<br />
-- ≥2 members per ensemble<br />
-- <strong>ELM data only</strong> (too slow for EAM unstructured grid)<br />
-- <code>stippling_on: true</code></p>
-<p><strong>How:</strong><br />
-- At gridcell (45°N, 90°W): Compare Control ensemble vs Scenario ensemble<br />
-- Performs t-test for that gridcell<br />
-- If p &lt; threshold, adds stippling to that gridcell<br />
-- Repeats for all gridcells</p>
+<p><strong>When:</strong></p>
+<ul>
+<li>Nested list configuration (ensemble)</li>
+<li>≥2 members per ensemble</li>
+<li><strong>ELM data only</strong> (too slow for EAM unstructured grid)</li>
+<li><code>stippling_on: true</code></li>
+</ul>
+<p><strong>How:</strong></p>
+<ul>
+<li>At gridcell (45°N, 90°W): Compare Control ensemble vs Scenario ensemble</li>
+<li>Performs t-test for that gridcell</li>
+<li>If p &lt; threshold, adds stippling to that gridcell</li>
+<li>Repeats for all gridcells</li>
+</ul>
 <p><strong>Visual Result:</strong> Stippling (hash marks) appears where differences are significant</p>
 <p><strong>Example:</strong> Amazon basin shows dense stippling → significant GPP changes there</p>
 <p><strong>EAM Limitation:</strong> Per-gridcell tests disabled for EAM due to computational cost with unstructured grids</p>
-<hr />
-<h3 id="statistical-testing-summary">Statistical Testing Summary</h3>
+<hr>
+<h3>Statistical Testing Summary</h3>
 <p><strong>Individual Files (simple list):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="mf">2</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">difference</span><span class="p">:</span>
-<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="n">Aggregated</span><span class="w"> </span><span class="p">(</span><span class="n">all</span><span class="w"> </span><span class="n">gridcells</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="kr">save</span><span class="n">d</span><span class="w"> </span><span class="kr">to</span><span class="w"> </span><span class="n">file</span>
-<span class="w">  </span><span class="err">✗</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">gridcell</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">applicable</span>
+<pre><code>2 files + difference:
+  ✓ Aggregated (all gridcells) - saved to file
+  ✗ Per-gridcell - not applicable
 
-<span class="n">N</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mean</span><span class="o">/</span><span class="n">sum</span><span class="p">:</span>
-<span class="w">  </span><span class="err">✗</span><span class="w"> </span><span class="n">No</span><span class="w"> </span><span class="n">statistical</span><span class="w"> </span><span class="n">testing</span>
-</code></pre></div>
-
+N files + mean/sum:
+  ✗ No statistical testing</code></pre>
 <p><strong>Ensemble Files (nested list, 2 ensembles only):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="err">✓</span><span class="w"> </span><span class="n">Aggregated</span><span class="w"> </span><span class="p">(</span><span class="n">all</span><span class="w"> </span><span class="n">gridcells</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">saved</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span>
-<span class="err">✓</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">gridcell</span><span class="w"> </span><span class="p">(</span><span class="n">ELM</span><span class="w"> </span><span class="n">only</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">stippling</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">map</span>
-<span class="err">✗</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">gridcell</span><span class="w"> </span><span class="p">(</span><span class="n">EAM</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">disabled</span><span class="w"> </span><span class="p">(</span><span class="n">too</span><span class="w"> </span><span class="n">slow</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h2 id="ensemble-file-organization">Ensemble File Organization</h2>
+<pre><code>✓ Aggregated (all gridcells) - saved to file
+✓ Per-gridcell (ELM only) - stippling on map
+✗ Per-gridcell (EAM) - disabled (too slow)</code></pre>
+<hr>
+<h2>Ensemble File Organization</h2>
 <p>When plotting ensembles, you can organize your file lists in <strong>two equivalent ways</strong>:</p>
-<h3 id="option-1-organized-by-file-set-intuitive">Option 1: Organized by File Set (Intuitive)</h3>
+<h3>Option 1: Organized by File Set (Intuitive)</h3>
 <p>Each row groups all ensemble members for one scenario:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;feedback.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="option-2-organized-by-ensemble-member">Option 2: Organized by Ensemble Member</h3>
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;control.nc&quot;, &quot;control_2.nc&quot;, &quot;control_3.nc&quot;, &quot;control_4.nc&quot;, &quot;control_5.nc&quot;],
+        [&quot;feedback.nc&quot;, &quot;feedback_2.nc&quot;, &quot;feedback_3.nc&quot;, &quot;feedback_4.nc&quot;, &quot;feedback_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;]
+}</code></pre>
+<hr>
+<h3>Option 2: Organized by Ensemble Member</h3>
 <p>Each row contains one member from each scenario:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_2.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_3.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_4.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_5.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="automatic-detection">Automatic Detection</h3>
-<p>The script automatically detects which organization you're using.</p>
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;control.nc&quot;, &quot;feedback.nc&quot;],
+        [&quot;control_2.nc&quot;, &quot;feedback_2.nc&quot;],
+        [&quot;control_3.nc&quot;, &quot;feedback_3.nc&quot;],
+        [&quot;control_4.nc&quot;, &quot;feedback_4.nc&quot;],
+        [&quot;control_5.nc&quot;, &quot;feedback_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;]
+}</code></pre>
+<hr>
+<h3>Automatic Detection</h3>
+<p>The script automatically detects which organization you&#x27;re using.</p>
 <p><strong>Both produce identical results!</strong> Use whichever is more intuitive.</p>
 <p><strong>Tip:</strong> Always provide <code>netcdf_file_sets</code> to label your scenarios clearly.</p>
 <p><strong>Note:</strong> Ensemble plots currently limited to 2 file sets.</p>
-<hr />
-<h2 id="elm-vs-eam-differences">ELM vs EAM Differences</h2>
-<h3 id="elm-land-model">ELM (Land Model)</h3>
+<hr>
+<h2>ELM vs EAM Differences</h2>
+<h3>ELM (Land Model)</h3>
 <p><strong>Grid:</strong> Structured latitude-longitude grid</p>
 <p><strong>Configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./elm_spatial_data.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./plots/elm/&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: &quot;./elm_spatial_data.nc&quot;,
+    &quot;plot_directory&quot;: &quot;./plots/elm/&quot;
+}</code></pre>
 <p><strong>No grid_file needed</strong> - uses native lat/lon coordinates</p>
 <p><strong>Variables:</strong> GPP, NPP, NBP, ER, TOTECOSYSC, etc.</p>
 <p><strong>Stippling:</strong> ✓ <strong>Available</strong> for per-gridcell significance testing</p>
-<hr />
-<h3 id="eam-atmosphere-model">EAM (Atmosphere Model)</h3>
+<hr>
+<h3>EAM (Atmosphere Model)</h3>
 <p><strong>Grid:</strong> Unstructured spectral element mesh (ne30, ne120, etc.)</p>
 <p><strong>Configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_spatial_data.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./plots/eam/&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: &quot;./eam_spatial_data.nc&quot;,
+    &quot;plot_directory&quot;: &quot;./plots/eam/&quot;,
+    &quot;grid_file&quot;: &quot;./ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>Requires grid_file</strong> - SCRIP format grid description</p>
 <p><strong>Variables:</strong> PRECC, PRECL, TREFHT, ZCO2, etc.</p>
 <p><strong>Stippling:</strong> ✗ <strong>Not available</strong> for per-gridcell tests (too slow for unstructured grids)</p>
-<p><strong>Grid Files:</strong><br />
-- ne30: <code>ne30pg2_scrip_c20191218.nc</code><br />
-- ne120: <code>ne120pg2_scrip_c20200803.nc</code></p>
-<hr />
-<h2 id="comprehensive-json-examples">Comprehensive JSON Examples</h2>
-<h3 id="elm-examples">ELM Examples</h3>
-<h4 id="example-1-single-control-map-elm-config-1">Example 1: Single Control Map (ELM Config #1)</h4>
+<p><strong>Grid Files:</strong></p>
+<ul>
+<li>ne30: <code>ne30pg2_scrip_c20191218.nc</code></li>
+<li>ne120: <code>ne120pg2_scrip_c20200803.nc</code></li>
+</ul>
+<hr>
+<h2>Comprehensive JSON Examples</h2>
+<h3>ELM Examples</h3>
+<h4>Example 1: Single Control Map (ELM Config #1)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./control_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_control&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: &quot;./control_spatial_data_elm.nc&quot;,
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_control&quot;,
+    &quot;use_latex&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Individual spatial maps for all variables:</strong><br />
-- <code>spatial_GPP.pdf</code> - Control GPP map (2071-2090 mean)<br />
-- <code>spatial_NPP.pdf</code> - Control NPP map<br />
-- <code>spatial_NBP.pdf</code> - Control NBP map<br />
-- ... (all variables in NetCDF file)</p>
+<p><strong>Individual spatial maps for all variables:</strong></p>
+<ul>
+<li><code>spatial_GPP.pdf</code> - Control GPP map (2071-2090 mean)</li>
+<li><code>spatial_NPP.pdf</code> - Control NPP map</li>
+<li><code>spatial_NBP.pdf</code> - Control NBP map</li>
+<li>... (all variables in NetCDF file)</li>
+</ul>
 <p><strong>Statistics panel on each map:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Max</span><span class="o">:</span><span class="w"> </span><span class="mf">1.23</span><span class="n">e</span><span class="o">+</span><span class="mi">01</span>
-<span class="n">Mean</span><span class="o">:</span><span class="w"> </span><span class="mf">4.56</span><span class="n">e</span><span class="o">+</span><span class="mi">00</span>
-<span class="n">Median</span><span class="o">:</span><span class="w"> </span><span class="mf">3.89</span><span class="n">e</span><span class="o">+</span><span class="mi">00</span>
-<span class="n">Min</span><span class="o">:</span><span class="w"> </span><span class="o">-</span><span class="mf">2.34</span><span class="n">e</span><span class="o">-</span><span class="mi">01</span>
-<span class="n">Std</span><span class="o">:</span><span class="w"> </span><span class="mf">2.67</span><span class="n">e</span><span class="o">+</span><span class="mi">00</span>
-</code></pre></div>
-
+<pre><code>Max: 1.23e+01
+Mean: 4.56e+00
+Median: 3.89e+00
+Min: -2.34e-01
+Std: 2.67e+00</code></pre>
 <p><strong>No statistical testing</strong> (only one file)</p>
-<hr />
-<h4 id="example-2-single-scenario-map-elm-config-2">Example 2: Single Scenario Map (ELM Config #2)</h4>
+<hr>
+<h4>Example 2: Single Scenario Map (ELM Config #2)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./full_feedback_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: &quot;./full_feedback_spatial_data_elm.nc&quot;,
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback&quot;,
+    &quot;use_latex&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
 <p>Same as Example 1, but for Full feedback scenario</p>
-<hr />
-<h4 id="example-3-individual-absolute-difference-elm-config-3">Example 3: Individual Absolute Difference (ELM Config #3)</h4>
+<hr>
+<h4>Example 3: Individual Absolute Difference (ELM Config #3)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_spatial_data_elm.nc&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm.nc&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback_minus_control_individual_absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        &quot;./control_spatial_data_elm.nc&quot;,
+        &quot;./full_feedback_spatial_data_elm.nc&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback_minus_control_individual_absolute_difference&quot;,
+    &quot;use_latex&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Difference maps (Full feedback - Control):</strong><br />
-- Positive values (red): GPP increased in Full feedback<br />
-- Negative values (blue): GPP decreased in Full feedback<br />
-- White/near-zero: Little change</p>
-<p><strong>Example for GPP:</strong><br />
-- Amazon: +5 to +10 gC/m²/month (strong increase)<br />
-- Sahara: ±0.1 gC/m²/month (minimal change)<br />
-- Northern Canada: +2 to +4 gC/m²/month (moderate increase)</p>
+<p><strong>Difference maps (Full feedback - Control):</strong></p>
+<ul>
+<li>Positive values (red): GPP increased in Full feedback</li>
+<li>Negative values (blue): GPP decreased in Full feedback</li>
+<li>White/near-zero: Little change</li>
+</ul>
+<p><strong>Example for GPP:</strong></p>
+<ul>
+<li>Amazon: +5 to +10 gC/m²/month (strong increase)</li>
+<li>Sahara: ±0.1 gC/m²/month (minimal change)</li>
+<li>Northern Canada: +2 to +4 gC/m²/month (moderate increase)</li>
+</ul>
 <p><strong>Statistical testing:</strong> Aggregated t-test in <code>p_values.dat</code></p>
 <p><strong>No stippling</strong> (simple list, not ensemble)</p>
-<hr />
-<h4 id="example-4-individual-percent-difference-elm-config-4">Example 4: Individual Percent Difference (ELM Config #4)</h4>
+<hr>
+<h4>Example 4: Individual Percent Difference (ELM Config #4)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_spatial_data_elm.nc&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm.nc&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback_minus_control_individual_percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;percent_difference&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        &quot;./control_spatial_data_elm.nc&quot;,
+        &quot;./full_feedback_spatial_data_elm.nc&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback_minus_control_individual_percent_difference&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;plot_type&quot;: &quot;percent_difference&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Percent change maps:</strong><br />
-- Amazon: +25% to +40% (large relative increase)<br />
-- Boreal forests: +10% to +15% (moderate relative increase)</p>
+<p><strong>Percent change maps:</strong></p>
+<ul>
+<li>Amazon: +25% to +40% (large relative increase)</li>
+<li>Boreal forests: +10% to +15% (moderate relative increase)</li>
+</ul>
 <p><strong>Statistical testing:</strong> Aggregated only</p>
-<hr />
-<h4 id="example-5-mean-across-multiple-files-elm-config-5">Example 5: Mean Across Multiple Files (ELM Config #5)</h4>
+<hr>
+<h4>Example 5: Mean Across Multiple Files (ELM Config #5)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm_2.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm_3.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm_4.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_elm_5.nc&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback_only_individual_mean&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;HR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ZCO2&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mean&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        &quot;./full_feedback_spatial_data_elm.nc&quot;,
+        &quot;./full_feedback_spatial_data_elm_2.nc&quot;,
+        &quot;./full_feedback_spatial_data_elm_3.nc&quot;,
+        &quot;./full_feedback_spatial_data_elm_4.nc&quot;,
+        &quot;./full_feedback_spatial_data_elm_5.nc&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback_only_individual_mean&quot;,
+    &quot;variables&quot;: [&quot;HR&quot;, &quot;NPP&quot;, &quot;ZCO2&quot;],
+    &quot;use_latex&quot;: true,
+    &quot;plot_type&quot;: &quot;mean&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Average maps across 5 ensemble members:</strong><br />
-- <code>spatial_HR.pdf</code> - Mean HR across 5 files<br />
-- <code>spatial_NPP.pdf</code> - Mean NPP across 5 files<br />
-- <code>spatial_ZCO2.pdf</code> - Mean ZCO2 across 5 files</p>
+<p><strong>Average maps across 5 ensemble members:</strong></p>
+<ul>
+<li><code>spatial_HR.pdf</code> - Mean HR across 5 files</li>
+<li><code>spatial_NPP.pdf</code> - Mean NPP across 5 files</li>
+<li><code>spatial_ZCO2.pdf</code> - Mean ZCO2 across 5 files</li>
+</ul>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code>For each gridcell:
-  Mean_GPP = (GPP_file1 + GPP_file2 + GPP_file3 + GPP_file4 + GPP_file5) / 5
-</code></pre></div>
-
+<pre><code>For each gridcell:
+  Mean_GPP = (GPP_file1 + GPP_file2 + GPP_file3 + GPP_file4 + GPP_file5) / 5</code></pre>
 <p><strong>No statistical testing</strong> (no comparison being made)</p>
-<p><strong>Use case:</strong> <br />
-- Visualizing ensemble mean without needing control comparison<br />
-- Showing average pattern across realizations<br />
-- Publication plot of ensemble mean alone</p>
-<hr />
-<h4 id="example-6-ensemble-absolute-difference-elm-config-6">Example 6: Ensemble Absolute Difference (ELM Config #6)</h4>
+<p><strong>Use case:</strong></p>
+<ul>
+<li>Visualizing ensemble mean without needing control comparison</li>
+<li>Showing average pattern across realizations</li>
+<li>Publication plot of ensemble mean alone</li>
+</ul>
+<hr>
+<h4>Example 6: Ensemble Absolute Difference (ELM Config #6)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback_minus_control_ensemble_absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;./control.nc&quot;, &quot;./control_2.nc&quot;, &quot;./control_3.nc&quot;, &quot;./control_4.nc&quot;, &quot;./control_5.nc&quot;],
+        [&quot;./feedback.nc&quot;, &quot;./feedback_2.nc&quot;, &quot;./feedback_3.nc&quot;, &quot;./feedback_4.nc&quot;, &quot;./feedback_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback_minus_control_ensemble_absolute_difference&quot;,
+    &quot;plot_type&quot;: &quot;absolute_difference&quot;,
+    &quot;use_latex&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Ensemble mean difference maps:</strong><br />
-- Control ensemble mean: 120 ± 5 gC/m²/month (varies by location)<br />
-- Full feedback ensemble mean: 128 ± 6 gC/m²/month<br />
-- Difference map shows: +8 gC/m²/month</p>
-<p><strong>Statistical testing:</strong><br />
-1. <strong>Aggregated:</strong> Global t-test in <code>p_values.dat</code><br />
-2. <strong>Per-gridcell:</strong> NO stippling (stippling_on not set)</p>
-<hr />
-<h4 id="example-7-ensemble-percent-difference-with-stippling-elm-config-7">Example 7: Ensemble Percent Difference with Stippling (ELM Config #7)</h4>
+<p><strong>Ensemble mean difference maps:</strong></p>
+<ul>
+<li>Control ensemble mean: 120 ± 5 gC/m²/month (varies by location)</li>
+<li>Full feedback ensemble mean: 128 ± 6 gC/m²/month</li>
+<li>Difference map shows: +8 gC/m²/month</li>
+</ul>
+<p><strong>Statistical testing:</strong></p>
+<ul>
+<li><strong>Aggregated:</strong> Global t-test in <code>p_values.dat</code></li>
+<li><strong>Per-gridcell:</strong> NO stippling (stippling_on not set)</li>
+</ul>
+<hr>
+<h4>Example 7: Ensemble Percent Difference with Stippling (ELM Config #7)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback_minus_control_ensemble_percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;./control.nc&quot;, &quot;./control_2.nc&quot;, &quot;./control_3.nc&quot;, &quot;./control_4.nc&quot;, &quot;./control_5.nc&quot;],
+        [&quot;./feedback.nc&quot;, &quot;./feedback_2.nc&quot;, &quot;./feedback_3.nc&quot;, &quot;./feedback_4.nc&quot;, &quot;./feedback_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback_minus_control_ensemble_percent_difference&quot;,
+    &quot;plot_type&quot;: &quot;percent_difference&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;stippling_on&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Ensemble mean percent difference with significance:</strong><br />
-- Shows % change with <strong>stippling (xxxx pattern)</strong> where p &lt; 0.05</p>
-<p><strong>Example for GPP:</strong><br />
-- Amazon basin: +35% change, <strong>dense stippling</strong> (highly significant)<br />
-- Sahara: +5% change, no stippling (not significant)<br />
-- Boreal: +15% change, <strong>moderate stippling</strong> (some gridcells significant)</p>
-<p><strong>Interpretation:</strong><br />
-- Stippled regions: Changes are statistically robust at that location<br />
-- Non-stippled regions: Changes may be due to natural variability</p>
-<hr />
-<h4 id="example-8-ensemble-separate-plots-with-stippling-elm-config-8">Example 8: Ensemble Separate Plots with Stippling (ELM Config #8)</h4>
+<p><strong>Ensemble mean percent difference with significance:</strong></p>
+<ul>
+<li>Shows % change with <strong>stippling (xxxx pattern)</strong> where p &lt; 0.05</li>
+</ul>
+<p><strong>Example for GPP:</strong></p>
+<ul>
+<li>Amazon basin: +35% change, <strong>dense stippling</strong> (highly significant)</li>
+<li>Sahara: +5% change, no stippling (not significant)</li>
+<li>Boreal: +15% change, <strong>moderate stippling</strong> (some gridcells significant)</li>
+</ul>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Stippled regions: Changes are statistically robust at that location</li>
+<li>Non-stippled regions: Changes may be due to natural variability</li>
+</ul>
+<hr>
+<h4>Example 8: Ensemble Separate Plots with Stippling (ELM Config #8)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/elm_full_feedback_minus_control_ensemble_separate_plots&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;separate_plots&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;./control.nc&quot;, &quot;./control_2.nc&quot;, &quot;./control_3.nc&quot;, &quot;./control_4.nc&quot;, &quot;./control_5.nc&quot;],
+        [&quot;./feedback.nc&quot;, &quot;./feedback_2.nc&quot;, &quot;./feedback_3.nc&quot;, &quot;./feedback_4.nc&quot;, &quot;./feedback_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/elm_full_feedback_minus_control_ensemble_separate_plots&quot;,
+    &quot;plot_type&quot;: &quot;separate_plots&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;stippling_on&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Two separate ensemble mean maps:</strong><br />
-- <code>spatial_GPP_set_1.pdf</code> - Control ensemble mean (100-150 gC/m²/month)<br />
-- <code>spatial_GPP_set_2.pdf</code> - Full feedback ensemble mean (105-160 gC/m²/month)</p>
+<p><strong>Two separate ensemble mean maps:</strong></p>
+<ul>
+<li><code>spatial_GPP_set_1.pdf</code> - Control ensemble mean (100-150 gC/m²/month)</li>
+<li><code>spatial_GPP_set_2.pdf</code> - Full feedback ensemble mean (105-160 gC/m²/month)</li>
+</ul>
 <p><strong>Stippling meaning:</strong> Shows regions with high ensemble confidence</p>
-<hr />
-<h3 id="eam-examples">EAM Examples</h3>
-<h4 id="example-9-single-control-map-eam-config-1">Example 9: Single Control Map (EAM Config #1)</h4>
+<hr>
+<h3>EAM Examples</h3>
+<h4>Example 9: Single Control Map (EAM Config #1)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./control_spatial_data_eam.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_control&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: &quot;./control_spatial_data_eam.nc&quot;,
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_control&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Maps for all EAM variables:</strong><br />
-- <code>spatial_TREFHT.pdf</code> - Surface temperature<br />
-- <code>spatial_PRECC.pdf</code> - Convective precipitation<br />
-- <code>spatial_PRECL.pdf</code> - Large-scale precipitation<br />
-- <code>spatial_ZCO2.pdf</code> - CO₂ concentration</p>
+<p><strong>Maps for all EAM variables:</strong></p>
+<ul>
+<li><code>spatial_TREFHT.pdf</code> - Surface temperature</li>
+<li><code>spatial_PRECC.pdf</code> - Convective precipitation</li>
+<li><code>spatial_PRECL.pdf</code> - Large-scale precipitation</li>
+<li><code>spatial_ZCO2.pdf</code> - CO₂ concentration</li>
+</ul>
 <p><strong>Key:</strong> <code>grid_file</code> parameter <strong>required</strong> for EAM</p>
-<hr />
-<h4 id="example-10-single-scenario-map-eam-config-2">Example 10: Single Scenario Map (EAM Config #2)</h4>
+<hr>
+<h4>Example 10: Single Scenario Map (EAM Config #2)</h4>
 <p>Same as Example 9, but for Full feedback scenario</p>
-<hr />
-<h4 id="example-11-individual-absolute-difference-eam-config-3">Example 11: Individual Absolute Difference (EAM Config #3)</h4>
+<hr>
+<h4>Example 11: Individual Absolute Difference (EAM Config #3)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_spatial_data_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam.nc&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_full_feedback_minus_control_individual_absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        &quot;./control_spatial_data_eam.nc&quot;,
+        &quot;./full_feedback_spatial_data_eam.nc&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_full_feedback_minus_control_individual_absolute_difference&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Difference maps for EAM variables:</strong><br />
-- Temperature differences<br />
-- Precipitation changes<br />
-- CO₂ concentration differences</p>
-<hr />
-<h4 id="example-12-individual-percent-difference-eam-config-4">Example 12: Individual Percent Difference (EAM Config #4)</h4>
+<p><strong>Difference maps for EAM variables:</strong></p>
+<ul>
+<li>Temperature differences</li>
+<li>Precipitation changes</li>
+<li>CO₂ concentration differences</li>
+</ul>
+<hr>
+<h4>Example 12: Individual Percent Difference (EAM Config #4)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_spatial_data_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam.nc&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_full_feedback_minus_control_individual_percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        &quot;./control_spatial_data_eam.nc&quot;,
+        &quot;./full_feedback_spatial_data_eam.nc&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_full_feedback_minus_control_individual_percent_difference&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;plot_type&quot;: &quot;percent_difference&quot;,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Percent change maps:</strong><br />
-- TREFHT: +1% to +5% (temperature)<br />
-- PRECC: +10% to +30% (convective precipitation intensification)</p>
-<hr />
-<h4 id="example-13-sum-across-multiple-files-eam-config-5">Example 13: Sum Across Multiple Files (EAM Config #5)</h4>
+<p><strong>Percent change maps:</strong></p>
+<ul>
+<li>TREFHT: +1% to +5% (temperature)</li>
+<li>PRECC: +10% to +30% (convective precipitation intensification)</li>
+</ul>
+<hr>
+<h4>Example 13: Sum Across Multiple Files (EAM Config #5)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam_2.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam_3.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam_4.nc&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_spatial_data_eam_5.nc&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_full_feedback_only_individual_sum&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;PRECIP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECSL&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        &quot;./full_feedback_spatial_data_eam.nc&quot;,
+        &quot;./full_feedback_spatial_data_eam_2.nc&quot;,
+        &quot;./full_feedback_spatial_data_eam_3.nc&quot;,
+        &quot;./full_feedback_spatial_data_eam_4.nc&quot;,
+        &quot;./full_feedback_spatial_data_eam_5.nc&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_full_feedback_only_individual_sum&quot;,
+    &quot;variables&quot;: [&quot;PRECIP&quot;, &quot;PRECSL&quot;],
+    &quot;use_latex&quot;: true,
+    &quot;plot_type&quot;: &quot;sum&quot;,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Summed maps across 5 files:</strong><br />
-- <code>spatial_PRECIP.pdf</code> - Sum of PRECIP across 5 files<br />
-- <code>spatial_PRECSL.pdf</code> - Sum of PRECSL across 5 files</p>
+<p><strong>Summed maps across 5 files:</strong></p>
+<ul>
+<li><code>spatial_PRECIP.pdf</code> - Sum of PRECIP across 5 files</li>
+<li><code>spatial_PRECSL.pdf</code> - Sum of PRECSL across 5 files</li>
+</ul>
 <p><strong>Processing:</strong></p>
-<div class="codehilite"><pre><span></span><code>For each gridcell:
-  Sum_PRECIP = PRECIP_file1 + PRECIP_file2 + PRECIP_file3 + PRECIP_file4 + PRECIP_file5
-</code></pre></div>
-
-<p><strong>Use case:</strong><br />
-- Combining precipitation components<br />
-- Total fluxes across ensemble members<br />
-- Aggregating related variables</p>
+<pre><code>For each gridcell:
+  Sum_PRECIP = PRECIP_file1 + PRECIP_file2 + PRECIP_file3 + PRECIP_file4 + PRECIP_file5</code></pre>
+<p><strong>Use case:</strong></p>
+<ul>
+<li>Combining precipitation components</li>
+<li>Total fluxes across ensemble members</li>
+<li>Aggregating related variables</li>
+</ul>
 <p><strong>No statistical testing</strong> (no comparison)</p>
-<hr />
-<h4 id="example-14-ensemble-absolute-difference-eam-config-6">Example 14: Ensemble Absolute Difference (EAM Config #6)</h4>
+<hr>
+<h4>Example 14: Ensemble Absolute Difference (EAM Config #6)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_full_feedback_minus_control_ensemble_absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;./control_eam.nc&quot;, &quot;./control_eam_2.nc&quot;, &quot;./control_eam_3.nc&quot;, &quot;./control_eam_4.nc&quot;, &quot;./control_eam_5.nc&quot;],
+        [&quot;./feedback_eam.nc&quot;, &quot;./feedback_eam_2.nc&quot;, &quot;./feedback_eam_3.nc&quot;, &quot;./feedback_eam_4.nc&quot;, &quot;./feedback_eam_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_full_feedback_minus_control_ensemble_absolute_difference&quot;,
+    &quot;plot_type&quot;: &quot;absolute_difference&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Ensemble mean difference maps for EAM:</strong><br />
-- TREFHT difference: +1.7 K average<br />
-  - Arctic: +3 to +5 K (strong amplification)<br />
-  - Tropics: +1 to +2 K</p>
+<p><strong>Ensemble mean difference maps for EAM:</strong></p>
+<ul>
+<li>TREFHT difference: +1.7 K average</li>
+<li>Arctic: +3 to +5 K (strong amplification)</li>
+<li>Tropics: +1 to +2 K</li>
+</ul>
 <p><strong>Statistical testing:</strong> Aggregated only (no stippling for EAM)</p>
-<hr />
-<h4 id="example-15-ensemble-percent-difference-eam-config-7">Example 15: Ensemble Percent Difference (EAM Config #7)</h4>
+<hr>
+<h4>Example 15: Ensemble Percent Difference (EAM Config #7)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_full_feedback_minus_control_ensemble_percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;./control_eam.nc&quot;, &quot;./control_eam_2.nc&quot;, &quot;./control_eam_3.nc&quot;, &quot;./control_eam_4.nc&quot;, &quot;./control_eam_5.nc&quot;],
+        [&quot;./feedback_eam.nc&quot;, &quot;./feedback_eam_2.nc&quot;, &quot;./feedback_eam_3.nc&quot;, &quot;./feedback_eam_4.nc&quot;, &quot;./feedback_eam_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_full_feedback_minus_control_ensemble_percent_difference&quot;,
+    &quot;plot_type&quot;: &quot;percent_difference&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;stippling_on&quot;: false,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>Key:</strong> <code>stippling_on: false</code> (EAM limitation)</p>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Percent difference without stippling:</strong><br />
-- PRECC: +40% to +60% (tropical convection)<br />
-- Mediterranean: -20% to -30% (drying)</p>
-<hr />
-<h4 id="example-16-ensemble-separate-plots-eam-config-8">Example 16: Ensemble Separate Plots (EAM Config #8)</h4>
+<p><strong>Percent difference without stippling:</strong></p>
+<ul>
+<li>PRECC: +40% to +60% (tropical convection)</li>
+<li>Mediterranean: -20% to -30% (drying)</li>
+</ul>
+<hr>
+<h4>Example 16: Ensemble Separate Plots (EAM Config #8)</h4>
 <p><strong>From JSON file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_eam_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback_eam.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_3.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_eam_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_file_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./spatial_plots/eam_full_feedback_minus_control_ensemble_separate_plots&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;separate_plots&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_files&quot;: [
+        [&quot;./control_eam.nc&quot;, &quot;./control_eam_2.nc&quot;, &quot;./control_eam_3.nc&quot;, &quot;./control_eam_4.nc&quot;, &quot;./control_eam_5.nc&quot;],
+        [&quot;./feedback_eam.nc&quot;, &quot;./feedback_eam_2.nc&quot;, &quot;./feedback_eam_3.nc&quot;, &quot;./feedback_eam_4.nc&quot;, &quot;./feedback_eam_5.nc&quot;]
+    ],
+    &quot;netcdf_file_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./spatial_plots/eam_full_feedback_minus_control_ensemble_separate_plots&quot;,
+    &quot;plot_type&quot;: &quot;separate_plots&quot;,
+    &quot;use_latex&quot;: true,
+    &quot;stippling_on&quot;: false,
+    &quot;grid_file&quot;: &quot;./eam_grid_file/ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Two separate ensemble mean maps:</strong><br />
-- <code>spatial_TREFHT_set_1.pdf</code> - Control temperature (288-290 K)<br />
-- <code>spatial_TREFHT_set_2.pdf</code> - Full feedback temperature (289-291 K)</p>
-<hr />
-<h2 id="output-files">Output Files</h2>
-<h3 id="plot-files">Plot Files</h3>
+<p><strong>Two separate ensemble mean maps:</strong></p>
+<ul>
+<li><code>spatial_TREFHT_set_1.pdf</code> - Control temperature (288-290 K)</li>
+<li><code>spatial_TREFHT_set_2.pdf</code> - Full feedback temperature (289-291 K)</li>
+</ul>
+<hr>
+<h2>Output Files</h2>
+<h3>Plot Files</h3>
 <p><strong>Naming Convention:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">spatial_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="o">.</span><span class="n">pdf</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">spatial_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_set_1</span><span class="o">.</span><span class="n">pdf</span><span class="w">  </span><span class="p">(</span><span class="n">separate_plots</span><span class="p">)</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">spatial_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_set_2</span><span class="o">.</span><span class="n">pdf</span><span class="w">  </span><span class="p">(</span><span class="n">separate_plots</span><span class="p">)</span>
-</code></pre></div>
-
-<h3 id="p-value-files">P-Value Files</h3>
+<pre><code>{plot_directory}/spatial_{variable}.pdf
+{plot_directory}/spatial_{variable}_set_1.pdf  (separate_plots)
+{plot_directory}/spatial_{variable}_set_2.pdf  (separate_plots)</code></pre>
+<h3>P-Value Files</h3>
 <p><strong>Purpose:</strong> Records aggregated statistical significance across all gridcells</p>
 <p><strong>Format:</strong></p>
-<div class="codehilite"><pre><span></span><code>GPP in Full feedback: 1.234e-05
-NPP in Full feedback: 3.456e-03
-</code></pre></div>
-
+<pre><code>GPP in Full feedback: 1.234e-05
+NPP in Full feedback: 3.456e-03</code></pre>
 <p><strong>Location:</strong> <code>{plot_directory}/p_values.dat</code></p>
 <p><strong>Note:</strong> Contains <strong>aggregated</strong> p-values (all gridcells combined). Per-gridcell p-values shown as stippling on maps (ELM only).</p>
-<hr />
-<h2 id="best-practices">Best Practices</h2>
-<h3 id="1-choose-appropriate-plot-type">1. Choose Appropriate Plot Type</h3>
-<p><strong>Use <code>absolute_difference</code> when:</strong><br />
-- Comparing two scenarios/ensembles<br />
-- Want actual magnitude of changes<br />
-- Publishing quantitative results</p>
-<p><strong>Use <code>percent_difference</code> when:</strong><br />
-- Emphasizing relative changes<br />
-- Variables with varying baseline magnitudes</p>
-<p><strong>Use <code>separate_plots</code> when:</strong><br />
-- Need to show absolute values for each scenario<br />
-- Side-by-side comparison</p>
-<p><strong>Use <code>mean</code> when:</strong><br />
-- Multiple files from same scenario<br />
-- Want average spatial pattern<br />
-- Reducing noise</p>
-<p><strong>Use <code>sum</code> when:</strong><br />
-- Aggregating related variables (e.g., precipitation components)<br />
-- Total fluxes across files</p>
-<hr />
-<h3 id="2-individual-vs-ensemble">2. Individual vs Ensemble</h3>
-<p><strong>Use individual (simple list) when:</strong><br />
-- Comparing 2 files: absolute or percent difference<br />
-- Averaging N files: mean or sum<br />
-- N separate maps: separate_plots</p>
-<p><strong>Use ensemble (nested list) when:</strong><br />
-- Need statistical significance testing<br />
-- Per-gridcell confidence via stippling (ELM)<br />
-- Robust ensemble mean comparison</p>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Choose Appropriate Plot Type</h3>
+<p><strong>Use <code>absolute_difference</code> when:</strong></p>
+<ul>
+<li>Comparing two scenarios/ensembles</li>
+<li>Want actual magnitude of changes</li>
+<li>Publishing quantitative results</li>
+</ul>
+<p><strong>Use <code>percent_difference</code> when:</strong></p>
+<ul>
+<li>Emphasizing relative changes</li>
+<li>Variables with varying baseline magnitudes</li>
+</ul>
+<p><strong>Use <code>separate_plots</code> when:</strong></p>
+<ul>
+<li>Need to show absolute values for each scenario</li>
+<li>Side-by-side comparison</li>
+</ul>
+<p><strong>Use <code>mean</code> when:</strong></p>
+<ul>
+<li>Multiple files from same scenario</li>
+<li>Want average spatial pattern</li>
+<li>Reducing noise</li>
+</ul>
+<p><strong>Use <code>sum</code> when:</strong></p>
+<ul>
+<li>Aggregating related variables (e.g., precipitation components)</li>
+<li>Total fluxes across files</li>
+</ul>
+<hr>
+<h3>2. Individual vs Ensemble</h3>
+<p><strong>Use individual (simple list) when:</strong></p>
+<ul>
+<li>Comparing 2 files: absolute or percent difference</li>
+<li>Averaging N files: mean or sum</li>
+<li>N separate maps: separate_plots</li>
+</ul>
+<p><strong>Use ensemble (nested list) when:</strong></p>
+<ul>
+<li>Need statistical significance testing</li>
+<li>Per-gridcell confidence via stippling (ELM)</li>
+<li>Robust ensemble mean comparison</li>
+</ul>
 <p><strong>Note:</strong> Ensembles currently limited to 2 file sets</p>
-<hr />
-<h3 id="3-temporal-averaging-period">3. Temporal Averaging Period</h3>
+<hr>
+<h3>3. Temporal Averaging Period</h3>
 <p><strong>Standard:</strong> 20-year average (2071-2090)</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2071</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2090</span>
-</code></pre></div>
-
+<pre><code>&quot;start_year&quot;: 2071,
+&quot;end_year&quot;: 2090</code></pre>
 <p><strong>Why average?</strong> Reduces interannual variability</p>
-<hr />
-<h3 id="4-stippling-strategy">4. Stippling Strategy</h3>
+<hr>
+<h3>4. Stippling Strategy</h3>
 <p><strong>For ELM ensemble plots:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</code></pre></div>
-
+<pre><code>&quot;stippling_on&quot;: true</code></pre>
 <p><strong>Benefits:</strong> Shows where changes are statistically significant</p>
 <p><strong>For EAM or individual plots:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
-</code></pre></div>
-
+<pre><code>&quot;stippling_on&quot;: false</code></pre>
 <p><strong>Why:</strong> EAM too slow, individuals lack ensemble structure</p>
-<hr />
-<h3 id="5-variable-selection">5. Variable Selection</h3>
+<hr>
+<h3>5. Variable Selection</h3>
 <p><strong>Plot all:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: &quot;all&quot;</code></pre>
 <p><strong>Plot specific:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="issue-1-grid-file-missing-eam">Issue 1: Grid File Missing (EAM)</h3>
+<pre><code>&quot;variables&quot;: [&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;]</code></pre>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Issue 1: Grid File Missing (EAM)</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code>TypeError: &#39;NoneType&#39; object is not callable
-</code></pre></div>
-
+<pre><code>TypeError: &#x27;NoneType&#x27; object is not callable</code></pre>
 <p><strong>Cause:</strong> Forgot <code>grid_file</code> parameter for EAM data</p>
 <p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./eam_data.nc&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;grid_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./ne30pg2_scrip_c20191218.nc&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-2-stippling-not-appearing-eam">Issue 2: Stippling Not Appearing (EAM)</h3>
+<pre><code>{
+    &quot;netcdf_files&quot;: &quot;./eam_data.nc&quot;,
+    &quot;grid_file&quot;: &quot;./ne30pg2_scrip_c20191218.nc&quot;
+}</code></pre>
+<hr>
+<h3>Issue 2: Stippling Not Appearing (EAM)</h3>
 <p><strong>Cause:</strong> Stippling disabled for EAM (computational limitation)</p>
 <p><strong>Solution:</strong> Accept limitation or use ELM data</p>
-<hr />
-<h3 id="issue-3-stippling-not-appearing-elm">Issue 3: Stippling Not Appearing (ELM)</h3>
-<p><strong>Possible Causes:</strong><br />
-1. <code>stippling_on: false</code> (default)<br />
-2. Simple list (not ensemble)<br />
-3. All gridcells non-significant</p>
+<hr>
+<h3>Issue 3: Stippling Not Appearing (ELM)</h3>
+<p><strong>Possible Causes:</strong></p>
+<ul>
+<li><code>stippling_on: false</code> (default)</li>
+<li>Simple list (not ensemble)</li>
+<li>All gridcells non-significant</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">  </span><span class="c1">// Must enable</span>
-</code></pre></div>
-
+<pre><code>&quot;stippling_on&quot;: true  // Must enable</code></pre>
 <p>Verify nested list structure</p>
-<hr />
-<h3 id="issue-4-wrong-plot-type-for-configuration">Issue 4: Wrong Plot Type for Configuration</h3>
+<hr>
+<h3>Issue 4: Wrong Plot Type for Configuration</h3>
 <p><strong>Symptom:</strong> Error or unexpected output</p>
 <p><strong>Cause:</strong> Using incompatible plot_type</p>
-<p><strong>Rules:</strong><br />
-- <code>absolute_difference</code>, <code>percent_difference</code>: Need exactly 2 files/ensembles<br />
-- <code>mean</code>, <code>sum</code>: Simple list only (not nested)<br />
-- <code>separate_plots</code>: Works with any configuration</p>
-<hr />
-<h2 id="references">References</h2>
+<p><strong>Rules:</strong></p>
+<ul>
+<li><code>absolute_difference</code>, <code>percent_difference</code>: Need exactly 2 files/ensembles</li>
+<li><code>mean</code>, <code>sum</code>: Simple list only (not nested)</li>
+<li><code>separate_plots</code>: Works with any configuration</li>
+</ul>
+<hr>
+<h2>References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>Cartopy Documentation: <a href="https://scitools.org.uk/cartopy/">https://scitools.org.uk/cartopy/</a></li>
@@ -1571,25 +878,18 @@ NPP in Full feedback: 3.456e-03
 <li>uxarray Documentation: <a href="https://uxarray.readthedocs.io/">https://uxarray.readthedocs.io/</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
-<hr />
-<h2 id="contact">Contact</h2>
-<p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
-- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
-<hr />
-<h2 id="version-information">Version Information</h2>
-<p><strong>Script:</strong> e3sm_plot_spatial_data.py<br />
-<strong>Documentation Version:</strong> 2.0<br />
-<strong>Last Updated:</strong> January 2026<br />
-<strong>Python Version:</strong> 3.7+<br />
-<strong>Dependencies:</strong> xarray, uxarray, cartopy, matplotlib, scipy, numpy, pandas</p>
-<hr />
-<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_plot_spatial_data.py</code> script to create publication-quality spatial maps from E3SM model output with ensemble analysis and statistical significance testing.</em></p>
-        <footer>
-            <p>E3SM Spatial Data Plotting Script Documentation<br>
-            <strong>Script:</strong> e3sm_plot_spatial_data.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
-        </footer>
-    </div>
+<hr>
+<h2>Contact</h2>
+<p>For questions or issues:</p>
+<ul>
+<li><strong>Philip Myint</strong>: myint1@llnl.gov</li>
+<li><strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</li>
+</ul>
+<hr>
+<h2>Version Information</h2>
+<p><strong>Script:</strong> e3sm_plot_spatial_data.py <strong>Documentation Version:</strong> 2.0 <strong>Last Updated:</strong> January 2026 <strong>Python Version:</strong> 3.7+ <strong>Dependencies:</strong> xarray, uxarray, cartopy, matplotlib, scipy, numpy, pandas</p>
+<hr>
+<p>*This documentation provides comprehensive guidance for using the <code>e3sm_plot_spatial_data.py</code> script to create publication-quality spatial maps from E3SM model output with ensemble analysis and statistical significance testing.*</p>
+</div>
 </body>
 </html>

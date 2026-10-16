@@ -10,7 +10,7 @@ import sys
 import time
 from utility_constants import *
 from utility_dataframes import read_file_into_dataframe
-from utility_functions import check_is_list_of_lists, transpose_scenarios_if_needed
+from utility_functions import check_is_list_of_lists, get_max_processes_from_inputs, transpose_scenarios_if_needed
 from utility_gcam import gcam_landtype_groups, gcam_landtype_groups_original, produce_dataframe_for_landtype_group
 from utility_plots import *
 
@@ -71,7 +71,8 @@ def process_inputs(inputs):
         Dictionary that completely specifies all plotting options. 
         If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
     """
-    # Check that the output file exists before trying to read it.
+    # Check that the output data file exists before trying to read it.
+    # Missing data files are skipped so one absent optional plot does not stop a long plotting run.
     if not os.path.exists(inputs['output_file']):
         print(f"Warning: output file not found, skipping: '{inputs['output_file']}'")
         return None
@@ -87,7 +88,8 @@ def process_inputs(inputs):
     else:
         category_label = inputs['category_label']
 
-    # If the list of categories (e.g., sectors or landtypes) have not been specified, populate the list with all categories except the excluded ones.
+    # If categories were not specified, populate them from the data. If the
+    # category column is absent, use "All" so the plot aggregates over the whole file.
     if 'categories' not in inputs:
         if category_label in df.columns:
             inputs['categories'] = list(df[category_label].unique())
@@ -107,7 +109,8 @@ def process_inputs(inputs):
     if not os.path.exists(inputs['plot_directory']):
         os.makedirs(inputs['plot_directory'])
 
-    # Use the name of the output file itself (without its path) to set defaults for the y-axis label and the name of the plot.
+    # Use the output CSV name as the default y-axis label and as the base for
+    # generated plot names.
     index_of_last_backslash = inputs['output_file'].rfind('/')
     index_of_dot_csv = inputs['output_file'].find('.csv')
     if index_of_last_backslash == -1:
@@ -185,11 +188,12 @@ def process_inputs(inputs):
         raise KeyError(f"Error: value_label '{value_label}' not found in '{inputs['output_file']}'. "
                        f"Available columns: {list(df.columns)}")
 
-    # If aggregation_function is area_weighted_mean, check that the 'area' column exists.
+    # area_weighted_mean requires area metadata from gcam_process_extracted_data.py.
     if inputs['aggregation_function'] == 'area_weighted_mean' and 'area' not in df.columns:
         raise KeyError(f"Error: aggregation_function is 'area_weighted_mean' "
                        f"but no 'area' column found in '{inputs['output_file']}'. "
-                       f"Consider using 'mean' or 'sum' instead, or add area data using gcam_add_areas_to_files.py.")
+                       f"Consider using 'mean' or 'sum' instead, or add area data "
+                       f"with gcam_process_extracted_data.py and a land_allocation_file entry.")
 
     # Check that hue and x_variable columns exist in the DataFrame if specified.
     hue = inputs.get('hue', None)
@@ -215,7 +219,7 @@ def process_inputs(inputs):
             print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
                   f"and will produce empty plots: {missing_scenarios}")
 
-    # Verify the plot directory is writable before doing any work.
+    # Verify the plot directory is writable before doing the plotting work.
     plot_name = inputs['plot_name']
     plot_dir = os.path.dirname(plot_name) or '.'
     if not os.access(plot_dir, os.W_OK):
@@ -238,7 +242,9 @@ def plot_box_and_whiskers(inputs):
     Returns:
         N/A.
     """
-    # This function creates a box plot where the data (scenarios or scenario sets, categories, regions) all come from a single output file.
+    # This function creates one multi-panel box-and-whisker figure from a single
+    # processed GCAM CSV. The data may be split by scenario, scenario set,
+    # category, region, basin, hue, and year depending on the JSON options.
     start_time = time.time()
     output_file = inputs['output_file']
     
@@ -288,7 +294,7 @@ def plot_box_and_whiskers(inputs):
     y_tick_label_size = inputs['y_tick_label_size']
     year_label = inputs['year_label']
 
-    # Set the plotting options.
+    # Collect the plotting options that are shared across all year panels.
     plot_options = dict(width=width, height=height, name=plot_name, x_label=x_label, y_label=fr'{y_label}')
     plot_options.update(zip(['x_scale', 'y_scale', 'y_limits', 'use_latex'], [x_scale, y_scale, y_limits, use_latex]))
     plot_options.update(zip(['x_tick_label_size', 'y_tick_label_size', 'legend_on'], [x_tick_label_size, y_tick_label_size, legend_on]))
@@ -299,13 +305,14 @@ def plot_box_and_whiskers(inputs):
     # Use LaTeX fonts for figures and set font size of tick labels.
     setup_plot_params(plot_options)
 
-    # Read the file, select requested years, and apply the user-specified multiplier.
+    # Read the data file, filter to requested years, and apply the user-specified multiplier.
     df = read_file_into_dataframe(output_file)
     if plot_years is not None:
         df = df[df[year_label].isin(plot_years)]
     df[value_label] *= multiplier
 
-    # Create and concatenate Pandas DataFrames for the regions and basins; 'Global' involving creating a copy of the entire DataFrame.
+    # Create regional subsets for plotting. "Global" is represented by a copy
+    # of the whole DataFrame with the region label overwritten, so it pools all regions.
     dataframes = []
     if 'Global' in regions:
         df_global = df.copy()
@@ -320,7 +327,7 @@ def plot_box_and_whiskers(inputs):
         dataframes.append(df_these_basins) 
     df = pd.concat(dataframes)
 
-    # Option 1: individual plots, in which each such box plot can include one or more individual (not grouped) data sets.
+    # Option 1: individual plots, where each scenario remains its own plotted data set.
     if not check_is_list_of_lists(scenarios) or plot_type == 'individual':
         
         # If scenarios is a list of lists, but we do not actually want to group each inner list into an ensemble, 
@@ -334,7 +341,7 @@ def plot_box_and_whiskers(inputs):
         df = df[df[scenario_label].isin(scenarios)]
         scenario_list = scenarios
     
-    # Option 2: ensemble plots, in which the outputs are subdivided into groups, where each group (ensemble) represents a set of scenarios.
+    # Option 2: ensemble plots, where scenarios are grouped into named scenario sets.
     elif check_is_list_of_lists(scenarios) and plot_type == 'ensemble':
         # For each scenario set, collect all scenarios that belong to that set and put in a DataFrame, then concatenate the DataFrames for all sets.
         dataframes = []
@@ -349,8 +356,8 @@ def plot_box_and_whiskers(inputs):
         df = pd.concat(dataframes)
         scenario_list = scenario_sets
 
-    # The rest of the script involves creating DataFrames for different categories (e.g., landtypes or sectors) and producing the box plot.
-    # This applies to both individual and ensemble plots.
+    # From this point on, individual and ensemble plots share the same category
+    # preparation and plotting logic.
 
     # Set the appropriate dictionary for the landtype group.
     if landtype_groups == 'modified':
@@ -358,8 +365,8 @@ def plot_box_and_whiskers(inputs):
     elif landtype_groups == 'original':
         landtype_groups = gcam_landtype_groups_original
 
-    # Create DataFrames for 1) all categories (create a copy of the entire DataFrame), 2) categories that correspond to
-    # a group of landtypes (e.g., forest, crop, grass, shrub, pasture), and 3) a set of individual categories.
+    # Create separate DataFrames for three category cases: all rows, named GCAM
+    # landtype groups (e.g., forest/crop/grass), and exact category values.
     dataframes = []
     if 'All' in categories:
         df_all = df.copy()
@@ -380,6 +387,8 @@ def plot_box_and_whiskers(inputs):
         dataframes.append(df)
     df = pd.concat(dataframes).reset_index()
 
+    # If different plotted categories use related units such as kg/yr and kg/m2/yr,
+    # keep the shared numerator on the y-axis and put each denominator on the x tick.
     units_by_category = {}
     if isinstance(category_label, str) and x_variable == category_label and 'units' in df.columns:
         for category, group in df.groupby(category_label):
@@ -398,6 +407,7 @@ def plot_box_and_whiskers(inputs):
         y_label += f' ({unit_label})'
         plot_options['y_label'] = fr'{y_label}'
 
+    # Each requested year gets its own panel in the same output figure.
     years_to_plot = plot_years if plot_years is not None else sorted(df[year_label].unique())
     ncols = inputs['plot_years_ncols'] or len(years_to_plot)
     nrows = math.ceil(len(years_to_plot) / ncols)
@@ -412,6 +422,8 @@ def plot_box_and_whiskers(inputs):
             ax.set_visible(False)
             continue
         if plot_percent_difference:
+            # Percent-difference box plots use the first scenario/scenario set as
+            # the reference and then drop that reference from the plotted data.
             reference = df_year[df_year[scenario_label] == scenario_list[0]][value_label].to_numpy()
             for scenario in scenario_list:
                 scenario_filter = df_year[scenario_label] == scenario
@@ -497,8 +509,13 @@ if __name__ == '__main__':
         if result is not None:
             list_of_inputs.append(result)
 
+    # Use any max_processes value requested in the inputs, otherwise use the default.
+    # Do not start more worker processes than there are independent plotting jobs.
+    max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
+    num_processes = min(max_processes, max(1, len(list_of_inputs)))
+
     # Create all of the box plots in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+    with multiprocessing.Pool(processes=num_processes) as pool:
         pool.map(plot_box_and_whiskers, list_of_inputs)
     
     # Print the total execution time to produce all the plots.

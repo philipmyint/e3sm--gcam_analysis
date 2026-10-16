@@ -5,7 +5,7 @@ import sys
 import time
 import xarray as xr
 from utility_constants import *
-from utility_functions import check_substrings_in_list, get_all_files_in_path
+from utility_functions import check_substrings_in_list, get_all_files_in_path, get_max_processes_from_inputs
 from utility_e3sm_netcdf import find_gridcell_areas_in_netcdf_file, get_netcdf_files_between_start_and_end_years
 
 
@@ -36,8 +36,7 @@ def process_inputs(inputs):
     if isinstance(inputs['output_files'], (str, int, float)):
         inputs['output_files'] = [inputs['output_files']]
 
-    # If the user specified only a single value (string, integer, float, or a single-element list) for the other plotting options, assume that they
-    # want to use that value for all of the variables.
+    # These options can be specified once and applied to every output file, or specified as one entry per output file.
     input_types_to_modify = ['netcdf_substrings', 'variables', 'start_years', 'end_years']
 
     # Inputs given per output file must have either one entry (applied to all) or one entry per output file.
@@ -80,6 +79,7 @@ def process_inputs(inputs):
         inputs_for_this_output_file = {'simulation_path': inputs['simulation_path'], 'output_files': output_file, 'netcdf_substrings': netcdf_substrings}
         inputs_for_this_output_file.update({'variables': variables, 'start_years': start_years, 'end_years': end_years})
         inputs_for_this_output_file['extra_dim_aggregation'] = inputs.get('extra_dim_aggregation', 'first')
+        inputs_for_this_output_file['max_processes'] = inputs.get('max_processes', MAX_PROCESSES)
         list_of_inputs.append(inputs_for_this_output_file)
     return list_of_inputs
 
@@ -112,7 +112,6 @@ def process_dataset(ds):
         partial_pressure_H2O = ds['PBOT']*ds['QBOT']/(0.622 + (0.378*ds['QBOT']))
         ds['ZCO2'] = mole_fraction_TO_ppm*ds['PCO2']/(ds['PBOT'] - partial_pressure_H2O)
         ds['ZCO2'].attrs = {'units':'ppm', 'description':'CO2 mole fraction in dry air'}
-
 
     # select the surface level for EAM CO2 concentration variables and calculate ppm concentration from the dry mixing ratio (kg/kg)
     for variable in variables:
@@ -253,14 +252,28 @@ if __name__ == '__main__':
 
     # Run this script together with the input JSON file(s) on the command line.
     start_time = time.time()
-    if len(sys.argv) < 2:
-        print('Usage: python e3sm_extract_spatial_data_h0.py `path/to/json/input/file(s)\'')
+    overwrite = False
+    input_files = []
+    for arg in sys.argv[1:]:
+        if arg == '--overwrite':
+            overwrite = True
+        elif arg in ['-h', '--help']:
+            print('Usage: python e3sm_extract_spatial_data_h0.py [--overwrite] `path/to/json/input/file(s)\'')
+            sys.exit()
+        elif arg.startswith('-'):
+            print(f"Error: unknown option: '{arg}'")
+            print('Usage: python e3sm_extract_spatial_data_h0.py [--overwrite] `path/to/json/input/file(s)\'')
+            sys.exit(1)
+        else:
+            input_files.append(arg)
+
+    if not input_files:
+        print('Usage: python e3sm_extract_spatial_data_h0.py [--overwrite] `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries.
     inputs = []
-    for index in range(1, len(sys.argv)):
-        input_file = sys.argv[index]
+    for input_file in input_files:
         with open(input_file) as f:
             inputs.extend(json.load(f))
 
@@ -270,17 +283,26 @@ if __name__ == '__main__':
     for index in range(len(inputs)):
         list_of_inputs_for_each_output_file.extend(process_inputs(inputs[index]))
 
-    # Check upfront whether any output files already exist; report all conflicts before exiting.
-    existing_files = [i['output_files'] for i in list_of_inputs_for_each_output_file if os.path.exists(i['output_files'])]
-    if existing_files:
-        for f in existing_files:
-            print(f"Error: output file already exists: '{f}'")
-        print("Error: some files in output_files already exist. To create new output_files either delete/rename existing files or "
-              "rename project files in input json file. No new files have been created")
-        sys.exit(1)
+    # Check upfront whether any output files already exist; report all conflicts before exiting unless overwrite was requested.
+    if not overwrite:
+        existing_files = [i['output_files'] for i in list_of_inputs_for_each_output_file if os.path.exists(i['output_files'])]
+        if existing_files:
+            for f in existing_files:
+                print(f"Error: output file already exists: '{f}'")
+            print("Error: some files in output_files already exist. To create new output_files either delete/rename existing files or "
+                  "rename project files in input json file. No new files have been created")
+            print("Use --overwrite to replace existing output files.")
+            sys.exit(1)
 
-    # Create all output NetCDF files in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+    try:
+        max_processes = get_max_processes_from_inputs(list_of_inputs_for_each_output_file, MAX_PROCESSES)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+    num_processes = min(max_processes, len(list_of_inputs_for_each_output_file))
+
+    # Create all output NetCDF files in parallel, capped by max_processes.
+    with multiprocessing.Pool(processes=num_processes) as pool:
         pool.map(extract_spatial_data_from_netcdf_files, list_of_inputs_for_each_output_file)
 
     # Print the total execution time needed to complete all data extraction operations.

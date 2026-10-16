@@ -1,9 +1,11 @@
 import multiprocessing
 import numpy as np
 import pandas as pd
+import sys
 import time
 from utility_constants import MAX_PROCESSES
 from utility_dataframes import read_file_into_dataframe, write_dataframe_to_fwf
+from utility_functions import validate_max_processes
 
 def produce_synthetic_time_series(inputs):
     """ 
@@ -60,6 +62,22 @@ if __name__ == '__main__':
 
     # The ensemble will consist of a total of len(files)*num_variations_for_each_scenario data sets.
     start_time = time.time()
+    max_processes = MAX_PROCESSES
+    args = sys.argv[1:]
+    while args:
+        arg = args.pop(0)
+        if arg == '--max-processes':
+            if not args:
+                print("Error: --max-processes requires a positive integer")
+                sys.exit(1)
+            max_processes = validate_max_processes(args.pop(0))
+        elif arg in ['-h', '--help']:
+            print('Usage: python gcam_produce_synthetic_data.py [--max-processes N]')
+            sys.exit()
+        else:
+            print(f"Error: unknown option: '{arg}'")
+            print('Usage: python gcam_produce_synthetic_data.py [--max-processes N]')
+            sys.exit(1)
 
     # Produce variations on the scenarios in the files listed below.
     files = ["./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv", 
@@ -67,9 +85,10 @@ if __name__ == '__main__':
              "./../2025_DiVittorio_et_al_gcam/co2_emissions_sectors_processed.csv",
              "./../2025_DiVittorio_et_al_gcam/land_allocation_processed.csv",
              "./../2025_DiVittorio_et_al_gcam/land_allocation_processed_original_crop_names.csv",
-             "./../2025_DiVittorio_et_al_gcam/scalars_control+full_feedback.csv"]
-    columns_to_modify = [['value'], ['value'], ['value'], ['value'], ['value'], ['vegetation', 'soil']]
-    scenario_labels = ['scenario', 'scenario', 'scenario', 'scenario', 'scenario', 'scenario']
+             "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
+             "./../2025_DiVittorio_et_al_gcam/soil_scalars.csv"]
+    columns_to_modify = [['value'], ['value'], ['value'], ['value'], ['value'], ['value'], ['value']]
+    scenario_labels = ['scenario', 'scenario', 'scenario', 'scenario', 'scenario', 'scenario', 'scenario']
 
     # Create inputs: list of scenarios for each file and scenario label for each file, columns with the numerical data (to later produce variations).
     all_scenarios = []
@@ -79,8 +98,10 @@ if __name__ == '__main__':
     num_variations_for_each_scenario = [5]*len(files)
     inputs = list(zip(files, all_scenarios, scenario_labels, columns_to_modify, num_variations_for_each_scenario))
 
+    num_processes = min(max_processes, max(1, len(inputs)))
+
     # Produce data for each file in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+    with multiprocessing.Pool(processes=num_processes) as pool:
         pool.map(produce_synthetic_time_series, inputs)
     
     # Print the total execution time needed to produce all the sets.

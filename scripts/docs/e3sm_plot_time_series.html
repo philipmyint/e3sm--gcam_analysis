@@ -1,494 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Time Series Plotting Script Documentation</title>
-    <style>/* 
- * Documentation Stylesheet for GCAM Synthetic Data Generation Script
- * A modern, colorful design with good readability
- */
-
-/* ===== ROOT VARIABLES ===== */
-:root {
-    /* Color Palette */
-    --primary-blue: #2563eb;
-    --primary-blue-light: #3b82f6;
-    --primary-blue-dark: #1e40af;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    --accent-purple: #8b5cf6;
-    --accent-red: #ef4444;
-    
-    /* Background Colors */
-    --bg-main: #f8fafc;
-    --bg-code: #1e293b;
-    --bg-code-inline: #e2e8f0;
-    --bg-table-header: #1e40af;
-    --bg-table-row-even: #f1f5f9;
-    --bg-table-row-odd: #ffffff;
-    --bg-note: #fef3c7;
-    --bg-warning: #fee2e2;
-    --bg-info: #dbeafe;
-    --bg-success: #d1fae5;
-    
-    /* Text Colors */
-    --text-main: #1e293b;
-    --text-secondary: #64748b;
-    --text-code: #e2e8f0;
-    --text-link: #2563eb;
-    --text-link-hover: #1e40af;
-    
-    /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-dark: #94a3b8;
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-}
-
-/* ===== BASE STYLES ===== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
-    color: var(--text-main);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: var(--spacing-xl) var(--spacing-md);
-    font-size: 16px;
-}
-
-/* Main Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    padding: var(--spacing-2xl);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1 {
-    font-size: 2.5rem;
-    color: var(--primary-blue-dark);
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 4px solid var(--primary-blue);
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-h2 {
-    font-size: 2rem;
-    color: var(--primary-blue);
-    margin-top: var(--spacing-2xl);
-    margin-bottom: var(--spacing-lg);
-    padding-left: var(--spacing-md);
-    border-left: 5px solid var(--accent-green);
-    font-weight: 600;
-}
-
-h3 {
-    font-size: 1.5rem;
-    color: var(--primary-blue-dark);
-    margin-top: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-}
-
-h3::before {
-    content: "▸";
-    color: var(--accent-orange);
-    margin-right: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-h4 {
-    font-size: 1.25rem;
-    color: var(--accent-purple);
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-sm);
-    font-weight: 600;
-}
-
-p {
-    margin-bottom: var(--spacing-md);
-    color: var(--text-main);
-}
-
-/* ===== LINKS ===== */
-a {
-    color: var(--text-link);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-a:hover {
-    color: var(--text-link-hover);
-    border-bottom-color: var(--text-link-hover);
-}
-
-/* ===== LISTS ===== */
-ul, ol {
-    margin-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-}
-
-li {
-    margin-bottom: var(--spacing-sm);
-    padding-left: var(--spacing-sm);
-}
-
-ul li::marker {
-    color: var(--accent-green);
-    font-size: 1.2em;
-}
-
-ol li::marker {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
-/* ===== CODE BLOCKS ===== */
-code {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--bg-code-inline);
-    color: var(--accent-red);
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-pre {
-    background: var(--bg-code);
-    color: var(--text-code);
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: var(--spacing-lg) 0;
-    border-left: 4px solid var(--accent-green);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-pre code {
-    background: transparent;
-    color: var(--text-code);
-    padding: 0;
-    font-size: 0.95em;
-    line-height: 1.5;
-}
-
-/* ===== TABLES ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: var(--spacing-xl) 0;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-thead {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
-    color: white;
-}
-
-th {
-    padding: var(--spacing-md);
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.05em;
-    border-bottom: 3px solid var(--accent-orange);
-}
-
-td {
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-light);
-}
-
-tbody tr:nth-child(even) {
-    background: var(--bg-table-row-even);
-}
-
-tbody tr:nth-child(odd) {
-    background: var(--bg-table-row-odd);
-}
-
-tbody tr:hover {
-    background: #e0f2fe;
-    transform: scale(1.01);
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ===== BLOCKQUOTES ===== */
-blockquote {
-    margin: var(--spacing-lg) 0;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--primary-blue-dark);
-}
-
-/* ===== HORIZONTAL RULES ===== */
-hr {
-    border: none;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
-    margin: var(--spacing-2xl) 0;
-    border-radius: 2px;
-}
-
-/* ===== SPECIAL BOXES ===== */
-.note {
-    background: var(--bg-note);
-    border-left: 5px solid var(--accent-orange);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.warning {
-    background: var(--bg-warning);
-    border-left: 5px solid var(--accent-red);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.info {
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.success {
-    background: var(--bg-success);
-    border-left: 5px solid var(--accent-green);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-/* ===== BADGES ===== */
-.badge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 600;
-    margin: 0 var(--spacing-xs);
-}
-
-.badge-required {
-    background: var(--accent-red);
-    color: white;
-}
-
-.badge-optional {
-    background: var(--accent-green);
-    color: white;
-}
-
-.badge-default {
-    background: var(--primary-blue);
-    color: white;
-}
-
-/* ===== STRONG & EM ===== */
-strong {
-    color: var(--primary-blue-dark);
-    font-weight: 700;
-}
-
-em {
-    color: var(--accent-purple);
-    font-style: italic;
-}
-
-/* ===== IMAGES ===== */
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: var(--spacing-lg) 0;
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-table-row-even);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--accent-purple) 100%);
-}
-
-/* ===== PRINT STYLES ===== */
-@media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-    
-    .container {
-        box-shadow: none;
-        max-width: 100%;
-    }
-    
-    h1, h2, h3 {
-        page-break-after: avoid;
-    }
-    
-    pre, table {
-        page-break-inside: avoid;
-    }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    body {
-        padding: var(--spacing-md) var(--spacing-sm);
-        font-size: 14px;
-    }
-    
-    .container {
-        padding: var(--spacing-lg);
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.25rem;
-    }
-    
-    table {
-        font-size: 0.9em;
-    }
-    
-    th, td {
-        padding: var(--spacing-sm);
-    }
-}
-
-/* ===== ADDITIONAL UTILITY CLASSES ===== */
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.margin-top-lg {
-    margin-top: var(--spacing-2xl);
-}
-
-.margin-bottom-lg {
-    margin-bottom: var(--spacing-2xl);
-}
-
-.highlight {
-    background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
-    padding: 0 var(--spacing-xs);
-    border-radius: 3px;
-}
-
-/* ===== SECTION DIVIDERS ===== */
-.section-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: var(--spacing-2xl) 0;
-}
-
-.section-divider::before,
-.section-divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 2px solid var(--border-medium);
-}
-
-.section-divider::before {
-    margin-right: var(--spacing-md);
-}
-
-.section-divider::after {
-    margin-left: var(--spacing-md);
-}
-
-/* ===== FOOTER ===== */
-footer {
-    margin-top: var(--spacing-2xl);
-    padding-top: var(--spacing-lg);
-    border-top: 2px solid var(--border-light);
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E3SM Time Series Plotting Script Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; background: #f8fafc; margin: 0; }
+.container { max-width: 980px; margin: 0 auto; padding: 2rem; background: #ffffff; }
+h1, h2, h3, h4 { color: #1f2937; line-height: 1.25; }
+a { color: #2563eb; }
+code { background: #eef2ff; padding: 0.1rem 0.25rem; border-radius: 4px; }
+pre { background: #111827; color: #f9fafb; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+pre code { background: transparent; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #d1d5db; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem; color: #475569; }
 </style>
 </head>
 <body>
-    <div class="container"><h1 id="e3sm-time-series-plotting-script-documentation">E3SM Time Series Plotting Script Documentation</h1>
-<h2 id="overview">Overview</h2>
+<div class="container">
+<h1>E3SM Time Series Plotting Script Documentation</h1>
+<h2>Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_plot_time_series.py</code></p>
 <p><strong>Purpose:</strong> Creates comprehensive time series plots from E3SM extracted data files with support for annual means, seasonal averages, monthly climatologies, ensemble analysis, statistical significance testing, and percent difference comparisons.</p>
-<p><strong>Key Capabilities:</strong><br />
-- Annual and seasonal time series plots<br />
-- Monthly climatology subplots<br />
-- Ensemble mean with uncertainty bands<br />
-- Individual ensemble member plots<br />
-- Statistical significance testing (multiple types)<br />
-- Percent difference plots<br />
-- Multiple scenarios comparison<br />
-- Flexible ensemble file organization</p>
+<p><strong>Key Capabilities:</strong></p>
+<ul>
+<li>Annual and seasonal time series plots</li>
+<li>Monthly climatology subplots</li>
+<li>Ensemble mean with uncertainty bands</li>
+<li>Individual ensemble member plots</li>
+<li>Statistical significance testing (multiple types)</li>
+<li>Percent difference plots</li>
+<li>Multiple scenarios comparison</li>
+<li>Flexible ensemble file organization</li>
+</ul>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
-<hr />
-<h2 id="table-of-contents">Table of Contents</h2>
-<ol>
+<hr>
+<h2>Table of Contents</h2>
+<ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
@@ -500,32 +51,26 @@ footer {
 <li><a href="#output-files">Output Files</a></li>
 <li><a href="#best-practices">Best Practices</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
-</ol>
-<hr />
-<h2 id="installation-requirements">Installation &amp; Requirements</h2>
-<h3 id="required-python-libraries">Required Python Libraries</h3>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>matplotlib<span class="w"> </span>scipy<span class="w"> </span>json<span class="w"> </span>multiprocessing
-</code></pre></div>
-
-<h3 id="required-utility-modules">Required Utility Modules</h3>
+</ul>
+<hr>
+<h2>Installation &amp; Requirements</h2>
+<h3>Required Python Libraries</h3>
+<pre><code>pip install pandas numpy matplotlib scipy json multiprocessing</code></pre>
+<h3>Required Utility Modules</h3>
 <ul>
 <li><code>utility_constants</code> - Physical constants</li>
 <li><code>utility_dataframes</code> - DataFrame operations</li>
 <li><code>utility_functions</code> - General utilities</li>
 <li><code>utility_plots</code> - Plotting defaults and functions</li>
 </ul>
-<hr />
-<h2 id="basic-usage">Basic Usage</h2>
-<h3 id="command-line-execution">Command Line Execution</h3>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_plot_time_series.py<span class="w"> </span>config.json
-</code></pre></div>
-
+<hr>
+<h2>Basic Usage</h2>
+<h3>Command Line Execution</h3>
+<pre><code>python e3sm_plot_time_series.py config.json</code></pre>
 <p><strong>Multiple Configuration Files:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_plot_time_series.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json
-</code></pre></div>
-
-<h3 id="what-the-script-does">What the Script Does</h3>
-<ol>
+<pre><code>python e3sm_plot_time_series.py config1.json config2.json</code></pre>
+<h3>What the Script Does</h3>
+<ul>
 <li>Reads JSON configuration file(s)</li>
 <li>Loads time series data files (.dat or .csv)</li>
 <li>Processes data (temporal aggregation, seasonal means)</li>
@@ -533,960 +78,623 @@ footer {
 <li>Performs statistical testing (multiple types available)</li>
 <li>Saves plots as PDF or PNG</li>
 <li>Outputs p-value files</li>
-</ol>
-<hr />
-<h2 id="complete-parameter-reference">Complete Parameter Reference</h2>
-<h3 id="required-parameters">Required Parameters</h3>
+</ul>
+<hr>
+<h2>Complete Parameter Reference</h2>
+<h3>Required Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>output_files</code></td>
-<td>list/nested list</td>
-<td><strong>Yes</strong></td>
-<td>-</td>
-<td>Data file paths</td>
-</tr>
-<tr>
-<td><code>output_labels</code></td>
-<td>list</td>
-<td><strong>Yes</strong></td>
-<td>-</td>
-<td>Labels for legend</td>
-</tr>
-<tr>
-<td><code>plot_directory</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'./'</code></td>
-<td>Output directory for plots</td>
-</tr>
-</tbody>
-</table>
-<h3 id="core-optional-parameters">Core Optional Parameters</h3>
+<tr><td><code>output_files</code></td><td>list/nested list</td><td><strong>Yes</strong></td><td>-</td><td>Data file paths</td></tr>
+<tr><td><code>output_labels</code></td><td>list</td><td><strong>Yes</strong></td><td>-</td><td>Labels for legend</td></tr>
+<tr><td><code>plot_directory</code></td><td>string</td><td>No</td><td><code>&#x27;./&#x27;</code></td><td>Output directory for plots</td></tr>
+</tbody></table>
+<h3>Core Optional Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>variables</code></td>
-<td>list or <code>'all'</code></td>
-<td>No</td>
-<td><code>'all'</code></td>
-<td>Variables to plot</td>
-</tr>
-<tr>
-<td><code>plot_type</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'ensemble'</code></td>
-<td><code>'ensemble'</code> or <code>'individual'</code></td>
-</tr>
-<tr>
-<td><code>plot_percent_difference</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Plot % difference vs first file</td>
-</tr>
-<tr>
-<td><code>start_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2015</code></td>
-<td>First year to plot</td>
-</tr>
-<tr>
-<td><code>end_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2100</code></td>
-<td>Last year to plot</td>
-</tr>
-<tr>
-<td><code>use_latex</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Use LaTeX fonts</td>
-</tr>
-</tbody>
-</table>
-<h3 id="visual-customization">Visual Customization</h3>
+<tr><td><code>variables</code></td><td>list or <code>&#x27;all&#x27;</code></td><td>No</td><td><code>&#x27;all&#x27;</code></td><td>Variables to plot</td></tr>
+<tr><td><code>plot_type</code></td><td>string</td><td>No</td><td><code>&#x27;ensemble&#x27;</code></td><td><code>&#x27;ensemble&#x27;</code> or <code>&#x27;individual&#x27;</code></td></tr>
+<tr><td><code>plot_percent_difference</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Plot % difference vs first file</td></tr>
+<tr><td><code>start_year</code></td><td>integer</td><td>No</td><td><code>2015</code></td><td>First year to plot</td></tr>
+<tr><td><code>end_year</code></td><td>integer</td><td>No</td><td><code>2100</code></td><td>Last year to plot</td></tr>
+<tr><td><code>use_latex</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Use LaTeX fonts</td></tr>
+<tr><td><code>max_processes</code></td><td>integer</td><td>No</td><td><code>MAX_PROCESSES</code></td><td>Maximum parallel workers. Defaults to all available CPUs minus one, with a minimum of one.</td></tr>
+</tbody></table>
+<h3>Visual Customization</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>width</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>10</code></td>
-<td>Figure width (inches)</td>
-</tr>
-<tr>
-<td><code>height</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>8</code></td>
-<td>Figure height (inches)</td>
-</tr>
-<tr>
-<td><code>x_limits</code></td>
-<td>list <code>[min, max]</code></td>
-<td>No</td>
-<td><code>None</code></td>
-<td>X-axis limits</td>
-</tr>
-<tr>
-<td><code>y_limits</code></td>
-<td>list <code>[min, max]</code></td>
-<td>No</td>
-<td><code>None</code></td>
-<td>Y-axis limits</td>
-</tr>
-<tr>
-<td><code>y_label</code></td>
-<td>dict</td>
-<td>No</td>
-<td>Auto</td>
-<td>Y-axis labels per variable</td>
-</tr>
-<tr>
-<td><code>linewidth</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>2</code></td>
-<td>Line width</td>
-</tr>
-<tr>
-<td><code>plot_colors</code></td>
-<td>list</td>
-<td>No</td>
-<td>Matplotlib default</td>
-<td>Line colors</td>
-</tr>
-<tr>
-<td><code>legend_on</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>true</code></td>
-<td>Show legend</td>
-</tr>
-<tr>
-<td><code>legend_label_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>14</code></td>
-<td>Legend font size</td>
-</tr>
-<tr>
-<td><code>x_label_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>24</code></td>
-<td>X-axis label font size</td>
-</tr>
-<tr>
-<td><code>y_label_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>24</code></td>
-<td>Y-axis label font size</td>
-</tr>
-<tr>
-<td><code>x_tick_label_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>20</code></td>
-<td>X-axis tick label font size</td>
-</tr>
-<tr>
-<td><code>y_tick_label_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>20</code></td>
-<td>Y-axis tick label font size</td>
-</tr>
-</tbody>
-</table>
-<h3 id="seasonal-analysis">Seasonal Analysis</h3>
+<tr><td><code>width</code></td><td>float</td><td>No</td><td><code>10</code></td><td>Figure width (inches)</td></tr>
+<tr><td><code>height</code></td><td>float</td><td>No</td><td><code>8</code></td><td>Figure height (inches)</td></tr>
+<tr><td><code>x_limits</code></td><td>list <code>[min, max]</code></td><td>No</td><td><code>None</code></td><td>X-axis limits</td></tr>
+<tr><td><code>y_limits</code></td><td>list <code>[min, max]</code></td><td>No</td><td><code>None</code></td><td>Y-axis limits</td></tr>
+<tr><td><code>y_label</code></td><td>dict</td><td>No</td><td>Auto</td><td>Y-axis labels per variable</td></tr>
+<tr><td><code>linewidth</code></td><td>float</td><td>No</td><td><code>2</code></td><td>Line width</td></tr>
+<tr><td><code>plot_colors</code></td><td>list</td><td>No</td><td>Matplotlib default</td><td>Line colors</td></tr>
+<tr><td><code>legend_on</code></td><td>boolean</td><td>No</td><td><code>true</code></td><td>Show legend</td></tr>
+<tr><td><code>legend_label_size</code></td><td>integer</td><td>No</td><td><code>14</code></td><td>Legend font size</td></tr>
+<tr><td><code>x_label_size</code></td><td>integer</td><td>No</td><td><code>24</code></td><td>X-axis label font size</td></tr>
+<tr><td><code>y_label_size</code></td><td>integer</td><td>No</td><td><code>24</code></td><td>Y-axis label font size</td></tr>
+<tr><td><code>x_tick_label_size</code></td><td>integer</td><td>No</td><td><code>20</code></td><td>X-axis tick label font size</td></tr>
+<tr><td><code>y_tick_label_size</code></td><td>integer</td><td>No</td><td><code>20</code></td><td>Y-axis tick label font size</td></tr>
+</tbody></table>
+<h3>Seasonal Analysis</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>include_seasons</code></td>
-<td>dict</td>
-<td>No</td>
-<td>All <code>false</code></td>
-<td>Include seasons on main plot</td>
-</tr>
-<tr>
-<td><code>seasons_to_plot_separately</code></td>
-<td>dict</td>
-<td>No</td>
-<td>All <code>false</code></td>
-<td>Create separate seasonal plots</td>
-</tr>
-<tr>
-<td><code>monthly_aggregation_type</code></td>
-<td>string/dict</td>
-<td>No</td>
-<td><code>'mean'</code></td>
-<td><code>'mean'</code> or <code>'sum'</code></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Seasons:</strong><br />
-- <strong>MAM:</strong> March-April-May (spring)<br />
-- <strong>JJA:</strong> June-July-August (summer)<br />
-- <strong>SON:</strong> September-October-November (fall)<br />
-- <strong>DJF:</strong> December-January-February (winter)</p>
-<h3 id="monthly-time-series">Monthly Time Series</h3>
+<tr><td><code>include_seasons</code></td><td>dict</td><td>No</td><td>All <code>false</code></td><td>Include seasons on main plot</td></tr>
+<tr><td><code>seasons_to_plot_separately</code></td><td>dict</td><td>No</td><td>All <code>false</code></td><td>Create separate seasonal plots</td></tr>
+<tr><td><code>monthly_aggregation_type</code></td><td>string/dict</td><td>No</td><td><code>&#x27;mean&#x27;</code></td><td><code>&#x27;mean&#x27;</code> or <code>&#x27;sum&#x27;</code></td></tr>
+</tbody></table>
+<p><strong>Seasons:</strong></p>
+<ul>
+<li><strong>MAM:</strong> March-April-May (spring)</li>
+<li><strong>JJA:</strong> June-July-August (summer)</li>
+<li><strong>SON:</strong> September-October-November (fall)</li>
+<li><strong>DJF:</strong> December-January-February (winter)</li>
+</ul>
+<h3>Monthly Time Series</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>monthly_time_series_plot</code></td>
-<td>boolean/dict</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Create monthly climatology subplot</td>
-</tr>
-<tr>
-<td><code>monthly_time_series_start_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2071</code></td>
-<td>Start year for monthly plot</td>
-</tr>
-<tr>
-<td><code>monthly_time_series_end_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2090</code></td>
-<td>End year for monthly plot</td>
-</tr>
-<tr>
-<td><code>monthly_time_series_x_limits</code></td>
-<td>list</td>
-<td>No</td>
-<td><code>None</code></td>
-<td>X-axis limits for monthly plot</td>
-</tr>
-<tr>
-<td><code>monthly_time_series_y_limits</code></td>
-<td>list</td>
-<td>No</td>
-<td><code>None</code></td>
-<td>Y-axis limits for monthly plot</td>
-</tr>
-</tbody>
-</table>
-<h3 id="statistical-testing">Statistical Testing</h3>
+<tr><td><code>monthly_time_series_plot</code></td><td>boolean/dict</td><td>No</td><td><code>false</code></td><td>Create monthly climatology subplot</td></tr>
+<tr><td><code>monthly_time_series_start_year</code></td><td>integer</td><td>No</td><td><code>2071</code></td><td>Start year for monthly plot</td></tr>
+<tr><td><code>monthly_time_series_end_year</code></td><td>integer</td><td>No</td><td><code>2090</code></td><td>End year for monthly plot</td></tr>
+<tr><td><code>monthly_time_series_x_limits</code></td><td>list</td><td>No</td><td><code>None</code></td><td>X-axis limits for monthly plot</td></tr>
+<tr><td><code>monthly_time_series_y_limits</code></td><td>list</td><td>No</td><td><code>None</code></td><td>Y-axis limits for monthly plot</td></tr>
+</tbody></table>
+<h3>Statistical Testing</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>p_value_threshold</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>0.05</code></td>
-<td>Significance threshold</td>
-</tr>
-<tr>
-<td><code>p_value_file</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'p_values.dat'</code></td>
-<td>Output file for p-values</td>
-</tr>
-<tr>
-<td><code>p_value_file_print_only_if_below_threshold</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>true</code></td>
-<td>Only print significant p-values</td>
-</tr>
-<tr>
-<td><code>p_value_marker</code></td>
-<td>string</td>
-<td>No</td>
-<td><code>'o'</code></td>
-<td>Marker for significant points</td>
-</tr>
-<tr>
-<td><code>p_value_marker_size</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>6</code></td>
-<td>Size of significance markers</td>
-</tr>
-<tr>
-<td><code>include_annual_mean_across_all_sets</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Plot ensemble mean across all scenarios</td>
-</tr>
-<tr>
-<td><code>include_monthly_mean_across_all_sets</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Plot monthly ensemble mean</td>
-</tr>
-<tr>
-<td><code>std_annual_multiplier</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>1</code></td>
-<td>Error bar multiplier for annual data</td>
-</tr>
-<tr>
-<td><code>std_monthly_multiplier</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>1</code></td>
-<td>Error bar multiplier for monthly data</td>
-</tr>
-<tr>
-<td><code>std_annual_mean_across_all_sets_multiplier</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>1</code></td>
-<td>Error bar multiplier for ensemble mean</td>
-</tr>
-<tr>
-<td><code>std_monthly_mean_across_all_sets_multiplier</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>1</code></td>
-<td>Error bar multiplier for monthly ensemble mean</td>
-</tr>
-<tr>
-<td><code>std_seasons_multiplier</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>None</code></td>
-<td>Error bar multiplier for seasons</td>
-</tr>
-<tr>
-<td><code>error_bars_alpha</code></td>
-<td>float</td>
-<td>No</td>
-<td><code>0.2</code></td>
-<td>Transparency of error bands</td>
-</tr>
-</tbody>
-</table>
-<h3 id="advanced-options">Advanced Options</h3>
+<tr><td><code>p_value_threshold</code></td><td>float</td><td>No</td><td><code>0.05</code></td><td>Significance threshold</td></tr>
+<tr><td><code>p_value_file</code></td><td>string</td><td>No</td><td><code>&#x27;p_values.dat&#x27;</code></td><td>Output file for p-values</td></tr>
+<tr><td><code>p_value_file_print_only_if_below_threshold</code></td><td>boolean</td><td>No</td><td><code>true</code></td><td>Only print significant p-values</td></tr>
+<tr><td><code>p_value_marker</code></td><td>string</td><td>No</td><td><code>&#x27;o&#x27;</code></td><td>Marker for significant points</td></tr>
+<tr><td><code>p_value_marker_size</code></td><td>integer</td><td>No</td><td><code>6</code></td><td>Size of significance markers</td></tr>
+<tr><td><code>include_annual_mean_across_all_sets</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Plot ensemble mean across all scenarios</td></tr>
+<tr><td><code>include_monthly_mean_across_all_sets</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Plot monthly ensemble mean</td></tr>
+<tr><td><code>std_annual_multiplier</code></td><td>float</td><td>No</td><td><code>1</code></td><td>Error bar multiplier for annual data</td></tr>
+<tr><td><code>std_monthly_multiplier</code></td><td>float</td><td>No</td><td><code>1</code></td><td>Error bar multiplier for monthly data</td></tr>
+<tr><td><code>std_annual_mean_across_all_sets_multiplier</code></td><td>float</td><td>No</td><td><code>1</code></td><td>Error bar multiplier for ensemble mean</td></tr>
+<tr><td><code>std_monthly_mean_across_all_sets_multiplier</code></td><td>float</td><td>No</td><td><code>1</code></td><td>Error bar multiplier for monthly ensemble mean</td></tr>
+<tr><td><code>std_seasons_multiplier</code></td><td>float</td><td>No</td><td><code>None</code></td><td>Error bar multiplier for seasons</td></tr>
+<tr><td><code>error_bars_alpha</code></td><td>float</td><td>No</td><td><code>0.2</code></td><td>Transparency of error bands</td></tr>
+</tbody></table>
+<h3>Advanced Options</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>multiplier</code></td>
-<td>float/dict</td>
-<td>No</td>
-<td><code>1</code></td>
-<td>Scale data values</td>
-</tr>
-<tr>
-<td><code>areas_in_thousands_km2</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>true</code></td>
-<td>Convert area units</td>
-</tr>
-<tr>
-<td><code>produce_png</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Output PNG instead of PDF</td>
-</tr>
-<tr>
-<td><code>notify_output_files_transposed</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td>Print message if ensemble format auto-converted</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="ensemble-vs-individual-plots">Ensemble vs Individual Plots</h2>
-<h3 id="plot-type-ensemble-default">Plot Type: <code>'ensemble'</code> (Default)</h3>
+<tr><td><code>multiplier</code></td><td>float/dict</td><td>No</td><td><code>1</code></td><td>Scale data values</td></tr>
+<tr><td><code>areas_in_thousands_km2</code></td><td>boolean</td><td>No</td><td><code>true</code></td><td>Convert area units</td></tr>
+<tr><td><code>produce_png</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Output PNG instead of PDF</td></tr>
+<tr><td><code>notify_output_files_transposed</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td>Print message if ensemble format auto-converted</td></tr>
+</tbody></table>
+<hr>
+<h2>Ensemble vs Individual Plots</h2>
+<h3>Plot Type: <code>&#x27;ensemble&#x27;</code> (Default)</h3>
 <p><strong>Purpose:</strong> Calculate and display ensemble mean with uncertainty quantification</p>
-<p><strong>When to Use:</strong><br />
-- Multiple realizations available (ensemble members)<br />
-- Need statistical confidence in results<br />
-- Want to show uncertainty bands<br />
-- Publication-quality significance testing</p>
-<p><strong>What It Does:</strong><br />
-1. Averages across ensemble members for each scenario<br />
-2. Calculates standard deviation/error bars<br />
-3. Performs statistical tests (t-tests)<br />
-4. Displays ensemble mean lines with shaded uncertainty<br />
-5. Marks statistically significant points</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Multiple realizations available (ensemble members)</li>
+<li>Need statistical confidence in results</li>
+<li>Want to show uncertainty bands</li>
+<li>Publication-quality significance testing</li>
+</ul>
+<p><strong>What It Does:</strong></p>
+<ul>
+<li>Averages across ensemble members for each scenario</li>
+<li>Calculates standard deviation/error bars</li>
+<li>Performs statistical tests (t-tests)</li>
+<li>Displays ensemble mean lines with shaded uncertainty</li>
+<li>Marks statistically significant points</li>
+</ul>
 <p><strong>Example Configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_3.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;scenario.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_3.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ensemble&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Result:</strong><br />
-- 2 lines (Control ensemble mean, Scenario ensemble mean)<br />
-- Shaded bands showing ±1σ uncertainty<br />
-- Markers at points where scenarios are significantly different (p &lt; 0.05)</p>
-<hr />
-<h3 id="plot-type-individual">Plot Type: <code>'individual'</code></h3>
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;control.dat&quot;, &quot;control_2.dat&quot;, &quot;control_3.dat&quot;],
+        [&quot;scenario.dat&quot;, &quot;scenario_2.dat&quot;, &quot;scenario_3.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Scenario&quot;],
+    &quot;plot_type&quot;: &quot;ensemble&quot;
+}</code></pre>
+<p><strong>Result:</strong></p>
+<ul>
+<li>2 lines (Control ensemble mean, Scenario ensemble mean)</li>
+<li>Shaded bands showing ±1σ uncertainty</li>
+<li>Markers at points where scenarios are significantly different (p &lt; 0.05)</li>
+</ul>
+<hr>
+<h3>Plot Type: <code>&#x27;individual&#x27;</code></h3>
 <p><strong>Purpose:</strong> Display each ensemble member as a separate line</p>
-<p><strong>When to Use:</strong><br />
-- Want to see range of individual realizations<br />
-- Exploring ensemble spread<br />
-- Comparing specific ensemble members<br />
-- No need for statistical testing</p>
-<p><strong>What It Does:</strong><br />
-1. Plots each file as a separate line<br />
-2. No averaging or statistics<br />
-3. Shows full range of variability<br />
-4. Good for understanding ensemble behavior</p>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Want to see range of individual realizations</li>
+<li>Exploring ensemble spread</li>
+<li>Comparing specific ensemble members</li>
+<li>No need for statistical testing</li>
+</ul>
+<p><strong>What It Does:</strong></p>
+<ul>
+<li>Plots each file as a separate line</li>
+<li>No averaging or statistics</li>
+<li>Shows full range of variability</li>
+<li>Good for understanding ensemble behavior</li>
+</ul>
 <p><strong>Example Configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_3.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;scenario.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_3.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;individual&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Result:</strong><br />
-- 6 lines total (3 Control + 3 Scenario)<br />
-- Each ensemble member visible<br />
-- No averaging or error bars<br />
-- No statistical testing</p>
-<hr />
-<h3 id="comparison-table">Comparison Table</h3>
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;control.dat&quot;, &quot;control_2.dat&quot;, &quot;control_3.dat&quot;],
+        [&quot;scenario.dat&quot;, &quot;scenario_2.dat&quot;, &quot;scenario_3.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Scenario&quot;],
+    &quot;plot_type&quot;: &quot;individual&quot;
+}</code></pre>
+<p><strong>Result:</strong></p>
+<ul>
+<li>6 lines total (3 Control + 3 Scenario)</li>
+<li>Each ensemble member visible</li>
+<li>No averaging or error bars</li>
+<li>No statistical testing</li>
+</ul>
+<hr>
+<h3>Comparison Table</h3>
 <table>
-<thead>
-<tr>
-<th>Feature</th>
-<th>Ensemble</th>
-<th>Individual</th>
-</tr>
-</thead>
+<thead><tr><th>Feature</th><th>Ensemble</th><th>Individual</th></tr></thead>
 <tbody>
-<tr>
-<td><strong>Lines per scenario</strong></td>
-<td>1 (mean)</td>
-<td>N (all members)</td>
-</tr>
-<tr>
-<td><strong>Uncertainty bands</strong></td>
-<td>Yes (±σ)</td>
-<td>No</td>
-</tr>
-<tr>
-<td><strong>Statistical testing</strong></td>
-<td>Yes (multiple types)</td>
-<td>Limited (aggregated only)</td>
-</tr>
-<tr>
-<td><strong>Markers for significance</strong></td>
-<td>Yes</td>
-<td>No (ensemble) or Yes (aggregated)</td>
-</tr>
-<tr>
-<td><strong>Use case</strong></td>
-<td>Publication, significance</td>
-<td>Exploration, range</td>
-</tr>
-<tr>
-<td><strong>Recommended for</strong></td>
-<td>Final analysis</td>
-<td>Initial investigation</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="statistical-testing-explained">Statistical Testing Explained</h2>
+<tr><td><strong>Lines per scenario</strong></td><td>1 (mean)</td><td>N (all members)</td></tr>
+<tr><td><strong>Uncertainty bands</strong></td><td>Yes (±σ)</td><td>No</td></tr>
+<tr><td><strong>Statistical testing</strong></td><td>Yes (multiple types)</td><td>Limited (aggregated only)</td></tr>
+<tr><td><strong>Markers for significance</strong></td><td>Yes</td><td>No (ensemble) or Yes (aggregated)</td></tr>
+<tr><td><strong>Use case</strong></td><td>Publication, significance</td><td>Exploration, range</td></tr>
+<tr><td><strong>Recommended for</strong></td><td>Final analysis</td><td>Initial investigation</td></tr>
+</tbody></table>
+<hr>
+<h2>Statistical Testing Explained</h2>
 <p>The script performs <strong>three types of statistical tests</strong> depending on configuration:</p>
-<h3 id="1-aggregated-t-test-always-available">1. Aggregated t-test (Always Available)</h3>
+<h3>1. Aggregated t-test (Always Available)</h3>
 <p><strong>What:</strong> Tests if the overall means differ across entire time period</p>
 <p><strong>When:</strong> Both ensemble and individual plots</p>
-<p><strong>How:</strong><br />
-- Takes mean of all values for Control across all time<br />
-- Takes mean of all values for Scenario across all time<br />
-- Performs two-sample t-test<br />
-- Records p-value in file</p>
+<p><strong>How:</strong></p>
+<ul>
+<li>Takes mean of all values for Control across all time</li>
+<li>Takes mean of all values for Scenario across all time</li>
+<li>Performs two-sample t-test</li>
+<li>Records p-value in file</li>
+</ul>
 <p><strong>Example Output:</strong></p>
-<div class="codehilite"><pre><span></span><code>p_values.dat:
-GPP in Scenario: 1.234e-04
-</code></pre></div>
-
+<pre><code>p_values.dat:
+GPP in Scenario: 1.234e-04</code></pre>
 <p><strong>Interpretation:</strong> Scenario is significantly different from Control over entire period</p>
-<hr />
-<h3 id="2-per-year-t-test-ensemble-only">2. Per-Year t-test (Ensemble Only)</h3>
+<hr>
+<h3>2. Per-Year t-test (Ensemble Only)</h3>
 <p><strong>What:</strong> Tests if means differ at each individual year</p>
-<p><strong>When:</strong> <code>plot_type = 'ensemble'</code> with ≥2 members per scenario</p>
-<p><strong>How:</strong><br />
-- At year 2050: Compare Control ensemble [ctrl, ctrl_2, ctrl_3] vs Scenario ensemble [scen, scen_2, scen_3]<br />
-- Performs t-test for that year<br />
-- If p &lt; threshold, places marker at that year<br />
-- Repeats for each year</p>
+<p><strong>When:</strong> <code>plot_type = &#x27;ensemble&#x27;</code> with ≥2 members per scenario</p>
+<p><strong>How:</strong></p>
+<ul>
+<li>At year 2050: Compare Control ensemble [ctrl, ctrl_2, ctrl_3] vs Scenario ensemble [scen, scen_2, scen_3]</li>
+<li>Performs t-test for that year</li>
+<li>If p &lt; threshold, places marker at that year</li>
+<li>Repeats for each year</li>
+</ul>
 <p><strong>Example:</strong> Markers appear at years 2075, 2080, 2085, 2090 where p &lt; 0.05</p>
 <p><strong>Interpretation:</strong> These specific years show significant differences</p>
-<hr />
-<h3 id="3-per-month-t-test-ensemble-monthly-plot">3. Per-Month t-test (Ensemble + Monthly Plot)</h3>
+<hr>
+<h3>3. Per-Month t-test (Ensemble + Monthly Plot)</h3>
 <p><strong>What:</strong> Tests if means differ for each month (averaged across years)</p>
-<p><strong>When:</strong> <code>plot_type = 'ensemble'</code>, <code>monthly_time_series_plot = true</code>, ≥2 members</p>
-<p><strong>How:</strong><br />
-- For January: Average all Januaries (2071-2090), compare Control vs Scenario<br />
-- Performs t-test for January<br />
-- If p &lt; threshold, places marker at January<br />
-- Repeats for each month</p>
+<p><strong>When:</strong> <code>plot_type = &#x27;ensemble&#x27;</code>, <code>monthly_time_series_plot = true</code>, ≥2 members</p>
+<p><strong>How:</strong></p>
+<ul>
+<li>For January: Average all Januaries (2071-2090), compare Control vs Scenario</li>
+<li>Performs t-test for January</li>
+<li>If p &lt; threshold, places marker at January</li>
+<li>Repeats for each month</li>
+</ul>
 <p><strong>Example:</strong> Markers at June, July, August (summer months significantly different)</p>
 <p><strong>Interpretation:</strong> Seasonal differences identified</p>
-<hr />
-<h3 id="statistical-testing-summary">Statistical Testing Summary</h3>
-<p><strong>Configuration Controls:</strong><br />
-- <code>p_value_threshold</code>: Significance level (default: 0.05)<br />
-- <code>p_value_marker</code>: Shape of significance markers (default: 'o')<br />
-- <code>p_value_file</code>: Where to save aggregated p-values</p>
+<hr>
+<h3>Statistical Testing Summary</h3>
+<p><strong>Configuration Controls:</strong></p>
+<ul>
+<li><code>p_value_threshold</code>: Significance level (default: 0.05)</li>
+<li><code>p_value_marker</code>: Shape of significance markers (default: &#x27;o&#x27;)</li>
+<li><code>p_value_file</code>: Where to save aggregated p-values</li>
+</ul>
 <p><strong>What Gets Tested:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Ensemble</span><span class="w"> </span><span class="nl">plot:</span>
-<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="n">Aggregated</span><span class="w"> </span><span class="p">(</span><span class="n">whole</span><span class="w"> </span><span class="n">period</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">saved</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span>
-<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">year</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">markers</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">plot</span>
-<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">month</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="n">monthly</span><span class="w"> </span><span class="n">plot</span><span class="w"> </span><span class="n">enabled</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">markers</span><span class="w"> </span><span class="n">on</span><span class="w"> </span><span class="n">monthly</span><span class="w"> </span><span class="n">plot</span>
+<pre><code>Ensemble plot:
+  ✓ Aggregated (whole period) - saved to file
+  ✓ Per-year - markers on plot
+  ✓ Per-month (if monthly plot enabled) - markers on monthly plot
 
-<span class="n">Individual</span><span class="w"> </span><span class="nl">plot:</span>
-<span class="w">  </span><span class="err">✓</span><span class="w"> </span><span class="n">Aggregated</span><span class="w"> </span><span class="p">(</span><span class="n">whole</span><span class="w"> </span><span class="n">period</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">saved</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">file</span>
-<span class="w">  </span><span class="err">✗</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">year</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">applicable</span>
-<span class="w">  </span><span class="err">✗</span><span class="w"> </span><span class="n">Per</span><span class="o">-</span><span class="n">month</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">applicable</span>
-</code></pre></div>
-
+Individual plot:
+  ✓ Aggregated (whole period) - saved to file
+  ✗ Per-year - not applicable
+  ✗ Per-month - not applicable</code></pre>
 <p><strong>P-Value File Contents:</strong></p>
-<div class="codehilite"><pre><span></span><code>GPP in Full feedback: 2.345e-05
+<pre><code>GPP in Full feedback: 2.345e-05
 NPP in Full feedback: 1.234e-03
-NBP in Ag scaling: 8.765e-02
-</code></pre></div>
-
-<p><strong>Interpretation:</strong><br />
-- Values &lt; 0.05: Statistically significant<br />
-- Values ≥ 0.05: Not statistically significant at 95% confidence</p>
-<hr />
-<h2 id="ensemble-file-organization">Ensemble File Organization</h2>
+NBP in Ag scaling: 8.765e-02</code></pre>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Values &lt; 0.05: Statistically significant</li>
+<li>Values ≥ 0.05: Not statistically significant at 95% confidence</li>
+</ul>
+<hr>
+<h2>Ensemble File Organization</h2>
 <p>When plotting ensembles, you can organize your file lists in <strong>two equivalent ways</strong>:</p>
-<h3 id="option-1-organized-by-scenario-intuitive">Option 1: Organized by Scenario (Intuitive)</h3>
+<h3>Option 1: Organized by Scenario (Intuitive)</h3>
 <p>Each row groups all ensemble members for one scenario together:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;feedback.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;scenario.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Structure:</strong><br />
-- Row 1: All Control files<br />
-- Row 2: All Full feedback files<br />
-- Row 3: All Scenario files<br />
-- Easy to see which files belong to each scenario</p>
-<hr />
-<h3 id="option-2-organized-by-ensemble-member">Option 2: Organized by Ensemble Member</h3>
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;control.dat&quot;, &quot;control_2.dat&quot;, &quot;control_3.dat&quot;, &quot;control_4.dat&quot;, &quot;control_5.dat&quot;],
+        [&quot;feedback.dat&quot;, &quot;feedback_2.dat&quot;, &quot;feedback_3.dat&quot;, &quot;feedback_4.dat&quot;, &quot;feedback_5.dat&quot;],
+        [&quot;scenario.dat&quot;, &quot;scenario_2.dat&quot;, &quot;scenario_3.dat&quot;, &quot;scenario_4.dat&quot;, &quot;scenario_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Scenario&quot;]
+}</code></pre>
+<p><strong>Structure:</strong></p>
+<ul>
+<li>Row 1: All Control files</li>
+<li>Row 2: All Full feedback files</li>
+<li>Row 3: All Scenario files</li>
+<li>Easy to see which files belong to each scenario</li>
+</ul>
+<hr>
+<h3>Option 2: Organized by Ensemble Member</h3>
 <p>Each row contains one member from each scenario:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_2.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_3.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_4.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_5.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feedback_5.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Structure:</strong><br />
-- Row 1: Member 1 for all scenarios<br />
-- Row 2: Member 2 for all scenarios<br />
-- Row 3: Member 3 for all scenarios<br />
-- Easy to add/remove ensemble members</p>
-<hr />
-<h3 id="automatic-detection">Automatic Detection</h3>
-<p>The script automatically detects which organization you're using by comparing:<br />
-1. Number of items in <code>output_labels</code><br />
-2. Dimensions of <code>output_files</code> matrix</p>
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;control.dat&quot;, &quot;feedback.dat&quot;, &quot;scenario.dat&quot;],
+        [&quot;control_2.dat&quot;, &quot;feedback_2.dat&quot;, &quot;scenario_2.dat&quot;],
+        [&quot;control_3.dat&quot;, &quot;feedback_3.dat&quot;, &quot;scenario_3.dat&quot;],
+        [&quot;control_4.dat&quot;, &quot;feedback_4.dat&quot;, &quot;scenario_4.dat&quot;],
+        [&quot;control_5.dat&quot;, &quot;feedback_5.dat&quot;, &quot;scenario_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Scenario&quot;]
+}</code></pre>
+<p><strong>Structure:</strong></p>
+<ul>
+<li>Row 1: Member 1 for all scenarios</li>
+<li>Row 2: Member 2 for all scenarios</li>
+<li>Row 3: Member 3 for all scenarios</li>
+<li>Easy to add/remove ensemble members</li>
+</ul>
+<hr>
+<h3>Automatic Detection</h3>
+<p>The script automatically detects which organization you&#x27;re using by comparing:</p>
+<ul>
+<li>Number of items in <code>output_labels</code></li>
+<li>Dimensions of <code>output_files</code> matrix</li>
+</ul>
 <p><strong>Both produce identical results!</strong> Use whichever is more intuitive for your workflow.</p>
 <p><strong>Tip:</strong> Always provide <code>output_labels</code> for unambiguous detection.</p>
-<hr />
-<h2 id="comprehensive-json-examples">Comprehensive JSON Examples</h2>
-<h3 id="example-1-simple-individual-scenarios">Example 1: Simple Individual Scenarios</h3>
+<hr>
+<h2>Comprehensive JSON Examples</h2>
+<h3>Example 1: Simple Individual Scenarios</h3>
 <p><strong>From JSON file (Config #1):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_time_series.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./ag_scaling_time_series.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./carbon_scaling_time_series.dat&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/individual&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;y_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CO$_2$ concentration (ppm)&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;monthly_aggregation_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;PRECIP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;NPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;x_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2015</span><span class="p">,</span><span class="w"> </span><span class="mi">2100</span><span class="p">]},</span>
-<span class="w">    </span><span class="nt">&quot;y_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">400</span><span class="p">,</span><span class="w"> </span><span class="mi">700</span><span class="p">]},</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        &quot;./control_time_series.dat&quot;,
+        &quot;./full_feedback_time_series.dat&quot;,
+        &quot;./ag_scaling_time_series.dat&quot;,
+        &quot;./carbon_scaling_time_series.dat&quot;
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Ag scaling&quot;, &quot;Carbon scaling&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/individual&quot;,
+    &quot;y_label&quot;: {&quot;ZCO2&quot;: &quot;CO$_2$ concentration (ppm)&quot;},
+    &quot;monthly_aggregation_type&quot;: {&quot;PRECIP&quot;: &quot;sum&quot;, &quot;NPP&quot;: &quot;sum&quot;},
+    &quot;x_limits&quot;: {&quot;ZCO2&quot;: [2015, 2100]},
+    &quot;y_limits&quot;: {&quot;ZCO2&quot;: [400, 700]},
+    &quot;use_latex&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Annual time series plots for all variables:</strong><br />
-- <code>time_series_GPP.pdf</code> - 4 lines (Control, Full feedback, Ag scaling, Carbon scaling)<br />
-- <code>time_series_NPP.pdf</code> - 4 lines<br />
-- <code>time_series_NBP.pdf</code> - 4 lines<br />
-- <code>time_series_ZCO2.pdf</code> - 4 lines, custom y-label, limits [400, 700] ppm<br />
-- <code>time_series_PRECIP.pdf</code> - 4 lines (monthly data summed to annual)<br />
-- ... (all other variables)</p>
-<p><strong>Statistical Testing:</strong><br />
-- Aggregated t-tests comparing each scenario to Control<br />
-- P-values saved to <code>./time_series_plots/individual/p_values.dat</code><br />
-- Example: <code>ZCO2 in Full feedback: 1.234e-05</code></p>
-<p><strong>No per-year markers</strong> (individual plots don't show these)</p>
-<hr />
-<h3 id="example-2-regional-comparison">Example 2: Regional Comparison</h3>
+<p><strong>Annual time series plots for all variables:</strong></p>
+<ul>
+<li><code>time_series_GPP.pdf</code> - 4 lines (Control, Full feedback, Ag scaling, Carbon scaling)</li>
+<li><code>time_series_NPP.pdf</code> - 4 lines</li>
+<li><code>time_series_NBP.pdf</code> - 4 lines</li>
+<li><code>time_series_ZCO2.pdf</code> - 4 lines, custom y-label, limits [400, 700] ppm</li>
+<li><code>time_series_PRECIP.pdf</code> - 4 lines (monthly data summed to annual)</li>
+<li>... (all other variables)</li>
+</ul>
+<p><strong>Statistical Testing:</strong></p>
+<ul>
+<li>Aggregated t-tests comparing each scenario to Control</li>
+<li>P-values saved to <code>./time_series_plots/individual/p_values.dat</code></li>
+<li>Example: <code>ZCO2 in Full feedback: 1.234e-05</code></li>
+</ul>
+<p><strong>No per-year markers</strong> (individual plots don&#x27;t show these)</p>
+<hr>
+<h3>Example 2: Regional Comparison</h3>
 <p><strong>From JSON file (Config #2):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_time_series.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./control_time_series_amazon.dat&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control (Global)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Control (Amazon)&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/individual_amazon&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;include_seasons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;JJA&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;DJF&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}},</span>
-<span class="w">    </span><span class="nt">&quot;seasons_to_plot_separately&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;MAM&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;JJA&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;SON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;DJF&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}},</span>
-<span class="w">    </span><span class="nt">&quot;monthly_time_series_plot&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        &quot;./control_time_series.dat&quot;,
+        &quot;./control_time_series_amazon.dat&quot;
+    ],
+    &quot;output_labels&quot;: [&quot;Control (Global)&quot;, &quot;Control (Amazon)&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/individual_amazon&quot;,
+    &quot;include_seasons&quot;: {&quot;ZCO2&quot;: {&quot;JJA&quot;: true, &quot;DJF&quot;: true}},
+    &quot;seasons_to_plot_separately&quot;: {&quot;ZCO2&quot;: {&quot;MAM&quot;: true, &quot;JJA&quot;: true, &quot;SON&quot;: true, &quot;DJF&quot;: true}},
+    &quot;monthly_time_series_plot&quot;: {&quot;ZCO2&quot;: true}
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>For ZCO2 variable:</strong><br />
-- <code>time_series_ZCO2.pdf</code> - Main plot with:<br />
-  - Annual mean (2 lines: Global, Amazon)<br />
-  - JJA seasonal line (summer, 2 lines)<br />
-  - DJF seasonal line (winter, 2 lines)<br />
-  - Total: 6 lines on one plot</p>
-<p><strong>Separate seasonal plots:</strong><br />
-- <code>time_series_ZCO2_MAM.pdf</code> - Spring only (2 lines)<br />
-- <code>time_series_ZCO2_JJA.pdf</code> - Summer only (2 lines)<br />
-- <code>time_series_ZCO2_SON.pdf</code> - Fall only (2 lines)<br />
-- <code>time_series_ZCO2_DJF.pdf</code> - Winter only (2 lines)</p>
-<p><strong>Monthly climatology:</strong><br />
-- <code>time_series_ZCO2_monthly.pdf</code> - Months Jan-Dec on x-axis<br />
-  - Shows average seasonal cycle<br />
-  - 2 lines (Global, Amazon)</p>
-<p><strong>For all other variables:</strong><br />
-- Standard annual plots (no seasons, no monthly)</p>
-<hr />
-<h3 id="example-3-percent-difference">Example 3: Percent Difference</h3>
+<p><strong>For ZCO2 variable:</strong></p>
+<ul>
+<li><code>time_series_ZCO2.pdf</code> - Main plot with:</li>
+<li>Annual mean (2 lines: Global, Amazon)</li>
+<li>JJA seasonal line (summer, 2 lines)</li>
+<li>DJF seasonal line (winter, 2 lines)</li>
+<li>Total: 6 lines on one plot</li>
+</ul>
+<p><strong>Separate seasonal plots:</strong></p>
+<ul>
+<li><code>time_series_ZCO2_MAM.pdf</code> - Spring only (2 lines)</li>
+<li><code>time_series_ZCO2_JJA.pdf</code> - Summer only (2 lines)</li>
+<li><code>time_series_ZCO2_SON.pdf</code> - Fall only (2 lines)</li>
+<li><code>time_series_ZCO2_DJF.pdf</code> - Winter only (2 lines)</li>
+</ul>
+<p><strong>Monthly climatology:</strong></p>
+<ul>
+<li><code>time_series_ZCO2_monthly.pdf</code> - Months Jan-Dec on x-axis</li>
+<li>Shows average seasonal cycle</li>
+<li>2 lines (Global, Amazon)</li>
+</ul>
+<p><strong>For all other variables:</strong></p>
+<ul>
+<li>Standard annual plots (no seasons, no monthly)</li>
+</ul>
+<hr>
+<h3>Example 3: Percent Difference</h3>
 <p><strong>From JSON file (Config #3):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_time_series.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./ag_scaling_time_series.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./carbon_scaling_time_series.dat&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/individual_percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_percent_difference&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;y_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">-10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">]}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        &quot;./control_time_series.dat&quot;,
+        &quot;./full_feedback_time_series.dat&quot;,
+        &quot;./ag_scaling_time_series.dat&quot;,
+        &quot;./carbon_scaling_time_series.dat&quot;
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Ag scaling&quot;, &quot;Carbon scaling&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/individual_percent_difference&quot;,
+    &quot;plot_percent_difference&quot;: true,
+    &quot;y_limits&quot;: {&quot;ZCO2&quot;: [-10, 10]}
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Percent difference plots:</strong><br />
-- Control: Not shown (reference = 0%)<br />
-- Full feedback: Shows % change relative to Control<br />
-- Ag scaling: Shows % change relative to Control<br />
-- Carbon scaling: Shows % change relative to Control</p>
-<p><strong>Example values:</strong><br />
-- Year 2050: Full feedback = +2.5% (2.5% higher than Control)<br />
-- Year 2075: Ag scaling = -1.8% (1.8% lower than Control)<br />
-- Year 2100: Carbon scaling = +5.2% (5.2% higher than Control)</p>
+<p><strong>Percent difference plots:</strong></p>
+<ul>
+<li>Control: Not shown (reference = 0%)</li>
+<li>Full feedback: Shows % change relative to Control</li>
+<li>Ag scaling: Shows % change relative to Control</li>
+<li>Carbon scaling: Shows % change relative to Control</li>
+</ul>
+<p><strong>Example values:</strong></p>
+<ul>
+<li>Year 2050: Full feedback = +2.5% (2.5% higher than Control)</li>
+<li>Year 2075: Ag scaling = -1.8% (1.8% lower than Control)</li>
+<li>Year 2100: Carbon scaling = +5.2% (5.2% higher than Control)</li>
+</ul>
 <p><strong>Y-axis for ZCO2:</strong> [-10, 10]% (custom limits)</p>
 <p><strong>Useful for:</strong> Highlighting relative impacts rather than absolute values</p>
-<hr />
-<h3 id="example-4-ensemble-analysis">Example 4: Ensemble Analysis</h3>
+<hr>
+<h3>Example 4: Ensemble Analysis</h3>
 <p><strong>From JSON file (Config #4):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./ag_scaling.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./carbon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/ensemble&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;./control.dat&quot;, &quot;./control_2.dat&quot;, &quot;./control_3.dat&quot;, &quot;./control_4.dat&quot;, &quot;./control_5.dat&quot;],
+        [&quot;./feedback.dat&quot;, &quot;./feedback_2.dat&quot;, &quot;./feedback_3.dat&quot;, &quot;./feedback_4.dat&quot;, &quot;./feedback_5.dat&quot;],
+        [&quot;./ag_scaling.dat&quot;, &quot;./ag_scaling_2.dat&quot;, &quot;./ag_scaling_3.dat&quot;, &quot;./ag_scaling_4.dat&quot;, &quot;./ag_scaling_5.dat&quot;],
+        [&quot;./carbon.dat&quot;, &quot;./carbon_2.dat&quot;, &quot;./carbon_3.dat&quot;, &quot;./carbon_4.dat&quot;, &quot;./carbon_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Ag scaling&quot;, &quot;Carbon scaling&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/ensemble&quot;
+}</code></pre>
 <p><strong>Note:</strong> This uses Option 1 format (organized by scenario)</p>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Ensemble mean plots:</strong><br />
-- <code>time_series_GPP.pdf</code> - 4 lines (ensemble means)<br />
-  - Control: Mean of 5 members ± shaded uncertainty band<br />
-  - Full feedback: Mean of 5 members ± shaded band<br />
-  - Ag scaling: Mean of 5 members ± shaded band<br />
-  - Carbon scaling: Mean of 5 members ± shaded band<br />
-  - Markers (circles) at years where p &lt; 0.05</p>
-<p><strong>Example interpretation:</strong><br />
-- Years 2060-2070: No markers → scenarios not significantly different<br />
-- Years 2075-2100: Markers on Full feedback line → significantly different from Control</p>
-<p><strong>Statistical Testing:</strong><br />
-- <strong>Per-year t-tests:</strong> Markers on plot at significant years<br />
-- <strong>Aggregated t-tests:</strong> In p_values.dat file<br />
-- <strong>Example p-value file:</strong><br />
-<code>GPP in Full feedback: 1.23e-06
+<p><strong>Ensemble mean plots:</strong></p>
+<ul>
+<li><code>time_series_GPP.pdf</code> - 4 lines (ensemble means)</li>
+<li>Control: Mean of 5 members ± shaded uncertainty band</li>
+<li>Full feedback: Mean of 5 members ± shaded band</li>
+<li>Ag scaling: Mean of 5 members ± shaded band</li>
+<li>Carbon scaling: Mean of 5 members ± shaded band</li>
+<li>Markers (circles) at years where p &lt; 0.05</li>
+</ul>
+<p><strong>Example interpretation:</strong></p>
+<ul>
+<li>Years 2060-2070: No markers → scenarios not significantly different</li>
+<li>Years 2075-2100: Markers on Full feedback line → significantly different from Control</li>
+</ul>
+<p><strong>Statistical Testing:</strong></p>
+<ul>
+<li><strong>Per-year t-tests:</strong> Markers on plot at significant years</li>
+<li><strong>Aggregated t-tests:</strong> In p_values.dat file</li>
+<li><strong>Example p-value file:</strong></li>
+</ul>
+<pre><code>  GPP in Full feedback: 1.23e-06
   GPP in Ag scaling: 4.56e-02
-  GPP in Carbon scaling: 7.89e-01</code></p>
+  GPP in Carbon scaling: 7.89e-01</code></pre>
 <p><strong>Uncertainty bands:</strong> Default ±1σ (can adjust with <code>std_annual_multiplier</code>)</p>
-<hr />
-<h3 id="example-5-ensemble-percent-difference">Example 5: Ensemble Percent Difference</h3>
+<hr>
+<h3>Example 5: Ensemble Percent Difference</h3>
 <p><strong>From JSON file (Config #5):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./ag_scaling.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./carbon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/ensemble_percent_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_percent_difference&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;y_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">-10</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">]}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;./control.dat&quot;, &quot;./control_2.dat&quot;, &quot;./control_3.dat&quot;, &quot;./control_4.dat&quot;, &quot;./control_5.dat&quot;],
+        [&quot;./feedback.dat&quot;, &quot;./feedback_2.dat&quot;, &quot;./feedback_3.dat&quot;, &quot;./feedback_4.dat&quot;, &quot;./feedback_5.dat&quot;],
+        [&quot;./ag_scaling.dat&quot;, &quot;./ag_scaling_2.dat&quot;, &quot;./ag_scaling_3.dat&quot;, &quot;./ag_scaling_4.dat&quot;, &quot;./ag_scaling_5.dat&quot;],
+        [&quot;./carbon.dat&quot;, &quot;./carbon_2.dat&quot;, &quot;./carbon_3.dat&quot;, &quot;./carbon_4.dat&quot;, &quot;./carbon_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Ag scaling&quot;, &quot;Carbon scaling&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/ensemble_percent_difference&quot;,
+    &quot;plot_percent_difference&quot;: true,
+    &quot;y_limits&quot;: {&quot;ZCO2&quot;: [-10, 10]}
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Ensemble mean percent difference plots:</strong><br />
-- Control: Not shown (reference = 0%)<br />
-- Full feedback: Ensemble mean % change ± uncertainty<br />
-- Ag scaling: Ensemble mean % change ± uncertainty<br />
-- Carbon scaling: Ensemble mean % change ± uncertainty<br />
-- Markers where ensemble means significantly different (p &lt; 0.05)</p>
-<p><strong>Example values for ZCO2 in year 2100:</strong><br />
-- Full feedback: +3.2% ± 0.8% (shaded band from +2.4% to +4.0%)<br />
-- Ag scaling: +1.5% ± 0.5%<br />
-- Carbon scaling: +2.1% ± 0.6%</p>
+<p><strong>Ensemble mean percent difference plots:</strong></p>
+<ul>
+<li>Control: Not shown (reference = 0%)</li>
+<li>Full feedback: Ensemble mean % change ± uncertainty</li>
+<li>Ag scaling: Ensemble mean % change ± uncertainty</li>
+<li>Carbon scaling: Ensemble mean % change ± uncertainty</li>
+<li>Markers where ensemble means significantly different (p &lt; 0.05)</li>
+</ul>
+<p><strong>Example values for ZCO2 in year 2100:</strong></p>
+<ul>
+<li>Full feedback: +3.2% ± 0.8% (shaded band from +2.4% to +4.0%)</li>
+<li>Ag scaling: +1.5% ± 0.5%</li>
+<li>Carbon scaling: +2.1% ± 0.6%</li>
+</ul>
 <p><strong>Combines:</strong> Ensemble uncertainty + percent difference + significance testing</p>
-<hr />
-<h3 id="example-6-individual-members-despite-ensemble-format">Example 6: Individual Members Despite Ensemble Format</h3>
+<hr>
+<h3>Example 6: Individual Members Despite Ensemble Format</h3>
 <p><strong>From JSON file (Config #6):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./ag_scaling.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./ag_scaling_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./carbon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_3.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./carbon_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ag scaling&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Carbon scaling&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;individual&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/individual_override_ensemble_default&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Key:</strong> <code>"plot_type": "individual"</code> overrides default ensemble behavior</p>
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;./control.dat&quot;, &quot;./control_2.dat&quot;, &quot;./control_3.dat&quot;, &quot;./control_4.dat&quot;, &quot;./control_5.dat&quot;],
+        [&quot;./feedback.dat&quot;, &quot;./feedback_2.dat&quot;, &quot;./feedback_3.dat&quot;, &quot;./feedback_4.dat&quot;, &quot;./feedback_5.dat&quot;],
+        [&quot;./ag_scaling.dat&quot;, &quot;./ag_scaling_2.dat&quot;, &quot;./ag_scaling_3.dat&quot;, &quot;./ag_scaling_4.dat&quot;, &quot;./ag_scaling_5.dat&quot;],
+        [&quot;./carbon.dat&quot;, &quot;./carbon_2.dat&quot;, &quot;./carbon_3.dat&quot;, &quot;./carbon_4.dat&quot;, &quot;./carbon_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;, &quot;Ag scaling&quot;, &quot;Carbon scaling&quot;],
+    &quot;plot_type&quot;: &quot;individual&quot;,
+    &quot;plot_directory&quot;: &quot;./time_series_plots/individual_override_ensemble_default&quot;
+}</code></pre>
+<p><strong>Key:</strong> <code>&quot;plot_type&quot;: &quot;individual&quot;</code> overrides default ensemble behavior</p>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Individual member plots:</strong><br />
-- <code>time_series_GPP.pdf</code> - 20 lines total!<br />
-  - 5 Control lines (control, control_2, control_3, control_4, control_5)<br />
-  - 5 Full feedback lines<br />
-  - 5 Ag scaling lines<br />
-  - 5 Carbon scaling lines</p>
+<p><strong>Individual member plots:</strong></p>
+<ul>
+<li><code>time_series_GPP.pdf</code> - 20 lines total!</li>
+<li>5 Control lines (control, control_2, control_3, control_4, control_5)</li>
+<li>5 Full feedback lines</li>
+<li>5 Ag scaling lines</li>
+<li>5 Carbon scaling lines</li>
+</ul>
 <p><strong>No averaging, no statistics, no uncertainty bands</strong></p>
 <p><strong>Use case:</strong> Want to see full range of ensemble spread without averaging</p>
-<hr />
-<h3 id="example-7-simple-surfdata-comparison">Example 7: Simple Surfdata Comparison</h3>
+<hr>
+<h3>Example 7: Simple Surfdata Comparison</h3>
 <p><strong>From JSON file (Config #7):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_time_series_surfdata_iESM_dyn_20240730.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./full_feedback_time_series_surfdata_iESM_dyn_20240730.dat&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/surfdata/&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        &quot;./control_time_series_surfdata_iESM_dyn_20240730.dat&quot;,
+        &quot;./full_feedback_time_series_surfdata_iESM_dyn_20240730.dat&quot;
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/surfdata/&quot;,
+    &quot;use_latex&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Simple comparison plots:</strong><br />
-- All variables in surfdata files<br />
-- 2 lines per plot (Control, Full feedback)<br />
-- LaTeX formatting for publication quality<br />
-- Aggregated t-tests in p_values.dat</p>
-<p><strong>Typical surfdata variables:</strong><br />
-- PCT_CROP, PCT_NATVEG, AREA_CROP, etc.<br />
-- Land use change variables</p>
-<hr />
-<h3 id="example-8-version-comparison">Example 8: Version Comparison</h3>
+<p><strong>Simple comparison plots:</strong></p>
+<ul>
+<li>All variables in surfdata files</li>
+<li>2 lines per plot (Control, Full feedback)</li>
+<li>LaTeX formatting for publication quality</li>
+<li>Aggregated t-tests in p_values.dat</li>
+</ul>
+<p><strong>Typical surfdata variables:</strong></p>
+<ul>
+<li>PCT_CROP, PCT_NATVEG, AREA_CROP, etc.</li>
+<li>Land use change variables</li>
+</ul>
+<hr>
+<h3>Example 8: Version Comparison</h3>
 <p><strong>From JSON file (Config #9):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;./control_surfdata_20240730.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./feedback_surfdata_20240730.dat&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;./control_surfdata_20240820.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;./feedback_surfdata_20240820.dat&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;Control (20240730)&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;Full feedback (20240730)&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;Control (20240820)&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">        </span><span class="s2">&quot;Full feedback (20240820)&quot;</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/surfdata_0730_vs_0820/&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        &quot;./control_surfdata_20240730.dat&quot;,
+        &quot;./feedback_surfdata_20240730.dat&quot;,
+        &quot;./control_surfdata_20240820.dat&quot;,
+        &quot;./feedback_surfdata_20240820.dat&quot;
+    ],
+    &quot;output_labels&quot;: [
+        &quot;Control (20240730)&quot;,
+        &quot;Full feedback (20240730)&quot;,
+        &quot;Control (20240820)&quot;,
+        &quot;Full feedback (20240820)&quot;
+    ],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/surfdata_0730_vs_0820/&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Comparison across different data versions:</strong><br />
-- 4 lines per plot<br />
-- Control from two dates<br />
-- Full feedback from two dates<br />
-- Useful for tracking how data/code changes affect results</p>
-<p><strong>Example interpretation:</strong><br />
-- If 20240730 and 20240820 lines identical → code changes didn't affect results<br />
-- If different → can quantify impact of updates</p>
-<hr />
-<h3 id="example-9-surfdata-ensemble">Example 9: Surfdata Ensemble</h3>
+<p><strong>Comparison across different data versions:</strong></p>
+<ul>
+<li>4 lines per plot</li>
+<li>Control from two dates</li>
+<li>Full feedback from two dates</li>
+<li>Useful for tracking how data/code changes affect results</li>
+</ul>
+<p><strong>Example interpretation:</strong></p>
+<ul>
+<li>If 20240730 and 20240820 lines identical → code changes didn&#x27;t affect results</li>
+<li>If different → can quantify impact of updates</li>
+</ul>
+<hr>
+<h3>Example 9: Surfdata Ensemble</h3>
 <p><strong>From JSON file (Config #10):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control_surfdata.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_surfdata_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_surfdata_3.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">         </span><span class="s2">&quot;./control_surfdata_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_surfdata_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback_surfdata.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_surfdata_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_surfdata_3.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">         </span><span class="s2">&quot;./feedback_surfdata_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_surfdata_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/surfdata_ensemble/&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;./control_surfdata.dat&quot;, &quot;./control_surfdata_2.dat&quot;, &quot;./control_surfdata_3.dat&quot;,
+         &quot;./control_surfdata_4.dat&quot;, &quot;./control_surfdata_5.dat&quot;],
+        [&quot;./feedback_surfdata.dat&quot;, &quot;./feedback_surfdata_2.dat&quot;, &quot;./feedback_surfdata_3.dat&quot;,
+         &quot;./feedback_surfdata_4.dat&quot;, &quot;./feedback_surfdata_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/surfdata_ensemble/&quot;
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Ensemble analysis for surfdata:</strong><br />
-- 2 ensemble mean lines (Control, Full feedback)<br />
-- Shaded uncertainty bands (±1σ)<br />
-- Per-year significance markers<br />
-- Aggregated p-values in file</p>
-<p><strong>Example for PCT_CROP:</strong><br />
-- Control ensemble mean: 15.2% ± 0.3% (2015) → 18.5% ± 0.5% (2100)<br />
-- Full feedback ensemble mean: 15.2% ± 0.3% (2015) → 19.8% ± 0.6% (2100)<br />
-- Markers appear starting around year 2050 where differences emerge</p>
-<hr />
-<h3 id="example-10-surfdata-ensemble-percent-difference">Example 10: Surfdata Ensemble Percent Difference</h3>
+<p><strong>Ensemble analysis for surfdata:</strong></p>
+<ul>
+<li>2 ensemble mean lines (Control, Full feedback)</li>
+<li>Shaded uncertainty bands (±1σ)</li>
+<li>Per-year significance markers</li>
+<li>Aggregated p-values in file</li>
+</ul>
+<p><strong>Example for PCT_CROP:</strong></p>
+<ul>
+<li>Control ensemble mean: 15.2% ± 0.3% (2015) → 18.5% ± 0.5% (2100)</li>
+<li>Full feedback ensemble mean: 15.2% ± 0.3% (2015) → 19.8% ± 0.6% (2100)</li>
+<li>Markers appear starting around year 2050 where differences emerge</li>
+</ul>
+<hr>
+<h3>Example 10: Surfdata Ensemble Percent Difference</h3>
 <p><strong>From JSON file (Config #11):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./control_surfdata.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_surfdata_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_surfdata_3.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">         </span><span class="s2">&quot;./control_surfdata_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./control_surfdata_5.dat&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;./feedback_surfdata.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_surfdata_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_surfdata_3.dat&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">         </span><span class="s2">&quot;./feedback_surfdata_4.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./feedback_surfdata_5.dat&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Full feedback&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./time_series_plots/surfdata_ensemble_percent_difference/&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;plot_percent_difference&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;output_files&quot;: [
+        [&quot;./control_surfdata.dat&quot;, &quot;./control_surfdata_2.dat&quot;, &quot;./control_surfdata_3.dat&quot;,
+         &quot;./control_surfdata_4.dat&quot;, &quot;./control_surfdata_5.dat&quot;],
+        [&quot;./feedback_surfdata.dat&quot;, &quot;./feedback_surfdata_2.dat&quot;, &quot;./feedback_surfdata_3.dat&quot;,
+         &quot;./feedback_surfdata_4.dat&quot;, &quot;./feedback_surfdata_5.dat&quot;]
+    ],
+    &quot;output_labels&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;],
+    &quot;plot_directory&quot;: &quot;./time_series_plots/surfdata_ensemble_percent_difference/&quot;,
+    &quot;plot_percent_difference&quot;: true
+}</code></pre>
 <p><strong>What This Creates:</strong></p>
-<p><strong>Percent difference with ensemble uncertainty:</strong><br />
-- Control: Not shown (reference = 0%)<br />
-- Full feedback: Ensemble mean % change with uncertainty bands<br />
-- Markers at significant years</p>
-<p><strong>Example for PCT_CROP in year 2100:</strong><br />
-- Full feedback: +7.0% ± 1.2% relative to Control<br />
-- Means: If Control = 18.5%, Full feedback = 19.8%<br />
-- Calculation: (19.8 - 18.5) / 18.5 × 100 = +7.0%<br />
-- Uncertainty from ensemble spread</p>
-<hr />
-<h2 id="output-files">Output Files</h2>
-<h3 id="plot-files">Plot Files</h3>
+<p><strong>Percent difference with ensemble uncertainty:</strong></p>
+<ul>
+<li>Control: Not shown (reference = 0%)</li>
+<li>Full feedback: Ensemble mean % change with uncertainty bands</li>
+<li>Markers at significant years</li>
+</ul>
+<p><strong>Example for PCT_CROP in year 2100:</strong></p>
+<ul>
+<li>Full feedback: +7.0% ± 1.2% relative to Control</li>
+<li>Means: If Control = 18.5%, Full feedback = 19.8%</li>
+<li>Calculation: (19.8 - 18.5) / 18.5 × 100 = +7.0%</li>
+<li>Uncertainty from ensemble spread</li>
+</ul>
+<hr>
+<h2>Output Files</h2>
+<h3>Plot Files</h3>
 <p><strong>Naming Convention:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="o">.</span><span class="n">pdf</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_MAM</span><span class="o">.</span><span class="n">pdf</span><span class="w">  </span><span class="p">(</span><span class="n">seasonal</span><span class="p">)</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_JJA</span><span class="o">.</span><span class="n">pdf</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_SON</span><span class="o">.</span><span class="n">pdf</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_DJF</span><span class="o">.</span><span class="n">pdf</span>
-<span class="p">{</span><span class="n">plot_directory</span><span class="p">}</span><span class="o">/</span><span class="n">time_series_</span><span class="p">{</span><span class="n">variable</span><span class="p">}</span><span class="n">_monthly</span><span class="o">.</span><span class="n">pdf</span>
-</code></pre></div>
-
+<pre><code>{plot_directory}/time_series_{variable}.pdf
+{plot_directory}/time_series_{variable}_MAM.pdf  (seasonal)
+{plot_directory}/time_series_{variable}_JJA.pdf
+{plot_directory}/time_series_{variable}_SON.pdf
+{plot_directory}/time_series_{variable}_DJF.pdf
+{plot_directory}/time_series_{variable}_monthly.pdf</code></pre>
 <p><strong>Example Output Directory:</strong></p>
-<div class="codehilite"><pre><span></span><code>./time_series_plots/ensemble/
+<pre><code>./time_series_plots/ensemble/
 ├── time_series_GPP.pdf
 ├── time_series_GPP_JJA.pdf
 ├── time_series_GPP_monthly.pdf
@@ -1498,102 +706,92 @@ NBP in Ag scaling: 8.765e-02
 ├── time_series_ZCO2_SON.pdf
 ├── time_series_ZCO2_DJF.pdf
 ├── time_series_ZCO2_monthly.pdf
-└── p_values.dat
-</code></pre></div>
-
-<h3 id="p-value-files">P-Value Files</h3>
+└── p_values.dat</code></pre>
+<h3>P-Value Files</h3>
 <p><strong>Purpose:</strong> Records aggregated statistical test results</p>
 <p><strong>Format:</strong></p>
-<div class="codehilite"><pre><span></span><code>GPP in Full feedback: 1.234e-05
+<pre><code>GPP in Full feedback: 1.234e-05
 GPP in Ag scaling: 3.456e-03
 NPP in Full feedback: 8.901e-07
-NBP in Full feedback: 5.678e-02
-</code></pre></div>
-
+NBP in Full feedback: 5.678e-02</code></pre>
 <p><strong>Location:</strong> <code>{plot_directory}/p_values.dat</code></p>
-<p><strong>Interpretation:</strong><br />
-- &lt; 0.05: Statistically significant difference from Control<br />
-- ≥ 0.05: Not statistically significant at 95% confidence level</p>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>&lt; 0.05: Statistically significant difference from Control</li>
+<li>≥ 0.05: Not statistically significant at 95% confidence level</li>
+</ul>
 <p><strong>Note:</strong> This file contains <strong>aggregated</strong> p-values (whole period). Per-year and per-month p-values shown as markers on plots.</p>
-<hr />
-<h2 id="best-practices">Best Practices</h2>
-<h3 id="1-choose-appropriate-plot-type">1. Choose Appropriate Plot Type</h3>
-<p><strong>Use <code>plot_type: "ensemble"</code> when:</strong><br />
-- Multiple ensemble members available<br />
-- Need statistical confidence<br />
-- Publishing results<br />
-- Want uncertainty quantification</p>
-<p><strong>Use <code>plot_type: "individual"</code> when:</strong><br />
-- Exploring ensemble spread<br />
-- Diagnosing outliers<br />
-- Comparing specific members<br />
-- Initial investigation phase</p>
-<hr />
-<h3 id="2-variable-selection">2. Variable Selection</h3>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Choose Appropriate Plot Type</h3>
+<p><strong>Use <code>plot_type: &quot;ensemble&quot;</code> when:</strong></p>
+<ul>
+<li>Multiple ensemble members available</li>
+<li>Need statistical confidence</li>
+<li>Publishing results</li>
+<li>Want uncertainty quantification</li>
+</ul>
+<p><strong>Use <code>plot_type: &quot;individual&quot;</code> when:</strong></p>
+<ul>
+<li>Exploring ensemble spread</li>
+<li>Diagnosing outliers</li>
+<li>Comparing specific members</li>
+<li>Initial investigation phase</li>
+</ul>
+<hr>
+<h3>2. Variable Selection</h3>
 <p><strong>Plot all variables:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: &quot;all&quot;</code></pre>
 <p><strong>Plot specific variables:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">]</span>
-</code></pre></div>
-
-<p><strong>Recommendation:</strong> Start specific for testing, expand to "all" for comprehensive analysis</p>
-<hr />
-<h3 id="3-monthly-aggregation">3. Monthly Aggregation</h3>
-<p><strong>Use <code>"sum"</code> for:</strong><br />
-- Fluxes (GPP, NPP, NBP, ER)<br />
-- Precipitation (PRECIP)<br />
-- Any rate that should be integrated over time</p>
-<p><strong>Use <code>"mean"</code> for:</strong><br />
-- State variables (temperature, CO₂ concentration)<br />
-- Fractions (land cover percentages)<br />
-- Dimensionless quantities</p>
+<pre><code>&quot;variables&quot;: [&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;]</code></pre>
+<p><strong>Recommendation:</strong> Start specific for testing, expand to &quot;all&quot; for comprehensive analysis</p>
+<hr>
+<h3>3. Monthly Aggregation</h3>
+<p><strong>Use <code>&quot;sum&quot;</code> for:</strong></p>
+<ul>
+<li>Fluxes (GPP, NPP, NBP, ER)</li>
+<li>Precipitation (PRECIP)</li>
+<li>Any rate that should be integrated over time</li>
+</ul>
+<p><strong>Use <code>&quot;mean&quot;</code> for:</strong></p>
+<ul>
+<li>State variables (temperature, CO₂ concentration)</li>
+<li>Fractions (land cover percentages)</li>
+<li>Dimensionless quantities</li>
+</ul>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;monthly_aggregation_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;NPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;PRECIP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;TREFHT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ZCO2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mean&quot;</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="4-ensemble-size">4. Ensemble Size</h3>
+<pre><code>&quot;monthly_aggregation_type&quot;: {
+    &quot;GPP&quot;: &quot;sum&quot;,
+    &quot;NPP&quot;: &quot;sum&quot;,
+    &quot;PRECIP&quot;: &quot;sum&quot;,
+    &quot;TREFHT&quot;: &quot;mean&quot;,
+    &quot;ZCO2&quot;: &quot;mean&quot;
+}</code></pre>
+<hr>
+<h3>4. Ensemble Size</h3>
 <p><strong>Recommended:</strong> 5-10 members</p>
-<p><strong>Small (n=3-5):</strong> Quick analysis, limited statistical power<br />
-<strong>Medium (n=5-10):</strong> Standard analysis, good balance (recommended)<br />
-<strong>Large (n=10-20):</strong> Publication-quality, robust statistics, high computational cost</p>
-<hr />
-<h3 id="5-seasonal-analysis-strategy">5. Seasonal Analysis Strategy</h3>
+<p><strong>Small (n=3-5):</strong> Quick analysis, limited statistical power <strong>Medium (n=5-10):</strong> Standard analysis, good balance (recommended) <strong>Large (n=10-20):</strong> Publication-quality, robust statistics, high computational cost</p>
+<hr>
+<h3>5. Seasonal Analysis Strategy</h3>
 <p><strong>Step 1:</strong> Include key seasons on main plot</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;include_seasons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;JJA&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;DJF&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}}</span>
-</code></pre></div>
-
+<pre><code>&quot;include_seasons&quot;: {&quot;GPP&quot;: {&quot;JJA&quot;: true, &quot;DJF&quot;: true}}</code></pre>
 <p><strong>Step 2:</strong> Create separate plots for detailed analysis</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;seasons_to_plot_separately&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;MAM&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;JJA&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;SON&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;DJF&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>&quot;seasons_to_plot_separately&quot;: {
+    &quot;GPP&quot;: {&quot;MAM&quot;: true, &quot;JJA&quot;: true, &quot;SON&quot;: true, &quot;DJF&quot;: true}
+}</code></pre>
 <p><strong>Avoid:</strong> Including all 4 seasons on main plot (too cluttered)</p>
-<hr />
-<h3 id="6-ensemble-file-organization">6. Ensemble File Organization</h3>
+<hr>
+<h3>6. Ensemble File Organization</h3>
 <p><strong>Recommendation:</strong> Use Option 1 (organized by scenario) for clarity</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;ctrl.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ctrl_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ctrl_3.dat&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;scen.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scen_2.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scen_3.dat&quot;</span><span class="p">]</span>
-<span class="p">]</span>
-</code></pre></div>
-
+<pre><code>&quot;output_files&quot;: [
+    [&quot;ctrl.dat&quot;, &quot;ctrl_2.dat&quot;, &quot;ctrl_3.dat&quot;],
+    [&quot;scen.dat&quot;, &quot;scen_2.dat&quot;, &quot;scen_3.dat&quot;]
+]</code></pre>
 <p><strong>Always provide <code>output_labels</code></strong> for unambiguous detection:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;output_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Control&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scenario&quot;</span><span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="7-file-organization">7. File Organization</h3>
-<div class="codehilite"><pre><span></span><code>project/
+<pre><code>&quot;output_labels&quot;: [&quot;Control&quot;, &quot;Scenario&quot;]</code></pre>
+<hr>
+<h3>7. File Organization</h3>
+<pre><code>project/
 ├── data/
 │   ├── control_time_series.dat
 │   ├── control_time_series_2.dat
@@ -1607,187 +805,146 @@ NBP in Full feedback: 5.678e-02
     ├── ensemble/
     ├── individual/
     ├── percent_diff/
-    └── seasonal/
-</code></pre></div>
-
-<hr />
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="issue-1-wrong-number-of-lines">Issue 1: Wrong Number of Lines</h3>
+    └── seasonal/</code></pre>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Issue 1: Wrong Number of Lines</h3>
 <p><strong>Symptom:</strong> Plot has unexpected number of lines</p>
-<p><strong>Possible Causes:</strong><br />
-1. <code>plot_type</code> set incorrectly<br />
-2. Ensemble format misdetected</p>
+<p><strong>Possible Causes:</strong></p>
+<ul>
+<li><code>plot_type</code> set incorrectly</li>
+<li>Ensemble format misdetected</li>
+</ul>
 <p><strong>Solutions:</strong></p>
 <p><strong>Check plot_type:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;ensemble&quot;</span><span class="w">  </span><span class="c1">// 1 line per scenario (mean)</span>
-<span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;individual&quot;</span><span class="w">  </span><span class="c1">// N lines per scenario (all members)</span>
-</code></pre></div>
-
+<pre><code>&quot;plot_type&quot;: &quot;ensemble&quot;  // 1 line per scenario (mean)
+&quot;plot_type&quot;: &quot;individual&quot;  // N lines per scenario (all members)</code></pre>
 <p><strong>Verify ensemble detection:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;notify_output_files_transposed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</code></pre></div>
-
+<pre><code>&quot;notify_output_files_transposed&quot;: true</code></pre>
 <p><strong>Check file count:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output_files&#39;</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Structure: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s2"> x </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-2-no-significance-markers">Issue 2: No Significance Markers</h3>
+<pre><code>import json
+with open(&#x27;config.json&#x27;) as f:
+    config = json.load(f)[0]
+    files = config[&#x27;output_files&#x27;]
+    print(f&quot;Structure: {len(files)} x {len(files[0])}&quot;)</code></pre>
+<hr>
+<h3>Issue 2: No Significance Markers</h3>
 <p><strong>Symptom:</strong> Expected markers but none appear</p>
-<p><strong>Possible Causes:</strong><br />
-1. Using <code>plot_type: "individual"</code> (no per-year tests)<br />
-2. All p-values &gt; threshold<br />
-3. Ensemble size too small (n=1)</p>
+<p><strong>Possible Causes:</strong></p>
+<ul>
+<li>Using <code>plot_type: &quot;individual&quot;</code> (no per-year tests)</li>
+<li>All p-values &gt; threshold</li>
+<li>Ensemble size too small (n=1)</li>
+</ul>
 <p><strong>Solutions:</strong></p>
 <p><strong>Check plot type:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ensemble&quot;</span><span class="w">  </span><span class="c1">// Required for per-year markers</span>
-</code></pre></div>
-
+<pre><code>&quot;plot_type&quot;: &quot;ensemble&quot;  // Required for per-year markers</code></pre>
 <p><strong>Lower threshold (exploratory only):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;p_value_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.10</span><span class="w">  </span><span class="c1">// More lenient</span>
-</code></pre></div>
-
+<pre><code>&quot;p_value_threshold&quot;: 0.10  // More lenient</code></pre>
 <p><strong>Check p-value file:</strong></p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>plots/p_values.dat
-</code></pre></div>
-
+<pre><code>cat plots/p_values.dat</code></pre>
 <p>If aggregated p-values high, per-year likely also high</p>
-<hr />
-<h3 id="issue-3-file-not-found">Issue 3: File Not Found</h3>
+<hr>
+<h3>Issue 3: File Not Found</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">FileNotFoundError</span><span class="o">:</span><span class="w"> </span><span class="n">control_time_series</span><span class="o">.</span><span class="na">dat</span>
-</code></pre></div>
-
+<pre><code>FileNotFoundError: control_time_series.dat</code></pre>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Verify files exist</span>
-ls<span class="w"> </span>-la<span class="w"> </span>control_time_series*.dat
+<pre><code># Verify files exist
+ls -la control_time_series*.dat
 
-<span class="c1"># Use absolute paths</span>
-<span class="s2">&quot;output_files&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="s2">&quot;/absolute/path/to/file.dat&quot;</span><span class="o">]</span>
+# Use absolute paths
+&quot;output_files&quot;: [&quot;/absolute/path/to/file.dat&quot;]
 
-<span class="c1"># Check working directory</span>
-<span class="nb">pwd</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-4-variable-not-found">Issue 4: Variable Not Found</h3>
+# Check working directory
+pwd</code></pre>
+<hr>
+<h3>Issue 4: Variable Not Found</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code>KeyError: &#39;GPP&#39;
-</code></pre></div>
-
+<pre><code>KeyError: &#x27;GPP&#x27;</code></pre>
 <p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="s1">&#39;time_series.dat&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>import pandas as pd
+df = pd.read_fwf(&#x27;time_series.dat&#x27;)
+print(df.columns)</code></pre>
 <p>Check exact variable names (case-sensitive)</p>
-<hr />
-<h3 id="issue-5-memory-error">Issue 5: Memory Error</h3>
+<hr>
+<h3>Issue 5: Memory Error</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">MemoryError</span><span class="o">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">allocate</span><span class="w"> </span><span class="n">array</span>
-</code></pre></div>
-
+<pre><code>MemoryError: Unable to allocate array</code></pre>
 <p><strong>Causes:</strong> Too many variables × files processed simultaneously</p>
 <p><strong>Solutions:</strong></p>
 <p><strong>Process fewer variables:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// Instead of &quot;all&quot;</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [&quot;GPP&quot;, &quot;NPP&quot;]  // Instead of &quot;all&quot;</code></pre>
 <p><strong>Run configurations separately:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>script.py<span class="w"> </span>config1.json
-python<span class="w"> </span>script.py<span class="w"> </span>config2.json
-</code></pre></div>
-
-<hr />
-<h3 id="issue-6-latex-errors">Issue 6: LaTeX Errors</h3>
+<pre><code>python script.py config1.json
+python script.py config2.json</code></pre>
+<hr>
+<h3>Issue 6: LaTeX Errors</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">RuntimeError</span><span class="o">:</span><span class="w"> </span><span class="n">Failed</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">process</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">tex</span>
-</code></pre></div>
-
+<pre><code>RuntimeError: Failed to process string with tex</code></pre>
 <p><strong>Solutions:</strong></p>
 <p><strong>Disable LaTeX:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;use_latex&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
-</code></pre></div>
-
+<pre><code>&quot;use_latex&quot;: false</code></pre>
 <p><strong>Or install LaTeX:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>texlive<span class="w"> </span>texlive-latex-extra
+<pre><code># Ubuntu/Debian
+sudo apt-get install texlive texlive-latex-extra
 
-<span class="c1"># macOS</span>
-brew<span class="w"> </span>install<span class="w"> </span>mactex
-</code></pre></div>
-
-<hr />
-<h2 id="advanced-features">Advanced Features</h2>
-<h3 id="per-variable-configuration">Per-Variable Configuration</h3>
+# macOS
+brew install mactex</code></pre>
+<hr>
+<h2>Advanced Features</h2>
+<h3>Per-Variable Configuration</h3>
 <p>Most parameters accept dictionaries for per-variable customization:</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TREFHT&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;y_limits&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">180</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;NBP&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">-10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;TREFHT&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">285</span><span class="p">,</span><span class="w"> </span><span class="mi">295</span><span class="p">]</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;monthly_time_series_plot&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;NBP&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;TREFHT&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;monthly_aggregation_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;GPP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;NBP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;TREFHT&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mean&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="multiple-configurations-in-one-file">Multiple Configurations in One File</h3>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./plots/set1/&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;output_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;plot_directory&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./plots/set2/&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;variables&quot;: [&quot;GPP&quot;, &quot;NBP&quot;, &quot;TREFHT&quot;],
+    &quot;y_limits&quot;: {
+        &quot;GPP&quot;: [100, 180],
+        &quot;NBP&quot;: [-10, 20],
+        &quot;TREFHT&quot;: [285, 295]
+    },
+    &quot;monthly_time_series_plot&quot;: {
+        &quot;GPP&quot;: true,
+        &quot;NBP&quot;: false,
+        &quot;TREFHT&quot;: true
+    },
+    &quot;monthly_aggregation_type&quot;: {
+        &quot;GPP&quot;: &quot;sum&quot;,
+        &quot;NBP&quot;: &quot;sum&quot;,
+        &quot;TREFHT&quot;: &quot;mean&quot;
+    }
+}</code></pre>
+<hr>
+<h3>Multiple Configurations in One File</h3>
+<pre><code>[
+    {
+        &quot;output_files&quot;: [...],
+        &quot;plot_directory&quot;: &quot;./plots/set1/&quot;
+    },
+    {
+        &quot;output_files&quot;: [...],
+        &quot;plot_directory&quot;: &quot;./plots/set2/&quot;
+    }
+]</code></pre>
 <p><strong>Result:</strong> All plots generated in one execution</p>
-<hr />
-<h2 id="references">References</h2>
+<hr>
+<h2>References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>Matplotlib Documentation: <a href="https://matplotlib.org/">https://matplotlib.org/</a></li>
 <li>SciPy Stats: <a href="https://docs.scipy.org/doc/scipy/reference/stats.html">https://docs.scipy.org/doc/scipy/reference/stats.html</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
-<hr />
-<h2 id="contact">Contact</h2>
-<p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
-- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
-<hr />
-<h2 id="version-information">Version Information</h2>
-<p><strong>Script:</strong> e3sm_plot_time_series.py<br />
-<strong>Documentation Version:</strong> 2.0<br />
-<strong>Last Updated:</strong> January 2026<br />
-<strong>Python Version:</strong> 3.7+<br />
-<strong>Dependencies:</strong> pandas, numpy, matplotlib, scipy</p>
-<hr />
-<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_plot_time_series.py</code> script to create publication-quality time series plots from E3SM model output with ensemble analysis and statistical significance testing.</em></p>
-        <footer>
-            <p>E3SM Time Series Plotting Script Documentation<br>
-            <strong>Script:</strong> e3sm_plot_time_series.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
-        </footer>
-    </div>
+<hr>
+<h2>Contact</h2>
+<p>For questions or issues:</p>
+<ul>
+<li><strong>Philip Myint</strong>: myint1@llnl.gov</li>
+<li><strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</li>
+</ul>
+<hr>
+<h2>Version Information</h2>
+<p><strong>Script:</strong> e3sm_plot_time_series.py <strong>Documentation Version:</strong> 2.0 <strong>Last Updated:</strong> January 2026 <strong>Python Version:</strong> 3.7+ <strong>Dependencies:</strong> pandas, numpy, matplotlib, scipy</p>
+<hr>
+<p>*This documentation provides comprehensive guidance for using the <code>e3sm_plot_time_series.py</code> script to create publication-quality time series plots from E3SM model output with ensemble analysis and statistical significance testing.*</p>
+</div>
 </body>
 </html>

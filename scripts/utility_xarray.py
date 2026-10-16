@@ -71,7 +71,7 @@ def convert_xarray_to_uxarray(data, grid, variable=None, fillna=1):
         data: Object of type xarray.
         grid: Grid object for the unstructured grid contained within the uxarray object.
         variable: Variable of interest.
-        fill_value: Value to fill NaNs.
+        fillna: Value to fill NaNs.
 
     Returns:
         uxarray (UxDataArray or UxDataset) version of the given xarray object.
@@ -81,17 +81,13 @@ def convert_xarray_to_uxarray(data, grid, variable=None, fillna=1):
         ds[variable] = data
     else:
         ds = data
-    # Apply fillna on the xarray Dataset before constructing the UxDataset, to avoid the
-    # uxarray/xarray >= 2025.7.1 incompatibility. Both ux.UxDataset.from_xarray and
-    # ux.UxDataset.fillna internally reconstruct a UxDataset by passing a Dataset as the
-    # first positional argument, which xarray >= 2025.7.1 no longer supports.
-    # Applying fillna on the xr.Dataset first and passing dict(ds) to UxDataset avoids both issues.
+    # Fill NaNs while the data are still a plain xarray Dataset. Calling fillna after constructing
+    # the UxDataset can hit uxarray/xarray >= 2025.7.1 constructor incompatibilities.
     if fillna:
         ds = ds.fillna(fillna)
-    # Rename the spatial dimension to match uxarray's face dimension name ('n_face') if needed.
-    # When ux.open_dataset was used, this mapping was done automatically. With direct UxDataset
-    # construction, we must do it manually — otherwise uxarray raises 'Data variable must be face
-    # centered' at plot time because the data dimension (e.g. 'ncol') doesn't match 'n_face'.
+    # Rename the grid-cell dimension (for example, ncol) to uxarray's face dimension name.
+    # Direct UxDataset construction does not do this mapping automatically, and uxarray expects
+    # face-centered plot data to use the n_face dimension.
     if hasattr(grid, 'n_face'):
         for dim in list(ds.dims):
             if dim not in ('time', 'year', 'lev', 'ilev') and ds.sizes[dim] == grid.n_face:

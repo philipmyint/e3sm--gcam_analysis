@@ -52,7 +52,7 @@
             "PRECSL"
         ],
         "use_latex": true,
-        "plot_type": "sum",
+        "time_calculation": "sum",
         "grid_file": "./../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
         "start_year": 2085,
         "end_year": 2090

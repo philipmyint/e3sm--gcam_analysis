@@ -1,489 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Synthetic Spatial Data Generation Script Documentation</title>
-    <style>/* 
- * Documentation Stylesheet for GCAM Synthetic Data Generation Script
- * A modern, colorful design with good readability
- */
-
-/* ===== ROOT VARIABLES ===== */
-:root {
-    /* Color Palette */
-    --primary-blue: #2563eb;
-    --primary-blue-light: #3b82f6;
-    --primary-blue-dark: #1e40af;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    --accent-purple: #8b5cf6;
-    --accent-red: #ef4444;
-    
-    /* Background Colors */
-    --bg-main: #f8fafc;
-    --bg-code: #1e293b;
-    --bg-code-inline: #e2e8f0;
-    --bg-table-header: #1e40af;
-    --bg-table-row-even: #f1f5f9;
-    --bg-table-row-odd: #ffffff;
-    --bg-note: #fef3c7;
-    --bg-warning: #fee2e2;
-    --bg-info: #dbeafe;
-    --bg-success: #d1fae5;
-    
-    /* Text Colors */
-    --text-main: #1e293b;
-    --text-secondary: #64748b;
-    --text-code: #e2e8f0;
-    --text-link: #2563eb;
-    --text-link-hover: #1e40af;
-    
-    /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-dark: #94a3b8;
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-}
-
-/* ===== BASE STYLES ===== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
-    color: var(--text-main);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: var(--spacing-xl) var(--spacing-md);
-    font-size: 16px;
-}
-
-/* Main Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    padding: var(--spacing-2xl);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1 {
-    font-size: 2.5rem;
-    color: var(--primary-blue-dark);
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 4px solid var(--primary-blue);
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-h2 {
-    font-size: 2rem;
-    color: var(--primary-blue);
-    margin-top: var(--spacing-2xl);
-    margin-bottom: var(--spacing-lg);
-    padding-left: var(--spacing-md);
-    border-left: 5px solid var(--accent-green);
-    font-weight: 600;
-}
-
-h3 {
-    font-size: 1.5rem;
-    color: var(--primary-blue-dark);
-    margin-top: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-}
-
-h3::before {
-    content: "▸";
-    color: var(--accent-orange);
-    margin-right: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-h4 {
-    font-size: 1.25rem;
-    color: var(--accent-purple);
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-sm);
-    font-weight: 600;
-}
-
-p {
-    margin-bottom: var(--spacing-md);
-    color: var(--text-main);
-}
-
-/* ===== LINKS ===== */
-a {
-    color: var(--text-link);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-a:hover {
-    color: var(--text-link-hover);
-    border-bottom-color: var(--text-link-hover);
-}
-
-/* ===== LISTS ===== */
-ul, ol {
-    margin-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-}
-
-li {
-    margin-bottom: var(--spacing-sm);
-    padding-left: var(--spacing-sm);
-}
-
-ul li::marker {
-    color: var(--accent-green);
-    font-size: 1.2em;
-}
-
-ol li::marker {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
-/* ===== CODE BLOCKS ===== */
-code {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--bg-code-inline);
-    color: var(--accent-red);
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-pre {
-    background: var(--bg-code);
-    color: var(--text-code);
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: var(--spacing-lg) 0;
-    border-left: 4px solid var(--accent-green);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-pre code {
-    background: transparent;
-    color: var(--text-code);
-    padding: 0;
-    font-size: 0.95em;
-    line-height: 1.5;
-}
-
-/* ===== TABLES ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: var(--spacing-xl) 0;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-thead {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
-    color: white;
-}
-
-th {
-    padding: var(--spacing-md);
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.05em;
-    border-bottom: 3px solid var(--accent-orange);
-}
-
-td {
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-light);
-}
-
-tbody tr:nth-child(even) {
-    background: var(--bg-table-row-even);
-}
-
-tbody tr:nth-child(odd) {
-    background: var(--bg-table-row-odd);
-}
-
-tbody tr:hover {
-    background: #e0f2fe;
-    transform: scale(1.01);
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ===== BLOCKQUOTES ===== */
-blockquote {
-    margin: var(--spacing-lg) 0;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--primary-blue-dark);
-}
-
-/* ===== HORIZONTAL RULES ===== */
-hr {
-    border: none;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
-    margin: var(--spacing-2xl) 0;
-    border-radius: 2px;
-}
-
-/* ===== SPECIAL BOXES ===== */
-.note {
-    background: var(--bg-note);
-    border-left: 5px solid var(--accent-orange);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.warning {
-    background: var(--bg-warning);
-    border-left: 5px solid var(--accent-red);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.info {
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.success {
-    background: var(--bg-success);
-    border-left: 5px solid var(--accent-green);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-/* ===== BADGES ===== */
-.badge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 600;
-    margin: 0 var(--spacing-xs);
-}
-
-.badge-required {
-    background: var(--accent-red);
-    color: white;
-}
-
-.badge-optional {
-    background: var(--accent-green);
-    color: white;
-}
-
-.badge-default {
-    background: var(--primary-blue);
-    color: white;
-}
-
-/* ===== STRONG & EM ===== */
-strong {
-    color: var(--primary-blue-dark);
-    font-weight: 700;
-}
-
-em {
-    color: var(--accent-purple);
-    font-style: italic;
-}
-
-/* ===== IMAGES ===== */
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: var(--spacing-lg) 0;
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-table-row-even);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--accent-purple) 100%);
-}
-
-/* ===== PRINT STYLES ===== */
-@media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-    
-    .container {
-        box-shadow: none;
-        max-width: 100%;
-    }
-    
-    h1, h2, h3 {
-        page-break-after: avoid;
-    }
-    
-    pre, table {
-        page-break-inside: avoid;
-    }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    body {
-        padding: var(--spacing-md) var(--spacing-sm);
-        font-size: 14px;
-    }
-    
-    .container {
-        padding: var(--spacing-lg);
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.25rem;
-    }
-    
-    table {
-        font-size: 0.9em;
-    }
-    
-    th, td {
-        padding: var(--spacing-sm);
-    }
-}
-
-/* ===== ADDITIONAL UTILITY CLASSES ===== */
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.margin-top-lg {
-    margin-top: var(--spacing-2xl);
-}
-
-.margin-bottom-lg {
-    margin-bottom: var(--spacing-2xl);
-}
-
-.highlight {
-    background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
-    padding: 0 var(--spacing-xs);
-    border-radius: 3px;
-}
-
-/* ===== SECTION DIVIDERS ===== */
-.section-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: var(--spacing-2xl) 0;
-}
-
-.section-divider::before,
-.section-divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 2px solid var(--border-medium);
-}
-
-.section-divider::before {
-    margin-right: var(--spacing-md);
-}
-
-.section-divider::after {
-    margin-left: var(--spacing-md);
-}
-
-/* ===== FOOTER ===== */
-footer {
-    margin-top: var(--spacing-2xl);
-    padding-top: var(--spacing-lg);
-    border-top: 2px solid var(--border-light);
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E3SM Synthetic Spatial Data Generation Script Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; background: #f8fafc; margin: 0; }
+.container { max-width: 980px; margin: 0 auto; padding: 2rem; background: #ffffff; }
+h1, h2, h3, h4 { color: #1f2937; line-height: 1.25; }
+a { color: #2563eb; }
+code { background: #eef2ff; padding: 0.1rem 0.25rem; border-radius: 4px; }
+pre { background: #111827; color: #f9fafb; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+pre code { background: transparent; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #d1d5db; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem; color: #475569; }
 </style>
 </head>
 <body>
-    <div class="container"><h1 id="e3sm-synthetic-spatial-data-generation-script-documentation">E3SM Synthetic Spatial Data Generation Script Documentation</h1>
+<div class="container">
+<h1>E3SM Synthetic Spatial Data Generation Script Documentation</h1>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
-<hr />
-<h2 id="overview">Overview</h2>
+<hr>
+<h2>Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_produce_synthetic_spatial_data.py</code></p>
 <p><strong>Purpose:</strong> Generates synthetic ensemble members from existing E3SM spatial NetCDF files by applying random perturbations to create multiple realizations for uncertainty quantification and ensemble analysis. This is particularly useful for statistical significance testing, sensitivity analysis, and creating pseudo-ensembles when limited simulation data is available.</p>
 <p><strong>Key Use Case:</strong> Creating synthetic ensemble members to enable statistical testing (e.g., t-tests, ensemble means) when only single simulation outputs exist. Common in climate model analysis for assessing spatial variability and statistical significance of differences between scenarios.</p>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
-<hr />
-<h2 id="table-of-contents">Table of Contents</h2>
-<ol>
+<hr>
+<h2>Table of Contents</h2>
+<ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
@@ -496,258 +45,219 @@ footer {
 <li><a href="#best-practices">Best Practices</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#scientific-considerations">Scientific Considerations</a></li>
-</ol>
-<hr />
-<h2 id="installation-requirements">Installation &amp; Requirements</h2>
-<h3 id="required-python-libraries">Required Python Libraries</h3>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>numpy<span class="w"> </span>xarray<span class="w"> </span>netCDF4<span class="w"> </span>multiprocessing
-</code></pre></div>
-
-<h3 id="required-utility-modules">Required Utility Modules</h3>
-<p>The script imports utility modules (though none are strictly required for this script):<br />
-- <code>utility_e3sm_netcdf</code> (not used in current implementation)<br />
-- <code>utility_functions</code> (not used in current implementation)<br />
-- <code>utility_dataframes</code> (not used in current implementation)<br />
-- <code>utility_xarray</code> (not used in current implementation)</p>
+</ul>
+<hr>
+<h2>Installation &amp; Requirements</h2>
+<h3>Required Python Libraries</h3>
+<pre><code>pip install numpy xarray netCDF4 multiprocessing</code></pre>
+<h3>Required Utility Modules</h3>
+<p>The script imports utility modules (though none are strictly required for this script):</p>
+<ul>
+<li><code>utility_e3sm_netcdf</code> (not used in current implementation)</li>
+<li><code>utility_functions</code> (not used in current implementation)</li>
+<li><code>utility_dataframes</code> (not used in current implementation)</li>
+<li><code>utility_xarray</code> (not used in current implementation)</li>
+</ul>
 <p><strong>Note:</strong> These imports can be removed if not needed.</p>
-<h3 id="system-requirements">System Requirements</h3>
+<h3>System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
 <li>Sufficient RAM to load NetCDF files (4+ GB recommended)</li>
 <li>Sufficient disk space for synthetic ensemble files</li>
 </ul>
-<hr />
-<h2 id="basic-usage">Basic Usage</h2>
-<h3 id="direct-execution-hardcoded-configuration">Direct Execution (Hardcoded Configuration)</h3>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_produce_synthetic_spatial_data.py
-</code></pre></div>
-
+<hr>
+<h2>Basic Usage</h2>
+<h3>Direct Execution (Hardcoded Configuration)</h3>
+<pre><code>python e3sm_produce_synthetic_spatial_data.py</code></pre>
 <p><strong>Note:</strong> This script does NOT use JSON configuration files. All parameters are hardcoded in the script and must be edited directly.</p>
-<h3 id="editing-the-script">Editing the Script</h3>
+<h3>Editing the Script</h3>
 <p>Open the script and modify the configuration section:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Edit these lists in the script:</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;./path/to/spatial_data_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./path/to/spatial_data_eam.nc&quot;</span>
-<span class="p">]</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>  <span class="c1"># Total ensemble members per base file</span>
-</code></pre></div>
-
-<h3 id="what-the-script-does">What the Script Does</h3>
-<ol>
+<pre><code># Edit these lists in the script:
+files = [
+    &quot;./path/to/spatial_data_elm.nc&quot;,
+    &quot;./path/to/spatial_data_eam.nc&quot;
+]
+num_files_in_each_set = [5, 5]  # Total ensemble members per base file</code></pre>
+<h3>What the Script Does</h3>
+<ul>
 <li><strong>Reads</strong> base spatial NetCDF file(s)</li>
 <li><strong>Generates</strong> random multipliers (default: uniform 0.99-1.02)</li>
 <li><strong>Creates</strong> synthetic copies by multiplying all variables by random factor</li>
 <li><strong>Saves</strong> synthetic files with numbered suffixes (_2.nc, _3.nc, etc.)</li>
 <li><strong>Processes</strong> multiple base files in parallel</li>
-</ol>
-<hr />
-<h2 id="how-it-works">How It Works</h2>
-<h3 id="perturbation-method">Perturbation Method</h3>
+</ul>
+<hr>
+<h2>How It Works</h2>
+<h3>Perturbation Method</h3>
 <p>The script creates synthetic ensemble members by applying random multiplicative perturbations:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># For each base file:</span>
-<span class="n">base_file</span><span class="o">.</span><span class="n">nc</span> <span class="err">→</span> <span class="n">Read</span> <span class="n">original</span> <span class="n">data</span>
+<pre><code># For each base file:
+base_file.nc → Read original data
 
-<span class="c1"># Create N-1 synthetic members (N = total ensemble size):</span>
-<span class="n">synthetic_1</span> <span class="o">=</span> <span class="n">base_data</span> <span class="err">×</span> <span class="n">random_multiplier_1</span>  <span class="c1"># e.g., × 1.015</span>
-<span class="n">synthetic_2</span> <span class="o">=</span> <span class="n">base_data</span> <span class="err">×</span> <span class="n">random_multiplier_2</span>  <span class="c1"># e.g., × 0.997</span>
-<span class="n">synthetic_3</span> <span class="o">=</span> <span class="n">base_data</span> <span class="err">×</span> <span class="n">random_multiplier_3</span>  <span class="c1"># e.g., × 1.008</span>
-<span class="o">...</span>
+# Create N-1 synthetic members (N = total ensemble size):
+synthetic_1 = base_data × random_multiplier_1  # e.g., × 1.015
+synthetic_2 = base_data × random_multiplier_2  # e.g., × 0.997
+synthetic_3 = base_data × random_multiplier_3  # e.g., × 1.008
+...
 
-<span class="c1"># Save as:</span>
-<span class="n">base_file_2</span><span class="o">.</span><span class="n">nc</span>
-<span class="n">base_file_3</span><span class="o">.</span><span class="n">nc</span>
-<span class="n">base_file_4</span><span class="o">.</span><span class="n">nc</span>
-<span class="o">...</span>
-</code></pre></div>
-
-<h3 id="random-multiplier-generation">Random Multiplier Generation</h3>
+# Save as:
+base_file_2.nc
+base_file_3.nc
+base_file_4.nc
+...</code></pre>
+<h3>Random Multiplier Generation</h3>
 <p><strong>Distribution:</strong> Uniform random distribution</p>
 <p><strong>Range:</strong> 0.99 to 1.02 (default)</p>
-<p><strong>Interpretation:</strong><br />
-- Multiplier = 0.99 → 1% decrease<br />
-- Multiplier = 1.00 → No change<br />
-- Multiplier = 1.02 → 2% increase</p>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li>Multiplier = 0.99 → 1% decrease</li>
+<li>Multiplier = 1.00 → No change</li>
+<li>Multiplier = 1.02 → 2% increase</li>
+</ul>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># If base GPP = 10.0 gC/m²/s at a gridcell:</span>
-<span class="n">multiplier</span> <span class="o">=</span> <span class="mf">1.015</span>  <span class="c1"># Randomly drawn</span>
-<span class="n">synthetic_GPP</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="err">×</span> <span class="mf">1.015</span> <span class="o">=</span> <span class="mf">10.15</span> <span class="n">gC</span><span class="o">/</span><span class="n">m</span><span class="err">²</span><span class="o">/</span><span class="n">s</span>
-</code></pre></div>
-
-<h3 id="parallel-processing">Parallel Processing</h3>
-<p>The script uses Python's multiprocessing to create synthetic ensembles in parallel:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Process multiple base files simultaneously</span>
-<span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_spatial_data</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
-</code></pre></div>
-
-<p><strong>Efficiency:</strong><br />
-- 6 base files × 4 synthetic members each = 24 files<br />
-- On 8-core machine: Processes ~8 files simultaneously<br />
-- Typical speedup: 5-8x compared to sequential</p>
-<hr />
-<h2 id="configuration-parameters">Configuration Parameters</h2>
-<h3 id="hardcoded-parameters-edit-in-script">Hardcoded Parameters (Edit in Script)</h3>
-<h4 id="1-files">1. <code>files</code></h4>
-<p><strong>Type:</strong> List of strings<br />
-<strong>Description:</strong> Paths to base spatial NetCDF files from which to generate synthetic ensembles.</p>
+<pre><code># If base GPP = 10.0 gC/m²/s at a gridcell:
+multiplier = 1.015  # Randomly drawn
+synthetic_GPP = 10.0 × 1.015 = 10.15 gC/m²/s</code></pre>
+<h3>Parallel Processing</h3>
+<p>The script uses Python&#x27;s multiprocessing to create synthetic ensembles in parallel. By default it uses <code>MAX_PROCESSES</code>, which is all available CPUs minus one with a minimum of one. Use <code>--max-processes N</code> to cap the worker count:</p>
+<pre><code>python e3sm_produce_synthetic_spatial_data.py --max-processes 4</code></pre>
+<p><strong>Efficiency:</strong></p>
+<ul>
+<li>6 base files × 4 synthetic members each = 24 files</li>
+<li>On 8-core machine: Processes ~8 files simultaneously</li>
+<li>Typical speedup: 5-8x compared to sequential</li>
+</ul>
+<hr>
+<h2>Configuration Parameters</h2>
+<h3>Hardcoded Parameters (Edit in Script)</h3>
+<h4>1. <code>files</code></h4>
+<p><strong>Type:</strong> List of strings <strong>Description:</strong> Paths to base spatial NetCDF files from which to generate synthetic ensembles.</p>
 <p><strong>Location in Script:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_elm.nc&quot;</span>
-<span class="p">]</span>
-<span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_eam.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_eam.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_eam.nc&quot;</span>
-<span class="p">])</span>
-</code></pre></div>
-
+<pre><code>files = [
+    &quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_elm.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_elm.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_elm.nc&quot;
+]
+files.extend([
+    &quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_eam.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_eam.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_eam.nc&quot;
+])</code></pre>
 <p><strong>Example Modification:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Single file</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./my_spatial_data.nc&quot;</span><span class="p">]</span>
+<pre><code># Single file
+files = [&quot;./my_spatial_data.nc&quot;]
 
-<span class="c1"># Multiple files</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;./control_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./control_eam.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./scenario_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./scenario_eam.nc&quot;</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h4 id="2-num_files_in_each_set">2. <code>num_files_in_each_set</code></h4>
-<p><strong>Type:</strong> List of integers<br />
-<strong>Description:</strong> Total number of ensemble members (including base file) for each base file.</p>
+# Multiple files
+files = [
+    &quot;./control_elm.nc&quot;,
+    &quot;./control_eam.nc&quot;,
+    &quot;./scenario_elm.nc&quot;,
+    &quot;./scenario_eam.nc&quot;
+]</code></pre>
+<hr>
+<h4>2. <code>num_files_in_each_set</code></h4>
+<p><strong>Type:</strong> List of integers <strong>Description:</strong> Total number of ensemble members (including base file) for each base file.</p>
 <p><strong>Location in Script:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>  <span class="c1"># 5 members for each base file</span>
-</code></pre></div>
-
-<p><strong>Interpretation:</strong><br />
-- <code>num_files_in_each_set = [5]</code> means 5 total members:<br />
-  - 1 original file (base_file.nc)<br />
-  - 4 synthetic files (base_file_2.nc, _3.nc, _4.nc, _5.nc)</p>
+<pre><code>num_files_in_each_set = [5]*len(files)  # 5 members for each base file</code></pre>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><code>num_files_in_each_set = [5]</code> means 5 total members:</li>
+<li>1 original file (base_file.nc)</li>
+<li>4 synthetic files (base_file_2.nc, _3.nc, _4.nc, _5.nc)</li>
+</ul>
 <p><strong>Example Modifications:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># 10 members for each file</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+<pre><code># 10 members for each file
+num_files_in_each_set = [10]*len(files)
 
-<span class="c1"># Different ensemble sizes for different files</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>  <span class="c1"># First 2 get 5, next 2 get 10</span>
+# Different ensemble sizes for different files
+num_files_in_each_set = [5, 5, 10, 10]  # First 2 get 5, next 2 get 10
 
-<span class="c1"># Single file with 20 members</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./spatial_data.nc&quot;</span><span class="p">]</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h4 id="3-random-multiplier-range-inside-function">3. Random Multiplier Range (Inside Function)</h4>
-<p><strong>Type:</strong> Float range<br />
-<strong>Description:</strong> Range for random perturbations.</p>
+# Single file with 20 members
+files = [&quot;./spatial_data.nc&quot;]
+num_files_in_each_set = [20]</code></pre>
+<hr>
+<h4>3. Random Multiplier Range (Inside Function)</h4>
+<p><strong>Type:</strong> Float range <strong>Description:</strong> Range for random perturbations.</p>
 <p><strong>Location in Script:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>def produce_synthetic_spatial_data(inputs):
+    ...
+    random_multipliers = np.random.uniform(low=0.99, high=1.02, size=num_synthetic_sets_in_ensemble)</code></pre>
 <p><strong>Default:</strong> 0.99 to 1.02 (±1-2% variation)</p>
 <p><strong>Modification Examples:</strong></p>
 <p><strong>Smaller perturbations (±0.5%):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.995</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.005</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>random_multipliers = np.random.uniform(low=0.995, high=1.005, size=num_synthetic_sets_in_ensemble)</code></pre>
 <p><strong>Larger perturbations (±5%):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.05</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>random_multipliers = np.random.uniform(low=0.95, high=1.05, size=num_synthetic_sets_in_ensemble)</code></pre>
 <p><strong>Conservative (±1%):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.01</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h2 id="synthetic-data-generation-method">Synthetic Data Generation Method</h2>
-<h3 id="step-by-step-process">Step-by-Step Process</h3>
+<pre><code>random_multipliers = np.random.uniform(low=0.99, high=1.01, size=num_synthetic_sets_in_ensemble)</code></pre>
+<hr>
+<h2>Synthetic Data Generation Method</h2>
+<h3>Step-by-Step Process</h3>
 <p><strong>For each base file:</strong></p>
-<ol>
+<ul>
 <li><strong>Generate random multipliers</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># If num_files_in_each_set = 5, create 4 multipliers</span>
-<span class="n">multipliers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.015</span><span class="p">,</span> <span class="mf">0.992</span><span class="p">,</span> <span class="mf">1.008</span><span class="p">,</span> <span class="mf">0.997</span><span class="p">]</span>  <span class="c1"># Example random values</span>
-</code></pre></div>
-
-<ol start="2">
+</ul>
+<pre><code># If num_files_in_each_set = 5, create 4 multipliers
+multipliers = [1.015, 0.992, 1.008, 0.997]  # Example random values</code></pre>
+<ul>
 <li><strong>Load base NetCDF file</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;control_spatial_data_elm.nc&#39;</span><span class="p">)</span>
-<span class="c1"># Contains: GPP, NPP, NBP, TOTECOSYSC, etc.</span>
-</code></pre></div>
-
-<ol start="3">
+</ul>
+<pre><code>ds = xr.open_dataset(&#x27;control_spatial_data_elm.nc&#x27;)
+# Contains: GPP, NPP, NBP, TOTECOSYSC, etc.</code></pre>
+<ul>
 <li><strong>Apply perturbation to ALL variables</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># For each synthetic member:</span>
-<span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;GPP&#39;</span><span class="p">,</span> <span class="s1">&#39;NPP&#39;</span><span class="p">,</span> <span class="s1">&#39;NBP&#39;</span><span class="p">,</span> <span class="s1">&#39;TOTECOSYSC&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-    <span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="err">×</span> <span class="n">multiplier</span>
-</code></pre></div>
-
-<ol start="4">
+</ul>
+<pre><code># For each synthetic member:
+for variable in [&#x27;GPP&#x27;, &#x27;NPP&#x27;, &#x27;NBP&#x27;, &#x27;TOTECOSYSC&#x27;, ...]:
+    ds[variable] = ds[variable] × multiplier</code></pre>
+<ul>
 <li><strong>Save synthetic file</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># First synthetic: control_spatial_data_elm_2.nc</span>
-<span class="c1"># Second synthetic: control_spatial_data_elm_3.nc</span>
-<span class="c1"># ...</span>
-</code></pre></div>
-
-<ol start="5">
+</ul>
+<pre><code># First synthetic: control_spatial_data_elm_2.nc
+# Second synthetic: control_spatial_data_elm_3.nc
+# ...</code></pre>
+<ul>
 <li><strong>Repeat</strong> for all ensemble members</li>
-</ol>
-<hr />
-<h3 id="mathematical-details">Mathematical Details</h3>
+</ul>
+<hr>
+<h3>Mathematical Details</h3>
 <p><strong>Perturbation Formula:</strong></p>
-<div class="codehilite"><pre><span></span><code>synthetic_value(lat, lon, year) = base_value(lat, lon, year) × multiplier
+<pre><code>synthetic_value(lat, lon, year) = base_value(lat, lon, year) × multiplier
 
 where:
-  multiplier ~ Uniform(0.99, 1.02)
-</code></pre></div>
-
-<p><strong>Properties:</strong><br />
-- <strong>Spatially uniform:</strong> Same multiplier applied to all gridcells<br />
-- <strong>Variable-specific:</strong> Different multiplier for each ensemble member<br />
-- <strong>Temporally uniform:</strong> Same multiplier for all years<br />
-- <strong>Preserves structure:</strong> Spatial patterns maintained, only magnitudes change</p>
+  multiplier ~ Uniform(0.99, 1.02)</code></pre>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><strong>Spatially uniform:</strong> Same multiplier applied to all gridcells</li>
+<li><strong>Variable-specific:</strong> Different multiplier for each ensemble member</li>
+<li><strong>Temporally uniform:</strong> Same multiplier for all years</li>
+<li><strong>Preserves structure:</strong> Spatial patterns maintained, only magnitudes change</li>
+</ul>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code>Base GPP at gridcell (45°N, 120°W) = 12.5 gC/m²/s
+<pre><code>Base GPP at gridcell (45°N, 120°W) = 12.5 gC/m²/s
 Multiplier = 1.015
 Synthetic GPP = 12.5 × 1.015 = 12.6875 gC/m²/s
 
 Base GPP at gridcell (30°N, 90°W) = 8.3 gC/m²/s
 Same multiplier = 1.015
-Synthetic GPP = 8.3 × 1.015 = 8.4245 gC/m²/s
-</code></pre></div>
-
-<hr />
-<h2 id="usage-examples">Usage Examples</h2>
-<h3 id="example-1-default-configuration">Example 1: Default Configuration</h3>
+Synthetic GPP = 8.3 × 1.015 = 8.4245 gC/m²/s</code></pre>
+<hr>
+<h2>Usage Examples</h2>
+<h3>Example 1: Default Configuration</h3>
 <p><strong>As provided in script:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_eam.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_eam.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_eam.nc&quot;</span>
-<span class="p">]</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>files = [
+    &quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_elm.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_elm.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_elm.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/control_spatial_data_eam.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/full_feedback_spatial_data_eam.nc&quot;,
+    &quot;./../2025_DiVittorio_et_al_e3sm/carbon_scaling_spatial_data_eam.nc&quot;
+]
+num_files_in_each_set = [5]*len(files)</code></pre>
 <p><strong>Execution:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_produce_synthetic_spatial_data.py
-</code></pre></div>
-
+<pre><code>python e3sm_produce_synthetic_spatial_data.py</code></pre>
 <p><strong>Output:</strong></p>
-<div class="codehilite"><pre><span></span><code>Creates 24 synthetic files (4 per base file × 6 base files):
+<pre><code>Creates 24 synthetic files (4 per base file × 6 base files):
 control_spatial_data_elm_2.nc
 control_spatial_data_elm_3.nc
 control_spatial_data_elm_4.nc
@@ -755,226 +265,194 @@ control_spatial_data_elm_5.nc
 full_feedback_spatial_data_elm_2.nc
 full_feedback_spatial_data_elm_3.nc
 ...
-(Total: 6 base + 24 synthetic = 30 files)
-</code></pre></div>
-
-<hr />
-<h3 id="example-2-single-file-large-ensemble">Example 2: Single File, Large Ensemble</h3>
+(Total: 6 base + 24 synthetic = 30 files)</code></pre>
+<hr>
+<h3>Example 2: Single File, Large Ensemble</h3>
 <p><strong>Edit script:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;./my_spatial_data.nc&quot;</span><span class="p">]</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>  <span class="c1"># 20 total members</span>
-</code></pre></div>
-
+<pre><code>files = [&quot;./my_spatial_data.nc&quot;]
+num_files_in_each_set = [20]  # 20 total members</code></pre>
 <p><strong>Output:</strong></p>
-<div class="codehilite"><pre><span></span><code>Creates 19 synthetic files:
+<pre><code>Creates 19 synthetic files:
 my_spatial_data_2.nc
 my_spatial_data_3.nc
 ...
 my_spatial_data_20.nc
 
-Total ensemble: 1 base + 19 synthetic = 20 members
-</code></pre></div>
-
+Total ensemble: 1 base + 19 synthetic = 20 members</code></pre>
 <p><strong>Use case:</strong> Large ensemble for robust statistical testing</p>
-<hr />
-<h3 id="example-3-different-ensemble-sizes">Example 3: Different Ensemble Sizes</h3>
+<hr>
+<h3>Example 3: Different Ensemble Sizes</h3>
 <p><strong>Edit script:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;./control_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./control_eam.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./scenario_elm.nc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;./scenario_eam.nc&quot;</span>
-<span class="p">]</span>
-<span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-</code></pre></div>
-
+<pre><code>files = [
+    &quot;./control_elm.nc&quot;,
+    &quot;./control_eam.nc&quot;,
+    &quot;./scenario_elm.nc&quot;,
+    &quot;./scenario_eam.nc&quot;
+]
+num_files_in_each_set = [10, 10, 5, 5]</code></pre>
 <p><strong>Output:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">control_elm</span><span class="o">:</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="n">synthetic</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">(</span><span class="n">_2</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">_10</span><span class="o">)</span>
-<span class="n">control_eam</span><span class="o">:</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="n">synthetic</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">(</span><span class="n">_2</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">_10</span><span class="o">)</span>
-<span class="n">scenario_elm</span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">synthetic</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">(</span><span class="n">_2</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">_5</span><span class="o">)</span>
-<span class="n">scenario_eam</span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">synthetic</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">(</span><span class="n">_2</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">_5</span><span class="o">)</span>
+<pre><code>control_elm: 9 synthetic files (_2 through _10)
+control_eam: 9 synthetic files (_2 through _10)
+scenario_elm: 4 synthetic files (_2 through _5)
+scenario_eam: 4 synthetic files (_2 through _5)
 
-<span class="n">Total</span><span class="o">:</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">26</span><span class="w"> </span><span class="n">synthetic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="n">files</span>
-</code></pre></div>
-
-<hr />
-<h3 id="example-4-conservative-perturbations">Example 4: Conservative Perturbations</h3>
+Total: 4 base + 26 synthetic = 30 files</code></pre>
+<hr>
+<h3>Example 4: Conservative Perturbations</h3>
 <p><strong>Edit script function:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">file</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">num_synthetic_sets_in_ensemble</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+<pre><code>def produce_synthetic_spatial_data(inputs):
+    start_time = time.time()
+    file = inputs[0]
+    num_synthetic_sets_in_ensemble = inputs[1] - 1
 
-    <span class="c1"># Change this line:</span>
-    <span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.995</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.005</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>
-    <span class="c1"># Now ±0.5% instead of ±2%</span>
+    # Change this line:
+    random_multipliers = np.random.uniform(low=0.995, high=1.005, size=num_synthetic_sets_in_ensemble)
+    # Now ±0.5% instead of ±2%
 
-    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">random_multipliers</span><span class="p">)):</span>
-        <span class="o">...</span>
-</code></pre></div>
-
+    for index in range(len(random_multipliers)):
+        ...</code></pre>
 <p><strong>Use case:</strong> More conservative uncertainty estimates</p>
-<hr />
-<h2 id="output-files">Output Files</h2>
-<h3 id="file-naming-convention">File Naming Convention</h3>
+<hr>
+<h2>Output Files</h2>
+<h3>File Naming Convention</h3>
 <p><strong>Pattern:</strong></p>
-<div class="codehilite"><pre><span></span><code>base_filename.nc           → Original (untouched)
+<pre><code>base_filename.nc           → Original (untouched)
 base_filename_2.nc         → First synthetic member
 base_filename_3.nc         → Second synthetic member
 ...
-base_filename_N.nc         → (N-1)th synthetic member
-</code></pre></div>
-
+base_filename_N.nc         → (N-1)th synthetic member</code></pre>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Input</span><span class="o">:</span><span class="w"> </span><span class="n">control_spatial_data_elm</span><span class="o">.</span><span class="na">nc</span>
-<span class="n">Output</span><span class="o">:</span>
-<span class="w">  </span><span class="n">control_spatial_data_elm</span><span class="o">.</span><span class="na">nc</span><span class="w">     </span><span class="o">(</span><span class="n">original</span><span class="o">,</span><span class="w"> </span><span class="n">unchanged</span><span class="o">)</span>
-<span class="w">  </span><span class="n">control_spatial_data_elm_2</span><span class="o">.</span><span class="na">nc</span><span class="w">   </span><span class="o">(</span><span class="n">synthetic</span><span class="o">)</span>
-<span class="w">  </span><span class="n">control_spatial_data_elm_3</span><span class="o">.</span><span class="na">nc</span><span class="w">   </span><span class="o">(</span><span class="n">synthetic</span><span class="o">)</span>
-<span class="w">  </span><span class="n">control_spatial_data_elm_4</span><span class="o">.</span><span class="na">nc</span><span class="w">   </span><span class="o">(</span><span class="n">synthetic</span><span class="o">)</span>
-<span class="w">  </span><span class="n">control_spatial_data_elm_5</span><span class="o">.</span><span class="na">nc</span><span class="w">   </span><span class="o">(</span><span class="n">synthetic</span><span class="o">)</span>
-</code></pre></div>
-
-<hr />
-<h3 id="file-structure">File Structure</h3>
+<pre><code>Input: control_spatial_data_elm.nc
+Output:
+  control_spatial_data_elm.nc     (original, unchanged)
+  control_spatial_data_elm_2.nc   (synthetic)
+  control_spatial_data_elm_3.nc   (synthetic)
+  control_spatial_data_elm_4.nc   (synthetic)
+  control_spatial_data_elm_5.nc   (synthetic)</code></pre>
+<hr>
+<h3>File Structure</h3>
 <p>Each synthetic file is identical in structure to the base file, only values differ:</p>
 <p><strong>Dimensions:</strong> Same as base file</p>
-<div class="codehilite"><pre><span></span><code><span class="n">year</span><span class="o">:</span><span class="w"> </span><span class="mi">6</span>
-<span class="n">lat</span><span class="o">:</span><span class="w"> </span><span class="mi">192</span>
-<span class="n">lon</span><span class="o">:</span><span class="w"> </span><span class="mi">288</span>
-</code></pre></div>
-
+<pre><code>year: 6
+lat: 192
+lon: 288</code></pre>
 <p><strong>Variables:</strong> Same as base file</p>
-<div class="codehilite"><pre><span></span><code>GPP(year, lat, lon)
+<pre><code>GPP(year, lat, lon)
 NPP(year, lat, lon)
 NBP(year, lat, lon)
-...
-</code></pre></div>
-
+...</code></pre>
 <p><strong>Coordinates:</strong> Identical to base file</p>
-<div class="codehilite"><pre><span></span><code>lat, lon, year values unchanged
-</code></pre></div>
-
+<pre><code>lat, lon, year values unchanged</code></pre>
 <p><strong>Metadata:</strong> Copied from base file</p>
 <p><strong>Data Values:</strong> Multiplied by random factor</p>
-<hr />
-<h3 id="file-sizes">File Sizes</h3>
-<p><strong>Typical sizes:</strong><br />
-- Base file: 100 MB<br />
-- Each synthetic file: 100 MB<br />
-- 5-member ensemble: ~500 MB (5 × 100 MB)<br />
-- 10-member ensemble: ~1 GB (10 × 100 MB)</p>
+<hr>
+<h3>File Sizes</h3>
+<p><strong>Typical sizes:</strong></p>
+<ul>
+<li>Base file: 100 MB</li>
+<li>Each synthetic file: 100 MB</li>
+<li>5-member ensemble: ~500 MB (5 × 100 MB)</li>
+<li>10-member ensemble: ~1 GB (10 × 100 MB)</li>
+</ul>
 <p><strong>Storage requirement:</strong></p>
-<div class="codehilite"><pre><span></span><code>Total storage = base_file_size × num_files_in_each_set × num_base_files
-</code></pre></div>
-
+<pre><code>Total storage = base_file_size × num_files_in_each_set × num_base_files</code></pre>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="mf">6</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mf">100</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">600</span><span class="w"> </span><span class="n">MB</span>
-<span class="mf">5</span><span class="w"> </span><span class="n">members</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mf">6</span><span class="w"> </span><span class="n">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">30</span><span class="w"> </span><span class="kr">to</span><span class="n">tal</span><span class="w"> </span><span class="n">files</span>
-<span class="kr">To</span><span class="n">tal</span><span class="w"> </span><span class="n">storage</span><span class="p">:</span><span class="w"> </span><span class="mf">30</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mf">100</span><span class="w"> </span><span class="n">MB</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3</span><span class="w"> </span><span class="n">GB</span>
-</code></pre></div>
+<pre><code>6 base files × 100 MB each = 600 MB
+5 members each × 6 files = 30 total files
+Total storage: 30 × 100 MB = 3 GB</code></pre>
+<hr>
+<h2>Integration with Other Scripts</h2>
+<h3>Typical Workflow</h3>
+<h4>1. Generate Base Spatial Data</h4>
+<pre><code># Extract spatial data from E3SM simulation
+python e3sm_extract_spatial_data_h0.py config.json
 
-<hr />
-<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
-<h3 id="typical-workflow">Typical Workflow</h3>
-<h4 id="1-generate-base-spatial-data">1. Generate Base Spatial Data</h4>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Extract spatial data from E3SM simulation</span>
-python<span class="w"> </span>e3sm_extract_spatial_data_h0.py<span class="w"> </span>config.json
+# Output: control_spatial_data_elm.nc</code></pre>
+<h4>2. Create Synthetic Ensemble</h4>
+<pre><code># Generate synthetic members
+python e3sm_produce_synthetic_spatial_data.py
 
-<span class="c1"># Output: control_spatial_data_elm.nc</span>
-</code></pre></div>
+# Output:
+#   control_spatial_data_elm.nc (base)
+#   control_spatial_data_elm_2.nc (synthetic)
+#   control_spatial_data_elm_3.nc (synthetic)
+#   ...</code></pre>
+<h4>3. Plot with Statistical Significance</h4>
+<pre><code># Use ensemble for t-tests in spatial plotting
+python gcam_plot_spatial_data.py plot_config.json
 
-<h4 id="2-create-synthetic-ensemble">2. Create Synthetic Ensemble</h4>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Generate synthetic members</span>
-python<span class="w"> </span>e3sm_produce_synthetic_spatial_data.py
-
-<span class="c1"># Output: </span>
-<span class="c1">#   control_spatial_data_elm.nc (base)</span>
-<span class="c1">#   control_spatial_data_elm_2.nc (synthetic)</span>
-<span class="c1">#   control_spatial_data_elm_3.nc (synthetic)</span>
-<span class="c1">#   ...</span>
-</code></pre></div>
-
-<h4 id="3-plot-with-statistical-significance">3. Plot with Statistical Significance</h4>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Use ensemble for t-tests in spatial plotting</span>
-python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>plot_config.json
-
-<span class="c1"># plot_config.json specifies ensemble members:</span>
-<span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;scenarios&quot;</span>:<span class="w"> </span><span class="o">[</span>
-<span class="w">        </span><span class="o">[</span><span class="s2">&quot;control_spatial_data_elm.nc&quot;</span>,
-<span class="w">         </span><span class="s2">&quot;control_spatial_data_elm_2.nc&quot;</span>,
-<span class="w">         </span><span class="s2">&quot;control_spatial_data_elm_3.nc&quot;</span>,
-<span class="w">         </span><span class="s2">&quot;control_spatial_data_elm_4.nc&quot;</span>,
-<span class="w">         </span><span class="s2">&quot;control_spatial_data_elm_5.nc&quot;</span><span class="o">]</span>
-<span class="w">    </span><span class="o">]</span>
-<span class="o">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="use-with-spatial-plotting-script">Use with Spatial Plotting Script</h3>
+# plot_config.json specifies ensemble members:
+{
+    &quot;scenarios&quot;: [
+        [&quot;control_spatial_data_elm.nc&quot;,
+         &quot;control_spatial_data_elm_2.nc&quot;,
+         &quot;control_spatial_data_elm_3.nc&quot;,
+         &quot;control_spatial_data_elm_4.nc&quot;,
+         &quot;control_spatial_data_elm_5.nc&quot;]
+    ]
+}</code></pre>
+<hr>
+<h3>Use with Spatial Plotting Script</h3>
 <p><strong>Enable statistical significance testing:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;scenarios&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;control_elm.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_elm_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_elm_3.nc&quot;</span><span class="p">,</span><span class="w"> </span>
-<span class="w">         </span><span class="s2">&quot;control_elm_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;control_elm_5.nc&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;scenario_elm.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_elm_2.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_elm_3.nc&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="s2">&quot;scenario_elm_4.nc&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scenario_elm_5.nc&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;plot_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;absolute_difference&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;stippling_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;p_value_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;scenarios&quot;: [
+        [&quot;control_elm.nc&quot;, &quot;control_elm_2.nc&quot;, &quot;control_elm_3.nc&quot;,
+         &quot;control_elm_4.nc&quot;, &quot;control_elm_5.nc&quot;],
+        [&quot;scenario_elm.nc&quot;, &quot;scenario_elm_2.nc&quot;, &quot;scenario_elm_3.nc&quot;,
+         &quot;scenario_elm_4.nc&quot;, &quot;scenario_elm_5.nc&quot;]
+    ],
+    &quot;plot_type&quot;: &quot;absolute_difference&quot;,
+    &quot;stippling_on&quot;: true,
+    &quot;p_value_threshold&quot;: 0.05
+}</code></pre>
 <p><strong>Result:</strong> Spatial map showing difference with stippling where statistically significant (p &lt; 0.05)</p>
-<hr />
-<h2 id="best-practices">Best Practices</h2>
-<h3 id="1-ensemble-size-selection">1. Ensemble Size Selection</h3>
-<p><strong>Small ensembles (n=3-5):</strong><br />
-- <strong>Pros:</strong> Fast, low storage<br />
-- <strong>Cons:</strong> Limited statistical power<br />
-- <strong>Use:</strong> Quick exploratory analysis</p>
-<p><strong>Medium ensembles (n=5-10):</strong><br />
-- <strong>Pros:</strong> Good statistical power, reasonable storage<br />
-- <strong>Cons:</strong> Moderate computation time<br />
-- <strong>Use:</strong> Standard analysis (recommended)</p>
-<p><strong>Large ensembles (n=10-20):</strong><br />
-- <strong>Pros:</strong> High statistical power, robust estimates<br />
-- <strong>Cons:</strong> High storage, longer processing<br />
-- <strong>Use:</strong> Publication-quality statistical testing</p>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Ensemble Size Selection</h3>
+<p><strong>Small ensembles (n=3-5):</strong></p>
+<ul>
+<li><strong>Pros:</strong> Fast, low storage</li>
+<li><strong>Cons:</strong> Limited statistical power</li>
+<li><strong>Use:</strong> Quick exploratory analysis</li>
+</ul>
+<p><strong>Medium ensembles (n=5-10):</strong></p>
+<ul>
+<li><strong>Pros:</strong> Good statistical power, reasonable storage</li>
+<li><strong>Cons:</strong> Moderate computation time</li>
+<li><strong>Use:</strong> Standard analysis (recommended)</li>
+</ul>
+<p><strong>Large ensembles (n=10-20):</strong></p>
+<ul>
+<li><strong>Pros:</strong> High statistical power, robust estimates</li>
+<li><strong>Cons:</strong> High storage, longer processing</li>
+<li><strong>Use:</strong> Publication-quality statistical testing</li>
+</ul>
 <p><strong>Recommendation:</strong> Start with n=5, increase if needed</p>
-<hr />
-<h3 id="2-perturbation-range-selection">2. Perturbation Range Selection</h3>
+<hr>
+<h3>2. Perturbation Range Selection</h3>
 <p><strong>Conservative (±0.5%):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.995</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.005</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>random_multipliers = np.random.uniform(low=0.995, high=1.005, ...)</code></pre>
 <ul>
 <li>Tight uncertainty bounds</li>
 <li>Use when model output is highly certain</li>
 </ul>
 <p><strong>Standard (±2%):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>  <span class="c1"># Default</span>
-</code></pre></div>
-
+<pre><code>random_multipliers = np.random.uniform(low=0.99, high=1.02, ...)  # Default</code></pre>
 <ul>
 <li>Moderate uncertainty</li>
 <li>General use case</li>
 </ul>
 <p><strong>Wide (±5%):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.05</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>random_multipliers = np.random.uniform(low=0.95, high=1.05, ...)</code></pre>
 <ul>
 <li>Large uncertainty bounds</li>
 <li>Use for sensitivity testing</li>
 </ul>
 <p><strong>Guidance:</strong> Match to expected model uncertainty</p>
-<hr />
-<h3 id="3-file-organization">3. File Organization</h3>
+<hr>
+<h3>3. File Organization</h3>
 <p><strong>Recommended structure:</strong></p>
-<div class="codehilite"><pre><span></span><code>project/
+<pre><code>project/
 ├── base_spatial_data/
 │   ├── control_spatial_data_elm.nc
 │   └── control_spatial_data_eam.nc
@@ -984,397 +462,347 @@ python<span class="w"> </span>gcam_plot_spatial_data.py<span class="w"> </span>p
 │   ├── ...
 │   ├── control_spatial_data_eam_2.nc
 │   └── ...
-└── plots/
-</code></pre></div>
-
+└── plots/</code></pre>
 <p><strong>Or keep together:</strong></p>
-<div class="codehilite"><pre><span></span><code>project/
+<pre><code>project/
 ├── spatial_data/
 │   ├── control_spatial_data_elm.nc       (base)
 │   ├── control_spatial_data_elm_2.nc     (synthetic)
 │   ├── control_spatial_data_elm_3.nc     (synthetic)
-│   └── ...
-</code></pre></div>
-
-<hr />
-<h3 id="4-version-control">4. Version Control</h3>
+│   └── ...</code></pre>
+<hr>
+<h3>4. Version Control</h3>
 <p><strong>Document your configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create README.txt</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Synthetic ensemble created: 2026-01-24</span>
-<span class="sd">Base files: control_spatial_data_elm.nc, control_spatial_data_eam.nc</span>
-<span class="sd">Ensemble size: 5 members per file</span>
-<span class="sd">Perturbation range: 0.99-1.02 (±2%)</span>
-<span class="sd">Random seed: Not set (different each run)</span>
-<span class="sd">Purpose: Statistical significance testing for Figure 3</span>
-<span class="sd">&quot;&quot;&quot;</span>
-</code></pre></div>
-
-<hr />
-<h3 id="5-reproducibility">5. Reproducibility</h3>
+<pre><code># Create README.txt
+&quot;&quot;&quot;
+Synthetic ensemble created: 2026-01-24
+Base files: control_spatial_data_elm.nc, control_spatial_data_eam.nc
+Ensemble size: 5 members per file
+Perturbation range: 0.99-1.02 (±2%)
+Random seed: Not set (different each run)
+Purpose: Statistical significance testing for Figure 3
+&quot;&quot;&quot;</code></pre>
+<hr>
+<h3>5. Reproducibility</h3>
 <p><strong>Set random seed for reproducibility:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="c1"># Add this at the beginning:</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>  <span class="c1"># Fixed seed for reproducibility</span>
+<pre><code>def produce_synthetic_spatial_data(inputs):
+    # Add this at the beginning:
+    np.random.seed(42)  # Fixed seed for reproducibility
 
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">file</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="o">...</span>
-</code></pre></div>
-
+    start_time = time.time()
+    file = inputs[0]
+    ...</code></pre>
 <p><strong>Caution:</strong> Setting seed means same synthetic ensemble every time</p>
 <p><strong>Alternative:</strong> Save random multipliers to file</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># After generating multipliers:</span>
-<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;random_multipliers.npy&#39;</span><span class="p">,</span> <span class="n">random_multipliers</span><span class="p">)</span>
+<pre><code># After generating multipliers:
+np.save(&#x27;random_multipliers.npy&#x27;, random_multipliers)
 
-<span class="c1"># Document in README:</span>
-<span class="c1"># Random multipliers saved to random_multipliers.npy</span>
-</code></pre></div>
-
-<hr />
-<h3 id="6-validation">6. Validation</h3>
+# Document in README:
+# Random multipliers saved to random_multipliers.npy</code></pre>
+<hr>
+<h3>6. Validation</h3>
 <p><strong>After generation, verify:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<pre><code>import xarray as xr
+import numpy as np
 
-<span class="c1"># Load base and synthetic</span>
-<span class="n">base</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;control_elm.nc&#39;</span><span class="p">)</span>
-<span class="n">synthetic</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;control_elm_2.nc&#39;</span><span class="p">)</span>
+# Load base and synthetic
+base = xr.open_dataset(&#x27;control_elm.nc&#x27;)
+synthetic = xr.open_dataset(&#x27;control_elm_2.nc&#x27;)
 
-<span class="c1"># Calculate ratio (should be close to 1.0)</span>
-<span class="n">ratio</span> <span class="o">=</span> <span class="n">synthetic</span><span class="p">[</span><span class="s1">&#39;GPP&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">base</span><span class="p">[</span><span class="s1">&#39;GPP&#39;</span><span class="p">]</span>
+# Calculate ratio (should be close to 1.0)
+ratio = synthetic[&#x27;GPP&#x27;] / base[&#x27;GPP&#x27;]
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Min ratio: </span><span class="si">{</span><span class="n">ratio</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max ratio: </span><span class="si">{</span><span class="n">ratio</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean ratio: </span><span class="si">{</span><span class="n">ratio</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+print(f&quot;Min ratio: {ratio.min().item():.4f}&quot;)
+print(f&quot;Max ratio: {ratio.max().item():.4f}&quot;)
+print(f&quot;Mean ratio: {ratio.mean().item():.4f}&quot;)
 
-<span class="c1"># Should be approximately:</span>
-<span class="c1"># Min: ~0.99</span>
-<span class="c1"># Max: ~1.02</span>
-<span class="c1"># Mean: ~1.005</span>
-</code></pre></div>
-
-<hr />
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="issue-1-memory-error">Issue 1: Memory Error</h3>
+# Should be approximately:
+# Min: ~0.99
+# Max: ~1.02
+# Mean: ~1.005</code></pre>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Issue 1: Memory Error</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">MemoryError</span><span class="o">:</span><span class="w"> </span><span class="n">Unable</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">allocate</span><span class="w"> </span><span class="n">array</span>
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- Large NetCDF files<br />
-- Many files processed simultaneously<br />
-- Insufficient RAM</p>
+<pre><code>MemoryError: Unable to allocate array</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li>Large NetCDF files</li>
+<li>Many files processed simultaneously</li>
+<li>Insufficient RAM</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<ol>
+<ul>
 <li><strong>Reduce parallel processing:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Instead of all CPUs:</span>
-<span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>  <span class="c1"># Use only 4 cores</span>
-    <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_spatial_data</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
-</code></pre></div>
-
-<ol start="2">
-<li><strong>Process files sequentially:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Replace parallel processing with loop:</span>
-<span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
-    <span class="n">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
-</code></pre></div>
-
-<ol start="3">
+</ul>
+<pre><code>python e3sm_produce_synthetic_spatial_data.py --max-processes 4</code></pre>
+<ul>
+<li><strong>Process files sequentially:</strong> use <code>--max-processes 1</code>.</li>
+</ul>
+<ul>
 <li><strong>Reduce ensemble size:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>  <span class="c1"># 3 instead of 5</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-2-file-not-found">Issue 2: File Not Found</h3>
+</ul>
+<pre><code>num_files_in_each_set = [3]*len(files)  # 3 instead of 5</code></pre>
+<hr>
+<h3>Issue 2: File Not Found</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code>FileNotFoundError: [Errno 2] No such file or directory: &#39;control_spatial_data_elm.nc&#39;
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- Incorrect file path in <code>files</code> list<br />
-- Base file doesn't exist</p>
+<pre><code>FileNotFoundError: [Errno 2] No such file or directory: &#x27;control_spatial_data_elm.nc&#x27;</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li>Incorrect file path in <code>files</code> list</li>
+<li>Base file doesn&#x27;t exist</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Verify file exists</span>
-ls<span class="w"> </span>-la<span class="w"> </span>control_spatial_data_elm.nc
+<pre><code># Verify file exists
+ls -la control_spatial_data_elm.nc
 
-<span class="c1"># Use absolute paths</span>
-<span class="nv">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;/absolute/path/to/control_spatial_data_elm.nc&quot;</span><span class="o">]</span>
+# Use absolute paths
+files = [&quot;/absolute/path/to/control_spatial_data_elm.nc&quot;]
 
-<span class="c1"># Or correct relative path</span>
-<span class="nv">files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;./output/control_spatial_data_elm.nc&quot;</span><span class="o">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-3-disk-space">Issue 3: Disk Space</h3>
+# Or correct relative path
+files = [&quot;./output/control_spatial_data_elm.nc&quot;]</code></pre>
+<hr>
+<h3>Issue 3: Disk Space</h3>
 <p><strong>Error:</strong></p>
-<div class="codehilite"><pre><span></span><code>OSError: [Errno 28] No space left on device
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- Insufficient disk space for synthetic files<br />
-- Large ensembles × large base files</p>
+<pre><code>OSError: [Errno 28] No space left on device</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li>Insufficient disk space for synthetic files</li>
+<li>Large ensembles × large base files</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<ol>
+<ul>
 <li><strong>Check available space:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h<span class="w"> </span>.<span class="w">  </span><span class="c1"># Check disk space</span>
-</code></pre></div>
-
-<ol start="2">
+</ul>
+<pre><code>df -h .  # Check disk space</code></pre>
+<ul>
 <li><strong>Estimate required space:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># If base file is 100 MB and you want 5 members:</span>
-<span class="c1"># Required space ≈ 100 MB × 5 members × num_files</span>
-</code></pre></div>
-
-<ol start="3">
+</ul>
+<pre><code># If base file is 100 MB and you want 5 members:
+# Required space ≈ 100 MB × 5 members × num_files</code></pre>
+<ul>
 <li><strong>Reduce ensemble size:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>  <span class="c1"># Smaller ensemble</span>
-</code></pre></div>
-
-<ol start="4">
+</ul>
+<pre><code>num_files_in_each_set = [3]*len(files)  # Smaller ensemble</code></pre>
+<ul>
 <li><strong>Use different output location:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Save to larger disk</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/large_disk/path/to/file.nc&quot;</span><span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-4-overwriting-files">Issue 4: Overwriting Files</h3>
+</ul>
+<pre><code># Save to larger disk
+files = [&quot;/large_disk/path/to/file.nc&quot;]</code></pre>
+<hr>
+<h3>Issue 4: Overwriting Files</h3>
 <p><strong>Symptom:</strong> Script reruns create same files again</p>
 <p><strong>Behavior:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">new_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>  <span class="c1"># mode=&#39;w&#39; overwrites</span>
-</code></pre></div>
-
+<pre><code>ds.to_netcdf(new_file, mode=&#x27;w&#x27;)  # mode=&#x27;w&#x27; overwrites</code></pre>
 <p><strong>If files exist, they are overwritten without warning</strong></p>
 <p><strong>Solutions:</strong></p>
-<ol>
+<ul>
 <li><strong>Check before running:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1"># List existing synthetic files</span>
-ls<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> </span>*_4.nc<span class="w"> </span>*_5.nc
-</code></pre></div>
-
-<ol start="2">
+</ul>
+<pre><code># List existing synthetic files
+ls *_2.nc *_3.nc *_4.nc *_5.nc</code></pre>
+<ul>
 <li><strong>Add file existence check:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</ul>
+<pre><code>import os
 
-<span class="n">new_file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">new_file</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: </span><span class="si">{</span><span class="n">new_file</span><span class="si">}</span><span class="s2"> already exists. Skipping.&quot;</span><span class="p">)</span>
-    <span class="k">continue</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">new_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</code></pre></div>
-
-<ol start="3">
+new_file = file.replace(&#x27;.nc&#x27;, f&#x27;_{index+2}.nc&#x27;)
+if os.path.exists(new_file):
+    print(f&quot;Warning: {new_file} already exists. Skipping.&quot;)
+    continue
+ds.to_netcdf(new_file, mode=&#x27;w&#x27;)</code></pre>
+<ul>
 <li><strong>Backup existing files:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>backup
-mv<span class="w"> </span>*_2.nc<span class="w"> </span>*_3.nc<span class="w"> </span>*_4.nc<span class="w"> </span>*_5.nc<span class="w"> </span>backup/
-</code></pre></div>
-
-<hr />
-<h3 id="issue-5-variable-specific-perturbations">Issue 5: Variable-Specific Perturbations</h3>
+</ul>
+<pre><code>mkdir backup
+mv *_2.nc *_3.nc *_4.nc *_5.nc backup/</code></pre>
+<hr>
+<h3>Issue 5: Variable-Specific Perturbations</h3>
 <p><strong>Current behavior:</strong> All variables perturbed by same multiplier</p>
 <p><strong>If you want different perturbations per variable:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">file</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">num_synthetic_sets_in_ensemble</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+<pre><code>def produce_synthetic_spatial_data(inputs):
+    start_time = time.time()
+    file = inputs[0]
+    num_synthetic_sets_in_ensemble = inputs[1] - 1
 
-    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">):</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="n">variables</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span>
+    for index in range(num_synthetic_sets_in_ensemble):
+        ds = xr.open_dataset(file)
+        variables = ds.data_vars
 
-        <span class="c1"># Different multiplier for each variable</span>
-        <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
-            <span class="n">random_multiplier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
-            <span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">*=</span> <span class="n">random_multiplier</span>
+        # Different multiplier for each variable
+        for variable in variables:
+            random_multiplier = np.random.uniform(low=0.99, high=1.02)
+            ds[variable] *= random_multiplier
 
-        <span class="n">new_file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">)</span>
-        <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">new_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h2 id="scientific-considerations">Scientific Considerations</h2>
-<h3 id="when-to-use-synthetic-ensembles">When to Use Synthetic Ensembles</h3>
-<p><strong>Appropriate uses:</strong><br />
-1. <strong>Statistical significance testing</strong> when single simulations available<br />
-2. <strong>Sensitivity analysis</strong> to perturbations<br />
-3. <strong>Uncertainty quantification</strong> when true ensemble unavailable<br />
-4. <strong>Method development</strong> before full ensemble runs complete</p>
-<p><strong>Inappropriate uses:</strong><br />
-1. <strong>Replacing true model ensembles</strong> (different initial conditions, physics)<br />
-2. <strong>Representing true climate variability</strong><br />
-3. <strong>Publishing as actual ensemble members</strong></p>
-<hr />
-<h3 id="limitations">Limitations</h3>
-<p><strong>1. Not True Ensemble Members:</strong><br />
-- Synthetic members don't represent true model uncertainty<br />
-- Don't capture different initial conditions<br />
-- Don't reflect model physics variability</p>
-<p><strong>2. Artificial Perturbations:</strong><br />
-- Random multipliers don't represent physical processes<br />
-- All gridcells perturbed by same factor (spatially uniform)<br />
-- Doesn't represent realistic spatial covariance</p>
-<p><strong>3. Statistical Limitations:</strong><br />
-- May underestimate or overestimate true variability<br />
-- P-values may not reflect true statistical significance<br />
-- Conservative for exploratory analysis only</p>
-<hr />
-<h3 id="best-practices-for-publication">Best Practices for Publication</h3>
+        new_file = file.replace(&#x27;.nc&#x27;, f&#x27;_{index+2}.nc&#x27;)
+        ds.to_netcdf(new_file, mode=&#x27;w&#x27;)</code></pre>
+<hr>
+<h2>Scientific Considerations</h2>
+<h3>When to Use Synthetic Ensembles</h3>
+<p><strong>Appropriate uses:</strong></p>
+<ul>
+<li><strong>Statistical significance testing</strong> when single simulations available</li>
+<li><strong>Sensitivity analysis</strong> to perturbations</li>
+<li><strong>Uncertainty quantification</strong> when true ensemble unavailable</li>
+<li><strong>Method development</strong> before full ensemble runs complete</li>
+</ul>
+<p><strong>Inappropriate uses:</strong></p>
+<ul>
+<li><strong>Replacing true model ensembles</strong> (different initial conditions, physics)</li>
+<li><strong>Representing true climate variability</strong></li>
+<li><strong>Publishing as actual ensemble members</strong></li>
+</ul>
+<hr>
+<h3>Limitations</h3>
+<p><strong>1. Not True Ensemble Members:</strong></p>
+<ul>
+<li>Synthetic members don&#x27;t represent true model uncertainty</li>
+<li>Don&#x27;t capture different initial conditions</li>
+<li>Don&#x27;t reflect model physics variability</li>
+</ul>
+<p><strong>2. Artificial Perturbations:</strong></p>
+<ul>
+<li>Random multipliers don&#x27;t represent physical processes</li>
+<li>All gridcells perturbed by same factor (spatially uniform)</li>
+<li>Doesn&#x27;t represent realistic spatial covariance</li>
+</ul>
+<p><strong>3. Statistical Limitations:</strong></p>
+<ul>
+<li>May underestimate or overestimate true variability</li>
+<li>P-values may not reflect true statistical significance</li>
+<li>Conservative for exploratory analysis only</li>
+</ul>
+<hr>
+<h3>Best Practices for Publication</h3>
 <p><strong>If using synthetic ensembles in publications:</strong></p>
-<ol>
-<li>
-<p><strong>Clearly state synthetic nature:</strong><br />
-   - "Synthetic ensemble members created by random perturbations"<br />
-   - "Not true model ensemble members"</p>
-</li>
-<li>
-<p><strong>Document method:</strong><br />
-   - Perturbation range (e.g., ±2%)<br />
-   - Ensemble size<br />
-   - Purpose (e.g., statistical testing)</p>
-</li>
-<li>
-<p><strong>Appropriate interpretation:</strong><br />
-   - "Regions with statistically significant differences in synthetic ensemble"<br />
-   - Not "Regions with robust differences across ensemble members"</p>
-</li>
-<li>
-<p><strong>Compare with true ensemble if available:</strong><br />
-   - Validate synthetic approach against real ensemble<br />
-   - Document any differences</p>
-</li>
-</ol>
-<hr />
-<h3 id="alternative-approaches">Alternative Approaches</h3>
+<ul>
+<li><strong>Clearly state synthetic nature:</strong></li>
+<li>&quot;Synthetic ensemble members created by random perturbations&quot;</li>
+<li>&quot;Not true model ensemble members&quot;</li>
+</ul>
+<ul>
+<li><strong>Document method:</strong></li>
+<li>Perturbation range (e.g., ±2%)</li>
+<li>Ensemble size</li>
+<li>Purpose (e.g., statistical testing)</li>
+</ul>
+<ul>
+<li><strong>Appropriate interpretation:</strong></li>
+<li>&quot;Regions with statistically significant differences in synthetic ensemble&quot;</li>
+<li>Not &quot;Regions with robust differences across ensemble members&quot;</li>
+</ul>
+<ul>
+<li><strong>Compare with true ensemble if available:</strong></li>
+<li>Validate synthetic approach against real ensemble</li>
+<li>Document any differences</li>
+</ul>
+<hr>
+<h3>Alternative Approaches</h3>
 <p><strong>Instead of synthetic ensembles, consider:</strong></p>
-<ol>
+<ul>
 <li><strong>Bootstrap resampling</strong> of time dimension</li>
 <li><strong>Block bootstrap</strong> for spatial data</li>
 <li><strong>True ensemble simulations</strong> (preferred)</li>
 <li><strong>Multi-model ensembles</strong> from different E3SM configurations</li>
-</ol>
-<hr />
-<h2 id="advanced-modifications">Advanced Modifications</h2>
-<h3 id="spatially-varying-perturbations">Spatially-Varying Perturbations</h3>
-<p><strong>Current:</strong> Same multiplier for all gridcells<br />
-<strong>Modification:</strong> Different multiplier per gridcell</p>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">file</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">num_synthetic_sets_in_ensemble</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+</ul>
+<hr>
+<h2>Advanced Modifications</h2>
+<h3>Spatially-Varying Perturbations</h3>
+<p><strong>Current:</strong> Same multiplier for all gridcells <strong>Modification:</strong> Different multiplier per gridcell</p>
+<pre><code>def produce_synthetic_spatial_data(inputs):
+    start_time = time.time()
+    file = inputs[0]
+    num_synthetic_sets_in_ensemble = inputs[1] - 1
 
-    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    ds = xr.open_dataset(file)
 
-    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">):</span>
-        <span class="n">ds_synthetic</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    for index in range(num_synthetic_sets_in_ensemble):
+        ds_synthetic = ds.copy(deep=True)
 
-        <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
-            <span class="c1"># Create spatial field of random multipliers</span>
-            <span class="n">shape</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-            <span class="n">random_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-            <span class="n">ds_synthetic</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">*</span> <span class="n">random_field</span>
+        for variable in ds.data_vars:
+            # Create spatial field of random multipliers
+            shape = ds[variable].shape
+            random_field = np.random.uniform(low=0.99, high=1.02, size=shape)
+            ds_synthetic[variable] = ds[variable] * random_field
 
-        <span class="n">new_file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">)</span>
-        <span class="n">ds_synthetic</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">new_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</code></pre></div>
+        new_file = file.replace(&#x27;.nc&#x27;, f&#x27;_{index+2}.nc&#x27;)
+        ds_synthetic.to_netcdf(new_file, mode=&#x27;w&#x27;)</code></pre>
+<hr>
+<h3>Normal Distribution Perturbations</h3>
+<p><strong>Current:</strong> Uniform distribution <strong>Modification:</strong> Normal (Gaussian) distribution</p>
+<pre><code># In function:
+# Instead of:
+random_multipliers = np.random.uniform(low=0.99, high=1.02, size=...)
 
-<hr />
-<h3 id="normal-distribution-perturbations">Normal Distribution Perturbations</h3>
-<p><strong>Current:</strong> Uniform distribution<br />
-<strong>Modification:</strong> Normal (Gaussian) distribution</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># In function:</span>
-<span class="c1"># Instead of:</span>
-<span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=...</span><span class="p">)</span>
+# Use:
+random_multipliers = np.random.normal(loc=1.0, scale=0.01, size=...)
+# loc = mean (1.0 = no change on average)
+# scale = standard deviation (0.01 = 1% std)</code></pre>
+<hr>
+<h2>Appendix: Complete Modified Examples</h2>
+<h3>Example A: Custom Script for 3 Files, 10 Members Each</h3>
+<pre><code>import multiprocessing
+import numpy as np
+import time
+import xarray as xr
 
-<span class="c1"># Use:</span>
-<span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">size</span><span class="o">=...</span><span class="p">)</span>
-<span class="c1"># loc = mean (1.0 = no change on average)</span>
-<span class="c1"># scale = standard deviation (0.01 = 1% std)</span>
-</code></pre></div>
+def produce_synthetic_spatial_data(inputs):
+    start_time = time.time()
+    file = inputs[0]
+    num_synthetic_sets_in_ensemble = inputs[1] - 1
+    random_multipliers = np.random.uniform(low=0.99, high=1.02, size=num_synthetic_sets_in_ensemble)
 
-<hr />
-<h2 id="appendix-complete-modified-examples">Appendix: Complete Modified Examples</h2>
-<h3 id="example-a-custom-script-for-3-files-10-members-each">Example A: Custom Script for 3 Files, 10 Members Each</h3>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+    for index in range(len(random_multipliers)):
+        ds = xr.open_dataset(file)
+        variables = ds.data_vars
+        for variable in variables:
+            ds[variable] *= random_multipliers[index]
+        new_file = file.replace(&#x27;.nc&#x27;, f&#x27;_{index+2}.nc&#x27;)
+        ds.to_netcdf(new_file, mode=&#x27;w&#x27;)
 
-<span class="k">def</span><span class="w"> </span><span class="nf">produce_synthetic_spatial_data</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">file</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">num_synthetic_sets_in_ensemble</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="n">random_multipliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">num_synthetic_sets_in_ensemble</span><span class="p">)</span>
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f&quot;Elapsed time for {file}: {elapsed_time:.2f} seconds&quot;)
 
-    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">random_multipliers</span><span class="p">)):</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="n">variables</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span>
-        <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
-            <span class="n">ds</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">*=</span> <span class="n">random_multipliers</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="n">new_file</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.nc&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s1">.nc&#39;</span><span class="p">)</span>
-        <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">new_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+if __name__ == &#x27;__main__&#x27;:
+    start_time = time.time()
 
-    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Elapsed time for </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">elapsed_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+    # Configuration
+    files = [
+        &quot;./control_elm.nc&quot;,
+        &quot;./control_eam.nc&quot;,
+        &quot;./scenario_elm.nc&quot;
+    ]
+    num_files_in_each_set = [10, 10, 10]  # 10 members each
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    inputs = list(zip(files, num_files_in_each_set))
 
-    <span class="c1"># Configuration</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;./control_elm.nc&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;./control_eam.nc&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;./scenario_elm.nc&quot;</span>
-    <span class="p">]</span>
-    <span class="n">num_files_in_each_set</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>  <span class="c1"># 10 members each</span>
+    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+        pool.map(produce_synthetic_spatial_data, inputs)
 
-    <span class="n">inputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">num_files_in_each_set</span><span class="p">))</span>
-
-    <span class="k">with</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">MAX_PROCESSES</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-        <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">produce_synthetic_spatial_data</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
-
-    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-    <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time: </span><span class="si">{</span><span class="n">elapsed_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h2 id="references">References</h2>
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f&quot;Total time: {elapsed_time:.2f} seconds&quot;)</code></pre>
+<hr>
+<h2>References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>NumPy Random Documentation: <a href="https://numpy.org/doc/stable/reference/random/">https://numpy.org/doc/stable/reference/random/</a></li>
 <li>xarray Documentation: <a href="https://xarray.pydata.org/">https://xarray.pydata.org/</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 </ul>
-<hr />
-<h2 id="contact">Contact</h2>
-<p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
-- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
-<hr />
-<h2 id="version-information">Version Information</h2>
-<p><strong>Script:</strong> e3sm_produce_synthetic_spatial_data.py<br />
-<strong>Documentation Version:</strong> 1.0<br />
-<strong>Last Updated:</strong> January 2026<br />
-<strong>Python Version:</strong> 3.7+<br />
-<strong>Dependencies:</strong> numpy, xarray, multiprocessing</p>
-<hr />
-<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_produce_synthetic_spatial_data.py</code> script to generate synthetic ensemble members from E3SM spatial NetCDF files for statistical testing and uncertainty quantification.</em></p>
-        <footer>
-            <p>E3SM Synthetic Spatial Data Generation Script Documentation<br>
-            <strong>Script:</strong> e3sm_produce_synthetic_spatial_data.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
-        </footer>
-    </div>
+<hr>
+<h2>Contact</h2>
+<p>For questions or issues:</p>
+<ul>
+<li><strong>Philip Myint</strong>: myint1@llnl.gov</li>
+<li><strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</li>
+</ul>
+<hr>
+<h2>Version Information</h2>
+<p><strong>Script:</strong> e3sm_produce_synthetic_spatial_data.py <strong>Documentation Version:</strong> 1.0 <strong>Last Updated:</strong> January 2026 <strong>Python Version:</strong> 3.7+ <strong>Dependencies:</strong> numpy, xarray, multiprocessing</p>
+<hr>
+<p>*This documentation provides comprehensive guidance for using the <code>e3sm_produce_synthetic_spatial_data.py</code> script to generate synthetic ensemble members from E3SM spatial NetCDF files for statistical testing and uncertainty quantification.*</p>
+</div>
 </body>
 </html>

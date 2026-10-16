@@ -1,485 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E3SM Time Series Extraction Script Documentation (h0 files)</title>
-    <style>/* 
- * Documentation Stylesheet for GCAM Synthetic Data Generation Script
- * A modern, colorful design with good readability
- */
-
-/* ===== ROOT VARIABLES ===== */
-:root {
-    /* Color Palette */
-    --primary-blue: #2563eb;
-    --primary-blue-light: #3b82f6;
-    --primary-blue-dark: #1e40af;
-    --accent-green: #10b981;
-    --accent-orange: #f59e0b;
-    --accent-purple: #8b5cf6;
-    --accent-red: #ef4444;
-    
-    /* Background Colors */
-    --bg-main: #f8fafc;
-    --bg-code: #1e293b;
-    --bg-code-inline: #e2e8f0;
-    --bg-table-header: #1e40af;
-    --bg-table-row-even: #f1f5f9;
-    --bg-table-row-odd: #ffffff;
-    --bg-note: #fef3c7;
-    --bg-warning: #fee2e2;
-    --bg-info: #dbeafe;
-    --bg-success: #d1fae5;
-    
-    /* Text Colors */
-    --text-main: #1e293b;
-    --text-secondary: #64748b;
-    --text-code: #e2e8f0;
-    --text-link: #2563eb;
-    --text-link-hover: #1e40af;
-    
-    /* Border Colors */
-    --border-light: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-dark: #94a3b8;
-    
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-}
-
-/* ===== BASE STYLES ===== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
-    color: var(--text-main);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: var(--spacing-xl) var(--spacing-md);
-    font-size: 16px;
-}
-
-/* Main Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    padding: var(--spacing-2xl);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-/* ===== TYPOGRAPHY ===== */
-h1 {
-    font-size: 2.5rem;
-    color: var(--primary-blue-dark);
-    margin-bottom: var(--spacing-xl);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 4px solid var(--primary-blue);
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-h2 {
-    font-size: 2rem;
-    color: var(--primary-blue);
-    margin-top: var(--spacing-2xl);
-    margin-bottom: var(--spacing-lg);
-    padding-left: var(--spacing-md);
-    border-left: 5px solid var(--accent-green);
-    font-weight: 600;
-}
-
-h3 {
-    font-size: 1.5rem;
-    color: var(--primary-blue-dark);
-    margin-top: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-}
-
-h3::before {
-    content: "▸";
-    color: var(--accent-orange);
-    margin-right: var(--spacing-sm);
-    font-size: 1.2rem;
-}
-
-h4 {
-    font-size: 1.25rem;
-    color: var(--accent-purple);
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-sm);
-    font-weight: 600;
-}
-
-p {
-    margin-bottom: var(--spacing-md);
-    color: var(--text-main);
-}
-
-/* ===== LINKS ===== */
-a {
-    color: var(--text-link);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 2px solid transparent;
-    transition: all 0.3s ease;
-}
-
-a:hover {
-    color: var(--text-link-hover);
-    border-bottom-color: var(--text-link-hover);
-}
-
-/* ===== LISTS ===== */
-ul, ol {
-    margin-left: var(--spacing-xl);
-    margin-bottom: var(--spacing-md);
-}
-
-li {
-    margin-bottom: var(--spacing-sm);
-    padding-left: var(--spacing-sm);
-}
-
-ul li::marker {
-    color: var(--accent-green);
-    font-size: 1.2em;
-}
-
-ol li::marker {
-    color: var(--primary-blue);
-    font-weight: 600;
-}
-
-/* ===== CODE BLOCKS ===== */
-code {
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    font-size: 0.9em;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--bg-code-inline);
-    color: var(--accent-red);
-    border-radius: 4px;
-    font-weight: 500;
-}
-
-pre {
-    background: var(--bg-code);
-    color: var(--text-code);
-    padding: var(--spacing-lg);
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: var(--spacing-lg) 0;
-    border-left: 4px solid var(--accent-green);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-pre code {
-    background: transparent;
-    color: var(--text-code);
-    padding: 0;
-    font-size: 0.95em;
-    line-height: 1.5;
-}
-
-/* ===== TABLES ===== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: var(--spacing-xl) 0;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-thead {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
-    color: white;
-}
-
-th {
-    padding: var(--spacing-md);
-    text-align: left;
-    font-weight: 600;
-    font-size: 1.05em;
-    border-bottom: 3px solid var(--accent-orange);
-}
-
-td {
-    padding: var(--spacing-md);
-    border-bottom: 1px solid var(--border-light);
-}
-
-tbody tr:nth-child(even) {
-    background: var(--bg-table-row-even);
-}
-
-tbody tr:nth-child(odd) {
-    background: var(--bg-table-row-odd);
-}
-
-tbody tr:hover {
-    background: #e0f2fe;
-    transform: scale(1.01);
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* ===== BLOCKQUOTES ===== */
-blockquote {
-    margin: var(--spacing-lg) 0;
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: var(--primary-blue-dark);
-}
-
-/* ===== HORIZONTAL RULES ===== */
-hr {
-    border: none;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
-    margin: var(--spacing-2xl) 0;
-    border-radius: 2px;
-}
-
-/* ===== SPECIAL BOXES ===== */
-.note {
-    background: var(--bg-note);
-    border-left: 5px solid var(--accent-orange);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.warning {
-    background: var(--bg-warning);
-    border-left: 5px solid var(--accent-red);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.info {
-    background: var(--bg-info);
-    border-left: 5px solid var(--primary-blue);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-.success {
-    background: var(--bg-success);
-    border-left: 5px solid var(--accent-green);
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin: var(--spacing-lg) 0;
-    border-radius: 0 8px 8px 0;
-}
-
-/* ===== BADGES ===== */
-.badge {
-    display: inline-block;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 600;
-    margin: 0 var(--spacing-xs);
-}
-
-.badge-required {
-    background: var(--accent-red);
-    color: white;
-}
-
-.badge-optional {
-    background: var(--accent-green);
-    color: white;
-}
-
-.badge-default {
-    background: var(--primary-blue);
-    color: white;
-}
-
-/* ===== STRONG & EM ===== */
-strong {
-    color: var(--primary-blue-dark);
-    font-weight: 700;
-}
-
-em {
-    color: var(--accent-purple);
-    font-style: italic;
-}
-
-/* ===== IMAGES ===== */
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: var(--spacing-lg) 0;
-}
-
-/* ===== SCROLLBAR STYLING ===== */
-::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-table-row-even);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--accent-purple) 100%);
-}
-
-/* ===== PRINT STYLES ===== */
-@media print {
-    body {
-        background: white;
-        padding: 0;
-    }
-    
-    .container {
-        box-shadow: none;
-        max-width: 100%;
-    }
-    
-    h1, h2, h3 {
-        page-break-after: avoid;
-    }
-    
-    pre, table {
-        page-break-inside: avoid;
-    }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-    body {
-        padding: var(--spacing-md) var(--spacing-sm);
-        font-size: 14px;
-    }
-    
-    .container {
-        padding: var(--spacing-lg);
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
-    
-    h3 {
-        font-size: 1.25rem;
-    }
-    
-    table {
-        font-size: 0.9em;
-    }
-    
-    th, td {
-        padding: var(--spacing-sm);
-    }
-}
-
-/* ===== ADDITIONAL UTILITY CLASSES ===== */
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.margin-top-lg {
-    margin-top: var(--spacing-2xl);
-}
-
-.margin-bottom-lg {
-    margin-bottom: var(--spacing-2xl);
-}
-
-.highlight {
-    background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
-    padding: 0 var(--spacing-xs);
-    border-radius: 3px;
-}
-
-/* ===== SECTION DIVIDERS ===== */
-.section-divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: var(--spacing-2xl) 0;
-}
-
-.section-divider::before,
-.section-divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 2px solid var(--border-medium);
-}
-
-.section-divider::before {
-    margin-right: var(--spacing-md);
-}
-
-.section-divider::after {
-    margin-left: var(--spacing-md);
-}
-
-/* ===== FOOTER ===== */
-footer {
-    margin-top: var(--spacing-2xl);
-    padding-top: var(--spacing-lg);
-    border-top: 2px solid var(--border-light);
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E3SM Time Series Extraction Script Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; background: #f8fafc; margin: 0; }
+.container { max-width: 980px; margin: 0 auto; padding: 2rem; background: #ffffff; }
+h1, h2, h3, h4 { color: #1f2937; line-height: 1.25; }
+a { color: #2563eb; }
+code { background: #eef2ff; padding: 0.1rem 0.25rem; border-radius: 4px; }
+pre { background: #111827; color: #f9fafb; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+pre code { background: transparent; padding: 0; color: inherit; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #d1d5db; padding: 0.45rem 0.55rem; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem; color: #475569; }
 </style>
 </head>
 <body>
-    <div class="container"><h1 id="e3sm-time-series-extraction-script-documentation">E3SM Time Series Extraction Script Documentation</h1>
-<h2 id="overview">Overview</h2>
+<div class="container">
+<h1>E3SM Time Series Extraction Script Documentation</h1>
+<h2>Overview</h2>
 <p><strong>Script Name:</strong> <code>e3sm_extract_time_series_h0.py</code></p>
 <p><strong>Purpose:</strong> Extracts time series data from E3SM (Energy Exascale Earth System Model) NetCDF h0 output files, aggregates data spatially (global or regional), processes variables (unit conversions, derived quantities), and outputs to formatted text files. The script handles both EAM (atmosphere) and ELM (land) model outputs.</p>
 <p><strong>Authors:</strong> Philip Myint (myint1@llnl.gov), Dalei Hao (dalei.hao@pnnl.gov), Sha Feng (sha.feng@pnnl.gov), and Eva Sinha (eva.sinha@pnnl.gov)</p>
 <p><strong>Repository:</strong> <a href="https://github.com/philipmyint/e3sm--gcam_analysis">E3SM-GCAM Analysis Scripts</a></p>
-<hr />
-<h2 id="table-of-contents">Table of Contents</h2>
-<ol>
+<hr>
+<h2>Table of Contents</h2>
+<ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#installation--requirements">Installation &amp; Requirements</a></li>
 <li><a href="#basic-usage">Basic Usage</a></li>
@@ -493,50 +42,50 @@ footer {
 <li><a href="#output-files">Output Files</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#best-practices">Best Practices</a></li>
-</ol>
-<hr />
-<h2 id="installation-requirements">Installation &amp; Requirements</h2>
-<h3 id="required-python-libraries">Required Python Libraries</h3>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pandas<span class="w"> </span>numpy<span class="w"> </span>xarray<span class="w"> </span>netCDF4<span class="w"> </span>multiprocessing
-</code></pre></div>
-
-<h3 id="required-utility-modules">Required Utility Modules</h3>
-<p>The script imports several utility modules that must be in the same directory or Python path:<br />
-- <code>utility_constants</code> - Physical constants (conversion factors, molecular masses)<br />
-- <code>utility_dataframes</code> - DataFrame manipulation functions<br />
-- <code>utility_functions</code> - General utility functions<br />
-- <code>utility_e3sm_netcdf</code> - E3SM-specific NetCDF handling functions</p>
-<h3 id="system-requirements">System Requirements</h3>
+</ul>
+<hr>
+<h2>Installation &amp; Requirements</h2>
+<h3>Required Python Libraries</h3>
+<pre><code>pip install pandas numpy xarray netCDF4 multiprocessing</code></pre>
+<h3>Required Utility Modules</h3>
+<p>The script imports several utility modules that must be in the same directory or Python path:</p>
+<ul>
+<li><code>utility_constants</code> - Physical constants (conversion factors, molecular masses)</li>
+<li><code>utility_dataframes</code> - DataFrame manipulation functions</li>
+<li><code>utility_functions</code> - General utility functions</li>
+<li><code>utility_e3sm_netcdf</code> - E3SM-specific NetCDF handling functions</li>
+</ul>
+<h3>System Requirements</h3>
 <ul>
 <li>Python 3.7+</li>
 <li>Multi-core processor (script uses parallel processing)</li>
 <li>Sufficient RAM for NetCDF file processing (8+ GB recommended)</li>
 <li>Access to E3SM simulation output directories</li>
 </ul>
-<hr />
-<h2 id="basic-usage">Basic Usage</h2>
-<h3 id="command-line-execution">Command Line Execution</h3>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_h0.py<span class="w"> </span>path/to/config.json
-</code></pre></div>
-
+<hr>
+<h2>Basic Usage</h2>
+<h3>Command Line Execution</h3>
+<pre><code>python e3sm_extract_time_series_h0.py path/to/config.json</code></pre>
+<p>By default, the script will stop before writing if any configured output file already exists. Add <code>--overwrite</code> to replace existing outputs:</p>
+<pre><code>python e3sm_extract_time_series_h0.py --overwrite path/to/config.json</code></pre>
 <p><strong>Multiple Configuration Files:</strong></p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>e3sm_extract_time_series_h0.py<span class="w"> </span>config1.json<span class="w"> </span>config2.json<span class="w"> </span>config3.json
-</code></pre></div>
-
-<h3 id="what-the-script-does">What the Script Does</h3>
-<p>For each configuration block in the JSON file, the script:<br />
-1. <strong>Locates</strong> E3SM NetCDF h0 files in simulation directory<br />
-2. <strong>Filters</strong> files by year range and file type (ELM/EAM)<br />
-3. <strong>Extracts</strong> specified variables from each monthly NetCDF file<br />
-4. <strong>Aggregates</strong> spatially (area-weighted mean/sum over lat/lon)<br />
-5. <strong>Filters</strong> by region (optional - global, Amazon, CONUS, etc.)<br />
-6. <strong>Processes</strong> variables (unit conversions, derived quantities)<br />
-7. <strong>Combines</strong> data across months and years<br />
-8. <strong>Outputs</strong> time series to formatted text file<br />
-9. <strong>Uses</strong> parallel processing for fast execution</p>
-<hr />
-<h2 id="e3sm-model-background">E3SM Model Background</h2>
-<h3 id="e3sm-components">E3SM Components</h3>
+<pre><code>python e3sm_extract_time_series_h0.py config1.json config2.json config3.json</code></pre>
+<h3>What the Script Does</h3>
+<p>For each configuration block in the JSON file, the script:</p>
+<ul>
+<li><strong>Locates</strong> E3SM NetCDF h0 files in simulation directory</li>
+<li><strong>Filters</strong> files by year range and file type (ELM/EAM)</li>
+<li><strong>Extracts</strong> specified variables from each monthly NetCDF file</li>
+<li><strong>Aggregates</strong> spatially (area-weighted mean/sum over lat/lon)</li>
+<li><strong>Filters</strong> by region (optional - global, Amazon, CONUS, etc.)</li>
+<li><strong>Processes</strong> variables (unit conversions, derived quantities)</li>
+<li><strong>Combines</strong> data across months and years</li>
+<li><strong>Outputs</strong> time series to formatted text file</li>
+<li><strong>Uses</strong> parallel processing for fast execution</li>
+</ul>
+<hr>
+<h2>E3SM Model Background</h2>
+<h3>E3SM Components</h3>
 <p><strong>E3SM (Energy Exascale Earth System Model)</strong> consists of multiple component models:</p>
 <ul>
 <li><strong>EAM (E3SM Atmosphere Model)</strong> - Atmospheric processes, radiation, clouds</li>
@@ -546,616 +95,500 @@ footer {
 <li><strong>MOSART</strong> - River transport</li>
 </ul>
 <p>This script processes outputs from <strong>EAM</strong> and <strong>ELM</strong> components.</p>
-<h3 id="netcdf-h0-files">NetCDF h0 Files</h3>
+<h3>NetCDF h0 Files</h3>
 <p><strong>File Naming Convention:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="n">component</span><span class="o">]</span><span class="p">.</span><span class="n">h0</span><span class="p">.</span><span class="n">YYYY</span><span class="o">-</span><span class="n">MM</span><span class="p">.</span><span class="n">nc</span>
+<pre><code>[component].h0.YYYY-MM.nc
 
-<span class="nl">Examples</span><span class="p">:</span>
-<span class="n">elm</span><span class="p">.</span><span class="n">h0</span><span class="mf">.2015</span><span class="o">-</span><span class="mf">01.</span><span class="n">nc</span><span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">ELM</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">January</span><span class="w"> </span><span class="mi">2015</span>
-<span class="n">eam</span><span class="p">.</span><span class="n">h0</span><span class="mf">.2015</span><span class="o">-</span><span class="mf">01.</span><span class="n">nc</span><span class="w">    </span><span class="err">#</span><span class="w"> </span><span class="n">EAM</span><span class="w"> </span><span class="k">output</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">January</span><span class="w"> </span><span class="mi">2015</span>
-</code></pre></div>
-
-<p><strong>File Contents:</strong><br />
-- One file per month per component<br />
-- Gridded data (latitude × longitude)<br />
-- Multiple variables in each file<br />
-- Metadata (units, descriptions)</p>
-<h3 id="common-variables">Common Variables</h3>
-<p><strong>ELM Variables (Land):</strong><br />
-- <code>GPP</code> - Gross Primary Production (gC/m²/s)<br />
-- <code>NPP</code> - Net Primary Production<br />
-- <code>NBP</code> - Net Biome Production<br />
-- <code>TOTECOSYSC</code> - Total ecosystem carbon (gC/m²)<br />
-- <code>TOTVEGC</code> - Total vegetation carbon<br />
-- <code>TOTSOMC</code> - Total soil carbon<br />
-- <code>PCT_LANDUNIT</code> - Land unit percentages<br />
-- <code>PCT_NAT_PFT</code> - Plant functional type percentages</p>
-<p><strong>EAM Variables (Atmosphere):</strong><br />
-- <code>PRECC</code>, <code>PRECL</code> - Convective and large-scale precipitation (m/s)<br />
-- <code>SFCO2</code> - Surface CO₂ flux (kg/m²/s)<br />
-- <code>TMCO2</code> - Atmospheric CO₂ mass (kg)<br />
-- <code>TREFHT</code> - Reference height temperature (K)</p>
-<hr />
-<h2 id="complete-parameter-reference-table">Complete Parameter Reference Table</h2>
-<h3 id="required-parameters">Required Parameters</h3>
+Examples:
+elm.h0.2015-01.nc    # ELM output for January 2015
+eam.h0.2015-01.nc    # EAM output for January 2015</code></pre>
+<p><strong>File Contents:</strong></p>
+<ul>
+<li>One file per month per component</li>
+<li>Gridded data (latitude × longitude)</li>
+<li>Multiple variables in each file</li>
+<li>Metadata (units, descriptions)</li>
+</ul>
+<h3>Common Variables</h3>
+<p><strong>ELM Variables (Land):</strong></p>
+<ul>
+<li><code>GPP</code> - Gross Primary Production (gC/m²/s)</li>
+<li><code>NPP</code> - Net Primary Production</li>
+<li><code>NBP</code> - Net Biome Production</li>
+<li><code>TOTECOSYSC</code> - Total ecosystem carbon (gC/m²)</li>
+<li><code>TOTVEGC</code> - Total vegetation carbon</li>
+<li><code>TOTSOMC</code> - Total soil carbon</li>
+<li><code>PCT_LANDUNIT</code> - Land unit percentages</li>
+<li><code>PCT_NAT_PFT</code> - Plant functional type percentages</li>
+</ul>
+<p><strong>EAM Variables (Atmosphere):</strong></p>
+<ul>
+<li><code>PRECC</code>, <code>PRECL</code> - Convective and large-scale precipitation (m/s)</li>
+<li><code>SFCO2</code> - Surface CO₂ flux (kg/m²/s)</li>
+<li><code>TMCO2</code> - Atmospheric CO₂ mass (kg)</li>
+<li><code>TREFHT</code> - Reference height temperature (K)</li>
+</ul>
+<hr>
+<h2>Complete Parameter Reference Table</h2>
+<h3>Required Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>simulation_path</code></td>
-<td>string</td>
-<td><strong>Yes</strong></td>
-<td>Path to E3SM simulation output directory</td>
-</tr>
-<tr>
-<td><code>output_file</code></td>
-<td>string</td>
-<td><strong>Yes</strong></td>
-<td>Path/name for output time series file</td>
-</tr>
-<tr>
-<td><code>netcdf_substrings</code></td>
-<td>nested list</td>
-<td><strong>Yes</strong></td>
-<td>File type identifiers for NetCDF files</td>
-</tr>
-<tr>
-<td><code>variables</code></td>
-<td>nested list</td>
-<td><strong>Yes</strong></td>
-<td>Variables to extract from each file type</td>
-</tr>
-</tbody>
-</table>
-<h3 id="optional-parameters">Optional Parameters</h3>
+<tr><td><code>simulation_path</code></td><td>string</td><td><strong>Yes</strong></td><td>Path to E3SM simulation output directory</td></tr>
+<tr><td><code>output_file</code></td><td>string</td><td><strong>Yes</strong></td><td>Path/name for output time series file</td></tr>
+<tr><td><code>netcdf_substrings</code></td><td>nested list</td><td><strong>Yes</strong></td><td>File type identifiers for NetCDF files</td></tr>
+<tr><td><code>variables</code></td><td>nested list</td><td><strong>Yes</strong></td><td>Variables to extract from each file type</td></tr>
+</tbody></table>
+<h3>Optional Parameters</h3>
 <table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-<th>Required</th>
-<th>Default</th>
-<th>Possible Values</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Possible Values</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>lat_lon_aggregation_types</code></td>
-<td>list</td>
-<td>No</td>
-<td><code>["area_weighted_mean_or_sum"]</code></td>
-<td><code>"area_weighted_mean_or_sum"</code>, <code>"mean"</code>, <code>"sum"</code></td>
-<td>Spatial aggregation method</td>
-</tr>
-<tr>
-<td><code>regions</code></td>
-<td>list</td>
-<td>No</td>
-<td><code>[None]</code> (global)</td>
-<td>Region names or <code>None</code></td>
-<td>Geographic regions to extract</td>
-</tr>
-<tr>
-<td><code>process_variables</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>true</code></td>
-<td><code>true</code>, <code>false</code></td>
-<td>Apply unit conversions and derived variables</td>
-</tr>
-<tr>
-<td><code>start_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2015</code></td>
-<td>Any year</td>
-<td>First year to extract</td>
-</tr>
-<tr>
-<td><code>end_year</code></td>
-<td>integer</td>
-<td>No</td>
-<td><code>2100</code></td>
-<td>Any year</td>
-<td>Last year to extract</td>
-</tr>
-<tr>
-<td><code>write_to_csv</code></td>
-<td>boolean</td>
-<td>No</td>
-<td><code>false</code></td>
-<td><code>true</code>, <code>false</code></td>
-<td>Output as CSV instead of fixed-width</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="detailed-parameter-descriptions">Detailed Parameter Descriptions</h2>
-<h3 id="core-required-parameters">Core Required Parameters</h3>
-<h4 id="simulation_path"><code>simulation_path</code></h4>
-<p><strong>Type:</strong> String (directory path)<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Complete path to directory containing E3SM NetCDF output files.</p>
+<tr><td><code>lat_lon_aggregation_types</code></td><td>list</td><td>No</td><td><code>[&quot;area_weighted_mean_or_sum&quot;]</code></td><td><code>&quot;area_weighted_mean_or_sum&quot;</code>, <code>&quot;mean&quot;</code>, <code>&quot;sum&quot;</code></td><td>Spatial aggregation method</td></tr>
+<tr><td><code>regions</code></td><td>list</td><td>No</td><td><code>[None]</code> (global)</td><td>Region names or <code>None</code></td><td>Geographic regions to extract</td></tr>
+<tr><td><code>process_variables</code></td><td>boolean</td><td>No</td><td><code>true</code></td><td><code>true</code>, <code>false</code></td><td>Apply unit conversions and derived variables</td></tr>
+<tr><td><code>start_year</code></td><td>integer</td><td>No</td><td><code>2015</code></td><td>Any year</td><td>First year to extract</td></tr>
+<tr><td><code>end_year</code></td><td>integer</td><td>No</td><td><code>2100</code></td><td>Any year</td><td>Last year to extract</td></tr>
+<tr><td><code>write_to_csv</code></td><td>boolean</td><td>No</td><td><code>false</code></td><td><code>true</code>, <code>false</code></td><td>Output as CSV instead of fixed-width</td></tr>
+<tr><td><code>extra_dim_aggregation_types</code></td><td>list</td><td>No</td><td><code>[&quot;first&quot;]</code></td><td><code>&quot;first&quot;</code>, <code>&quot;mean&quot;</code></td><td>How to collapse non-spatial dimensions other than <code>time</code>, <code>lat</code>, <code>lon</code>, and <code>ncol</code>. CO2 concentration variables with <code>lev</code> select the surface level separately.</td></tr>
+<tr><td><code>max_processes</code></td><td>integer</td><td>No</td><td><code>MAX_PROCESSES</code></td><td>Positive integer</td><td>Maximum parallel workers. Defaults to all available CPUs minus one, with a minimum of one.</td></tr>
+</tbody></table>
+<hr>
+<h2>Detailed Parameter Descriptions</h2>
+<h3>Core Required Parameters</h3>
+<h4><code>simulation_path</code></h4>
+<p><strong>Type:</strong> String (directory path) <strong>Required:</strong> Yes <strong>Description:</strong> Complete path to directory containing E3SM NetCDF output files.</p>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run&quot;</span>
-</code></pre></div>
-
-<p><strong>Requirements:</strong><br />
-- Must be valid directory path<br />
-- Must contain NetCDF (.nc) files<br />
-- Files must follow E3SM naming convention</p>
+<pre><code>&quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/ac.eva.sinha/20240730_SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_without_feedbacks/run&quot;</code></pre>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Must be valid directory path</li>
+<li>Must contain NetCDF (.nc) files</li>
+<li>Files must follow E3SM naming convention</li>
+</ul>
 <p><strong>Typical Structure:</strong></p>
-<div class="codehilite"><pre><span></span><code>simulation_path/
+<pre><code>simulation_path/
 ├── elm.h0.2015-01.nc
 ├── elm.h0.2015-02.nc
 ├── ...
 ├── eam.h0.2015-01.nc
 ├── eam.h0.2015-02.nc
-└── ...
-</code></pre></div>
-
-<hr />
-<h4 id="output_file"><code>output_file</code></h4>
-<p><strong>Type:</strong> String (file path)<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Path and filename for output time series data.</p>
+└── ...</code></pre>
+<hr>
+<h4><code>output_file</code></h4>
+<p><strong>Type:</strong> String (file path) <strong>Required:</strong> Yes <strong>Description:</strong> Path and filename for output time series data.</p>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;./../2025_DiVittorio_et_al_e3sm/control_time_series.dat&quot;</span>
-<span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output/amazon_time_series.csv&quot;</span>
-</code></pre></div>
-
-<p><strong>File Formats:</strong><br />
-- <strong>Fixed-width (.dat)</strong> - Default, human-readable, aligned columns<br />
-- <strong>CSV (.csv)</strong> - If filename ends in .csv or <code>write_to_csv: true</code></p>
+<pre><code>&quot;output_file&quot;: &quot;./../2025_DiVittorio_et_al_e3sm/control_time_series.dat&quot;
+&quot;output_file&quot;: &quot;./output/amazon_time_series.csv&quot;</code></pre>
+<p><strong>File Formats:</strong></p>
+<ul>
+<li><strong>Fixed-width (.dat)</strong> - Default, human-readable, aligned columns</li>
+<li><strong>CSV (.csv)</strong> - If filename ends in .csv or <code>write_to_csv: true</code></li>
+</ul>
 <p><strong>Output Structure:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)  TREFHT (K)  ...
+<pre><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)  TREFHT (K)  ...
 2015      1        10.234           5.123      288.45
 2015      2         9.876           4.987      289.12
-...
-</code></pre></div>
-
-<hr />
-<h4 id="netcdf_substrings"><code>netcdf_substrings</code></h4>
-<p><strong>Type:</strong> Nested list of strings<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Identifies different types of NetCDF files by substrings in filenames.</p>
+...</code></pre>
+<hr>
+<h4><code>netcdf_substrings</code></h4>
+<p><strong>Type:</strong> Nested list of strings <strong>Required:</strong> Yes <strong>Description:</strong> Identifies different types of NetCDF files by substrings in filenames.</p>
 <p><strong>Format:</strong> List of lists, where each inner list contains substrings for one file type.</p>
 <p><strong>Examples:</strong></p>
 <p><strong>Single file type (ELM only):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">]]</span>
-</code></pre></div>
-
+<pre><code>&quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;]]</code></pre>
 <p><strong>Two file types (ELM and EAM):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]]</span>
-</code></pre></div>
-
+<pre><code>&quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]]</code></pre>
 <p><strong>Multiple substrings (must all be present):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;h0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;clm2&quot;</span><span class="p">]]</span>
-</code></pre></div>
-
-<p><strong>How It Works:</strong><br />
-- Script searches <code>simulation_path</code> for .nc files<br />
-- Each file must contain ALL substrings in its corresponding list<br />
-- Files grouped by type based on which substring list they match</p>
-<hr />
-<h4 id="variables"><code>variables</code></h4>
-<p><strong>Type:</strong> Nested list of strings<br />
-<strong>Required:</strong> Yes<br />
-<strong>Description:</strong> Variables to extract from each NetCDF file type.</p>
+<pre><code>&quot;netcdf_substrings&quot;: [[&quot;elm&quot;, &quot;h0&quot;, &quot;clm2&quot;]]</code></pre>
+<p><strong>How It Works:</strong></p>
+<ul>
+<li>Script searches <code>simulation_path</code> for .nc files</li>
+<li>Each file must contain ALL substrings in its corresponding list</li>
+<li>Files grouped by type based on which substring list they match</li>
+</ul>
+<hr>
+<h4><code>variables</code></h4>
+<p><strong>Type:</strong> Nested list of strings <strong>Required:</strong> Yes <strong>Description:</strong> Variables to extract from each NetCDF file type.</p>
 <p><strong>Format:</strong> List of lists, where each inner list corresponds to one file type in <code>netcdf_substrings</code>.</p>
 <p><strong>Structure:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">variables</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">variables</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">extract</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">netcdf_substrings</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="n">files</span>
-</code></pre></div>
-
+<pre><code>variables[i] = variables to extract from netcdf_substrings[i] files</code></pre>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTECOSYSC&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;PRECC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TREFHT&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Breakdown:</strong><br />
-- <code>["GPP", "NPP", "NBP", "TOTECOSYSC"]</code> extracted from ELM files<br />
-- <code>["PRECC", "PRECL", "TREFHT"]</code> extracted from EAM files<br />
-- Final output has columns for ALL variables (merged by Year/Month)</p>
+<pre><code>{
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],
+    &quot;variables&quot;: [
+        [&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;TOTECOSYSC&quot;],
+        [&quot;PRECC&quot;, &quot;PRECL&quot;, &quot;TREFHT&quot;]
+    ]
+}</code></pre>
+<p><strong>Breakdown:</strong></p>
+<ul>
+<li><code>[&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;TOTECOSYSC&quot;]</code> extracted from ELM files</li>
+<li><code>[&quot;PRECC&quot;, &quot;PRECL&quot;, &quot;TREFHT&quot;]</code> extracted from EAM files</li>
+<li>Final output has columns for ALL variables (merged by Year/Month)</li>
+</ul>
 <p><strong>Common ELM Variables:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NEE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NEP&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;TOTECOSYSC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTVEGC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTSOMC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTLITC&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;WOODC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;LAND_UPTAKE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;LAND_USE_FLUX&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;PCT_LANDUNIT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCT_NAT_PFT&quot;</span><span class="p">]</span>
-<span class="p">]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [
+    [&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;, &quot;HR&quot;, &quot;NEE&quot;, &quot;NEP&quot;,
+     &quot;TOTECOSYSC&quot;, &quot;TOTVEGC&quot;, &quot;TOTSOMC&quot;, &quot;TOTLITC&quot;,
+     &quot;WOODC&quot;, &quot;LAND_UPTAKE&quot;, &quot;LAND_USE_FLUX&quot;,
+     &quot;PCT_LANDUNIT&quot;, &quot;PCT_NAT_PFT&quot;]
+]</code></pre>
 <p><strong>Common EAM Variables:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="p">[</span><span class="s2">&quot;PRECC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECSC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECSL&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;SFCO2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SFCO2_LND&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SFCO2_OCN&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;TMCO2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TMCO2_LND&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TMCO2_OCN&quot;</span><span class="p">,</span>
-<span class="w">     </span><span class="s2">&quot;TREFHT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PBOT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCO2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;QBOT&quot;</span><span class="p">]</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="optional-parameters_1">Optional Parameters</h3>
-<h4 id="lat_lon_aggregation_types"><code>lat_lon_aggregation_types</code></h4>
-<p><strong>Type:</strong> List of strings<br />
-<strong>Required:</strong> No<br />
-<strong>Default:</strong> <code>["area_weighted_mean_or_sum"]</code> for all file types<br />
-<strong>Possible Values:</strong> <code>"area_weighted_mean_or_sum"</code>, <code>"mean"</code>, <code>"sum"</code></p>
+<pre><code>&quot;variables&quot;: [
+    [&quot;PRECC&quot;, &quot;PRECL&quot;, &quot;PRECSC&quot;, &quot;PRECSL&quot;,
+     &quot;SFCO2&quot;, &quot;SFCO2_LND&quot;, &quot;SFCO2_OCN&quot;,
+     &quot;TMCO2&quot;, &quot;TMCO2_LND&quot;, &quot;TMCO2_OCN&quot;,
+     &quot;TREFHT&quot;, &quot;PBOT&quot;, &quot;PCO2&quot;, &quot;QBOT&quot;]
+]</code></pre>
+<hr>
+<h3>Optional Parameters</h3>
+<h4><code>extra_dim_aggregation_types</code></h4>
+<p><strong>Type:</strong> List of strings <strong>Required:</strong> No <strong>Default:</strong> <code>[&quot;first&quot;]</code> for all file types <strong>Possible Values:</strong> <code>&quot;first&quot;</code>, <code>&quot;mean&quot;</code></p>
+<p><strong>Description:</strong> Controls what happens when a requested variable has dimensions beyond time and horizontal space. For example, soil or vertical-level variables may include dimensions such as <code>levgrnd</code>. The default, <code>&quot;first&quot;</code>, selects index 0 along each extra dimension. <code>&quot;mean&quot;</code> averages over each extra dimension before the script converts the data to a DataFrame.</p>
+<p>CO2 concentration variables whose names start with <code>CO2</code> and include a <code>lev</code> dimension are special-cased: the script selects the surface level (<code>lev=-1</code>) before unit conversion.</p>
+<p><strong>Example:</strong></p>
+<pre><code>&quot;extra_dim_aggregation_types&quot;: [&quot;first&quot;, &quot;mean&quot;]</code></pre>
+<h4><code>max_processes</code></h4>
+<p><strong>Type:</strong> Integer <strong>Required:</strong> No <strong>Default:</strong> <code>MAX_PROCESSES</code> from <code>utility_constants.py</code></p>
+<p><strong>Description:</strong> Caps the number of worker processes used to extract monthly files. <code>MAX_PROCESSES</code> defaults to all available CPUs minus one, with a minimum of one.</p>
+<p><strong>Example:</strong></p>
+<pre><code>&quot;max_processes&quot;: 8</code></pre>
+<h4><code>lat_lon_aggregation_types</code></h4>
+<p><strong>Type:</strong> List of strings <strong>Required:</strong> No <strong>Default:</strong> <code>[&quot;area_weighted_mean_or_sum&quot;]</code> for all file types <strong>Possible Values:</strong> <code>&quot;area_weighted_mean_or_sum&quot;</code>, <code>&quot;mean&quot;</code>, <code>&quot;sum&quot;</code></p>
 <p><strong>Description:</strong> How to aggregate data spatially across lat/lon grid.</p>
 <p><strong>Format:</strong> One aggregation type per file type in <code>netcdf_substrings</code>.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;, &quot;area_weighted_mean_or_sum&quot;]
+}</code></pre>
 <p><strong>Options:</strong></p>
-<ol>
-<li>
-<p><strong><code>"area_weighted_mean_or_sum"</code></strong> (recommended, default)<br />
-   - Intelligent aggregation based on variable type<br />
-   - <strong>Fluxes/Stocks</strong> (per area units): Area-weighted sum → global total<br />
-   - <strong>Intensive variables</strong> (temperature, pressure): Area-weighted mean<br />
-   - Accounts for gridcell area variations<br />
-   - Accounts for land/ocean fractions</p>
-</li>
-<li>
-<p><strong><code>"mean"</code></strong><br />
-   - Simple arithmetic mean across all gridcells<br />
-   - Ignores gridcell area differences<br />
-   - Use with caution (biases towards high-latitude cells)</p>
-</li>
-<li>
-<p><strong><code>"sum"</code></strong><br />
-   - Simple sum across all gridcells<br />
-   - Appropriate only for specific use cases<br />
-   - Generally not recommended</p>
-</li>
-</ol>
-<hr />
-<h4 id="regions"><code>regions</code></h4>
-<p><strong>Type:</strong> List of strings or <code>None</code><br />
-<strong>Required:</strong> No<br />
-<strong>Default:</strong> <code>[None]</code> (global - no filtering)<br />
-<strong>Possible Values:</strong> Region names (see below) or <code>None</code></p>
+<ul>
+<li><strong><code>&quot;area_weighted_mean_or_sum&quot;</code></strong> (recommended, default)</li>
+<li>Intelligent aggregation based on variable type</li>
+<li><strong>Fluxes/Stocks</strong> (per area units): Area-weighted sum → global total</li>
+<li><strong>Intensive variables</strong> (temperature, pressure): Area-weighted mean</li>
+<li>Accounts for gridcell area variations</li>
+<li>Accounts for land/ocean fractions</li>
+</ul>
+<ul>
+<li><strong><code>&quot;mean&quot;</code></strong></li>
+<li>Simple arithmetic mean across all gridcells</li>
+<li>Ignores gridcell area differences</li>
+<li>Use with caution (biases towards high-latitude cells)</li>
+</ul>
+<ul>
+<li><strong><code>&quot;sum&quot;</code></strong></li>
+<li>Simple sum across all gridcells</li>
+<li>Appropriate only for specific use cases</li>
+<li>Generally not recommended</li>
+</ul>
+<hr>
+<h4><code>regions</code></h4>
+<p><strong>Type:</strong> List of strings or <code>None</code> <strong>Required:</strong> No <strong>Default:</strong> <code>[None]</code> (global - no filtering) <strong>Possible Values:</strong> Region names (see below) or <code>None</code></p>
 <p><strong>Description:</strong> Geographic regions to filter data extraction.</p>
 <p><strong>Format:</strong> One region per file type in <code>netcdf_substrings</code>.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">]</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],
+    &quot;regions&quot;: [&quot;amazon&quot;, &quot;amazon&quot;]
+}</code></pre>
 <p><strong>Available Regions:</strong></p>
-<p><strong>North America:</strong><br />
-- <code>"noam"</code> - North America<br />
-- <code>"bona"</code> - Boreal North America<br />
-- <code>"tena"</code> - Temperate North America<br />
-- <code>"conus"</code> - Continental United States<br />
-- <code>"columbia"</code> - Columbia River watershed<br />
-- <code>"ceam"</code> - Central America</p>
-<p><strong>South America:</strong><br />
-- <code>"soam"</code> - South America<br />
-- <code>"nhsa"</code> - Northern Hemisphere South America<br />
-- <code>"shsa"</code> - Southern Hemisphere South America<br />
-- <code>"amazon"</code> - Amazon Basin</p>
-<p><strong>Europe/Middle East:</strong><br />
-- <code>"euro"</code> - Europe<br />
-- <code>"mide"</code> - Middle East</p>
-<p><strong>Africa:</strong><br />
-- <code>"afrc"</code> - Africa<br />
-- <code>"nhaf"</code> - Northern Hemisphere Africa<br />
-- <code>"shaf"</code> - Southern Hemisphere Africa</p>
-<p><strong>Asia:</strong><br />
-- <code>"asia"</code> - Asia<br />
-- <code>"boas"</code> - Boreal Asia<br />
-- <code>"ceas"</code> - Central Asia<br />
-- <code>"seas"</code> - Southeast Asia<br />
-- <code>"eqas"</code> - Equatorial Asia</p>
-<p><strong>Australia:</strong><br />
-- <code>"aust"</code> - Australia</p>
-<p><strong>Regional Boundaries:</strong><br />
-Defined in <code>utility_e3sm_netcdf.py</code> as lat/lon bounding boxes.</p>
+<p><strong>North America:</strong></p>
+<ul>
+<li><code>&quot;noam&quot;</code> - North America</li>
+<li><code>&quot;bona&quot;</code> - Boreal North America</li>
+<li><code>&quot;tena&quot;</code> - Temperate North America</li>
+<li><code>&quot;conus&quot;</code> - Continental United States</li>
+<li><code>&quot;columbia&quot;</code> - Columbia River watershed</li>
+<li><code>&quot;ceam&quot;</code> - Central America</li>
+</ul>
+<p><strong>South America:</strong></p>
+<ul>
+<li><code>&quot;soam&quot;</code> - South America</li>
+<li><code>&quot;nhsa&quot;</code> - Northern Hemisphere South America</li>
+<li><code>&quot;shsa&quot;</code> - Southern Hemisphere South America</li>
+<li><code>&quot;amazon&quot;</code> - Amazon Basin</li>
+</ul>
+<p><strong>Europe/Middle East:</strong></p>
+<ul>
+<li><code>&quot;euro&quot;</code> - Europe</li>
+<li><code>&quot;mide&quot;</code> - Middle East</li>
+</ul>
+<p><strong>Africa:</strong></p>
+<ul>
+<li><code>&quot;afrc&quot;</code> - Africa</li>
+<li><code>&quot;nhaf&quot;</code> - Northern Hemisphere Africa</li>
+<li><code>&quot;shaf&quot;</code> - Southern Hemisphere Africa</li>
+</ul>
+<p><strong>Asia:</strong></p>
+<ul>
+<li><code>&quot;asia&quot;</code> - Asia</li>
+<li><code>&quot;boas&quot;</code> - Boreal Asia</li>
+<li><code>&quot;ceas&quot;</code> - Central Asia</li>
+<li><code>&quot;seas&quot;</code> - Southeast Asia</li>
+<li><code>&quot;eqas&quot;</code> - Equatorial Asia</li>
+</ul>
+<p><strong>Australia:</strong></p>
+<ul>
+<li><code>&quot;aust&quot;</code> - Australia</li>
+</ul>
+<p><strong>Regional Boundaries:</strong> Defined in <code>utility_e3sm_netcdf.py</code> as lat/lon bounding boxes.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">amazon</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">85</span><span class="err">°</span><span class="p">,</span> <span class="o">-</span><span class="mi">35</span><span class="err">°</span><span class="p">]</span> <span class="n">longitude</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">25</span><span class="err">°</span><span class="p">,</span> <span class="mi">15</span><span class="err">°</span><span class="p">]</span> <span class="n">latitude</span>
-<span class="n">conus</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">125.25</span><span class="err">°</span><span class="p">,</span> <span class="o">-</span><span class="mf">66.25</span><span class="err">°</span><span class="p">]</span> <span class="n">longitude</span><span class="p">,</span> <span class="p">[</span><span class="mf">23.25</span><span class="err">°</span><span class="p">,</span> <span class="mf">54.75</span><span class="err">°</span><span class="p">]</span> <span class="n">latitude</span>
-</code></pre></div>
-
-<hr />
-<h4 id="process_variables"><code>process_variables</code></h4>
-<p><strong>Type:</strong> Boolean<br />
-<strong>Required:</strong> No<br />
-<strong>Default:</strong> <code>true</code><br />
-<strong>Possible Values:</strong> <code>true</code>, <code>false</code></p>
+<pre><code>amazon = [-85°, -35°] longitude, [-25°, 15°] latitude
+conus = [-125.25°, -66.25°] longitude, [23.25°, 54.75°] latitude</code></pre>
+<hr>
+<h4><code>process_variables</code></h4>
+<p><strong>Type:</strong> Boolean <strong>Required:</strong> No <strong>Default:</strong> <code>true</code> <strong>Possible Values:</strong> <code>true</code>, <code>false</code></p>
 <p><strong>Description:</strong> Whether to apply post-processing to extracted variables.</p>
-<p><strong>When <code>true</code> (recommended):</strong><br />
-- Unit conversions (g → Pg, m/s → mm/month, /s → /month)<br />
-- Derived variables (total precipitation, CO₂ mole fraction)<br />
-- Improved readability and scientific usability</p>
-<p><strong>When <code>false</code>:</strong><br />
-- Raw values from NetCDF files<br />
-- Original units<br />
-- Minimal processing<br />
-- Use for debugging or custom processing</p>
+<p><strong>When <code>true</code> (recommended):</strong></p>
+<ul>
+<li>Unit conversions (g → Pg, m/s → mm/month, /s → /month)</li>
+<li>Derived variables (total precipitation, CO₂ mole fraction)</li>
+<li>Improved readability and scientific usability</li>
+</ul>
+<p><strong>When <code>false</code>:</strong></p>
+<ul>
+<li>Raw values from NetCDF files</li>
+<li>Original units</li>
+<li>Minimal processing</li>
+<li>Use for debugging or custom processing</li>
+</ul>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</code></pre></div>
-
-<p><strong>Transformations Applied:</strong><br />
-See <a href="#variable-processing">Variable Processing</a> section.</p>
-<hr />
-<h4 id="start_year-and-end_year"><code>start_year</code> and <code>end_year</code></h4>
-<p><strong>Type:</strong> Integer<br />
-<strong>Required:</strong> No<br />
-<strong>Defaults:</strong> <code>start_year: 2015</code>, <code>end_year: 2100</code></p>
+<pre><code>&quot;process_variables&quot;: true</code></pre>
+<p><strong>Transformations Applied:</strong> See <a href="#variable-processing">Variable Processing</a> section.</p>
+<hr>
+<h4><code>start_year</code> and <code>end_year</code></h4>
+<p><strong>Type:</strong> Integer <strong>Required:</strong> No <strong>Defaults:</strong> <code>start_year: 2015</code>, <code>end_year: 2100</code></p>
 <p><strong>Description:</strong> Year range for time series extraction.</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2050</span>
-</code></pre></div>
-
-<p><strong>Usage:</strong><br />
-- Extracts only NetCDF files within this range<br />
-- Reduces processing time for subset analysis<br />
-- Useful for specific time periods (e.g., 21st century only)</p>
+<pre><code>&quot;start_year&quot;: 2020,
+&quot;end_year&quot;: 2050</code></pre>
+<p><strong>Usage:</strong></p>
+<ul>
+<li>Extracts only NetCDF files within this range</li>
+<li>Reduces processing time for subset analysis</li>
+<li>Useful for specific time periods (e.g., 21st century only)</li>
+</ul>
 <p><strong>File Selection:</strong></p>
-<div class="codehilite"><pre><span></span><code>elm.h0.2019-12.nc  → Excluded (year 2019 &lt; start_year 2020)
+<pre><code>elm.h0.2019-12.nc  → Excluded (year 2019 &lt; start_year 2020)
 elm.h0.2020-01.nc  → Included
 elm.h0.2050-12.nc  → Included
-elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)
-</code></pre></div>
-
-<hr />
-<h4 id="write_to_csv"><code>write_to_csv</code></h4>
-<p><strong>Type:</strong> Boolean<br />
-<strong>Required:</strong> No<br />
-<strong>Default:</strong> <code>false</code></p>
+elm.h0.2051-01.nc  → Excluded (year 2051 &gt; end_year 2050)</code></pre>
+<hr>
+<h4><code>write_to_csv</code></h4>
+<p><strong>Type:</strong> Boolean <strong>Required:</strong> No <strong>Default:</strong> <code>false</code></p>
 <p><strong>Description:</strong> Force output to CSV format.</p>
-<p><strong>Behavior:</strong><br />
-- <code>false</code> → Fixed-width format (.dat)<br />
-- <code>true</code> → CSV format<br />
-- Automatically <code>true</code> if <code>output_file</code> ends in <code>.csv</code></p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li><code>false</code> → Fixed-width format (.dat)</li>
+<li><code>true</code> → CSV format</li>
+<li>Automatically <code>true</code> if <code>output_file</code> ends in <code>.csv</code></li>
+</ul>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;write_to_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</code></pre></div>
-
+<pre><code>&quot;write_to_csv&quot;: true</code></pre>
 <p><strong>Comparison:</strong></p>
 <p><strong>Fixed-width (.dat):</strong></p>
-<div class="codehilite"><pre><span></span><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)
+<pre><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)
 2015      1        10.234           5.123
-2015      2         9.876           4.987
-</code></pre></div>
-
+2015      2         9.876           4.987</code></pre>
 <p><strong>CSV (.csv):</strong></p>
-<div class="codehilite"><pre><span></span><code>Year,Month,GPP (PgC/month),NPP (PgC/month)
+<pre><code>Year,Month,GPP (PgC/month),NPP (PgC/month)
 2015,1,10.234,5.123
-2015,2,9.876,4.987
-</code></pre></div>
-
-<hr />
-<h2 id="spatial-aggregation-types">Spatial Aggregation Types</h2>
-<h3 id="area-weighted-mean-or-sum-recommended">Area-Weighted Mean or Sum (Recommended)</h3>
-<p><strong>Name:</strong> <code>"area_weighted_mean_or_sum"</code></p>
+2015,2,9.876,4.987</code></pre>
+<hr>
+<h2>Spatial Aggregation Types</h2>
+<h3>Area-Weighted Mean or Sum (Recommended)</h3>
+<p><strong>Name:</strong> <code>&quot;area_weighted_mean_or_sum&quot;</code></p>
 <p><strong>How It Works:</strong></p>
-<ol>
-<li>
-<p><strong>Multiply by gridcell area:</strong><br />
-   - Each gridcell has different area (latitude-dependent)<br />
-   - Multiply all values by their gridcell area</p>
-</li>
-<li>
-<p><strong>Account for land/ocean fractions:</strong><br />
-   - EAM variables with <code>_LND</code> suffix → multiply by land fraction<br />
-   - EAM variables with <code>_OCN</code> suffix → multiply by ocean fraction</p>
-</li>
-<li>
-<p><strong>Sum across all gridcells:</strong><br />
-   - Create global totals (area-weighted sums)</p>
-</li>
-<li>
-<p><strong>Decide mean vs sum based on units:</strong><br />
-   - <strong>Fluxes/Stocks</strong> (with <code>/m²</code> or <code>/m2</code>): Keep as sum → global total<br />
-   - <strong>Intensive variables</strong> (temperature, pressure): Divide by total area → mean</p>
-</li>
-</ol>
+<ul>
+<li><strong>Multiply by gridcell area:</strong></li>
+<li>Each gridcell has different area (latitude-dependent)</li>
+<li>Multiply all values by their gridcell area</li>
+</ul>
+<ul>
+<li><strong>Account for land/ocean fractions:</strong></li>
+<li>EAM variables with <code>_LND</code> suffix → multiply by land fraction</li>
+<li>EAM variables with <code>_OCN</code> suffix → multiply by ocean fraction</li>
+</ul>
+<ul>
+<li><strong>Sum across all gridcells:</strong></li>
+<li>Create global totals (area-weighted sums)</li>
+</ul>
+<ul>
+<li><strong>Decide mean vs sum based on units:</strong></li>
+<li><strong>Fluxes/Stocks</strong> (with <code>/m²</code> or <code>/m2</code>): Keep as sum → global total</li>
+<li><strong>Intensive variables</strong> (temperature, pressure): Divide by total area → mean</li>
+</ul>
 <p><strong>Examples:</strong></p>
 <p><strong>Flux Variable (GPP in gC/m²/s):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Original</span><span class="w"> </span><span class="nl">units:</span><span class="w"> </span><span class="n">gC</span><span class="o">/</span><span class="n">m²</span><span class="o">/</span><span class="n">s</span>
-<span class="n">After</span><span class="w"> </span><span class="nl">aggregation:</span><span class="w"> </span><span class="n">gC</span><span class="o">/</span><span class="n">s</span><span class="w"> </span><span class="p">(</span><span class="n">global</span><span class="w"> </span><span class="n">total</span><span class="p">)</span>
-<span class="n">After</span><span class="w"> </span><span class="nl">processing:</span><span class="w"> </span><span class="n">PgC</span><span class="o">/</span><span class="n">month</span><span class="w"> </span><span class="p">(</span><span class="n">global</span><span class="w"> </span><span class="n">total</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>Original units: gC/m²/s
+After aggregation: gC/s (global total)
+After processing: PgC/month (global total)</code></pre>
 <p><strong>Intensive Variable (TREFHT in K):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Original</span><span class="w"> </span><span class="nl">units:</span><span class="w"> </span><span class="n">K</span>
-<span class="n">After</span><span class="w"> </span><span class="nl">aggregation:</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="p">(</span><span class="n">global</span><span class="w"> </span><span class="n">mean</span><span class="w"> </span><span class="n">temperature</span><span class="p">)</span>
-<span class="n">Stays</span><span class="w"> </span><span class="nl">as:</span><span class="w"> </span><span class="n">K</span>
-</code></pre></div>
-
+<pre><code>Original units: K
+After aggregation: K (global mean temperature)
+Stays as: K</code></pre>
 <p><strong>Formula for area-weighted mean:</strong></p>
-<div class="codehilite"><pre><span></span><code>mean = Σ(value × area) / Σ(area)
-</code></pre></div>
-
-<hr />
-<h3 id="simple-mean">Simple Mean</h3>
-<p><strong>Name:</strong> <code>"mean"</code></p>
-<p><strong>How It Works:</strong><br />
-- Arithmetic mean across all gridcells<br />
-- Ignores gridcell area differences<br />
-- <code>mean = Σ(values) / n</code></p>
-<p><strong>Use Cases:</strong><br />
-- Quick estimates (non-rigorous)<br />
-- Debugging</p>
-<p><strong>Limitations:</strong><br />
-- Biases towards high-latitude gridcells (smaller area but equal weight)<br />
-- Not appropriate for fluxes/stocks<br />
-- Not scientifically rigorous for global estimates</p>
-<hr />
-<h3 id="simple-sum">Simple Sum</h3>
-<p><strong>Name:</strong> <code>"sum"</code></p>
-<p><strong>How It Works:</strong><br />
-- Simple sum across all gridcells<br />
-- <code>sum = Σ(values)</code><br />
-- Ignores area</p>
-<p><strong>Use Cases:</strong><br />
-- Very specific applications<br />
-- Generally not recommended</p>
-<p><strong>Limitations:</strong><br />
-- Meaningless for intensive variables<br />
-- Incorrect for fluxes (doesn't account for area)</p>
-<hr />
-<h2 id="variable-processing">Variable Processing</h2>
+<pre><code>mean = Σ(value × area) / Σ(area)</code></pre>
+<hr>
+<h3>Simple Mean</h3>
+<p><strong>Name:</strong> <code>&quot;mean&quot;</code></p>
+<p><strong>How It Works:</strong></p>
+<ul>
+<li>Arithmetic mean across all gridcells</li>
+<li>Ignores gridcell area differences</li>
+<li><code>mean = Σ(values) / n</code></li>
+</ul>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>Quick estimates (non-rigorous)</li>
+<li>Debugging</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Biases towards high-latitude gridcells (smaller area but equal weight)</li>
+<li>Not appropriate for fluxes/stocks</li>
+<li>Not scientifically rigorous for global estimates</li>
+</ul>
+<hr>
+<h3>Simple Sum</h3>
+<p><strong>Name:</strong> <code>&quot;sum&quot;</code></p>
+<p><strong>How It Works:</strong></p>
+<ul>
+<li>Simple sum across all gridcells</li>
+<li><code>sum = Σ(values)</code></li>
+<li>Ignores area</li>
+</ul>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>Very specific applications</li>
+<li>Generally not recommended</li>
+</ul>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Meaningless for intensive variables</li>
+<li>Incorrect for fluxes (doesn&#x27;t account for area)</li>
+</ul>
+<hr>
+<h2>Variable Processing</h2>
 <p>When <code>process_variables: true</code>, the script applies multiple transformations:</p>
-<h3 id="1-precipitation-unit-conversion">1. Precipitation Unit Conversion</h3>
+<h3>1. Precipitation Unit Conversion</h3>
 <p><strong>Variables:</strong> <code>PRECC</code>, <code>PRECL</code>, <code>PRECSC</code>, <code>PRECSL</code></p>
 <p><strong>Transformation:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">m</span><span class="o">/</span><span class="n">s</span>
-<span class="n">Convert</span><span class="w"> </span><span class="n">to</span><span class="o">:</span><span class="w"> </span><span class="n">mm</span><span class="o">/</span><span class="n">month</span>
-<span class="n">Factor</span><span class="o">:</span><span class="w"> </span><span class="n">seconds_in_month</span><span class="w"> </span><span class="err">×</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="n">mm</span><span class="o">/</span><span class="n">m</span>
-</code></pre></div>
-
+<pre><code>Original: m/s
+Convert to: mm/month
+Factor: seconds_in_month × 1000 mm/m</code></pre>
 <p><strong>Derived Variable:</strong></p>
-<div class="codehilite"><pre><span></span><code>PRECIP (mm/month) = PRECC + PRECL + PRECSC + PRECSL
-</code></pre></div>
-
-<p><strong>Result:</strong><br />
-- Individual precipitation components in mm/month<br />
-- Total precipitation as new column</p>
-<hr />
-<h3 id="2-co2-mole-fraction-calculation">2. CO₂ Mole Fraction Calculation</h3>
+<pre><code>PRECIP (mm/month) = PRECC + PRECL + PRECSC + PRECSL</code></pre>
+<p><strong>Result:</strong></p>
+<ul>
+<li>Individual precipitation components in mm/month</li>
+<li>Total precipitation as new column</li>
+</ul>
+<hr>
+<h3>2. CO₂ Mole Fraction Calculation</h3>
 <p><strong>Variables Required:</strong> <code>PBOT</code>, <code>PCO2</code>, <code>QBOT</code></p>
 <p><strong>Calculation:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Partial pressure of water vapor</span>
-<span class="n">pH2O</span> <span class="o">=</span> <span class="n">PBOT</span> <span class="err">×</span> <span class="n">QBOT</span> <span class="o">/</span> <span class="p">(</span><span class="mf">0.622</span> <span class="o">+</span> <span class="mf">0.378</span> <span class="err">×</span> <span class="n">QBOT</span><span class="p">)</span>
+<pre><code># Partial pressure of water vapor
+pH2O = PBOT × QBOT / (0.622 + 0.378 × QBOT)
 
-<span class="c1"># Dry air mole fraction (ppm)</span>
-<span class="n">ZCO2</span> <span class="p">(</span><span class="n">ppm</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1e6</span> <span class="err">×</span> <span class="n">PCO2</span> <span class="o">/</span> <span class="p">(</span><span class="n">PBOT</span> <span class="o">-</span> <span class="n">pH2O</span><span class="p">)</span>
-</code></pre></div>
-
+# Dry air mole fraction (ppm)
+ZCO2 (ppm) = 1e6 × PCO2 / (PBOT - pH2O)</code></pre>
 <p><strong>Derived Variable:</strong></p>
-<div class="codehilite"><pre><span></span><code>ZCO2 (ppm) - Atmospheric CO₂ mole fraction in dry air
-</code></pre></div>
-
-<p><strong>Scientific Background:</strong><br />
-- CO₂ concentration typically reported as mole fraction in <em>dry</em> air<br />
-- Must remove water vapor contribution<br />
-- Uses humidity formula from psychrometric calculations</p>
-<hr />
-<h3 id="3-carbon-mass-unit-conversion">3. Carbon Mass Unit Conversion</h3>
+<pre><code>ZCO2 (ppm) - Atmospheric CO₂ mole fraction in dry air</code></pre>
+<p><strong>Scientific Background:</strong></p>
+<ul>
+<li>CO₂ concentration typically reported as mole fraction in *dry* air</li>
+<li>Must remove water vapor contribution</li>
+<li>Uses humidity formula from psychrometric calculations</li>
+</ul>
+<hr>
+<h3>3. Carbon Mass Unit Conversion</h3>
 <p><strong>Variables:</strong> All with units containing <code>gC</code>, <code>g/</code>, or <code>kg</code></p>
 <p><strong>Transformation:</strong></p>
-<div class="codehilite"><pre><span></span><code>g → Pg (1 Pg = 10¹⁵ g)
-kg → Pg (1 Pg = 10¹² kg)
-</code></pre></div>
-
+<pre><code>g → Pg (1 Pg = 10¹⁵ g)
+kg → Pg (1 Pg = 10¹² kg)</code></pre>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">gC</span><span class="sr">/m²/s</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">PgC</span><span class="sr">/m²/s</span>
+<pre><code>Original: gC/m²/s
+After: PgC/m²/s
 
-<span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">gC</span><span class="o">/</span><span class="n">m²</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">PgC</span><span class="o">/</span><span class="n">m²</span>
+Original: gC/m²
+After: PgC/m²
 
-<span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">kg</span><span class="sr">/m²/s</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">Pg</span><span class="sr">/m²/s</span>
-</code></pre></div>
-
-<p><strong>Rationale:</strong><br />
-- Pg (Petagrams) = 10¹⁵ grams<br />
-- Appropriate scale for global carbon budgets<br />
-- Standard in climate science literature</p>
-<hr />
-<h3 id="4-temporal-unit-conversion">4. Temporal Unit Conversion</h3>
+Original: kg/m²/s
+After: Pg/m²/s</code></pre>
+<p><strong>Rationale:</strong></p>
+<ul>
+<li>Pg (Petagrams) = 10¹⁵ grams</li>
+<li>Appropriate scale for global carbon budgets</li>
+<li>Standard in climate science literature</li>
+</ul>
+<hr>
+<h3>4. Temporal Unit Conversion</h3>
 <p><strong>Variables:</strong> All with units containing <code>/s</code></p>
 <p><strong>Transformation:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">per</span><span class="w"> </span><span class="n">second</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="n">per</span><span class="w"> </span><span class="n">month</span>
-<span class="n">Factor</span><span class="p">:</span><span class="w"> </span><span class="n">seconds_in_month</span><span class="w"> </span><span class="p">(</span><span class="n">varies</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">month</span><span class="p">)</span>
-</code></pre></div>
-
+<pre><code>per second → per month
+Factor: seconds_in_month (varies by month)</code></pre>
 <p><strong>Account for varying month lengths:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">seconds_in_month</span> <span class="o">=</span> <span class="n">days_in_month</span> <span class="err">×</span> <span class="mi">86400</span>
-<span class="c1"># January: 31 days = 2,678,400 seconds</span>
-<span class="c1"># February: 28/29 days = 2,419,200 / 2,505,600 seconds</span>
-<span class="c1"># etc.</span>
-</code></pre></div>
-
+<pre><code>seconds_in_month = days_in_month × 86400
+# January: 31 days = 2,678,400 seconds
+# February: 28/29 days = 2,419,200 / 2,505,600 seconds
+# etc.</code></pre>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">PgC</span><span class="sr">/m²/s</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">PgC</span><span class="sr">/m²/</span><span class="n">month</span>
+<pre><code>Original: PgC/m²/s
+After: PgC/m²/month
 
-<span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">kg</span><span class="sr">/m²/s</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">Pg</span><span class="sr">/m²/</span><span class="n">month</span>
-</code></pre></div>
-
-<hr />
-<h3 id="5-co2-to-c-conversion">5. CO₂ to C Conversion</h3>
+Original: kg/m²/s
+After: Pg/m²/month</code></pre>
+<hr>
+<h3>5. CO₂ to C Conversion</h3>
 <p><strong>Variables:</strong> <code>SFCO2</code>, <code>TMCO2</code> (and variants)</p>
 <p><strong>Transformation:</strong></p>
-<div class="codehilite"><pre><span></span><code>PgCO₂ → PgC
-Factor: MM_C / MM_CO₂ = 12 / 44 = 0.2727
-</code></pre></div>
-
+<pre><code>PgCO₂ → PgC
+Factor: MM_C / MM_CO₂ = 12 / 44 = 0.2727</code></pre>
 <p><strong>Examples:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">SFCO2</span><span class="o">:</span><span class="w"> </span><span class="n">Surface</span><span class="w"> </span><span class="n">CO₂</span><span class="w"> </span><span class="n">flux</span>
-<span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">Pg</span><span class="sr">/m²/</span><span class="n">month</span><span class="w"> </span><span class="o">(</span><span class="k">as</span><span class="w"> </span><span class="n">CO₂</span><span class="o">)</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">PgC</span><span class="sr">/m²/</span><span class="n">month</span><span class="w"> </span><span class="o">(</span><span class="k">as</span><span class="w"> </span><span class="n">C</span><span class="o">)</span>
+<pre><code>SFCO2: Surface CO₂ flux
+Original: Pg/m²/month (as CO₂)
+After: PgC/m²/month (as C)
 
-<span class="n">TMCO2</span><span class="o">:</span><span class="w"> </span><span class="n">Total</span><span class="w"> </span><span class="n">atmospheric</span><span class="w"> </span><span class="n">CO₂</span><span class="w"> </span><span class="n">mass</span>
-<span class="n">Original</span><span class="o">:</span><span class="w"> </span><span class="n">Pg</span><span class="w"> </span><span class="o">(</span><span class="k">as</span><span class="w"> </span><span class="n">CO₂</span><span class="o">)</span>
-<span class="n">After</span><span class="o">:</span><span class="w"> </span><span class="n">PgC</span><span class="w"> </span><span class="o">(</span><span class="k">as</span><span class="w"> </span><span class="n">C</span><span class="o">)</span>
-</code></pre></div>
-
-<p><strong>Rationale:</strong><br />
-- Carbon budgets reported in C, not CO₂<br />
-- Molecular mass conversion: CO₂ (44 g/mol) → C (12 g/mol)</p>
-<hr />
-<h3 id="6-plant-functional-type-pft-analysis">6. Plant Functional Type (PFT) Analysis</h3>
+TMCO2: Total atmospheric CO₂ mass
+Original: Pg (as CO₂)
+After: PgC (as C)</code></pre>
+<p><strong>Rationale:</strong></p>
+<ul>
+<li>Carbon budgets reported in C, not CO₂</li>
+<li>Molecular mass conversion: CO₂ (44 g/mol) → C (12 g/mol)</li>
+</ul>
+<hr>
+<h3>6. Plant Functional Type (PFT) Analysis</h3>
 <p><strong>Variables:</strong> <code>PCT_LANDUNIT</code>, <code>PCT_NAT_PFT</code></p>
 <p><strong>Processing:</strong></p>
 <p><strong>Land Unit Extraction:</strong></p>
-<div class="codehilite"><pre><span></span><code>PCT_LANDUNIT → 9 land units
+<pre><code>PCT_LANDUNIT → 9 land units
 Select: Land unit 0 (vegetation)
 Convert: Percent → Fraction (/100)
-Output: FRAC_VEG
-</code></pre></div>
-
+Output: FRAC_VEG</code></pre>
 <p><strong>PFT Areas:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="mf">17</span><span class="w"> </span><span class="n">PFTs</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">E3SM</span><span class="p">:</span>
-<span class="mf">0</span><span class="p">:</span><span class="w"> </span><span class="n">Bare</span><span class="w"> </span><span class="n">soil</span>
-<span class="mf">1</span><span class="o">-</span><span class="mf">8</span><span class="p">:</span><span class="w"> </span><span class="n">Trees</span><span class="w"> </span><span class="p">(</span><span class="mf">8</span><span class="w"> </span><span class="n">types</span><span class="p">)</span>
-<span class="mf">9</span><span class="o">-</span><span class="mf">11</span><span class="p">:</span><span class="w"> </span><span class="n">Shrubs</span><span class="w"> </span><span class="p">(</span><span class="mf">3</span><span class="w"> </span><span class="n">types</span><span class="p">)</span>
-<span class="mf">12</span><span class="o">-</span><span class="mf">14</span><span class="p">:</span><span class="w"> </span><span class="n">Grasses</span><span class="w"> </span><span class="p">(</span><span class="mf">3</span><span class="w"> </span><span class="n">types</span><span class="p">)</span>
-<span class="mf">15</span><span class="p">:</span><span class="w"> </span><span class="n">Crop</span>
-<span class="mf">16</span><span class="p">:</span><span class="w"> </span><span class="n">Empty</span><span class="w"> </span><span class="p">(</span><span class="n">ignored</span><span class="p">)</span>
+<pre><code>17 PFTs in E3SM:
+0: Bare soil
+1-8: Trees (8 types)
+9-11: Shrubs (3 types)
+12-14: Grasses (3 types)
+15: Crop
+16: Empty (ignored)
 
-<span class="n">Aggregate</span><span class="w"> </span><span class="nb">int</span><span class="n">o</span><span class="p">:</span>
-<span class="o">-</span><span class="w"> </span><span class="n">Individual</span><span class="w"> </span><span class="n">PFTs</span><span class="p">:</span><span class="w"> </span><span class="n">PFT_1_AREA</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">PFT_16_AREA</span><span class="w"> </span><span class="p">(</span><span class="n">km²</span><span class="p">)</span>
-<span class="o">-</span><span class="w"> </span><span class="n">Bare</span><span class="w"> </span><span class="n">soil</span><span class="p">:</span><span class="w"> </span><span class="n">BARE_AREA</span><span class="w"> </span><span class="p">(</span><span class="n">km²</span><span class="p">)</span>
-<span class="o">-</span><span class="w"> </span><span class="kr">For</span><span class="n">est</span><span class="p">:</span><span class="w"> </span><span class="kr">FOR</span><span class="n">EST_AREA</span><span class="w"> </span><span class="p">(</span><span class="n">km²</span><span class="p">)</span><span class="w"> </span><span class="err">[</span><span class="n">sum</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">PFTs</span><span class="w"> </span><span class="mf">1</span><span class="o">-</span><span class="mf">8</span><span class="err">]</span>
-<span class="o">-</span><span class="w"> </span><span class="n">Shrub</span><span class="p">:</span><span class="w"> </span><span class="n">SHRUB_AREA</span><span class="w"> </span><span class="p">(</span><span class="n">km²</span><span class="p">)</span><span class="w"> </span><span class="err">[</span><span class="n">sum</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">PFTs</span><span class="w"> </span><span class="mf">9</span><span class="o">-</span><span class="mf">11</span><span class="err">]</span>
-<span class="o">-</span><span class="w"> </span><span class="n">Grass</span><span class="p">:</span><span class="w"> </span><span class="n">GRASS_AREA</span><span class="w"> </span><span class="p">(</span><span class="n">km²</span><span class="p">)</span><span class="w"> </span><span class="err">[</span><span class="n">sum</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">PFTs</span><span class="w"> </span><span class="mf">12</span><span class="o">-</span><span class="mf">14</span><span class="err">]</span>
-<span class="o">-</span><span class="w"> </span><span class="n">Crop</span><span class="p">:</span><span class="w"> </span><span class="n">CROP_AREA</span><span class="w"> </span><span class="p">(</span><span class="n">km²</span><span class="p">)</span><span class="w"> </span><span class="err">[</span><span class="n">PFT</span><span class="w"> </span><span class="mf">15</span><span class="err">]</span>
-</code></pre></div>
-
+Aggregate into:
+- Individual PFTs: PFT_1_AREA through PFT_16_AREA (km²)
+- Bare soil: BARE_AREA (km²)
+- Forest: FOREST_AREA (km²) [sum of PFTs 1-8]
+- Shrub: SHRUB_AREA (km²) [sum of PFTs 9-11]
+- Grass: GRASS_AREA (km²) [sum of PFTs 12-14]
+- Crop: CROP_AREA (km²) [PFT 15]</code></pre>
 <p><strong>Calculation:</strong></p>
-<div class="codehilite"><pre><span></span><code>PFT_AREA (km²) = AREA (km²) × FRAC_VEG × PFT_fraction
-</code></pre></div>
-
+<pre><code>PFT_AREA (km²) = AREA (km²) × FRAC_VEG × PFT_fraction</code></pre>
 <p><strong>Output Columns:</strong></p>
-<div class="codehilite"><pre><span></span><code>FRAC_VEG
+<pre><code>FRAC_VEG
 AREA (km^2)
 PFT_1_AREA (km^2)
 ...
@@ -1164,423 +597,397 @@ BARE_AREA (km^2)
 FOREST_AREA (km^2)
 SHRUB_AREA (km^2)
 GRASS_AREA (km^2)
-CROP_AREA (km^2)
-</code></pre></div>
-
-<hr />
-<h2 id="regional-analysis">Regional Analysis</h2>
-<h3 id="defining-regions">Defining Regions</h3>
+CROP_AREA (km^2)</code></pre>
+<hr>
+<h2>Regional Analysis</h2>
+<h3>Defining Regions</h3>
 <p>Regions defined by lat/lon bounding boxes in <code>utility_e3sm_netcdf.py</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_regional_bounds</span><span class="p">(</span><span class="n">region</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">region</span> <span class="o">==</span> <span class="s1">&#39;amazon&#39;</span><span class="p">:</span>
-        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">85.</span><span class="p">,</span> <span class="o">-</span><span class="mf">35.</span><span class="p">,</span> <span class="o">-</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">]</span>  <span class="c1"># [min_lon, max_lon, min_lat, max_lat]</span>
-    <span class="k">elif</span> <span class="n">region</span> <span class="o">==</span> <span class="s1">&#39;conus&#39;</span><span class="p">:</span>
-        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">125.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">66.25</span><span class="p">,</span> <span class="mf">23.25</span><span class="p">,</span> <span class="mf">54.75</span><span class="p">]</span>
-    <span class="c1"># ... etc</span>
-</code></pre></div>
-
-<h3 id="how-regional-filtering-works">How Regional Filtering Works</h3>
-<ol>
-<li>
-<p><strong>Before spatial aggregation:</strong><br />
-   - Load NetCDF file<br />
-   - Filter gridcells outside bounding box<br />
-   - Keep only gridcells within region</p>
-</li>
-<li>
-<p><strong>Apply aggregation:</strong><br />
-   - Area-weighted mean/sum over regional gridcells only<br />
-   - Land/ocean fractions applied within region</p>
-</li>
-<li>
-<p><strong>Result:</strong><br />
-   - Regional totals or means instead of global</p>
-</li>
-</ol>
-<h3 id="example-amazon-carbon-fluxes">Example: Amazon Carbon Fluxes</h3>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/simulation&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_carbon.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;amazon&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>Output:</strong><br />
-- GPP, NPP, NBP, ER for Amazon Basin only<br />
-- Units: PgC/month (regional totals)</p>
-<hr />
-<h2 id="json-configuration-examples">JSON Configuration Examples</h2>
-<h3 id="example-1-global-carbon-cycle-elm-eam">Example 1: Global Carbon Cycle (ELM + EAM)</h3>
+<pre><code>def get_regional_bounds(region):
+    if region == &#x27;amazon&#x27;:
+        bounds = [-85., -35., -25., 15.]  # [min_lon, max_lon, min_lat, max_lat]
+    elif region == &#x27;conus&#x27;:
+        bounds = [-125.25, -66.25, 23.25, 54.75]
+    # ... etc</code></pre>
+<h3>How Regional Filtering Works</h3>
+<ul>
+<li><strong>Before spatial aggregation:</strong></li>
+<li>Load NetCDF file</li>
+<li>Filter gridcells outside bounding box</li>
+<li>Keep only gridcells within region</li>
+</ul>
+<ul>
+<li><strong>Apply aggregation:</strong></li>
+<li>Area-weighted mean/sum over regional gridcells only</li>
+<li>Land/ocean fractions applied within region</li>
+</ul>
+<ul>
+<li><strong>Result:</strong></li>
+<li>Regional totals or means instead of global</li>
+</ul>
+<h3>Example: Amazon Carbon Fluxes</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/path/to/simulation&quot;,
+    &quot;output_file&quot;: &quot;./amazon_carbon.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;]],
+    &quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;]],
+    &quot;regions&quot;: [&quot;amazon&quot;],
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>Output:</strong></p>
+<ul>
+<li>GPP, NPP, NBP, ER for Amazon Basin only</li>
+<li>Units: PgC/month (regional totals)</li>
+</ul>
+<hr>
+<h2>JSON Configuration Examples</h2>
+<h3>Example 1: Global Carbon Cycle (ELM + EAM)</h3>
 <p><strong>Purpose:</strong> Extract comprehensive carbon cycle variables globally</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./global_carbon_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTECOSYSC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTVEGC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTSOMC&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;SFCO2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SFCO2_LND&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;SFCO2_OCN&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TMCO2&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Extracts ELM land carbon fluxes and stocks<br />
-- Extracts EAM atmospheric CO₂ fluxes and mass<br />
-- Global aggregation with area weighting<br />
-- Processes units (g→Pg, /s→/month)<br />
-- Output: 86 years × 12 months = 1,032 rows</p>
-<hr />
-<h3 id="example-2-regional-analysis-amazon">Example 2: Regional Analysis (Amazon)</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./global_carbon_time_series.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],
+    &quot;variables&quot;: [
+        [&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;, &quot;HR&quot;, &quot;TOTECOSYSC&quot;, &quot;TOTVEGC&quot;, &quot;TOTSOMC&quot;],
+        [&quot;SFCO2&quot;, &quot;SFCO2_LND&quot;, &quot;SFCO2_OCN&quot;, &quot;TMCO2&quot;]
+    ],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;, &quot;area_weighted_mean_or_sum&quot;],
+    &quot;process_variables&quot;: true,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Extracts ELM land carbon fluxes and stocks</li>
+<li>Extracts EAM atmospheric CO₂ fluxes and mass</li>
+<li>Global aggregation with area weighting</li>
+<li>Processes units (g→Pg, /s→/month)</li>
+<li>Output: 86 years × 12 months = 1,032 rows</li>
+</ul>
+<hr>
+<h3>Example 2: Regional Analysis (Amazon)</h3>
 <p><strong>Purpose:</strong> Focus on Amazon Basin carbon dynamics</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./amazon_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NEE&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTECOSYSC&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;PRECC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TREFHT&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Filters to Amazon Basin coordinates<br />
-- Extracts carbon fluxes and climate variables<br />
-- Regional totals/means (not global)<br />
-- Total precipitation derived from PRECC + PRECL</p>
-<hr />
-<h3 id="example-3-climate-variables-only-eam">Example 3: Climate Variables Only (EAM)</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./amazon_time_series.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],
+    &quot;variables&quot;: [
+        [&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;NEE&quot;, &quot;TOTECOSYSC&quot;],
+        [&quot;PRECC&quot;, &quot;PRECL&quot;, &quot;TREFHT&quot;]
+    ],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;, &quot;area_weighted_mean_or_sum&quot;],
+    &quot;regions&quot;: [&quot;amazon&quot;, &quot;amazon&quot;],
+    &quot;process_variables&quot;: true,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Filters to Amazon Basin coordinates</li>
+<li>Extracts carbon fluxes and climate variables</li>
+<li>Regional totals/means (not global)</li>
+<li>Total precipitation derived from PRECC + PRECL</li>
+</ul>
+<hr>
+<h3>Example 3: Climate Variables Only (EAM)</h3>
 <p><strong>Purpose:</strong> Extract atmospheric/climate data without land carbon</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./climate_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;PRECC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECSC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECSL&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TREFHT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PBOT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCO2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;QBOT&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- EAM variables only<br />
-- Calculates PRECIP (total precipitation in mm/month)<br />
-- Calculates ZCO2 (CO₂ mole fraction in ppm)<br />
-- Global mean temperature (TREFHT)</p>
-<hr />
-<h3 id="example-4-land-use-and-vegetation">Example 4: Land Use and Vegetation</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./climate_time_series.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;eam.h0&quot;]],
+    &quot;variables&quot;: [
+        [&quot;PRECC&quot;, &quot;PRECL&quot;, &quot;PRECSC&quot;, &quot;PRECSL&quot;, &quot;TREFHT&quot;, &quot;PBOT&quot;, &quot;PCO2&quot;, &quot;QBOT&quot;]
+    ],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;],
+    &quot;process_variables&quot;: true,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>EAM variables only</li>
+<li>Calculates PRECIP (total precipitation in mm/month)</li>
+<li>Calculates ZCO2 (CO₂ mole fraction in ppm)</li>
+<li>Global mean temperature (TREFHT)</li>
+</ul>
+<hr>
+<h3>Example 4: Land Use and Vegetation</h3>
 <p><strong>Purpose:</strong> Track land use changes and vegetation types</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./landuse_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">[</span><span class="s2">&quot;LAND_USE_FLUX&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;WOOD_HARVESTC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;DWT_CONV_CFLUX_GRC&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="s2">&quot;PCT_LANDUNIT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCT_NAT_PFT&quot;</span><span class="p">]</span>
-<span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Land use change fluxes<br />
-- Wood harvest carbon<br />
-- Vegetation fractions<br />
-- PFT areas (individual and aggregated)<br />
-- Output includes: FRAC_VEG, FOREST_AREA, CROP_AREA, etc.</p>
-<hr />
-<h3 id="example-5-short-time-period-for-testing">Example 5: Short Time Period for Testing</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./landuse_time_series.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;]],
+    &quot;variables&quot;: [
+        [&quot;LAND_USE_FLUX&quot;, &quot;WOOD_HARVESTC&quot;, &quot;DWT_CONV_CFLUX_GRC&quot;,
+         &quot;PCT_LANDUNIT&quot;, &quot;PCT_NAT_PFT&quot;]
+    ],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;],
+    &quot;process_variables&quot;: true,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Land use change fluxes</li>
+<li>Wood harvest carbon</li>
+<li>Vegetation fractions</li>
+<li>PFT areas (individual and aggregated)</li>
+<li>Output includes: FRAC_VEG, FOREST_AREA, CROP_AREA, etc.</li>
+</ul>
+<hr>
+<h3>Example 5: Short Time Period for Testing</h3>
 <p><strong>Purpose:</strong> Quick test with subset of data</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./test_time_series.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2020</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Only 6 years of data<br />
-- Fast execution for testing<br />
-- Verify configuration before full run</p>
-<hr />
-<h3 id="example-6-csv-output">Example 6: CSV Output</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./test_time_series.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;]],
+    &quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;]],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;],
+    &quot;process_variables&quot;: true,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2020
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Only 6 years of data</li>
+<li>Fast execution for testing</li>
+<li>Verify configuration before full run</li>
+</ul>
+<hr>
+<h3>Example 6: CSV Output</h3>
 <p><strong>Purpose:</strong> Output in CSV format for easy import to other tools</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./carbon_time_series.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;write_to_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- Same as Example 1 but CSV output<br />
-- Comma-separated values<br />
-- Easy import to Excel, R, Python</p>
-<hr />
-<h3 id="example-7-raw-variables-no-processing">Example 7: Raw Variables (No Processing)</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./carbon_time_series.csv&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;]],
+    &quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;]],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;],
+    &quot;process_variables&quot;: true,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100,
+    &quot;write_to_csv&quot;: true
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>Same as Example 1 but CSV output</li>
+<li>Comma-separated values</li>
+<li>Easy import to Excel, R, Python</li>
+</ul>
+<hr>
+<h3>Example 7: Raw Variables (No Processing)</h3>
 <p><strong>Purpose:</strong> Extract raw NetCDF values without unit conversions</p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/simulation_directory/run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./raw_data.dat&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;process_variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<p><strong>What it does:</strong><br />
-- No unit conversions<br />
-- Original units: gC/m²/s, etc.<br />
-- Use for custom processing or debugging</p>
-<hr />
-<h2 id="output-files">Output Files</h2>
-<h3 id="fixed-width-format-dat">Fixed-Width Format (.dat)</h3>
+<pre><code>{
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/simulation_directory/run&quot;,
+    &quot;output_file&quot;: &quot;./raw_data.dat&quot;,
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;]],
+    &quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;, &quot;ER&quot;]],
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;],
+    &quot;process_variables&quot;: false,
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100
+}</code></pre>
+<p><strong>What it does:</strong></p>
+<ul>
+<li>No unit conversions</li>
+<li>Original units: gC/m²/s, etc.</li>
+<li>Use for custom processing or debugging</li>
+</ul>
+<hr>
+<h2>Output Files</h2>
+<h3>Fixed-Width Format (.dat)</h3>
 <p><strong>Default format</strong> - Human-readable with aligned columns</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)  NBP (PgC/month)  TREFHT (K)
+<pre><code>Year  Month  GPP (PgC/month)  NPP (PgC/month)  NBP (PgC/month)  TREFHT (K)
 2015      1       10.234           5.123           -0.456      288.45
 2015      2        9.876           4.987           -0.421      289.12
-2015      3       11.345           5.678           -0.534      290.23
-</code></pre></div>
-
-<p><strong>Characteristics:</strong><br />
-- Spaces used for padding<br />
-- Columns aligned<br />
-- Easy to read<br />
-- Standard for E3SM analysis</p>
-<hr />
-<h3 id="csv-format-csv">CSV Format (.csv)</h3>
+2015      3       11.345           5.678           -0.534      290.23</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Spaces used for padding</li>
+<li>Columns aligned</li>
+<li>Easy to read</li>
+<li>Standard for E3SM analysis</li>
+</ul>
+<hr>
+<h3>CSV Format (.csv)</h3>
 <p><strong>Optional format</strong> - Machine-readable</p>
 <p><strong>Example:</strong></p>
-<div class="codehilite"><pre><span></span><code>Year,Month,GPP (PgC/month),NPP (PgC/month),NBP (PgC/month),TREFHT (K)
+<pre><code>Year,Month,GPP (PgC/month),NPP (PgC/month),NBP (PgC/month),TREFHT (K)
 2015,1,10.234,5.123,-0.456,288.45
 2015,2,9.876,4.987,-0.421,289.12
-2015,3,11.345,5.678,-0.534,290.23
-</code></pre></div>
-
-<p><strong>Characteristics:</strong><br />
-- Comma-separated<br />
-- Smaller file size<br />
-- Easy import to Excel, pandas, R</p>
-<hr />
-<h3 id="output-structure">Output Structure</h3>
-<p><strong>Temporal Organization:</strong><br />
-- One row per month<br />
-- Sorted by Year, then Month<br />
-- Continuous monthly time series</p>
+2015,3,11.345,5.678,-0.534,290.23</code></pre>
+<p><strong>Characteristics:</strong></p>
+<ul>
+<li>Comma-separated</li>
+<li>Smaller file size</li>
+<li>Easy import to Excel, pandas, R</li>
+</ul>
+<hr>
+<h3>Output Structure</h3>
+<p><strong>Temporal Organization:</strong></p>
+<ul>
+<li>One row per month</li>
+<li>Sorted by Year, then Month</li>
+<li>Continuous monthly time series</li>
+</ul>
 <p><strong>Column Organization:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="n">Year</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">Month</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">ELM variables...</span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="n">EAM variables...</span><span class="o">]</span>
-</code></pre></div>
-
+<pre><code>[Year] [Month] [ELM variables...] [EAM variables...]</code></pre>
 <p><strong>Column Headers:</strong></p>
-<div class="codehilite"><pre><span></span><code>Variable_name (units)
+<pre><code>Variable_name (units)
 
 Examples:
 GPP (PgC/month)
 TREFHT (K)
 PRECIP (mm/month)
-ZCO2 (ppm)
-</code></pre></div>
-
-<hr />
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="issue-1-no-netcdf-files-found">Issue 1: No NetCDF Files Found</h3>
+ZCO2 (ppm)</code></pre>
+<hr>
+<h2>Troubleshooting</h2>
+<h3>Issue 1: No NetCDF Files Found</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code>No files found matching criteria
-</code></pre></div>
-
-<p><strong>Causes:</strong><br />
-- Incorrect <code>simulation_path</code><br />
-- Wrong <code>netcdf_substrings</code><br />
-- Files don't match year range</p>
+<pre><code>No files found matching criteria</code></pre>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Incorrect <code>simulation_path</code></li>
+<li>Wrong <code>netcdf_substrings</code></li>
+<li>Files don&#x27;t match year range</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check directory exists</span>
-ls<span class="w"> </span>-la<span class="w"> </span>/path/to/simulation/
+<pre><code># Check directory exists
+ls -la /path/to/simulation/
 
-<span class="c1"># Check for NetCDF files</span>
-ls<span class="w"> </span>/path/to/simulation/*.nc<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
+# Check for NetCDF files
+ls /path/to/simulation/*.nc | head
 
-<span class="c1"># Verify filenames match substrings</span>
-ls<span class="w"> </span>/path/to/simulation/elm.h0.*.nc
-ls<span class="w"> </span>/path/to/simulation/eam.h0.*.nc
+# Verify filenames match substrings
+ls /path/to/simulation/elm.h0.*.nc
+ls /path/to/simulation/eam.h0.*.nc
 
-<span class="c1"># Check year range</span>
-ls<span class="w"> </span>/path/to/simulation/elm.h0.2015-*.nc
-</code></pre></div>
-
-<hr />
-<h3 id="issue-2-variable-not-found-in-netcdf">Issue 2: Variable Not Found in NetCDF</h3>
+# Check year range
+ls /path/to/simulation/elm.h0.2015-*.nc</code></pre>
+<hr>
+<h3>Issue 2: Variable Not Found in NetCDF</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code>KeyError: &#39;VARIABLE_NAME&#39;
-</code></pre></div>
-
-<p><strong>Causes:</strong><br />
-- Variable not in NetCDF file<br />
-- Typo in variable name<br />
-- Wrong file type (ELM vs EAM)</p>
+<pre><code>KeyError: &#x27;VARIABLE_NAME&#x27;</code></pre>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Variable not in NetCDF file</li>
+<li>Typo in variable name</li>
+<li>Wrong file type (ELM vs EAM)</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check what variables are in file</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;elm.h0.2015-01.nc&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">))</span>
+<pre><code># Check what variables are in file
+import xarray as xr
+ds = xr.open_dataset(&#x27;elm.h0.2015-01.nc&#x27;)
+print(list(ds.data_vars))
 
-<span class="c1"># Common mistakes:</span>
-<span class="c1"># &quot;GPP&quot; is in ELM, not EAM</span>
-<span class="c1"># &quot;TREFHT&quot; is in EAM, not ELM</span>
-<span class="c1"># Variable names are case-sensitive</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-3-memory-error">Issue 3: Memory Error</h3>
+# Common mistakes:
+# &quot;GPP&quot; is in ELM, not EAM
+# &quot;TREFHT&quot; is in EAM, not ELM
+# Variable names are case-sensitive</code></pre>
+<hr>
+<h3>Issue 3: Memory Error</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code>MemoryError
-</code></pre></div>
-
-<p><strong>Causes:</strong><br />
-- Large NetCDF files<br />
-- Many variables<br />
-- Long time series<br />
-- Insufficient RAM</p>
-<p><strong>Solutions:</strong><br />
-1. <strong>Reduce year range:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2050</span><span class="w">  </span><span class="c1">// Instead of 2100</span>
-</code></pre></div>
-
-<ol start="2">
+<pre><code>MemoryError</code></pre>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Large NetCDF files</li>
+<li>Many variables</li>
+<li>Long time series</li>
+<li>Insufficient RAM</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li><strong>Reduce year range:</strong></li>
+</ul>
+<pre><code>&quot;start_year&quot;: 2015,
+&quot;end_year&quot;: 2050  // Instead of 2100</code></pre>
+<ul>
 <li><strong>Process fewer variables:</strong></li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">]]</span><span class="w">  </span><span class="c1">// Instead of 20+ variables</span>
-</code></pre></div>
+</ul>
+<pre><code>&quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;]]  // Instead of 20+ variables</code></pre>
+<ul>
+<li><strong>Run on larger memory machine</strong></li>
+</ul>
+<ul>
+<li><strong>Process in chunks:</strong></li>
+</ul>
+<pre><code>// Config 1
+{&quot;start_year&quot;: 2015, &quot;end_year&quot;: 2050}
 
-<ol start="3">
-<li>
-<p><strong>Run on larger memory machine</strong></p>
-</li>
-<li>
-<p><strong>Process in chunks:</strong></p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Config 1</span>
-<span class="p">{</span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2050</span><span class="p">}</span>
-
-<span class="c1">// Config 2</span>
-<span class="p">{</span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2051</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-4-slow-execution">Issue 4: Slow Execution</h3>
+// Config 2
+{&quot;start_year&quot;: 2051, &quot;end_year&quot;: 2100}</code></pre>
+<hr>
+<h3>Issue 4: Slow Execution</h3>
 <p><strong>Symptom:</strong> Script taking hours to complete</p>
-<p><strong>Causes:</strong><br />
-- Many NetCDF files (86 years × 12 months × 2 file types = 2,064 files)<br />
-- Large files<br />
-- Limited CPU cores</p>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Many NetCDF files (86 years × 12 months × 2 file types = 2,064 files)</li>
+<li>Large files</li>
+<li>Limited CPU cores</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<ol>
-<li>
-<p><strong>Use multiprocessing (already built-in):</strong><br />
-Script automatically uses all CPU cores</p>
-</li>
-<li>
-<p><strong>Reduce year range:</strong></p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2080</span><span class="p">,</span>
-<span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="w">  </span><span class="c1">// Only 21 years instead of 86</span>
-</code></pre></div>
-
-<ol start="3">
-<li>
-<p><strong>Run on high-performance computing (HPC)</strong></p>
-</li>
-<li>
-<p><strong>Monitor progress:</strong><br />
-Script prints completion time for each output file</p>
-</li>
-</ol>
-<hr />
-<h3 id="issue-5-regional-bounds-error">Issue 5: Regional Bounds Error</h3>
+<ul>
+<li><strong>Tune multiprocessing (already built-in):</strong></li>
+</ul>
+<p>By default the script uses <code>MAX_PROCESSES</code>, which is all available CPUs minus one with a minimum of one. Set <code>max_processes</code> in the JSON to cap worker count when memory or filesystem contention is the bottleneck.</p>
+<ul>
+<li><strong>Reduce year range:</strong></li>
+</ul>
+<pre><code>&quot;start_year&quot;: 2080,
+&quot;end_year&quot;: 2100  // Only 21 years instead of 86</code></pre>
+<ul>
+<li><strong>Run on high-performance computing (HPC)</strong></li>
+</ul>
+<ul>
+<li><strong>Monitor progress:</strong></li>
+</ul>
+<p>Script prints completion time for each output file</p>
+<hr>
+<h3>Issue 5: Regional Bounds Error</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">Did</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">recognize</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">selected</span><span class="w"> </span><span class="n">region</span><span class="o">!</span>
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- Region name typo<br />
-- Region not in predefined list</p>
+<pre><code>Did not recognize the selected region!</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li>Region name typo</li>
+<li>Region not in predefined list</li>
+</ul>
 <p><strong>Solutions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Check spelling</span>
-<span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;amazon&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// Correct</span>
-<span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Amazon&quot;</span><span class="p">]</span><span class="w">  </span><span class="c1">// Wrong (case-sensitive)</span>
+<pre><code>// Check spelling
+&quot;regions&quot;: [&quot;amazon&quot;]  // Correct
+&quot;regions&quot;: [&quot;Amazon&quot;]  // Wrong (case-sensitive)
 
-<span class="c1">// Use None for global</span>
-<span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kc">null</span><span class="p">]</span>
+// Use None for global
+&quot;regions&quot;: [null]
 
-<span class="c1">// Check available regions in utility_e3sm_netcdf.py</span>
-</code></pre></div>
-
-<hr />
-<h3 id="issue-6-mismatched-list-lengths">Issue 6: Mismatched List Lengths</h3>
+// Check available regions in utility_e3sm_netcdf.py</code></pre>
+<hr>
+<h3>Issue 6: Mismatched List Lengths</h3>
 <p><strong>Error Message:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">IndexError</span><span class="o">:</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">range</span>
-</code></pre></div>
-
-<p><strong>Cause:</strong><br />
-- <code>netcdf_substrings</code>, <code>variables</code>, <code>lat_lon_aggregation_types</code>, <code>regions</code> have different lengths</p>
+<pre><code>IndexError: list index out of range</code></pre>
+<p><strong>Cause:</strong></p>
+<ul>
+<li><code>netcdf_substrings</code>, <code>variables</code>, <code>lat_lon_aggregation_types</code>, <code>regions</code> have different lengths</li>
+</ul>
 <p><strong>Solution:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// All lists must have same length</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span><span class="w">      </span><span class="c1">// Length 2</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;TREFHT&quot;</span><span class="p">]],</span><span class="w">                 </span><span class="c1">// Length 2</span>
-<span class="w">    </span><span class="nt">&quot;lat_lon_aggregation_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;area_weighted_mean_or_sum&quot;</span><span class="p">],</span><span class="w">  </span><span class="c1">// Length 2</span>
-<span class="w">    </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;amazon&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;amazon&quot;</span><span class="p">]</span><span class="w">                     </span><span class="c1">// Length 2</span>
-<span class="p">}</span>
+<pre><code>// All lists must have same length
+{
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],      // Length 2
+    &quot;variables&quot;: [[&quot;GPP&quot;], [&quot;TREFHT&quot;]],                 // Length 2
+    &quot;lat_lon_aggregation_types&quot;: [&quot;area_weighted_mean_or_sum&quot;, &quot;area_weighted_mean_or_sum&quot;],  // Length 2
+    &quot;regions&quot;: [&quot;amazon&quot;, &quot;amazon&quot;]                     // Length 2
+}
 
-<span class="c1">// Or use defaults (don&#39;t specify)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;netcdf_substrings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;elm.h0&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;eam.h0&quot;</span><span class="p">]],</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;TREFHT&quot;</span><span class="p">]]</span>
-<span class="w">    </span><span class="c1">// lat_lon_aggregation_types and regions will default to length 2</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h2 id="best-practices">Best Practices</h2>
-<h3 id="1-directory-organization">1. Directory Organization</h3>
+// Or use defaults (don&#x27;t specify)
+{
+    &quot;netcdf_substrings&quot;: [[&quot;elm.h0&quot;], [&quot;eam.h0&quot;]],
+    &quot;variables&quot;: [[&quot;GPP&quot;], [&quot;TREFHT&quot;]]
+    // lat_lon_aggregation_types and regions will default to length 2
+}</code></pre>
+<hr>
+<h2>Best Practices</h2>
+<h3>1. Directory Organization</h3>
 <p><strong>Recommended Structure:</strong></p>
-<div class="codehilite"><pre><span></span><code>project/
+<pre><code>project/
 ├── simulations/
 │   ├── control/
 │   │   └── run/          # simulation_path
@@ -1594,421 +1001,230 @@ Script prints completion time for each output file</p>
 ├── configs/
 │   └── extraction_configs.json
 └── analysis/
-    └── scripts/
-</code></pre></div>
-
-<hr />
-<h3 id="2-configuration-file-organization">2. Configuration File Organization</h3>
+    └── scripts/</code></pre>
+<hr>
+<h3>2. Configuration File Organization</h3>
 <p><strong>Use descriptive names:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="n">configs</span><span class="o">/</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">global_carbon_extraction</span><span class="o">.</span><span class="n">json</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">regional_amazon_extraction</span><span class="o">.</span><span class="n">json</span>
-<span class="err">├──</span><span class="w"> </span><span class="n">climate_variables_extraction</span><span class="o">.</span><span class="n">json</span>
-<span class="err">└──</span><span class="w"> </span><span class="n">testing_2015_2020</span><span class="o">.</span><span class="n">json</span>
-</code></pre></div>
-
+<pre><code>configs/
+├── global_carbon_extraction.json
+├── regional_amazon_extraction.json
+├── climate_variables_extraction.json
+└── testing_2015_2020.json</code></pre>
 <p><strong>Group related extractions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;control_global.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;control_amazon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario_global.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario_amazon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="3-testing-strategy">3. Testing Strategy</h3>
+<pre><code>[
+    {&quot;output_file&quot;: &quot;control_global.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;control_amazon.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;scenario_global.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;scenario_amazon.dat&quot;, ...}
+]</code></pre>
+<hr>
+<h3>3. Testing Strategy</h3>
 <p><strong>Start small:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2016</span><span class="p">,</span><span class="w">  </span><span class="c1">// Just 2 years</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">]]</span><span class="w">  </span><span class="c1">// Few variables</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2016,  // Just 2 years
+    &quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;]]  // Few variables
+}</code></pre>
 <p><strong>Then scale up:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;start_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;end_year&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2100</span><span class="p">,</span><span class="w">  </span><span class="c1">// Full range</span>
-<span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">]]</span><span class="w">  </span><span class="c1">// All variables</span>
-<span class="p">}</span>
-</code></pre></div>
-
-<hr />
-<h3 id="4-variable-selection">4. Variable Selection</h3>
+<pre><code>{
+    &quot;start_year&quot;: 2015,
+    &quot;end_year&quot;: 2100,  // Full range
+    &quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, ...]]  // All variables
+}</code></pre>
+<hr>
+<h3>4. Variable Selection</h3>
 <p><strong>Consider your analysis needs:</strong></p>
 <p><strong>Carbon budget analysis:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NEE&quot;</span><span class="p">]]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [[&quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;, &quot;HR&quot;, &quot;NEE&quot;]]</code></pre>
 <p><strong>Climate impact:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;TREFHT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PRECL&quot;</span><span class="p">]]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [[&quot;TREFHT&quot;, &quot;PRECC&quot;, &quot;PRECL&quot;]]</code></pre>
 <p><strong>Land use:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;LAND_USE_FLUX&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;WOOD_HARVESTC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCT_LANDUNIT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCT_NAT_PFT&quot;</span><span class="p">]]</span>
-</code></pre></div>
-
+<pre><code>&quot;variables&quot;: [[&quot;LAND_USE_FLUX&quot;, &quot;WOOD_HARVESTC&quot;, &quot;PCT_LANDUNIT&quot;, &quot;PCT_NAT_PFT&quot;]]</code></pre>
 <p><strong>Comprehensive:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span>
-<span class="w">    </span><span class="s2">&quot;GPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NPP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NBP&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ER&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HR&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NEE&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;TOTECOSYSC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTVEGC&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TOTSOMC&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;LAND_USE_FLUX&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCT_LANDUNIT&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PCT_NAT_PFT&quot;</span>
-<span class="p">]]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="5-regional-vs-global">5. Regional vs Global</h3>
-<p><strong>When to use global:</strong><br />
-- Earth system scale analysis<br />
-- Comparing total carbon budgets<br />
-- Climate projections</p>
-<p><strong>When to use regional:</strong><br />
-- Regional impacts (Amazon, CONUS, etc.)<br />
-- Hotspot analysis<br />
-- Policy-relevant scales</p>
+<pre><code>&quot;variables&quot;: [[
+    &quot;GPP&quot;, &quot;NPP&quot;, &quot;NBP&quot;, &quot;ER&quot;, &quot;HR&quot;, &quot;NEE&quot;,
+    &quot;TOTECOSYSC&quot;, &quot;TOTVEGC&quot;, &quot;TOTSOMC&quot;,
+    &quot;LAND_USE_FLUX&quot;, &quot;PCT_LANDUNIT&quot;, &quot;PCT_NAT_PFT&quot;
+]]</code></pre>
+<hr>
+<h3>5. Regional vs Global</h3>
+<p><strong>When to use global:</strong></p>
+<ul>
+<li>Earth system scale analysis</li>
+<li>Comparing total carbon budgets</li>
+<li>Climate projections</li>
+</ul>
+<p><strong>When to use regional:</strong></p>
+<ul>
+<li>Regional impacts (Amazon, CONUS, etc.)</li>
+<li>Hotspot analysis</li>
+<li>Policy-relevant scales</li>
+</ul>
 <p><strong>Multiple regions:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;global.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="kc">null</span><span class="p">]},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amazon.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;amazon&quot;</span><span class="p">]},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;conus.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;conus&quot;</span><span class="p">]}</span>
-<span class="p">]</span>
-</code></pre></div>
-
-<hr />
-<h3 id="6-performance-optimization">6. Performance Optimization</h3>
-<p><strong>Parallel processing:</strong><br />
-- Script uses all CPU cores automatically<br />
-- Process multiple output files in one run</p>
+<pre><code>[
+    {&quot;output_file&quot;: &quot;global.dat&quot;, &quot;regions&quot;: [null]},
+    {&quot;output_file&quot;: &quot;amazon.dat&quot;, &quot;regions&quot;: [&quot;amazon&quot;]},
+    {&quot;output_file&quot;: &quot;conus.dat&quot;, &quot;regions&quot;: [&quot;conus&quot;]}
+]</code></pre>
+<hr>
+<h3>6. Performance Optimization</h3>
+<p><strong>Parallel processing:</strong></p>
+<ul>
+<li>Script uses <code>MAX_PROCESSES</code> by default, which is all available CPUs minus one with a minimum of one</li>
+<li>Use <code>max_processes</code> to cap concurrent workers</li>
+<li>Process multiple output files in one run</li>
+</ul>
 <p><strong>Efficient configuration:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1">// Good: One JSON with multiple outputs</span>
-<span class="p">[</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;control.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="nt">&quot;output_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scenario.dat&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">}</span>
-<span class="p">]</span>
+<pre><code>// Good: One JSON with multiple outputs
+[
+    {&quot;output_file&quot;: &quot;control.dat&quot;, ...},
+    {&quot;output_file&quot;: &quot;scenario.dat&quot;, ...}
+]
 
-<span class="c1">// Less efficient: Multiple script calls</span>
-<span class="err">py</span><span class="kc">t</span><span class="err">ho</span><span class="kc">n</span><span class="w"> </span><span class="err">scrip</span><span class="kc">t</span><span class="err">.py</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ig</span><span class="mf">1.</span><span class="err">jso</span><span class="kc">n</span>
-<span class="err">py</span><span class="kc">t</span><span class="err">ho</span><span class="kc">n</span><span class="w"> </span><span class="err">scrip</span><span class="kc">t</span><span class="err">.py</span><span class="w"> </span><span class="err">co</span><span class="kc">nf</span><span class="err">ig</span><span class="mf">2.</span><span class="err">jso</span><span class="kc">n</span>
-</code></pre></div>
-
-<hr />
-<h3 id="7-data-validation">7. Data Validation</h3>
+// Less efficient: Multiple script calls
+python script.py config1.json
+python script.py config2.json</code></pre>
+<hr>
+<h3>7. Data Validation</h3>
 <p><strong>After extraction, verify:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<pre><code>import pandas as pd
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;output.csv&#39;</span><span class="p">)</span>  <span class="c1"># or read_fwf for .dat</span>
+df = pd.read_csv(&#x27;output.csv&#x27;)  # or read_fwf for .dat
 
-<span class="c1"># Check dimensions</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="c1"># Expected: 1032 rows (86 years × 12 months) for 2015-2100</span>
+# Check dimensions
+print(f&quot;Shape: {df.shape}&quot;)
+# Expected: 1032 rows (86 years × 12 months) for 2015-2100
 
-<span class="c1"># Check for missing values</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+# Check for missing values
+print(df.isnull().sum())
 
-<span class="c1"># Check value ranges</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+# Check value ranges
+print(df.describe())
 
-<span class="c1"># Verify temporal continuity</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;Year&#39;</span><span class="p">,</span> <span class="s1">&#39;Month&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span>
-</code></pre></div>
-
-<hr />
-<h3 id="8-reproducibility">8. Reproducibility</h3>
+# Verify temporal continuity
+print(df[[&#x27;Year&#x27;, &#x27;Month&#x27;]].head(15))</code></pre>
+<hr>
+<h3>8. Reproducibility</h3>
 <p><strong>Document your extraction:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;comment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Global carbon cycle for control simulation&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;date_extracted&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-01-24&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;simulation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SSP245_ZATM_BGC_without_feedbacks&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;simulation_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/lcrc/group/e3sm/.../run&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="err">...</span>
-<span class="p">}</span>
-</code></pre></div>
-
+<pre><code>{
+    &quot;comment&quot;: &quot;Global carbon cycle for control simulation&quot;,
+    &quot;date_extracted&quot;: &quot;2026-01-24&quot;,
+    &quot;simulation&quot;: &quot;SSP245_ZATM_BGC_without_feedbacks&quot;,
+    &quot;simulation_path&quot;: &quot;/lcrc/group/e3sm/.../run&quot;,
+    ...
+}</code></pre>
 <p><strong>Version control configurations:</strong></p>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>add<span class="w"> </span>configs/
-git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Add extraction configs for control simulation&quot;</span>
-</code></pre></div>
+<pre><code>git add configs/
+git commit -m &quot;Add extraction configs for control simulation&quot;</code></pre>
+<hr>
+<h2>Integration with Other Scripts</h2>
+<h3>Typical E3SM-GCAM Analysis Workflow</h3>
+<pre><code>1. Run E3SM simulation
+   ↓ (Produces NetCDF h0 files)
 
-<hr />
-<h2 id="integration-with-other-scripts">Integration with Other Scripts</h2>
-<h3 id="typical-e3sm-gcam-analysis-workflow">Typical E3SM-GCAM Analysis Workflow</h3>
-<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="kr">Run</span><span class="w"> </span><span class="n">E3SM</span><span class="w"> </span><span class="n">simulation</span>
-<span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Produces</span><span class="w"> </span><span class="n">NetCDF</span><span class="w"> </span><span class="n">h0</span><span class="w"> </span><span class="n">files</span><span class="p">)</span>
+2. e3sm_extract_time_series_h0.py  ← THIS SCRIPT
+   ↓ (Extracts time series from NetCDF)
 
-<span class="mf">2.</span><span class="w"> </span><span class="n">e3sm_extract_time_series_h0</span><span class="mf">.</span><span class="n">py</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="n">SCRIPT</span>
-<span class="w">   </span><span class="err">↓</span><span class="w"> </span><span class="p">(</span><span class="n">Extracts</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="n">series</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">NetCDF</span><span class="p">)</span>
-
-<span class="mf">3.</span><span class="w"> </span><span class="n">Further</span><span class="w"> </span><span class="n">analysis</span><span class="w"> </span><span class="n">scripts</span><span class="p">:</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Time</span><span class="w"> </span><span class="n">series</span><span class="w"> </span><span class="n">plotting</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Statistical</span><span class="w"> </span><span class="n">analysis</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">Model</span><span class="w"> </span><span class="n">comparison</span>
-<span class="w">   </span><span class="o">-</span><span class="w"> </span><span class="n">GCAM</span><span class="w"> </span><span class="n">coupling</span><span class="w"> </span><span class="nb">val</span><span class="n">idation</span>
-</code></pre></div>
-
-<h3 id="downstream-analysis">Downstream Analysis</h3>
+3. Further analysis scripts:
+   - Time series plotting
+   - Statistical analysis
+   - Model comparison
+   - GCAM coupling validation</code></pre>
+<h3>Downstream Analysis</h3>
 <p><strong>Time Series Plotting:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Use extracted data in plotting scripts</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<pre><code># Use extracted data in plotting scripts
+import pandas as pd
+import matplotlib.pyplot as plt
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;carbon_time_series.csv&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;GPP (PgC/month)&#39;</span><span class="p">])</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Year&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;GPP (PgC/month)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</code></pre></div>
-
+df = pd.read_csv(&#x27;carbon_time_series.csv&#x27;)
+plt.plot(df[&#x27;Year&#x27;], df[&#x27;GPP (PgC/month)&#x27;])
+plt.xlabel(&#x27;Year&#x27;)
+plt.ylabel(&#x27;GPP (PgC/month)&#x27;)
+plt.show()</code></pre>
 <p><strong>Statistical Analysis:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Analyze trends</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<pre><code># Analyze trends
+from scipy import stats
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;carbon_time_series.csv&#39;</span><span class="p">)</span>
-<span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span>
-    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;NBP (PgC/month)&#39;</span><span class="p">]</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NBP trend: </span><span class="si">{</span><span class="n">slope</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> PgC/month/year, p=</span><span class="si">{</span><span class="n">p_value</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
-
-<hr />
-<h2 id="appendix-common-e3sm-variables">Appendix: Common E3SM Variables</h2>
-<h3 id="elm-carbon-cycle-variables">ELM Carbon Cycle Variables</h3>
+df = pd.read_csv(&#x27;carbon_time_series.csv&#x27;)
+slope, intercept, r_value, p_value, std_err = stats.linregress(
+    df[&#x27;Year&#x27;], df[&#x27;NBP (PgC/month)&#x27;]
+)
+print(f&quot;NBP trend: {slope:.4f} PgC/month/year, p={p_value:.4f}&quot;)</code></pre>
+<hr>
+<h2>Appendix: Common E3SM Variables</h2>
+<h3>ELM Carbon Cycle Variables</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Units</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Variable</th><th>Units</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>GPP</code></td>
-<td>gC/m²/s</td>
-<td>Gross Primary Production</td>
-</tr>
-<tr>
-<td><code>NPP</code></td>
-<td>gC/m²/s</td>
-<td>Net Primary Production</td>
-</tr>
-<tr>
-<td><code>NBP</code></td>
-<td>gC/m²/s</td>
-<td>Net Biome Production</td>
-</tr>
-<tr>
-<td><code>NEE</code></td>
-<td>gC/m²/s</td>
-<td>Net Ecosystem Exchange</td>
-</tr>
-<tr>
-<td><code>NEP</code></td>
-<td>gC/m²/s</td>
-<td>Net Ecosystem Production</td>
-</tr>
-<tr>
-<td><code>ER</code></td>
-<td>gC/m²/s</td>
-<td>Ecosystem Respiration</td>
-</tr>
-<tr>
-<td><code>HR</code></td>
-<td>gC/m²/s</td>
-<td>Heterotrophic Respiration</td>
-</tr>
-<tr>
-<td><code>LAND_UPTAKE</code></td>
-<td>gC/m²/s</td>
-<td>Net land carbon uptake</td>
-</tr>
-<tr>
-<td><code>LAND_USE_FLUX</code></td>
-<td>gC/m²/s</td>
-<td>Land use change emissions</td>
-</tr>
-<tr>
-<td><code>WOOD_HARVESTC</code></td>
-<td>gC/m²/s</td>
-<td>Wood harvest carbon</td>
-</tr>
-<tr>
-<td><code>PFT_FIRE_CLOSS</code></td>
-<td>gC/m²/s</td>
-<td>Fire carbon loss</td>
-</tr>
-</tbody>
-</table>
-<h3 id="elm-carbon-stock-variables">ELM Carbon Stock Variables</h3>
+<tr><td><code>GPP</code></td><td>gC/m²/s</td><td>Gross Primary Production</td></tr>
+<tr><td><code>NPP</code></td><td>gC/m²/s</td><td>Net Primary Production</td></tr>
+<tr><td><code>NBP</code></td><td>gC/m²/s</td><td>Net Biome Production</td></tr>
+<tr><td><code>NEE</code></td><td>gC/m²/s</td><td>Net Ecosystem Exchange</td></tr>
+<tr><td><code>NEP</code></td><td>gC/m²/s</td><td>Net Ecosystem Production</td></tr>
+<tr><td><code>ER</code></td><td>gC/m²/s</td><td>Ecosystem Respiration</td></tr>
+<tr><td><code>HR</code></td><td>gC/m²/s</td><td>Heterotrophic Respiration</td></tr>
+<tr><td><code>LAND_UPTAKE</code></td><td>gC/m²/s</td><td>Net land carbon uptake</td></tr>
+<tr><td><code>LAND_USE_FLUX</code></td><td>gC/m²/s</td><td>Land use change emissions</td></tr>
+<tr><td><code>WOOD_HARVESTC</code></td><td>gC/m²/s</td><td>Wood harvest carbon</td></tr>
+<tr><td><code>PFT_FIRE_CLOSS</code></td><td>gC/m²/s</td><td>Fire carbon loss</td></tr>
+</tbody></table>
+<h3>ELM Carbon Stock Variables</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Units</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Variable</th><th>Units</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>TOTECOSYSC</code></td>
-<td>gC/m²</td>
-<td>Total ecosystem carbon</td>
-</tr>
-<tr>
-<td><code>TOTVEGC</code></td>
-<td>gC/m²</td>
-<td>Total vegetation carbon</td>
-</tr>
-<tr>
-<td><code>TOTSOMC</code></td>
-<td>gC/m²</td>
-<td>Total soil organic carbon</td>
-</tr>
-<tr>
-<td><code>TOTLITC</code></td>
-<td>gC/m²</td>
-<td>Total litter carbon</td>
-</tr>
-<tr>
-<td><code>WOODC</code></td>
-<td>gC/m²</td>
-<td>Wood carbon</td>
-</tr>
-</tbody>
-</table>
-<h3 id="eam-atmospheric-variables">EAM Atmospheric Variables</h3>
+<tr><td><code>TOTECOSYSC</code></td><td>gC/m²</td><td>Total ecosystem carbon</td></tr>
+<tr><td><code>TOTVEGC</code></td><td>gC/m²</td><td>Total vegetation carbon</td></tr>
+<tr><td><code>TOTSOMC</code></td><td>gC/m²</td><td>Total soil organic carbon</td></tr>
+<tr><td><code>TOTLITC</code></td><td>gC/m²</td><td>Total litter carbon</td></tr>
+<tr><td><code>WOODC</code></td><td>gC/m²</td><td>Wood carbon</td></tr>
+</tbody></table>
+<h3>EAM Atmospheric Variables</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Units</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Variable</th><th>Units</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>TREFHT</code></td>
-<td>K</td>
-<td>Reference height temperature (2m)</td>
-</tr>
-<tr>
-<td><code>PBOT</code></td>
-<td>Pa</td>
-<td>Surface pressure</td>
-</tr>
-<tr>
-<td><code>PCO2</code></td>
-<td>Pa</td>
-<td>CO₂ partial pressure</td>
-</tr>
-<tr>
-<td><code>QBOT</code></td>
-<td>kg/kg</td>
-<td>Specific humidity at surface</td>
-</tr>
-<tr>
-<td><code>PRECC</code></td>
-<td>m/s</td>
-<td>Convective precipitation rate</td>
-</tr>
-<tr>
-<td><code>PRECL</code></td>
-<td>m/s</td>
-<td>Large-scale precipitation rate</td>
-</tr>
-<tr>
-<td><code>PRECSC</code></td>
-<td>m/s</td>
-<td>Convective snow rate</td>
-</tr>
-<tr>
-<td><code>PRECSL</code></td>
-<td>m/s</td>
-<td>Large-scale snow rate</td>
-</tr>
-</tbody>
-</table>
-<h3 id="eam-co2-flux-variables">EAM CO₂ Flux Variables</h3>
+<tr><td><code>TREFHT</code></td><td>K</td><td>Reference height temperature (2m)</td></tr>
+<tr><td><code>PBOT</code></td><td>Pa</td><td>Surface pressure</td></tr>
+<tr><td><code>PCO2</code></td><td>Pa</td><td>CO₂ partial pressure</td></tr>
+<tr><td><code>QBOT</code></td><td>kg/kg</td><td>Specific humidity at surface</td></tr>
+<tr><td><code>PRECC</code></td><td>m/s</td><td>Convective precipitation rate</td></tr>
+<tr><td><code>PRECL</code></td><td>m/s</td><td>Large-scale precipitation rate</td></tr>
+<tr><td><code>PRECSC</code></td><td>m/s</td><td>Convective snow rate</td></tr>
+<tr><td><code>PRECSL</code></td><td>m/s</td><td>Large-scale snow rate</td></tr>
+</tbody></table>
+<h3>EAM CO₂ Flux Variables</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Units</th>
-<th>Description</th>
-</tr>
-</thead>
+<thead><tr><th>Variable</th><th>Units</th><th>Description</th></tr></thead>
 <tbody>
-<tr>
-<td><code>SFCO2</code></td>
-<td>kg/m²/s</td>
-<td>Total surface CO₂ flux</td>
-</tr>
-<tr>
-<td><code>SFCO2_LND</code></td>
-<td>kg/m²/s</td>
-<td>Land surface CO₂ flux</td>
-</tr>
-<tr>
-<td><code>SFCO2_OCN</code></td>
-<td>kg/m²/s</td>
-<td>Ocean surface CO₂ flux</td>
-</tr>
-<tr>
-<td><code>SFCO2_FFF</code></td>
-<td>kg/m²/s</td>
-<td>Fossil fuel CO₂ flux</td>
-</tr>
-<tr>
-<td><code>TMCO2</code></td>
-<td>kg</td>
-<td>Total atmospheric CO₂ mass</td>
-</tr>
-<tr>
-<td><code>TMCO2_LND</code></td>
-<td>kg</td>
-<td>CO₂ mass from land</td>
-</tr>
-<tr>
-<td><code>TMCO2_OCN</code></td>
-<td>kg</td>
-<td>CO₂ mass from ocean</td>
-</tr>
-<tr>
-<td><code>TMCO2_FFF</code></td>
-<td>kg</td>
-<td>CO₂ mass from fossil fuels</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="references">References</h2>
+<tr><td><code>SFCO2</code></td><td>kg/m²/s</td><td>Total surface CO₂ flux</td></tr>
+<tr><td><code>SFCO2_LND</code></td><td>kg/m²/s</td><td>Land surface CO₂ flux</td></tr>
+<tr><td><code>SFCO2_OCN</code></td><td>kg/m²/s</td><td>Ocean surface CO₂ flux</td></tr>
+<tr><td><code>SFCO2_FFF</code></td><td>kg/m²/s</td><td>Fossil fuel CO₂ flux</td></tr>
+<tr><td><code>TMCO2</code></td><td>kg</td><td>Total atmospheric CO₂ mass</td></tr>
+<tr><td><code>TMCO2_LND</code></td><td>kg</td><td>CO₂ mass from land</td></tr>
+<tr><td><code>TMCO2_OCN</code></td><td>kg</td><td>CO₂ mass from ocean</td></tr>
+<tr><td><code>TMCO2_FFF</code></td><td>kg</td><td>CO₂ mass from fossil fuels</td></tr>
+</tbody></table>
+<hr>
+<h2>References</h2>
 <ul>
 <li>E3SM Documentation: <a href="https://e3sm.org/">https://e3sm.org/</a></li>
 <li>E3SM Model Description: <a href="https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2018MS001350">https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2018MS001350</a></li>
-<li>DiVittorio et al. (2025). "E3SM-GCAM coupling methodology and applications." <em>Journal of Advances in Modeling Earth Systems</em>. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
+<li>DiVittorio et al. (2025). &quot;E3SM-GCAM coupling methodology and applications.&quot; *Journal of Advances in Modeling Earth Systems*. <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024MS004806">DOI: 10.1029/2024MS004806</a></li>
 <li>GitHub Repository: <a href="https://github.com/philipmyint/e3sm--gcam_analysis">https://github.com/philipmyint/e3sm--gcam_analysis</a></li>
 <li>xarray Documentation: <a href="https://xarray.pydata.org/">https://xarray.pydata.org/</a></li>
 </ul>
-<hr />
-<h2 id="contact">Contact</h2>
-<p>For questions or issues:<br />
-- <strong>Philip Myint</strong>: myint1@llnl.gov<br />
-- <strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</p>
-<hr />
-<h2 id="version-information">Version Information</h2>
-<p><strong>Script:</strong> e3sm_extract_time_series_h0.py<br />
-<strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py<br />
-<strong>Documentation Version:</strong> 1.0<br />
-<strong>Last Updated:</strong> January 2026<br />
-<strong>Python Version:</strong> 3.7+<br />
-<strong>xarray Version:</strong> 0.16+</p>
-<hr />
-<p><em>This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_h0.py</code> script to extract, aggregate, and process time series data from E3SM model output NetCDF files for climate and carbon cycle analysis.</em></p>
-        <footer>
-            <p>E3SM Time Series Extraction Script Documentation (h0 files)<br>
-            <strong>Script:</strong> e3sm_extract_time_series_h0.py<br>
-            <strong>Authors:</strong> Philip Myint, Dalei Hao, Sha Feng, Eva Sinha</p>
-        </footer>
-    </div>
+<hr>
+<h2>Contact</h2>
+<p>For questions or issues:</p>
+<ul>
+<li><strong>Philip Myint</strong>: myint1@llnl.gov</li>
+<li><strong>Dalei Hao</strong>: dalei.hao@pnnl.gov</li>
+</ul>
+<hr>
+<h2>Version Information</h2>
+<p><strong>Script:</strong> e3sm_extract_time_series_h0.py <strong>Utility Modules:</strong> utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py <strong>Documentation Version:</strong> 1.0 <strong>Last Updated:</strong> January 2026 <strong>Python Version:</strong> 3.7+ <strong>xarray Version:</strong> 0.16+</p>
+<hr>
+<p>*This documentation provides comprehensive guidance for using the <code>e3sm_extract_time_series_h0.py</code> script to extract, aggregate, and process time series data from E3SM model output NetCDF files for climate and carbon cycle analysis.*</p>
+</div>
 </body>
 </html>

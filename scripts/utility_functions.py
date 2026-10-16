@@ -141,6 +141,20 @@ def get_all_files_in_path(path, file_name_substrings=None, file_extension=None):
                     file_paths.append(file_path)
     return file_paths
 
+def get_max_processes_from_inputs(inputs, default_max_processes):
+    """
+    Returns the process count for a shared multiprocessing pool.
+
+    Each input block can specify max_processes. Blocks that omit it use default_max_processes.
+    For a shared pool, use the most restrictive effective value across all blocks.
+    """
+    if isinstance(inputs, dict):
+        inputs = [inputs]
+    if not inputs:
+        return validate_max_processes(default_max_processes)
+    effective_values = [i.get('max_processes', default_max_processes) for i in inputs]
+    return min(validate_max_processes(value) for value in effective_values)
+
 def modify_list_based_on_condition(original_list, condition, new_value_function):
     """
     Modifies a list by applying a condition and a function to generate new values.
@@ -316,3 +330,15 @@ def transpose_scenarios_if_needed(scenarios, scenario_sets=None):
         # abort with error message
         print("In json input file: netdcf_files has ambiguous format. Specify netcdf_file_sets for two separate ensemble inputs and set netcdf_files accordingly (one ensemble in each sublist)")
         os._exit(1)
+
+def validate_max_processes(max_processes):
+    """
+    Validates and returns a positive integer process count.
+    """
+    try:
+        max_processes = int(max_processes)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"max_processes must be a positive integer, got {max_processes}") from exc
+    if max_processes < 1:
+        raise ValueError(f"max_processes must be at least 1, got {max_processes}")
+    return max_processes

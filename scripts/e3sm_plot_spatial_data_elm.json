@@ -49,7 +49,7 @@
             "ZCO2"
         ],
         "use_latex": true,
-        "plot_type": "mean",
+        "time_calculation": "mean",
         "start_year": 2085,
         "end_year": 2090
     },

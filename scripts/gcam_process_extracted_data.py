@@ -7,6 +7,7 @@ import sys
 import time
 from utility_constants import MAX_PROCESSES
 from utility_dataframes import read_file_into_dataframe, write_dataframe_to_file
+from utility_functions import get_max_processes_from_inputs
 from utility_gcam import modify_crop_names, add_areas_to_dataframe
 
 def process_extracted_data(inputs):
@@ -222,9 +223,13 @@ if __name__ == '__main__':
     for inputs in land_alloc_inputs:
         process_extracted_data(inputs)
 
+    max_processes = get_max_processes_from_inputs(list_of_inputs, MAX_PROCESSES)
+
     # Produce the remaining data in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
-        pool.map(process_extracted_data, other_inputs)
+    if other_inputs:
+        num_processes = min(max_processes, len(other_inputs))
+        with multiprocessing.Pool(processes=num_processes) as pool:
+            pool.map(process_extracted_data, other_inputs)
     
     # Print the total execution time needed to process/compile the scalars for all files.
     end_time = time.time()

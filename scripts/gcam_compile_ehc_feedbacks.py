@@ -6,8 +6,19 @@ import sys
 import time
 from utility_constants import MAX_PROCESSES
 from utility_dataframes import read_file_into_dataframe, write_dataframe_to_file
-from utility_functions import get_all_files_in_path
+from utility_functions import get_all_files_in_path, get_max_processes_from_inputs
 from utility_gcam import modify_crop_names, add_areas_to_dataframe
+
+"""
+Compile EHC feedback files into the same long-table format used by the GCAM
+plotting scripts.
+
+The E3SM human component writes several small CSV files while it runs. Those
+files are organized by scenario and year, and some of them contain multiple
+physical quantities in separate columns. This script combines the per-year files
+across scenarios, adds scenario labels, optionally attaches land area metadata,
+and writes one plottable CSV per quantity with a common column named 'value'.
+"""
 
 def compile_ehc_scalars(inputs):
     """ 
@@ -33,7 +44,10 @@ def compile_ehc_scalars(inputs):
     file_root_names = inputs.get('file_root_names', {})
     land_allocation_file = inputs.get('land_allocation_file', None)
 
-    # Derive output paths for vegetation and soil files from output_dir.
+    # Scalar input files contain both vegetation and soil columns. Split them
+    # into separate output files so downstream plotting JSON can treat each
+    # quantity the same way as other processed GCAM tables: one 'value' column
+    # plus metadata columns.
     vegetation_output_file = os.path.join(output_dir, 'vegetation_scalars.csv')
     soil_output_file = os.path.join(output_dir, 'soil_scalars.csv')
 
@@ -51,6 +65,9 @@ def compile_ehc_scalars(inputs):
             print(f"Error: cannot write to output file '{out_file}': {e}")
             return
 
+    # Each input directory corresponds to one scenario. Read all matching
+    # per-year scalar files in that directory, combine them, and tag the rows
+    # with the scenario label from the JSON.
     dataframes_for_all_scenarios = []
     for index, scenario in enumerate(scenarios):
         input_directory = input_directories[index]
@@ -60,7 +77,10 @@ def compile_ehc_scalars(inputs):
             print(f"Warning: input directory not found: '{input_directory}' (scenario '{scenario}'). Skipping.")
             continue
 
-        # Look up the root name for this scenario from the file_root_names dict; default to 'scalars'.
+        # Look up the root name for this scenario. Most EHC scalar files are
+        # named scalars_<year>.csv, but file_root_names and the dispatcher's
+        # _file_root_name override allow the same reader to handle alternate
+        # root names without duplicating the loop below.
         file_root_name = file_root_names.get(scenario, inputs.get('_file_root_name', 'scalars'))
 
         # Filter to CSV files whose names start with file_root_name, to avoid reading non-scalars
@@ -88,7 +108,10 @@ def compile_ehc_scalars(inputs):
             return
 
         df = df.sort_values(by='year')
-        # Split the landtype_basin column into 'landtype' and 'basin' columns. Delete the original 'landtype_basin' column.
+        # The EHC scalar files encode two plotting keys together, for example
+        # Corn_UsaPacNW. Split this into separate landtype and basin columns so
+        # the output has the same key structure as the processed land allocation
+        # tables.
         df[['landtype', 'basin']] = df['landtype_basin'].str.split('_', expand=True)
         df.drop('landtype_basin', axis=1, inplace=True)
         df['scenario'] = scenario
@@ -109,14 +132,14 @@ def compile_ehc_scalars(inputs):
     df = df.sort_values(by=key_columns)
     df = df[key_columns + ['vegetation', 'soil']]
 
-    # Add areas from the detailed land allocation file before standardizing crop names,
-    # since the detailed land allocation file uses the original crop names.
+    # Add areas before standardizing crop names. The scalar files still use the
+    # original GCAM crop names here, so the land allocation file should be the
+    # processed land allocation table that also keeps original crop names
+    # (call_modify_crop_names = false in gcam_process_extracted_data.json).
     if land_allocation_file is None:
         print(f"Error: A 'land_allocation_file' must be specified in the JSON input")
-        print(f"Error: The detailed land allocation file ('detailed_land_allocation.csv') must be provided "
-              f"here (not the processed version), since it uses the original crop names.")
-        print(f"Error: The default 'land_allocation_file' is called 'detailed_land_allocation_processed.csv' "
-              f"and should be located in the 'output/gcam_csv/' directory.")
+        print(f"Error: Use the processed detailed land allocation file that keeps original crop names, "
+              f"for example 'land_allocation_processed_original_crop_names.csv'.")
         return
     if not os.path.exists(land_allocation_file):
         print(f"Error: land_allocation_file not found: '{land_allocation_file}'")
@@ -128,16 +151,19 @@ def compile_ehc_scalars(inputs):
     if call_modify_crop_names:
         df = modify_crop_names(df, key_columns, 'area_weighted_mean')
 
-    # Trailing columns present after add_areas (area and area_units if available).
+    # Keep area metadata at the end of the output tables if it was successfully
+    # added. Plotting scripts can use the area column for area-weighted means.
     trailing = [c for c in ['area', 'area_units'] if c in df.columns]
 
-    # Write vegetation scalars: rename vegetation -> value, add units column.
+    # Write vegetation scalars as a standard processed GCAM table. Renaming the
+    # data column to 'value' lets plotting JSON omit value_label or set it to the
+    # default 'value'.
     veg_df = df[key_columns + ['vegetation'] + trailing].rename(columns={'vegetation': 'value'}).copy()
     veg_df['units'] = 'Unitless'
     veg_df = veg_df[key_columns + ['value', 'units'] + trailing]
     write_dataframe_to_file(veg_df, vegetation_output_file)
 
-    # Write soil scalars: rename soil -> value, add units column.
+    # Write soil scalars with the same structure as vegetation_scalars.csv.
     soil_df = df[key_columns + ['soil'] + trailing].rename(columns={'soil': 'value'}).copy()
     soil_df['units'] = 'Unitless'
     soil_df = soil_df[key_columns + ['value', 'units'] + trailing]
@@ -167,6 +193,9 @@ def compile_hdd_cdd_scalars(inputs):
     file_root_names = inputs.get('file_root_names', {})
     land_allocation_file = inputs.get('land_allocation_file', None)
 
+    # The HDD/CDD scalar input stores two quantities in one row. As above, write
+    # one output file per quantity so each downstream plot reads a single 'value'
+    # column.
     hdd_output_file = os.path.join(output_dir, 'hdd_scalars.csv')
     cdd_output_file = os.path.join(output_dir, 'cdd_scalars.csv')
 
@@ -182,6 +211,7 @@ def compile_hdd_cdd_scalars(inputs):
             print(f"Error: cannot write to output file '{out_file}': {e}")
             return
 
+    # Combine all per-year HDD/CDD scalar files across the requested scenarios.
     dataframes_for_all_scenarios = []
     for index, scenario in enumerate(scenarios):
         input_directory = input_directories[index]
@@ -190,6 +220,8 @@ def compile_hdd_cdd_scalars(inputs):
             print(f"Warning: input directory not found: '{input_directory}' (scenario '{scenario}'). Skipping.")
             continue
 
+        # Default to hdd_cdd_scalars_<year>.csv, unless file_type or
+        # file_root_names asks this input block to use a different prefix.
         file_root_name = file_root_names.get(scenario, inputs.get('_file_root_name', 'hdd_cdd_scalars'))
 
         files = get_all_files_in_path(input_directory, file_extension='.csv')
@@ -230,6 +262,10 @@ def compile_hdd_cdd_scalars(inputs):
     df = df.sort_values(by=key_columns)
     df = df[key_columns + ['hdd', 'cdd']]
 
+    # HDD/CDD scalar files are regional rather than landtype/basin-specific.
+    # If a land allocation file is provided, add aggregate regional areas for
+    # use in area-weighted downstream calculations; otherwise leave the data as
+    # pure regional time series.
     if land_allocation_file is not None:
         if not os.path.exists(land_allocation_file):
             print(f"Error: land_allocation_file not found: '{land_allocation_file}'")
@@ -238,6 +274,7 @@ def compile_hdd_cdd_scalars(inputs):
         df = add_areas_to_dataframe(df, df_land)
     trailing = [c for c in ['area', 'area_units'] if c in df.columns]
 
+    # Write one standardized output table per quantity.
     hdd_df = df[key_columns + ['hdd'] + trailing].rename(columns={'hdd': 'value'}).copy()
     hdd_df['units'] = 'Unitless'
     hdd_df = hdd_df[key_columns + ['value', 'units'] + trailing]
@@ -276,6 +313,8 @@ def compile_scaled_hdd_cdd_diag(inputs):
     file_root_names = inputs.get('file_root_names', {})
     land_allocation_file = inputs.get('land_allocation_file', None)
 
+    # The diagnostic file contains four end-use columns. Create four output CSVs
+    # so each file has one plottable quantity in the standard 'value' column.
     value_columns = ['comm_heating', 'comm_cooling', 'resid_heating', 'resid_cooling']
     output_files = {col: os.path.join(output_dir, f'{col}_diag.csv') for col in value_columns}
 
@@ -291,6 +330,9 @@ def compile_scaled_hdd_cdd_diag(inputs):
             print(f"Error: cannot write to output file '{out_file}': {e}")
             return
 
+    # Combine all matching diagnostic files across scenarios. Unlike the scalar
+    # files above, the year is not stored in the file contents; it is encoded in
+    # the filename and is added explicitly below.
     dataframes_for_all_scenarios = []
     for index, scenario in enumerate(scenarios):
         input_directory = input_directories[index]
@@ -299,6 +341,9 @@ def compile_scaled_hdd_cdd_diag(inputs):
             print(f"Warning: input directory not found: '{input_directory}' (scenario '{scenario}'). Skipping.")
             continue
 
+        # Default to scaled_hdd_cdd_diag<year>.csv. The same override machinery
+        # lets a JSON block use another prefix if a run produced differently
+        # named diagnostic files.
         file_root_name = file_root_names.get(scenario, inputs.get('_file_root_name', 'scaled_hdd_cdd_diag'))
 
         files = get_all_files_in_path(input_directory, file_extension='.csv')
@@ -313,6 +358,9 @@ def compile_scaled_hdd_cdd_diag(inputs):
         dfs = []
         for file in files:
             basename = os.path.basename(file)
+            # File names are expected to look like
+            # scaled_hdd_cdd_diag2025.csv. Slice off the prefix and suffix to
+            # recover the year.
             year_str = basename[len(file_root_name):-len('.csv')]
             try:
                 year = int(year_str)
@@ -351,6 +399,8 @@ def compile_scaled_hdd_cdd_diag(inputs):
     df = df.sort_values(by=key_columns)
     df = df[key_columns + value_columns]
 
+    # Area metadata is optional for these regional diagnostic outputs. When it
+    # is present, the plotting scripts can use it for area-weighted aggregation.
     if land_allocation_file is not None:
         if not os.path.exists(land_allocation_file):
             print(f"Error: land_allocation_file not found: '{land_allocation_file}'")
@@ -359,6 +409,8 @@ def compile_scaled_hdd_cdd_diag(inputs):
         df = add_areas_to_dataframe(df, df_land)
     trailing = [c for c in ['area', 'area_units'] if c in df.columns]
 
+    # Write one file per diagnostic column, normalizing the selected column name
+    # to 'value' in each output.
     for col in value_columns:
         out_df = df[key_columns + [col] + trailing].rename(columns={col: 'value'}).copy()
         out_df['units'] = 'degF/yr'
@@ -379,12 +431,19 @@ def compile_ehc_feedbacks(inputs):
       a list          — runs those types, each string as both type and root name
       a dict          — keys are type identifiers, values are the root names to search for
     Valid type identifiers: 'scalars', 'hdd_cdd_scalars', 'scaled_hdd_cdd_diag'."""
+    # Map each file_type identifier to the function that knows that input
+    # layout. The JSON file_type field controls which of these readers runs for
+    # a given input block.
     all_types = ['scalars', 'hdd_cdd_scalars', 'scaled_hdd_cdd_diag']
     type_to_func = {
         'scalars': compile_ehc_scalars,
         'hdd_cdd_scalars': compile_hdd_cdd_scalars,
         'scaled_hdd_cdd_diag': compile_scaled_hdd_cdd_diag,
     }
+    # Normalize file_type into (type identifier, file prefix) pairs:
+    #   "scalars" runs the scalar reader on files starting with "scalars";
+    #   ["scalars", "hdd_cdd_scalars"] runs both default prefixes;
+    #   {"scalars": "my_scalars"} runs the scalar reader with a custom prefix.
     raw = inputs.get('file_type', 'all')
     if raw == 'all':
         type_root_pairs = [(t, t) for t in all_types]
@@ -399,6 +458,9 @@ def compile_ehc_feedbacks(inputs):
             print(f"Error: unknown file_type '{file_type}'. Valid types: {all_types}.")
             return
         modified_inputs = dict(inputs)
+        # Store the chosen root name in a private key so the lower-level compile
+        # function can use the same input dictionary without changing its public
+        # JSON interface.
         modified_inputs['_file_root_name'] = root_name
         type_to_func[file_type](modified_inputs)
 
@@ -409,7 +471,7 @@ if __name__ == '__main__':
     # Run this script together with the input JSON file(s) on the command line.
     start_time = time.time()
     if len(sys.argv) < 2:
-        print('Usage: python gcam_compile_ehc_scalars.py `path/to/json/input/file(s)\'')
+        print('Usage: python gcam_compile_ehc_feedbacks.py `path/to/json/input/file(s)\'')
         sys.exit()
 
     # Read and load the JSON file(s) into a list of dictionaries.
@@ -419,11 +481,19 @@ if __name__ == '__main__':
         with open(input_file) as f:
             list_of_inputs.extend(json.load(f))
 
-    # Produce data for each file in parallel.
-    with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+    # Use any max_processes value requested in the inputs, otherwise use the default.
+    # Do not start more worker processes than there are independent input blocks.
+    max_processes = get_max_processes_from_inputs(list_of_inputs, MAX_PROCESSES)
+    num_processes = min(max_processes, max(1, len(list_of_inputs)))
+
+    # Each top-level JSON block is independent, so multiple blocks can be
+    # compiled in parallel. Inside each block, the files for that block are read
+    # serially to keep the per-output ordering and error messages simple.
+    with multiprocessing.Pool(processes=num_processes) as pool:
         pool.map(compile_ehc_feedbacks, list_of_inputs)
     
-    # Print the total execution time needed to process/compile the scalars for all files.
+    # Print the total execution time needed to process/compile all requested
+    # feedback files.
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time processing/compiling the data for all files: {elapsed_time:.2f} seconds")

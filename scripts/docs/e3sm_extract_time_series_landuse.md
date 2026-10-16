@@ -66,6 +66,12 @@ The script imports several utility modules that must be in the same directory or
 python e3sm_extract_time_series_landuse.py path/to/config.json
 ```
 
+By default, the script will stop before writing if any configured output file already exists. Add `--overwrite` to replace existing outputs:
+
+```bash
+python e3sm_extract_time_series_landuse.py --overwrite path/to/config.json
+```
+
 **Multiple Configuration Files:**
 ```bash
 python e3sm_extract_time_series_landuse.py config1.json config2.json config3.json
@@ -82,7 +88,7 @@ For each configuration block in the JSON file, the script:
 6. **Filters** by region (optional - global, Amazon, CONUS, etc.)
 7. **Calculates** total harvest from individual harvest types
 8. **Outputs** annual time series to formatted text file
-9. **Uses** parallel processing (one process per year)
+9. **Uses** parallel processing across multiple configured landuse files; each individual file is processed year-by-year inside one worker
 
 ---
 
@@ -162,6 +168,7 @@ time = year values (e.g., 2015, 2016, ..., 2100)
 | `start_year` | integer | No | `2015` | Any year | First year to extract |
 | `end_year` | integer | No | `2100` | Any year | Last year to extract |
 | `write_to_csv` | boolean | No | `false` | `true`, `false` | Output as CSV instead of fixed-width |
+| `max_processes` | integer | No | `MAX_PROCESSES` | Positive integer | Maximum number of landuse files to process concurrently. Defaults to all available CPUs minus one, with a minimum of one. |
 
 ---
 
@@ -170,8 +177,8 @@ time = year values (e.g., 2015, 2016, ..., 2100)
 ### Core Required Parameters
 
 #### `landuse_file`
-**Type:** String (file path)  
-**Required:** Yes  
+**Type:** String (file path)
+**Required:** Yes
 **Description:** Full path and name of the land use NetCDF file, such as the `surfdata_iESM_dyn.nc` file in an E3SM simulation run directory or a land use time series input file.
 
 **Examples:**
@@ -187,8 +194,8 @@ time = year values (e.g., 2015, 2016, ..., 2100)
 ---
 
 #### `output_file`
-**Type:** String (file path)  
-**Required:** Yes  
+**Type:** String (file path)
+**Required:** Yes
 **Description:** Path and filename for output time series data.
 
 **Examples:**
@@ -212,8 +219,8 @@ Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2
 ---
 
 #### `variables`
-**Type:** List of strings  
-**Required:** Yes  
+**Type:** List of strings
+**Required:** Yes
 **Description:** Variables to extract from surfdata_iESM_dyn.nc file.
 
 **Format:** Simple list (not nested like in h0 script)
@@ -243,10 +250,22 @@ Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2
 
 ### Optional Parameters
 
+#### `max_processes`
+**Type:** Integer
+**Required:** No
+**Default:** `MAX_PROCESSES` from `utility_constants.py`
+
+**Description:** Caps the number of landuse files processed at the same time when the JSON contains multiple configuration blocks. Processing within a single landuse file is sequential by year because the earlier per-year multiprocessing path is intentionally disabled.
+
+**Example:**
+```json
+"max_processes": 4
+```
+
 #### `region`
-**Type:** String or `None`  
-**Required:** No  
-**Default:** `None` (global - no filtering)  
+**Type:** String or `None`
+**Required:** No
+**Default:** `None` (global - no filtering)
 **Possible Values:** Region names or `None`
 
 **Description:** Geographic region to filter data extraction.
@@ -303,8 +322,8 @@ Year  FRAC_VEG  GRAZING_AREA (km^2)  HARVEST_VH1_AREA (km^2)  HARVEST_AREA (km^2
 ---
 
 #### `start_year` and `end_year`
-**Type:** Integer  
-**Required:** No  
+**Type:** Integer
+**Required:** No
 **Defaults:** `start_year: 2015`, `end_year: 2100`
 
 **Description:** Year range for time series extraction.
@@ -331,8 +350,8 @@ Year 2051 → Excluded (> end_year 2050)
 ---
 
 #### `write_to_csv`
-**Type:** Boolean  
-**Required:** No  
+**Type:** Boolean
+**Required:** No
 **Default:** `false`
 
 **Description:** Force output to CSV format.
@@ -373,10 +392,10 @@ These are variables that exist directly in the surfdata_iESM_dyn.nc file:
 
 #### Grazing
 
-**Variable:** `GRAZING`  
-**Original Units:** Dimensionless fraction (0-1)  
-**Output Units:** km² (after processing)  
-**Description:** Fraction of grassland area used for livestock grazing  
+**Variable:** `GRAZING`
+**Original Units:** Dimensionless fraction (0-1)
+**Output Units:** km² (after processing)
+**Description:** Fraction of grassland area used for livestock grazing
 **Output Column:** `GRAZING_AREA (km^2)`
 
 **Calculation:**
@@ -386,34 +405,34 @@ GRAZING_AREA (km²) = GRAZING × GRASS_AREA (km²)
 
 #### Wood Harvesting
 
-**Variable:** `HARVEST_VH1`  
-**Original Units:** Dimensionless fraction (0-1)  
-**Output Units:** km² (after processing)  
-**Description:** Very heavy harvest intensity 1 - fraction of forest harvested  
+**Variable:** `HARVEST_VH1`
+**Original Units:** Dimensionless fraction (0-1)
+**Output Units:** km² (after processing)
+**Description:** Very heavy harvest intensity 1 - fraction of forest harvested
 **Output Column:** `HARVEST_VH1_AREA (km^2)`
 
-**Variable:** `HARVEST_VH2`  
-**Original Units:** Dimensionless fraction (0-1)  
-**Output Units:** km² (after processing)  
-**Description:** Very heavy harvest intensity 2 - fraction of forest harvested  
+**Variable:** `HARVEST_VH2`
+**Original Units:** Dimensionless fraction (0-1)
+**Output Units:** km² (after processing)
+**Description:** Very heavy harvest intensity 2 - fraction of forest harvested
 **Output Column:** `HARVEST_VH2_AREA (km^2)`
 
-**Variable:** `HARVEST_SH1`  
-**Original Units:** Dimensionless fraction (0-1)  
-**Output Units:** km² (after processing)  
-**Description:** Secondary heavy harvest 1 - fraction of forest harvested  
+**Variable:** `HARVEST_SH1`
+**Original Units:** Dimensionless fraction (0-1)
+**Output Units:** km² (after processing)
+**Description:** Secondary heavy harvest 1 - fraction of forest harvested
 **Output Column:** `HARVEST_SH1_AREA (km^2)`
 
-**Variable:** `HARVEST_SH2`  
-**Original Units:** Dimensionless fraction (0-1)  
-**Output Units:** km² (after processing)  
-**Description:** Secondary heavy harvest 2 - fraction of forest harvested  
+**Variable:** `HARVEST_SH2`
+**Original Units:** Dimensionless fraction (0-1)
+**Output Units:** km² (after processing)
+**Description:** Secondary heavy harvest 2 - fraction of forest harvested
 **Output Column:** `HARVEST_SH2_AREA (km^2)`
 
-**Variable:** `HARVEST_SH3`  
-**Original Units:** Dimensionless fraction (0-1)  
-**Output Units:** km² (after processing)  
-**Description:** Secondary heavy harvest 3 - fraction of forest harvested  
+**Variable:** `HARVEST_SH3`
+**Original Units:** Dimensionless fraction (0-1)
+**Output Units:** km² (after processing)
+**Description:** Secondary heavy harvest 3 - fraction of forest harvested
 **Output Column:** `HARVEST_SH3_AREA (km^2)`
 
 **Harvest Calculation:**
@@ -423,16 +442,16 @@ HARVEST_*_AREA (km²) = HARVEST_* × FOREST_AREA (km²)
 
 #### Vegetation Cover
 
-**Variable:** `PCT_NATVEG`  
-**Original Units:** Percent (0-100)  
-**Output Units:** Fraction (0-1)  
-**Description:** Percentage of grid cell covered by natural vegetation  
+**Variable:** `PCT_NATVEG`
+**Original Units:** Percent (0-100)
+**Output Units:** Fraction (0-1)
+**Description:** Percentage of grid cell covered by natural vegetation
 **Output Column:** `FRAC_VEG`
 
-**Variable:** `PCT_NAT_PFT`  
-**Original Units:** Percent (0-100)  
-**Output Units:** km² (individual PFT areas)  
-**Description:** Percentage of each plant functional type  
+**Variable:** `PCT_NAT_PFT`
+**Original Units:** Percent (0-100)
+**Output Units:** km² (individual PFT areas)
+**Description:** Percentage of each plant functional type
 **Output Columns:** Individual and aggregated PFT areas
 
 ---
@@ -443,25 +462,25 @@ These are calculated by the script from other variables:
 
 #### Total Harvest Area
 
-**Variable:** Automatically created  
-**Output Column:** `HARVEST_AREA (km^2)`  
+**Variable:** Automatically created
+**Output Column:** `HARVEST_AREA (km^2)`
 **Description:** Total forest area harvested (sum of all harvest types)
 
 **Calculation:**
 ```
-HARVEST_AREA (km²) = HARVEST_VH1_AREA + HARVEST_VH2_AREA + 
+HARVEST_AREA (km²) = HARVEST_VH1_AREA + HARVEST_VH2_AREA +
                       HARVEST_SH1_AREA + HARVEST_SH2_AREA + HARVEST_SH3_AREA
 ```
 
 #### Grid Cell Area
 
-**Variable:** Automatically included  
-**Output Column:** `AREA (km^2)`  
+**Variable:** Automatically included
+**Output Column:** `AREA (km^2)`
 **Description:** Total grid cell area
 
 #### PFT Areas
 
-**Variables:** Automatically calculated when PCT_NAT_PFT requested  
+**Variables:** Automatically calculated when PCT_NAT_PFT requested
 **Output Columns:**
 - Individual PFTs: `PFT_1_AREA (km^2)` through `PFT_16_AREA (km^2)`
 - Aggregated groups:
@@ -1042,8 +1061,8 @@ Warning: Duplicate time values found
 
 **Solutions:**
 
-1. **Parallel processing (already built-in):**
-Script automatically uses all CPU cores
+1. **Parallel processing across files (already built-in):**
+The script can process multiple configured landuse files concurrently. It uses `MAX_PROCESSES` by default, which is all available CPUs minus one with a minimum of one, and can be capped with `max_processes`.
 
 2. **Reduce year range:**
 ```json
@@ -1210,9 +1229,9 @@ configs/
 ### 6. Performance Optimization
 
 **Parallel processing:**
-- Script uses all CPU cores automatically
-- One process per year
-- Scales well with more cores
+- Script can process multiple configured landuse files concurrently
+- A single landuse file is processed sequentially by year
+- Use `max_processes` to cap concurrent workers
 
 **Efficient configuration:**
 ```json
@@ -1343,13 +1362,13 @@ git commit -m "Add surfdata extraction configs for control simulation"
 ```
 1. Run E3SM-GCAM coupled simulation
    ↓ (Produces surfdata_iESM_dyn.nc + monthly h0 files)
-   
+
 2a. e3sm_extract_time_series_h0.py
     ↓ (Extract climate and carbon cycle - monthly)
-    
+
 2b. e3sm_extract_time_series_landuse.py  ← THIS SCRIPT
     ↓ (Extract harvest and grazing - annual)
-    
+
 3. Combine analyses:
    - Plot harvest trends over time
    - Correlate with carbon cycle changes
@@ -1457,11 +1476,11 @@ For questions or issues:
 
 ## Version Information
 
-**Script:** e3sm_extract_time_series_landuse.py  
-**Utility Modules:** utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py  
-**Documentation Version:** 1.0  
-**Last Updated:** January 2026  
-**Python Version:** 3.7+  
+**Script:** e3sm_extract_time_series_landuse.py
+**Utility Modules:** utility_e3sm_netcdf.py, utility_constants.py, utility_dataframes.py, utility_functions.py
+**Documentation Version:** 1.0
+**Last Updated:** January 2026
+**Python Version:** 3.7+
 **xarray Version:** 0.16+
 
 ---

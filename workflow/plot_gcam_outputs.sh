@@ -16,6 +16,44 @@ echo "Starting job at: $(date)"
 set -e
 trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 
+MACHINE="perlmutter"
+
+# Parse optional command-line arguments. The --machine flag selects a known
+# E3SM unified environment to source for the Python steps; with no flag, default to Perlmutter.
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --machine)
+            MACHINE="${2:-}"
+            if [[ -z "${MACHINE}" ]]; then
+                echo "ERROR: --machine requires one of: perlmutter, compy" >&2
+                exit 1
+            fi
+            case "${MACHINE}" in
+                perlmutter|compy)
+                    ;;
+                *)
+                    echo "ERROR: unknown or unsupported machine for this GCAM workflow: ${MACHINE}" >&2
+                    echo "Valid machines: perlmutter, compy" >&2
+                    echo "Chrysalis is not supported because the R extraction step cannot run there." >&2
+                    exit 1
+                    ;;
+            esac
+            shift 2
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--machine perlmutter|compy]"
+            echo "Default: --machine perlmutter"
+            echo "Note: chrysalis is not supported for this workflow because the R extraction step cannot run there."
+            exit 0
+            ;;
+        *)
+            echo "ERROR: unknown option: $1" >&2
+            echo "Usage: $0 [--machine perlmutter|compy]" >&2
+            exit 1
+            ;;
+    esac
+done
+
 # This script runs the Python scripts that extract and plot GCAM outputs.
 # These JSON config files are configured to make simple plots for two cases for a default set of GCAM outputs.
 
@@ -79,16 +117,21 @@ module load R/4.3.3
 Rscript "${SCRIPT_DIR}/../scripts/gcam_extract_csv_from_xml_or_project_files.R" \
     "${SCRIPT_DIR}/gcam_extract_csv_from_xml_or_project_files.json"
 
-# Next load the E3SM unified environment
-
-# Perlmutter (login or cpu nodes)
-source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
-
-# compy
-#source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
-
-# chrysalis
-#source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh
+# Load the E3SM unified environment for the selected machine before running the Python steps.
+case "${MACHINE}" in
+    perlmutter)
+        source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
+        ;;
+    compy)
+        source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
+        ;;
+    *)
+        echo "ERROR: unknown or unsupported machine for this GCAM workflow: ${MACHINE}" >&2
+        echo "Valid machines: perlmutter, compy" >&2
+        echo "Chrysalis is not supported because the R extraction step cannot run there." >&2
+        exit 1
+        ;;
+esac
 
 # process the extracted csv files to create 'processed' csv files for plotting
 python3 "${SCRIPT_DIR}/../scripts/gcam_process_extracted_data.py" \

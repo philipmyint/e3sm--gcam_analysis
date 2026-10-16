@@ -12,7 +12,7 @@ import uxarray as ux
 import xarray as xr
 from utility_constants import *
 from utility_dataframes import perform_ttest
-from utility_functions import check_is_list_of_lists, print_p_values, replace_inside_parentheses, sort_file, transpose_scenarios_if_needed
+from utility_functions import check_is_list_of_lists, get_max_processes_from_inputs, print_p_values, replace_inside_parentheses, sort_file, transpose_scenarios_if_needed
 from utility_plots import *
 from utility_xarray import calculate_statistics_of_xarray, convert_xarray_to_uxarray
 
@@ -45,6 +45,7 @@ default_inputs = {
     'width': width_default               
 }
 
+# Treat land fractions at or below this tiny threshold as non-land, avoiding numerical noise near zero.
 LANDFRAC_EPSILON = 1e-12
 EPSILON = 1e-12  # avoid division by zero in percent difference
 
@@ -98,8 +99,7 @@ def process_inputs(inputs):
                          inputs['netcdf_files'][0] if isinstance(inputs['netcdf_files'], list) else
                          inputs['netcdf_files'])
 
-    # If the user entered the string 'all' for the variables or no input at all for the variables, assume that they want to make plots for
-    # all variables that are in the Dataset.
+    # If the user entered 'all' for variables or omitted variables entirely, plot every Dataset variable except AREA and LANDFRAC support fields.
     if 'variables' not in inputs:
         inputs['variables'] = None
     variables = inputs['variables']
@@ -232,7 +232,7 @@ def plot_spatial_data_eam(inputs, grid_file):
     use_latex = inputs['use_latex']
     width = inputs['width'] 
 
-    # add the year range to the plot name, before the extension if there is one
+    # Add the year range to the plot name, before the extension if there is one.
     plot_root, plot_ext = os.path.splitext(plot_name)
     _diff_tag = {'absolute_difference': '_abs_diff', 'percent_difference': '_pct_diff'}.get(plot_type, '')
     plot_name = f'{plot_root}_{start_year}-{end_year}{_diff_tag}{plot_ext}'
@@ -268,11 +268,9 @@ def plot_spatial_data_eam(inputs, grid_file):
             + "and if there are two sets there must be at least two files in each set (for ensemble plots)."
         raise ValueError(error_message)
 
-    # Read each of the NetCDF output files, which are arranged in a list of lists (2D matrix), into an uxarray DataArray and then add each of these 
-    # DataArrays to a single uxarray Dataset that will store the data from all of the files. To form the DataArrays, calculate either the mean or sum 
-    # between the start and end years for each lat/lon coordinate. We will later display some function of this mean or sum on the spatial plot.
-    # Use a plain xr.Dataset as the intermediate container to avoid uxarray constructor
-    # incompatibility with xarray >= 2025.7.1; convert to uxarray only at the plotting step.
+    # Read each NetCDF output file, aggregate the requested variable over the selected years, and store the results in a plain xarray Dataset.
+    # We avoid using uxarray as the intermediate container because its Dataset constructor is incompatible with xarray >= 2025.7.1 here.
+    # The final xarray results are converted to uxarray only at the plotting step, where the unstructured grid is needed.
     uxds = xr.Dataset()
     area_weights = None
     for file_set_index in range(num_file_sets):
@@ -300,11 +298,7 @@ def plot_spatial_data_eam(inputs, grid_file):
                 wfile = os.path.join(plot_directory, f'temp_{plot_type}_{variable}_{file_index}_{file_set_index}.nc')
                 ds.to_netcdf(wfile, 'w')
                 ds.close()
-                # Load the temporal aggregate as a plain xr.DataArray rather than a ux.UxDataArray.
-                # ux.UxDataset.from_xarray and ux.open_dataset both use a UxDataset constructor
-                # that is incompatible with xarray >= 2025.7.1. Since uxarray is only needed at
-                # the final plotting step (where convert_xarray_to_uxarray is called), we use
-                # plain xarray DataArrays here and store them in an xr.Dataset (uxds).
+                # Reopen the sliced temporary file with xarray and collapse the year dimension before storing it in uxds.
                 if time_calculation == 'mean':
                     xr_ds = xr.open_dataset(wfile).mean(dim='year')
                     uxda = xr_ds[variable]*multiplier
@@ -690,7 +684,7 @@ def plot_spatial_data_elm(inputs):
         dataArrays_for_statistics.append(da)
         print(f"Plotting single file set of {num_file_sets} file(s) for {variable}.")
 
-    # this is when there are more than three files listed in one input set, so differences don't make sense
+    # This is when there are more than three files listed in one input set, so differences don't make sense
     else:
         error_message = (f"Error: variable '{variable}', num_files_in_each_set={num_files_in_each_set}, "
                          f"num_file_sets={num_file_sets}, plot_type='{plot_type}': "
@@ -813,14 +807,19 @@ if __name__ == '__main__':
         list_of_inputs.extend(process_inputs(inputs[index]))
 
     # Delete all the p-value files before we do any calculations to start a fresh run.
-    for inputs in list_of_inputs:
-        file = inputs['p_value_file']
+    for input_options in list_of_inputs:
+        file = input_options['p_value_file']
         if os.path.exists(file): 
             os.remove(file)
 
+    # Use any max_processes value requested in the inputs, otherwise use the default.
+    # Do not start more worker processes than there are independent plotting jobs.
+    max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
+    num_processes = min(max_processes, max(1, len(list_of_inputs)))
+
     # Create all of the spatial plots in parallel.
     try:
-        with multiprocessing.Pool(processes=MAX_PROCESSES) as pool:
+        with multiprocessing.Pool(processes=num_processes) as pool:
             pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs)
     except Exception as e:
         print(e)
