@@ -41,6 +41,7 @@ python gcam_plot_spatial_data.py config1.json config2.json
 | `categories` | No | Auto-detected or `"All"` | Data categories to include before plotting. |
 | `plot_categories` | No | `None` | Categories to display as separate panels. Can be a list or a dict for multi-column categories. |
 | `plot_categories_ncols` | No | `2` | Number of columns for category-panel plots. |
+| `multipanel` | No | `true` | If `true`, `plot_years` and `plot_categories` produce panel figures. If `false`, each requested year/category is written as a separate single-map figure. |
 | `aggregation_function` | No | `"sum"` | `"sum"`, `"mean"`, or `"area_weighted_mean"` when rows must collapse to one map value. |
 | `aggregate_to_region` | No | `false` | Drop basin granularity and dissolve the shapefile to region polygons. |
 | `key_columns` | No | `None` | Grouping columns used when aggregating GCAM landtype groups. |
@@ -73,9 +74,11 @@ For differences, the first scenario or scenario set is the reference.
 
 ## Plot Layouts
 
-If `plot_years` is set and `plot_categories` is omitted, the script creates one multi-panel figure with one map per year.
+By default, `multipanel` is `true`. In this mode, if `plot_years` is set and `plot_categories` is omitted, the script creates one multi-panel figure with one map per year.
 
 If `plot_categories` is set, the script creates one output file per year, with one map panel per requested category. When `plot_years` has one year, the configured `plot_name` is used directly.
+
+Set `"multipanel": false` to split those same requests into separate single-map figures. The script appends the category and/or year to the configured `plot_name` so the individual outputs do not overwrite one another.
 
 For regional scalar files such as `hdd_scalars.csv` and `cdd_scalars.csv`, omit `category_label`, `categories`, and `plot_categories` unless a real category column exists.
 

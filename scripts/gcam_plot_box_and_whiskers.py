@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import multiprocessing
 import os
 import pandas as pd
+import re
 import seaborn as sns
 import sys
 import time
@@ -32,6 +33,7 @@ default_inputs = {
     'legend_x_offset': None,
     'linewidth': 1,
     'marker_size': 6,
+    'multipanel': True,
     'multiplier': 1,
     'notify_scenarios_transposed': False,
     'plot_colors': plot_colors_default,
@@ -59,6 +61,41 @@ default_inputs = {
     'y_tick_label_size': tick_label_size_default,
     'year_label': 'year'            
 }
+
+def _safe_plot_name_part(value):
+    """Return a filesystem-friendly name fragment for a year or category."""
+    if isinstance(value, (list, tuple)):
+        value = '_'.join(str(item) for item in value)
+    value = str(value).strip().replace(' ', '_')
+    return re.sub(r'[^A-Za-z0-9_.=-]+', '_', value).strip('_')
+
+
+def _add_suffix_to_plot_name(plot_name, *suffix_parts):
+    """Insert non-empty suffix parts before the plot file extension."""
+    clean_parts = [_safe_plot_name_part(part) for part in suffix_parts if part is not None]
+    clean_parts = [part for part in clean_parts if part]
+    if not clean_parts:
+        return plot_name
+    directory, filename = os.path.split(plot_name)
+    stem, extension = os.path.splitext(filename)
+    updated_name = f"{stem}_{'_'.join(clean_parts)}{extension}"
+    return os.path.join(directory, updated_name) if directory else updated_name
+
+
+def _format_units_for_label(units, use_latex=False):
+    """Return a readable units label, or None if the units value is empty/noisy."""
+    if units is None:
+        return None
+    units_str = str(units).strip()
+    if units_str.upper() in ('', 'NA', 'NONE', 'NAN', 'NULL') or units_str in ('(', ')'):
+        return None
+    units_str = units_str.replace('thous km2', 'thousands km2')
+    if use_latex:
+        units_str = units_str.replace('^2', r'$^2$')
+        units_str = units_str.replace('km2', r'km$^2$')
+        units_str = units_str.replace('m2', r'm$^2$')
+    return units_str
+
 
 def process_inputs(inputs):
     """ 
@@ -250,8 +287,8 @@ def plot_box_and_whiskers(inputs):
     
     # Extract all other plotting options.
     basin_label = inputs['basin_label']
-    basins = inputs['basins']
-    categories = inputs['categories']
+    basins = list(inputs['basins']) if isinstance(inputs['basins'], list) else inputs['basins']
+    categories = list(inputs['categories']) if isinstance(inputs['categories'], list) else inputs['categories']
     category_label = inputs['category_label']
     fill_boxes = inputs['fill_boxes']
     height = inputs['height']
@@ -265,6 +302,7 @@ def plot_box_and_whiskers(inputs):
     legend_x_offset = inputs['legend_x_offset']
     linewidth = inputs['linewidth']
     marker_size = inputs['marker_size']
+    multipanel = inputs['multipanel']
     multiplier = inputs['multiplier']
     aggregation_function = inputs['aggregation_function']
     plot_colors = inputs['plot_colors']
@@ -274,7 +312,7 @@ def plot_box_and_whiskers(inputs):
     plot_type = inputs['plot_type']
     produce_png = inputs['produce_png']
     region_label = inputs['region_label']
-    regions = inputs['regions']
+    regions = list(inputs['regions']) if isinstance(inputs['regions'], list) else inputs['regions']
     scenario_label = inputs['scenario_label']
     scenario_sets = inputs['scenario_sets']
     scenarios = inputs['scenarios']
@@ -307,6 +345,17 @@ def plot_box_and_whiskers(inputs):
 
     # Read the data file, filter to requested years, and apply the user-specified multiplier.
     df = read_file_into_dataframe(output_file)
+    if not multipanel:
+        years_to_loop = plot_years if plot_years is not None else sorted(df[year_label].unique())
+        include_year_in_name = plot_years is None or len(plot_years) != 1
+        for year in years_to_loop:
+            child_inputs = inputs.copy()
+            child_inputs['multipanel'] = True
+            child_inputs['plot_years'] = [year]
+            if include_year_in_name:
+                child_inputs['plot_name'] = _add_suffix_to_plot_name(plot_name, year)
+            plot_box_and_whiskers(child_inputs)
+        return
     if plot_years is not None:
         df = df[df[year_label].isin(plot_years)]
     df[value_label] *= multiplier
@@ -392,7 +441,8 @@ def plot_box_and_whiskers(inputs):
     units_by_category = {}
     if isinstance(category_label, str) and x_variable == category_label and 'units' in df.columns:
         for category, group in df.groupby(category_label):
-            units = group['units'].dropna().unique()
+            units = [_format_units_for_label(unit, use_latex) for unit in group['units'].dropna().unique()]
+            units = [unit for unit in units if unit]
             if len(units) == 1 and '/' in units[0]:
                 units_by_category[str(category)] = units[0]
         numerators = {unit.split('/', 1)[0] for unit in units_by_category.values()}
@@ -401,7 +451,8 @@ def plot_box_and_whiskers(inputs):
             if numerator not in y_label:
                 y_label += f' (% diff in {numerator})' if plot_percent_difference else f' ({numerator})'
                 plot_options['y_label'] = fr'{y_label}'
-    units = df['units'].dropna().unique() if 'units' in df.columns else []
+    units = [_format_units_for_label(unit, use_latex) for unit in df['units'].dropna().unique()] if 'units' in df.columns else []
+    units = [unit for unit in units if unit]
     if not units_by_category and len(units) == 1 and units[0] not in y_label:
         unit_label = f'% diff in {units[0]}' if plot_percent_difference else units[0]
         y_label += f' ({unit_label})'

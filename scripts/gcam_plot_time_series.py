@@ -46,6 +46,18 @@ def label_already_contains_units(label, units):
         return re.sub(r'[^a-z0-9%]+', '', text)
     return normalize(units) in normalize(label)
 
+def format_units_for_label(units, use_latex):
+    """Return a display-friendly units string without changing the data units."""
+    if not units:
+        return units
+    units_str = str(units)
+    units_str = units_str.replace('thous km2', 'thousands km2')
+    if use_latex:
+        units_str = units_str.replace('^2', r'$^2$')
+        units_str = units_str.replace('km2', r'km$^2$')
+        units_str = units_str.replace('m2', r'm$^2$')
+    return units_str
+
 def category_to_label_str(category):
     """Return a display string for a category that may be a string or a multi-column tuple."""
     if isinstance(category, tuple):
@@ -492,7 +504,7 @@ def plot_time_series(inputs):
         else:
             axis_y_label = f'{y_label_abbreviated} (% difference)'
     elif units and not label_already_contains_units(y_label, units):
-        axis_y_label = f'{y_label_abbreviated} ({units})'
+        axis_y_label = f'{y_label_abbreviated} ({format_units_for_label(units, use_latex)})'
     else:
         axis_y_label = y_label_abbreviated
     plot_options = dict(width=width, height=height, name=plot_name, x_label='Year', y_label=fr'{axis_y_label}', title=title, title_size=title_size)

@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import multiprocessing
 import os
 import pandas as pd
+import re
 from scipy import stats
 import sys
 import time
@@ -27,6 +28,7 @@ default_inputs = {
     'key_columns': None,
     'landtype_groups': 'modified',
     'linewidth': 0.5,
+    'multipanel': True,
     'multiplier': 1,
     'aggregation_function': 'sum',
     'notify_scenarios_transposed': False,
@@ -57,6 +59,48 @@ default_inputs = {
     'year_label': 'year'            
 }
 
+def _safe_plot_name_part(value):
+    """Return a filesystem-friendly name fragment for a year or category."""
+    if isinstance(value, (list, tuple)):
+        value = '_'.join(str(item) for item in value)
+    value = str(value).strip().replace(' ', '_')
+    return re.sub(r'[^A-Za-z0-9_.=-]+', '_', value).strip('_')
+
+
+def _add_suffix_to_plot_name(plot_name, *suffix_parts):
+    """Insert non-empty suffix parts before the plot file extension."""
+    clean_parts = [_safe_plot_name_part(part) for part in suffix_parts if part is not None]
+    clean_parts = [part for part in clean_parts if part]
+    if not clean_parts:
+        return plot_name
+    directory, filename = os.path.split(plot_name)
+    stem, extension = os.path.splitext(filename)
+    updated_name = f"{stem}_{'_'.join(clean_parts)}{extension}"
+    return os.path.join(directory, updated_name) if directory else updated_name
+
+
+def _display_label_part(value):
+    """Return a readable title fragment for a year or category."""
+    if isinstance(value, (list, tuple)):
+        return ' / '.join(str(item) for item in value)
+    return str(value)
+
+
+def _format_units_for_label(units, use_latex=False):
+    """Return a readable units label, or None if the units value is empty/noisy."""
+    if units is None:
+        return None
+    units_str = str(units).strip()
+    if units_str.upper() in ('', 'NA', 'NONE', 'NAN', 'NULL') or units_str in ('(', ')'):
+        return None
+    units_str = units_str.replace('thous km2', 'thousands km2')
+    if use_latex:
+        units_str = units_str.replace('^2', r'$^2$')
+        units_str = units_str.replace('km2', r'km$^2$')
+        units_str = units_str.replace('m2', r'm$^2$')
+    return units_str
+
+
 def _aggregate(df_rows, value_label, method):
     """Collapse all rows for one map polygon/scenario into one plotted value."""
     if method == 'sum':
@@ -67,11 +111,12 @@ def _aggregate(df_rows, value_label, method):
     return df_rows[value_label].mean()
 
 
-def _panel_units_str(df_panel, plot_type, default_units_str):
+def _panel_units_str(df_panel, plot_type, default_units_str, use_latex=False):
     """ Looks up the units for a single category panel, since different categories in the same file can have different units. """
     if plot_type not in ('absolute_difference', 'mean', 'percent_difference') or 'units' not in df_panel.columns:
         return default_units_str
-    panel_units = df_panel['units'].dropna().unique()
+    panel_units = [_format_units_for_label(unit, use_latex) for unit in df_panel['units'].dropna().unique()]
+    panel_units = [unit for unit in panel_units if unit]
     if len(panel_units) != 1:
         return default_units_str
     if plot_type == 'percent_difference':
@@ -126,7 +171,7 @@ def process_inputs(inputs):
                 inputs['categories'] = 'All'
         else:
             inputs['categories'] = 'All'
-    categories = inputs['categories']
+    categories = list(inputs['categories']) if isinstance(inputs['categories'], list) else inputs['categories']
     # A multi-column category can be supplied as a dict, for example:
     # {"sector": ["crop"], "technology": ["Corn", "Wheat"]}. Expand that into
     # explicit tuples so filtering works the same way everywhere below.
@@ -180,7 +225,8 @@ def process_inputs(inputs):
         # names like 'crop' that are aggregated from raw values rather than literal column values).
         if df_units_source.empty:
             df_units_source = df
-        data_units = df_units_source['units'].dropna().unique()
+        data_units = [_format_units_for_label(unit) for unit in df_units_source['units'].dropna().unique()]
+        data_units = [unit for unit in data_units if unit]
         if len(data_units) == 1:
             inputs['units'] = data_units[0]
 
@@ -344,6 +390,7 @@ def plot_spatial_data(inputs):
     key_columns = inputs['key_columns']
     landtype_groups = inputs['landtype_groups']
     linewidth = inputs['linewidth']
+    multipanel = inputs['multipanel']
     multiplier = inputs['multiplier']
     aggregation_function = inputs['aggregation_function']
     p_value_file = inputs['p_value_file']
@@ -364,7 +411,7 @@ def plot_spatial_data(inputs):
     title_size = inputs['title_size']
     use_latex = inputs['use_latex']
     value_label = inputs['value_label']
-    units = inputs.get('units', None)
+    units = _format_units_for_label(inputs.get('units', None), use_latex)
     width = inputs['width']
     x_tick_label_size = inputs['x_tick_label_size']
     y_tick_label_size = inputs['y_tick_label_size']
@@ -372,12 +419,15 @@ def plot_spatial_data(inputs):
 
     # Append plot-type/unit information to titles. Percent-difference plots use
     # percent labels, while mean and absolute-difference plots keep physical units.
+    title_already_formatted = inputs.get('_title_already_formatted', False)
     if plot_type == 'percent_difference':
         if title and '%' not in title and 'percent' not in title:
-            title += r' (\% difference)'
+            if not title_already_formatted:
+                title += r' (\% difference)'
         units_str = f' (% diff in {units})' if units else ' (%)'
     elif plot_type in ('absolute_difference', 'mean') and units:
-        title += f' ({units})'
+        if not title_already_formatted:
+            title += f' ({units})'
         units_str = f' ({units})'
     else:
         units_str = ''
@@ -396,8 +446,11 @@ def plot_spatial_data(inputs):
     else:
         category_label_in_data = category_label in df.columns
     selected_category = categories[0] if len(categories) == 1 and (categories[0] != 'All' or category_label_in_data) else None
+    single_plot_year = inputs.get('_single_plot_year', None)
     plot_years = inputs.get('plot_years', None)
-    if plot_years is not None:
+    if single_plot_year is not None:
+        df = df[df[year_label] == single_plot_year]
+    elif plot_years is not None:
         df = df[df[year_label].isin(plot_years)]
     # Apply the multiplier to the value column (this could be used to change units, for example).
     df[value_label] *= multiplier
@@ -469,9 +522,43 @@ def plot_spatial_data(inputs):
             scenarios_indices_this_set = [f'scen={index}_{i}' for i in range(num_scenarios_in_each_set)]
             scenario_columns.extend(scenarios_indices_this_set)
 
+    plot_categories = inputs.get('plot_categories', None)
+
+    # By default, plot_years and plot_categories create panel figures. When
+    # multipanel is false, expand the same request into separate single-map
+    # outputs, preserving the current panel behavior for workflows that rely on it.
+    if not multipanel and (plot_years is not None or plot_categories is not None):
+        years_to_loop = plot_years if plot_years is not None else sorted(df[year_label].unique())
+        categories_to_loop = plot_categories if plot_categories is not None else [None]
+        include_year_in_name = plot_years is None or len(plot_years) != 1
+
+        for year in years_to_loop:
+            for category in categories_to_loop:
+                child_inputs = inputs.copy()
+                child_inputs['multipanel'] = True
+                child_inputs['plot_years'] = None
+                child_inputs['plot_categories'] = None
+                child_inputs['_single_plot_year'] = year
+
+                suffix_parts = []
+                title_parts = []
+                if category is not None:
+                    normalized_category = tuple(category) if isinstance(category, list) else category
+                    child_inputs['categories'] = [normalized_category]
+                    suffix_parts.append(normalized_category)
+                    title_parts.append(_display_label_part(normalized_category))
+                if include_year_in_name:
+                    suffix_parts.append(year)
+                title_parts.append(_display_label_part(year))
+
+                child_inputs['plot_name'] = _add_suffix_to_plot_name(plot_name, *suffix_parts)
+                child_inputs['title'] = f"{title} ({', '.join(title_parts)})" if title_parts else title
+                child_inputs['_title_already_formatted'] = True
+                plot_spatial_data(child_inputs)
+        return
+
     # If plot_years is set without plot_categories, produce one multi-panel figure
     # with one map panel per year.
-    plot_categories = inputs.get('plot_categories', None)
     if plot_years is not None and plot_categories is None:
         ncols = inputs.get('plot_years_ncols') or len(plot_years)
         nrows = math.ceil(len(plot_years) / ncols)
@@ -649,7 +736,7 @@ def plot_spatial_data(inputs):
                 if plot_type == 'percent_difference' and not cbar_limits and gdf_panel['plot'].abs().max() > 100:
                     panel_vmin, panel_vmax = -100, 100
 
-                panel_title = f'{chr(ord("a") + panel_idx)}) {category} ({year}){_panel_units_str(df_cat, plot_type, units_str)}'
+                panel_title = f'{chr(ord("a") + panel_idx)}) {category} ({year}){_panel_units_str(df_cat, plot_type, units_str, use_latex)}'
                 ax.set_title(panel_title, fontdict={'fontsize': title_size})
                 gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                                legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)

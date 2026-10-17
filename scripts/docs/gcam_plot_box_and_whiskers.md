@@ -4,7 +4,7 @@
 
 ## Overview
 
-`gcam_plot_box_and_whiskers.py` creates multi-panel box plots from processed GCAM CSV files. It can compare individual scenarios or scenario-set ensembles across categories, regions, basins, and years.
+`gcam_plot_box_and_whiskers.py` creates box plots from processed GCAM CSV files. It can compare individual scenarios or scenario-set ensembles across categories, regions, basins, and years, either as multi-panel year figures or as separate single-year figures.
 
 The script expects at least:
 
@@ -37,6 +37,7 @@ python gcam_plot_box_and_whiskers.py config1.json config2.json
 | `plot_percent_difference` | No | `false` | Plot percent difference from the first scenario or scenario set. |
 | `plot_years` | No | `[2015, 2025, 2035, 2045]` | Years to show as panels. |
 | `plot_years_ncols` | No | `2` | Number of columns for year panels. |
+| `multipanel` | No | `true` | If `true`, requested years are shown as panels in one figure. If `false`, each requested year is written as a separate single-year figure. |
 | `category_label` | No | `"sector"` | Category column used when `x_variable` is not supplied. |
 | `categories` | No | Auto-detected | Categories to include. |
 | `regions` | No | `["Global"]` | Regions to include. `"Global"` pools all regions. |
@@ -169,4 +170,6 @@ Use `"x_variable": "region"` instead when the goal is to compare regional distri
 
 ## Notes
 
-Each requested year is rendered as a panel in the same output figure. If `plot_years` is omitted, the default years are used. If `plot_years` is set to `null`, all years in the file are plotted.
+By default, `multipanel` is `true`, so each requested year is rendered as a panel in the same output figure. If `plot_years` is omitted, the default years are used. If `plot_years` is set to `null`, all years in the file are plotted.
+
+Set `"multipanel": false` to split the same request into separate single-year figures. The script appends the year to the configured `plot_name` when needed so the individual outputs do not overwrite one another.

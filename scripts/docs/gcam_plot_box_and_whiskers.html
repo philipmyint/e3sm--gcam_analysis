@@ -23,7 +23,7 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 <h1>GCAM Box-And-Whisker Plotting</h1>
 <p><strong>Script:</strong> <code>gcam_plot_box_and_whiskers.py</code></p>
 <h2>Overview</h2>
-<p><code>gcam_plot_box_and_whiskers.py</code> creates multi-panel box plots from processed GCAM CSV files. It can compare individual scenarios or scenario-set ensembles across categories, regions, basins, and years.</p>
+<p><code>gcam_plot_box_and_whiskers.py</code> creates box plots from processed GCAM CSV files. It can compare individual scenarios or scenario-set ensembles across categories, regions, basins, and years, either as multi-panel year figures or as separate single-year figures.</p>
 <p>The script expects at least:</p>
 <pre><code>scenario, region, year, value</code></pre>
 <p>Category-rich files usually include <code>sector</code> or <code>landtype</code>. Regional scalar files such as <code>hdd_scalars.csv</code> and <code>cdd_scalars.csv</code> do not have those category columns, so their box plot JSON should set <code>x_variable</code> explicitly, usually to <code>&quot;scenario&quot;</code> or <code>&quot;region&quot;</code>.</p>
@@ -42,6 +42,7 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 <tr><td><code>plot_percent_difference</code></td><td>No</td><td><code>false</code></td><td>Plot percent difference from the first scenario or scenario set.</td></tr>
 <tr><td><code>plot_years</code></td><td>No</td><td><code>[2015, 2025, 2035, 2045]</code></td><td>Years to show as panels.</td></tr>
 <tr><td><code>plot_years_ncols</code></td><td>No</td><td><code>2</code></td><td>Number of columns for year panels.</td></tr>
+<tr><td><code>multipanel</code></td><td>No</td><td><code>true</code></td><td>If <code>true</code>, requested years are shown as panels in one figure. If <code>false</code>, each requested year is written as a separate single-year figure.</td></tr>
 <tr><td><code>category_label</code></td><td>No</td><td><code>&quot;sector&quot;</code></td><td>Category column used when <code>x_variable</code> is not supplied.</td></tr>
 <tr><td><code>categories</code></td><td>No</td><td>Auto-detected</td><td>Categories to include.</td></tr>
 <tr><td><code>regions</code></td><td>No</td><td><code>[&quot;Global&quot;]</code></td><td>Regions to include. <code>&quot;Global&quot;</code> pools all regions.</td></tr>
@@ -133,7 +134,8 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 }</code></pre>
 <p>Use <code>&quot;x_variable&quot;: &quot;region&quot;</code> instead when the goal is to compare regional distributions.</p>
 <h2>Notes</h2>
-<p>Each requested year is rendered as a panel in the same output figure. If <code>plot_years</code> is omitted, the default years are used. If <code>plot_years</code> is set to <code>null</code>, all years in the file are plotted.</p>
+<p>By default, <code>multipanel</code> is <code>true</code>, so each requested year is rendered as a panel in the same output figure. If <code>plot_years</code> is omitted, the default years are used. If <code>plot_years</code> is set to <code>null</code>, all years in the file are plotted.</p>
+<p>Set <code>&quot;multipanel&quot;: false</code> to split the same request into separate single-year figures. The script appends the year to the configured <code>plot_name</code> when needed so the individual outputs do not overwrite one another.</p>
 </div>
 </body>
 </html>

@@ -7,6 +7,7 @@
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
         "plot_name": "box_plot_ag_commodity_prices_control.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -19,6 +20,7 @@
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
         "plot_name": "box_plot_ag_commodity_prices_by_region.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -31,6 +33,7 @@
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
         "plot_name": "box_plot_ag_commodity_prices_by_scenario.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -42,6 +45,7 @@
         "plot_percent_difference": true,
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
         "plot_name": "box_plot_ag_commodity_prices_percent_difference.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -55,6 +59,7 @@
         "y_label": "vegetation scalars",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
         "plot_name": "box_plot_vegetation_scalars_by_scenario.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -70,6 +75,7 @@
         "y_label": "vegetation scalars",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/individual",
         "plot_name": "box_plot_vegetation_scalars_landtype_groups_by_basin.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -87,6 +93,7 @@
         "y_label": "vegetation scalars",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
         "plot_name": "box_plot_vegetation_scalars_ensemble.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -105,6 +112,7 @@
         "y_limits": [-20, 100],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
         "plot_name": "box_plot_vegetation_scalars_ensemble_percent_difference.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -124,6 +132,7 @@
         "y_limits": [0.1, 3000],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
         "plot_name": "box_plot_land_allocation_ensemble.pdf",
+        "multipanel": false,
         "use_latex": true
     },
     {
@@ -144,6 +153,7 @@
         "y_limits": [-20, 100],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/ensemble",
         "plot_name": "box_plot_land_allocation_ensemble_percent_difference.pdf",
+        "multipanel": false,
         "use_latex": true
     }
 ]

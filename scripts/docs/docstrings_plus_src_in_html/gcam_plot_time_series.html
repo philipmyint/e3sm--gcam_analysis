@@ -70,970 +70,982 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
    46          return re.sub(r&#x27;[^a-z0-9%]+&#x27;, &#x27;&#x27;, text)
    47      return normalize(units) in normalize(label)
    48
-   49  def category_to_label_str(category):
-   50      &quot;&quot;&quot;Return a display string for a category that may be a string or a multi-column tuple.&quot;&quot;&quot;
-   51      if isinstance(category, tuple):
-   52          return &#x27; / &#x27;.join(str(v) for v in category)
-   53      return str(category)
-   54
-   55  def legend_header_label(label):
-   56      &quot;&quot;&quot;Return a readable legend section label for a DataFrame column name.&quot;&quot;&quot;
-   57      return &#x27; &#x27;.join(part[:1].upper() + part[1:] for part in str(label).replace(&#x27;_&#x27;, &#x27; &#x27;).split())
-   58
-   59  def filter_df_by_category(df, category_label, category):
-   60      &quot;&quot;&quot;Filter df to rows matching category, supporting a single-column string or multi-column list.&quot;&quot;&quot;
-   61      if isinstance(category_label, list):
-   62          mask = pd.Series(True, index=df.index)
-   63          for col, val in zip(category_label, category):
-   64              mask &amp;= df[col] == val
-   65          return df[mask]
-   66      return df[df[category_label] == category]
-   67
-   68  def _legend_section_header(text, use_latex, has_prior):
-   69      &quot;&quot;&quot;Return (handles, labels) for a legend section header with an optional blank spacer before it.&quot;&quot;&quot;
-   70      formatted = (r&#x27;$\mathbf{&#x27; + text.replace(&#x27; &#x27;, r&#x27;\ &#x27;).replace(&#x27;_&#x27;, r&#x27;\_&#x27;) + r&#x27;}$&#x27;
-   71                   if use_latex else text)
-   72      h = [mlines.Line2D([], [], color=&#x27;none&#x27;, linewidth=0)]
-   73      l = [formatted]
-   74      if has_prior:
-   75          h = [mlines.Line2D([], [], color=&#x27;none&#x27;, linewidth=0)] + h
-   76          l = [&#x27;&#x27;] + l
-   77      return h, l
-   78
-   79  def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_category,
-   80                            plot_colors, markers, linestyle_tuples, marker_size, linewidth,
-   81                            category_label, col_unique_values, plot_percent_difference, plot_options):
-   82      &quot;&quot;&quot;Build a multi-section proxy-handle legend grouping categories, regions, and scenarios.&quot;&quot;&quot;
-   83      use_latex = plot_options.get(&#x27;use_latex&#x27;, False)
-   84      legend_label_size = plot_options.get(&#x27;legend_label_size&#x27;, legend_label_size_default)
-   85      legend_num_columns = plot_options.get(&#x27;legend_num_columns&#x27;) or 1
-   86      legend_place_outside = plot_options.get(&#x27;legend_place_outside&#x27;, True)
-   87      legend_x_offset = plot_options.get(&#x27;legend_x_offset&#x27;, None)
-   88
-   89      handles, labels = [], []
+   49  def format_units_for_label(units, use_latex):
+   50      &quot;&quot;&quot;Return a display-friendly units string without changing the data units.&quot;&quot;&quot;
+   51      if not units:
+   52          return units
+   53      units_str = str(units)
+   54      units_str = units_str.replace(&#x27;thous km2&#x27;, &#x27;thousands km2&#x27;)
+   55      if use_latex:
+   56          units_str = units_str.replace(&#x27;^2&#x27;, r&#x27;$^2$&#x27;)
+   57          units_str = units_str.replace(&#x27;km2&#x27;, r&#x27;km$^2$&#x27;)
+   58          units_str = units_str.replace(&#x27;m2&#x27;, r&#x27;m$^2$&#x27;)
+   59      return units_str
+   60
+   61  def category_to_label_str(category):
+   62      &quot;&quot;&quot;Return a display string for a category that may be a string or a multi-column tuple.&quot;&quot;&quot;
+   63      if isinstance(category, tuple):
+   64          return &#x27; / &#x27;.join(str(v) for v in category)
+   65      return str(category)
+   66
+   67  def legend_header_label(label):
+   68      &quot;&quot;&quot;Return a readable legend section label for a DataFrame column name.&quot;&quot;&quot;
+   69      return &#x27; &#x27;.join(part[:1].upper() + part[1:] for part in str(label).replace(&#x27;_&#x27;, &#x27; &#x27;).split())
+   70
+   71  def filter_df_by_category(df, category_label, category):
+   72      &quot;&quot;&quot;Filter df to rows matching category, supporting a single-column string or multi-column list.&quot;&quot;&quot;
+   73      if isinstance(category_label, list):
+   74          mask = pd.Series(True, index=df.index)
+   75          for col, val in zip(category_label, category):
+   76              mask &amp;= df[col] == val
+   77          return df[mask]
+   78      return df[df[category_label] == category]
+   79
+   80  def _legend_section_header(text, use_latex, has_prior):
+   81      &quot;&quot;&quot;Return (handles, labels) for a legend section header with an optional blank spacer before it.&quot;&quot;&quot;
+   82      formatted = (r&#x27;$\mathbf{&#x27; + text.replace(&#x27; &#x27;, r&#x27;\ &#x27;).replace(&#x27;_&#x27;, r&#x27;\_&#x27;) + r&#x27;}$&#x27;
+   83                   if use_latex else text)
+   84      h = [mlines.Line2D([], [], color=&#x27;none&#x27;, linewidth=0)]
+   85      l = [formatted]
+   86      if has_prior:
+   87          h = [mlines.Line2D([], [], color=&#x27;none&#x27;, linewidth=0)] + h
+   88          l = [&#x27;&#x27;] + l
+   89      return h, l
    90
-   91      is_ensemble = check_is_list_of_lists(scenarios)
-   92      num_scen = len(scenarios[0]) if is_ensemble else len(scenarios)
-   93      scen_display = (scenario_sets if scenario_sets else [str(i) for i in range(num_scen)]) if is_ensemble else list(scenarios)
-   94      is_two_scen_pct_diff = (num_scen == 2 and plot_percent_difference)
-   95      multi_scen = num_scen &gt; 1
-   96      color_by_category = True
-   97
-   98      # Multi-column categories can create many plotted lines. Instead of adding
-   99      # one legend entry per line, build proxy handles that explain the visual
-  100      # encoding: first category column -&gt; color, second -&gt; marker, third -&gt;
-  101      # linewidth. Additional category columns are still filtered, but they are
-  102      # not visually distinguished.
-  103      if isinstance(category_label, list) and col_unique_values:
-  104          if len(col_unique_values) &gt; 3:
-  105              print(f&quot;Warning: only 3 category columns are visually encoded (color, marker, linewidth). &quot;
-  106                    f&quot;Columns beyond the third will not be visually distinguished: {category_label[3:]}&quot;)
-  107          for col_idx, col_name in enumerate(category_label):
-  108              if col_idx &gt;= 3:  # color (0), marker (1), linewidth (2) exhaust available encodings
-  109                  continue
-  110              h, l = _legend_section_header(legend_header_label(col_name) + &#x27;:&#x27;, use_latex, bool(handles))
-  111              handles.extend(h); labels.extend(l)
-  112              for val_idx, val in enumerate(col_unique_values[col_idx]):
-  113                  if col_idx == 0:
-  114                      handle = mlines.Line2D([], [], color=plot_colors[val_idx % len(plot_colors)],
-  115                                             linestyle=&#x27;-&#x27;, linewidth=linewidth)
-  116                  elif col_idx == 1:
-  117                      handle = mlines.Line2D([], [], color=&#x27;gray&#x27;, linestyle=&#x27;-&#x27;,
-  118                                             marker=markers[val_idx % len(markers)],
-  119                                             markersize=marker_size, linewidth=linewidth)
-  120                  else:  # col_idx == 2, encoded by linewidth
-  121                      handle = mlines.Line2D([], [], color=&#x27;gray&#x27;, linestyle=&#x27;-&#x27;,
-  122                                             linewidth=linewidth * (val_idx + 1))
-  123                  handles.append(handle); labels.append(str(val))
-  124      elif len(categories) &gt; 1 or color_by_category:
-  125          col_name = legend_header_label(category_label) if isinstance(category_label, str) else &#x27;Categories&#x27;
-  126          h, l = _legend_section_header(col_name + &#x27;:&#x27;, use_latex, bool(handles))
-  127          handles.extend(h); labels.extend(l)
-  128          for cat_idx, cat in enumerate(categories):
-  129              color = plot_colors[cat_idx % len(plot_colors)] if color_by_category else &#x27;gray&#x27;
-  130              handle = mlines.Line2D([], [], color=color, linestyle=&#x27;-&#x27;,
-  131                                      marker=markers[cat_idx % len(markers)],
-  132                                      markersize=marker_size, linewidth=linewidth)
-  133              handles.append(handle); labels.append(category_to_label_str(cat))
-  134
-  135      # Region legend entries are shown only for the single-column category case.
-  136      # In the multi-column case, the category legend already uses the available
-  137      # marker/line encodings, so adding regions would make the legend misleading.
-  138      if not isinstance(category_label, list):
-  139          all_regions = []
-  140          for cat in categories:
-  141              for region in regions_per_category.get(cat, [&#x27;Global&#x27;]):
-  142                  if region not in all_regions:
-  143                      all_regions.append(region)
-  144          if len(all_regions) &gt; 1:
-  145              h, l = _legend_section_header(&#x27;Regions:&#x27;, use_latex, bool(handles))
-  146              handles.extend(h); labels.extend(l)
-  147              for reg_idx, region in enumerate(all_regions):
-  148                  handle = mlines.Line2D([], [], color=&#x27;gray&#x27;,
-  149                                          linestyle=linestyle_tuples[reg_idx % len(linestyle_tuples)][1],
-  150                                          linewidth=linewidth)
-  151                  handles.append(handle); labels.append(region)
-  152
-  153      # Scenario entries describe line styles. For a two-scenario percent
-  154      # difference plot, the reference scenario is not plotted, so there is no
-  155      # separate scenario section to show.
-  156      if multi_scen and not is_two_scen_pct_diff:
-  157          h, l = _legend_section_header(&#x27;Scenarios:&#x27;, use_latex, bool(handles))
-  158          handles.extend(h); labels.extend(l)
-  159          start = 1 if plot_percent_difference else 0
-  160          for scen_idx in range(start, num_scen):
-  161              handle = mlines.Line2D([], [], color=&#x27;gray&#x27;,
-  162                                      linestyle=linestyle_tuples[scen_idx % len(linestyle_tuples)][1],
-  163                                      linewidth=linewidth)
-  164              handles.append(handle); labels.append(str(scen_display[scen_idx]))
-  165
-  166      if not handles:
-  167          return
-  168
-  169      if not legend_x_offset:
-  170          legend_x_offset = 1.02
-  171      kw = dict(prop={&#x27;size&#x27;: legend_label_size}, frameon=False, ncol=legend_num_columns)
-  172      if legend_place_outside:
-  173          ax.legend(handles=handles, labels=labels, loc=&#x27;center left&#x27;,
-  174                    bbox_to_anchor=(legend_x_offset, 0.5), **kw)
-  175      else:
-  176          ax.legend(handles=handles, labels=labels, loc=&#x27;best&#x27;, **kw)
+   91  def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_category,
+   92                            plot_colors, markers, linestyle_tuples, marker_size, linewidth,
+   93                            category_label, col_unique_values, plot_percent_difference, plot_options):
+   94      &quot;&quot;&quot;Build a multi-section proxy-handle legend grouping categories, regions, and scenarios.&quot;&quot;&quot;
+   95      use_latex = plot_options.get(&#x27;use_latex&#x27;, False)
+   96      legend_label_size = plot_options.get(&#x27;legend_label_size&#x27;, legend_label_size_default)
+   97      legend_num_columns = plot_options.get(&#x27;legend_num_columns&#x27;) or 1
+   98      legend_place_outside = plot_options.get(&#x27;legend_place_outside&#x27;, True)
+   99      legend_x_offset = plot_options.get(&#x27;legend_x_offset&#x27;, None)
+  100
+  101      handles, labels = [], []
+  102
+  103      is_ensemble = check_is_list_of_lists(scenarios)
+  104      num_scen = len(scenarios[0]) if is_ensemble else len(scenarios)
+  105      scen_display = (scenario_sets if scenario_sets else [str(i) for i in range(num_scen)]) if is_ensemble else list(scenarios)
+  106      is_two_scen_pct_diff = (num_scen == 2 and plot_percent_difference)
+  107      multi_scen = num_scen &gt; 1
+  108      color_by_category = True
+  109
+  110      # Multi-column categories can create many plotted lines. Instead of adding
+  111      # one legend entry per line, build proxy handles that explain the visual
+  112      # encoding: first category column -&gt; color, second -&gt; marker, third -&gt;
+  113      # linewidth. Additional category columns are still filtered, but they are
+  114      # not visually distinguished.
+  115      if isinstance(category_label, list) and col_unique_values:
+  116          if len(col_unique_values) &gt; 3:
+  117              print(f&quot;Warning: only 3 category columns are visually encoded (color, marker, linewidth). &quot;
+  118                    f&quot;Columns beyond the third will not be visually distinguished: {category_label[3:]}&quot;)
+  119          for col_idx, col_name in enumerate(category_label):
+  120              if col_idx &gt;= 3:  # color (0), marker (1), linewidth (2) exhaust available encodings
+  121                  continue
+  122              h, l = _legend_section_header(legend_header_label(col_name) + &#x27;:&#x27;, use_latex, bool(handles))
+  123              handles.extend(h); labels.extend(l)
+  124              for val_idx, val in enumerate(col_unique_values[col_idx]):
+  125                  if col_idx == 0:
+  126                      handle = mlines.Line2D([], [], color=plot_colors[val_idx % len(plot_colors)],
+  127                                             linestyle=&#x27;-&#x27;, linewidth=linewidth)
+  128                  elif col_idx == 1:
+  129                      handle = mlines.Line2D([], [], color=&#x27;gray&#x27;, linestyle=&#x27;-&#x27;,
+  130                                             marker=markers[val_idx % len(markers)],
+  131                                             markersize=marker_size, linewidth=linewidth)
+  132                  else:  # col_idx == 2, encoded by linewidth
+  133                      handle = mlines.Line2D([], [], color=&#x27;gray&#x27;, linestyle=&#x27;-&#x27;,
+  134                                             linewidth=linewidth * (val_idx + 1))
+  135                  handles.append(handle); labels.append(str(val))
+  136      elif len(categories) &gt; 1 or color_by_category:
+  137          col_name = legend_header_label(category_label) if isinstance(category_label, str) else &#x27;Categories&#x27;
+  138          h, l = _legend_section_header(col_name + &#x27;:&#x27;, use_latex, bool(handles))
+  139          handles.extend(h); labels.extend(l)
+  140          for cat_idx, cat in enumerate(categories):
+  141              color = plot_colors[cat_idx % len(plot_colors)] if color_by_category else &#x27;gray&#x27;
+  142              handle = mlines.Line2D([], [], color=color, linestyle=&#x27;-&#x27;,
+  143                                      marker=markers[cat_idx % len(markers)],
+  144                                      markersize=marker_size, linewidth=linewidth)
+  145              handles.append(handle); labels.append(category_to_label_str(cat))
+  146
+  147      # Region legend entries are shown only for the single-column category case.
+  148      # In the multi-column case, the category legend already uses the available
+  149      # marker/line encodings, so adding regions would make the legend misleading.
+  150      if not isinstance(category_label, list):
+  151          all_regions = []
+  152          for cat in categories:
+  153              for region in regions_per_category.get(cat, [&#x27;Global&#x27;]):
+  154                  if region not in all_regions:
+  155                      all_regions.append(region)
+  156          if len(all_regions) &gt; 1:
+  157              h, l = _legend_section_header(&#x27;Regions:&#x27;, use_latex, bool(handles))
+  158              handles.extend(h); labels.extend(l)
+  159              for reg_idx, region in enumerate(all_regions):
+  160                  handle = mlines.Line2D([], [], color=&#x27;gray&#x27;,
+  161                                          linestyle=linestyle_tuples[reg_idx % len(linestyle_tuples)][1],
+  162                                          linewidth=linewidth)
+  163                  handles.append(handle); labels.append(region)
+  164
+  165      # Scenario entries describe line styles. For a two-scenario percent
+  166      # difference plot, the reference scenario is not plotted, so there is no
+  167      # separate scenario section to show.
+  168      if multi_scen and not is_two_scen_pct_diff:
+  169          h, l = _legend_section_header(&#x27;Scenarios:&#x27;, use_latex, bool(handles))
+  170          handles.extend(h); labels.extend(l)
+  171          start = 1 if plot_percent_difference else 0
+  172          for scen_idx in range(start, num_scen):
+  173              handle = mlines.Line2D([], [], color=&#x27;gray&#x27;,
+  174                                      linestyle=linestyle_tuples[scen_idx % len(linestyle_tuples)][1],
+  175                                      linewidth=linewidth)
+  176              handles.append(handle); labels.append(str(scen_display[scen_idx]))
   177
-  178  &quot;&quot;&quot; Dictionary of default input values for time series plots. &quot;&quot;&quot;
-  179  default_inputs = {
-  180      &#x27;aggregation_type_in_each_year&#x27;: &#x27;sum&#x27;,
-  181      &#x27;category_label&#x27;: &#x27;sector&#x27;,
-  182      &#x27;end_year&#x27;: 2050,
-  183      &#x27;error_bars_alpha&#x27;: 0.2,
-  184      &#x27;height&#x27;: height_default,
-  185      &#x27;include_mean_across_all_data&#x27;: False,
-  186      &#x27;key_columns&#x27;: None,
-  187      &#x27;landtype_groups&#x27;: &#x27;modified&#x27;,
-  188      &#x27;legend_label_size&#x27;: legend_label_size_default,
-  189      &#x27;legend_num_columns&#x27;: None,
-  190      &#x27;legend_on&#x27;: legend_on_default,
-  191      &#x27;legend_place_outside&#x27;: True,
-  192      &#x27;legend_x_offset&#x27;: None,
-  193      &#x27;linestyle_tuples&#x27;: linestyle_tuples_default,
-  194      &#x27;linewidth&#x27;: linewidth_default,
-  195      &#x27;marker_size&#x27;: 6,
-  196      &#x27;markers&#x27;: markers_default,
-  197      &#x27;multiplier&#x27;: 1,
-  198      &#x27;mean_or_sum_if_more_than_one_row_in_same_landtype_group&#x27;: &#x27;sum&#x27;,
-  199      &#x27;notify_scenarios_transposed&#x27;: False,
-  200      &#x27;p_value_file&#x27;: &#x27;p_values.dat&#x27;,
-  201      &#x27;p_value_file_print_only_if_below_threshold&#x27;: True,
-  202      &#x27;p_value_marker_size&#x27;: 10,
-  203      &#x27;p_value_threshold&#x27;: 0.05,
-  204      &#x27;plot_colors&#x27;: plot_colors_default,
-  205      &#x27;plot_directory&#x27;: &#x27;./&#x27;,
-  206      &#x27;plot_percent_difference&#x27;: False,
-  207      &#x27;plot_type&#x27;: &#x27;ensemble&#x27;,
-  208      &#x27;produce_png&#x27;: produce_png_default,
-  209      &#x27;region_label&#x27;: &#x27;region&#x27;,
-  210      &#x27;regions&#x27;: [&#x27;Global&#x27;],
-  211      &#x27;scenario_label&#x27;: &#x27;scenario&#x27;,
-  212      &#x27;scenario_sets&#x27;: None,
-  213      &#x27;set_nan_to_zero&#x27;: False,
-  214      &#x27;start_year&#x27;: 2015,
-  215      &#x27;std_mean_across_all_data_multiplier&#x27;: 1,
-  216      &#x27;std_multiplier&#x27;: 1,
-  217      &#x27;title&#x27;: None,
-  218      &#x27;title_size&#x27;: axis_label_size_default,
-  219      &#x27;use_latex&#x27;: use_latex_default,
-  220      &#x27;units_label&#x27;: &#x27;units&#x27;,
-  221      &#x27;value_label&#x27;: &#x27;value&#x27;,
-  222      &#x27;width&#x27;: width_default,
-  223      &#x27;x_label_size&#x27;: axis_label_size_default,
-  224      &#x27;x_limits&#x27;: axis_limits_default,
-  225      &#x27;x_scale&#x27;: scale_default,
-  226      &#x27;x_tick_label_size&#x27;: tick_label_size_default,
-  227      &#x27;y_label_size&#x27;: axis_label_size_default,
-  228      &#x27;y_label_abbreviated&#x27;: None,
-  229      &#x27;y_limits&#x27;: axis_limits_default,
-  230      &#x27;y_scale&#x27;: scale_default,
-  231      &#x27;y_tick_label_size&#x27;: tick_label_size_default,
-  232      &#x27;year_label&#x27;: &#x27;year&#x27;
-  233  }
-  234
-  235  def process_inputs(inputs):
-  236      &quot;&quot;&quot;
-  237      Processes a dictionary of inputs (keys are options, values are choices for those options) for creating time series plots.
-  238
-  239      Parameters:
-  240          inputs: Dictionary containing the user plotting choice inputs for different options. This dictionary may be incomplete or have invalid values.
-  241
-  242      Returns:
-  243          Dictionary that completely specifies all plotting options.
-  244          If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
-  245      &quot;&quot;&quot;
-  246      # Check that the output file exists and is non-empty before trying to read it.
-  247      if not os.path.exists(inputs[&#x27;output_file&#x27;]):
-  248          print(f&quot;Warning: output file not found, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
-  249          return None
-  250      if os.path.getsize(inputs[&#x27;output_file&#x27;]) == 0:
-  251          print(f&quot;Warning: output file is empty, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
-  252          return None
-  253      df = read_file_into_dataframe(inputs[&#x27;output_file&#x27;])
-  254
-  255      # If the category label (e.g., sector or landtype) has not been specified, use the default value.
-  256      if &#x27;category_label&#x27; not in inputs:
-  257          category_label = default_inputs[&#x27;category_label&#x27;]
-  258          inputs[&#x27;category_label&#x27;] = category_label
-  259      else:
-  260          category_label = inputs[&#x27;category_label&#x27;]
-  261
-  262      # If the list of categories (e.g., sectors or landtypes) has not been
-  263      # specified, populate it from the data. For a multi-column category_label,
-  264      # each category is a tuple of values drawn from those columns.
-  265      if &#x27;categories&#x27; not in inputs:
-  266          if isinstance(category_label, list) and all(c in df.columns for c in category_label):
-  267              combos = df[category_label].drop_duplicates()
-  268              inputs[&#x27;categories&#x27;] = list(combos.itertuples(index=False, name=None))
-  269              if &#x27;categories_to_exclude&#x27; in inputs:
-  270                  exclude = {tuple(e) if isinstance(e, list) else e for e in inputs[&#x27;categories_to_exclude&#x27;]}
-  271                  inputs[&#x27;categories&#x27;] = [c for c in inputs[&#x27;categories&#x27;] if c not in exclude]
-  272          elif not isinstance(category_label, list) and category_label in df.columns:
-  273              inputs[&#x27;categories&#x27;] = df[category_label].unique()
-  274              if &#x27;categories_to_exclude&#x27; in inputs:
-  275                  inputs[&#x27;categories&#x27;] = [column for column in inputs[&#x27;categories&#x27;] if column not in inputs[&#x27;categories_to_exclude&#x27;]]
-  276          else:
-  277              inputs[&#x27;categories&#x27;] = &#x27;All&#x27;
-  278      categories = inputs[&#x27;categories&#x27;]
-  279      # A multi-column category can also be supplied as a dict, for example:
-  280      # {&quot;sector&quot;: [&quot;crop&quot;], &quot;technology&quot;: [&quot;Corn&quot;, &quot;Wheat&quot;]}. Expand that into
-  281      # explicit tuples so the rest of the code can handle categories uniformly.
-  282      if isinstance(categories, dict) and isinstance(category_label, list):
-  283          per_column = [categories[col] for col in category_label]
-  284          categories = list(itertools.product(*per_column))
-  285          inputs[&#x27;categories&#x27;] = categories
-  286      # If the user entered a string indicating a single category, put that string in a list.
-  287      elif isinstance(categories, str):
-  288          categories = [categories]
-  289          inputs[&#x27;categories&#x27;] = categories
-  290      elif isinstance(category_label, list):
-  291          # Convert any list-type categories (from JSON) to tuples.
-  292          categories = [tuple(c) if isinstance(c, list) else c for c in categories]
-  293          inputs[&#x27;categories&#x27;] = categories
-  294
-  295      # Create the plot directory if it does not already exist. By default, put
-  296      # the p-value output file in the same directory as the plots.
-  297      if &#x27;plot_directory&#x27; not in inputs:
-  298          inputs[&#x27;plot_directory&#x27;] = default_inputs[&#x27;plot_directory&#x27;]
-  299      if not os.path.exists(inputs[&#x27;plot_directory&#x27;]):
-  300          os.makedirs(inputs[&#x27;plot_directory&#x27;])
-  301      if &#x27;p_value_file&#x27; not in inputs:
-  302          inputs[&#x27;p_value_file&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], default_inputs[&#x27;p_value_file&#x27;])
-  303
-  304      # Use the output CSV name as the default y-axis label and plot name. Drop
-  305      # &quot;_processed&quot; so generated plot labels read like user-facing quantities
-  306      # rather than pipeline artifact names.
-  307      index_of_last_backslash = inputs[&#x27;output_file&#x27;].rfind(&#x27;/&#x27;)
-  308      index_of_dot_csv = inputs[&#x27;output_file&#x27;].find(&#x27;.csv&#x27;)
-  309      if index_of_last_backslash == -1:
-  310          output_file_name = inputs[&#x27;output_file&#x27;][:index_of_dot_csv]
-  311      else:
-  312          output_file_name = inputs[&#x27;output_file&#x27;][index_of_last_backslash+1:index_of_dot_csv]
-  313      if &#x27;y_label&#x27; not in inputs:
-  314          inputs[&#x27;y_label&#x27;] = output_file_name
-  315      inputs[&#x27;y_label&#x27;] = inputs[&#x27;y_label&#x27;].replace(&#x27;_processed&#x27;, &#x27;&#x27;)
-  316      output_file_name_clean = output_file_name.replace(&#x27;_processed&#x27;, &#x27;&#x27;)
-  317      if &#x27;plot_name&#x27; not in inputs:
-  318          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], &#x27;time_series_&#x27; + output_file_name_clean)
-  319      elif &#x27;plot_name&#x27; in inputs and &#x27;/&#x27; not in inputs[&#x27;plot_name&#x27;]:
-  320          # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
-  321          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], inputs[&#x27;plot_name&#x27;].replace(&#x27;_processed&#x27;, &#x27;&#x27;))
-  322
-  323      # Add keys for plotting options that have not been specified in the inputs dictionary and use default values for them.
-  324      for key in default_inputs.keys():
-  325          if key not in inputs:
-  326              inputs[key] = default_inputs[key]
-  327
-  328      # If the scenarios have not been specified, use all the scenarios in the Pandas DataFrame.
-  329      if &#x27;scenarios&#x27; not in inputs:
-  330          scenario_label = inputs[&#x27;scenario_label&#x27;]
-  331          inputs[&#x27;scenarios&#x27;] = df[scenario_label].unique()
-  332
-  333      # If the scenarios are specified as a list of lists (for ensemble plots), check if they need to be transposed.
-  334      # Users can now specify scenarios in two formats:
-  335      #   Format A (organized by ensemble member - original format):
-  336      #       [[&quot;Control&quot;, &quot;Full feedback&quot;], [&quot;Control_2&quot;, &quot;Full feedback_2&quot;], ...]
-  337      #   Format B (organized by scenario set - new user-friendly format):
-  338      #       [[&quot;Control&quot;, &quot;Control_2&quot;, ...], [&quot;Full feedback&quot;, &quot;Full feedback_2&quot;, ...]]
-  339      # The plotting functions expect Format A internally, so Format B will be automatically transposed.
-  340      if check_is_list_of_lists(inputs[&#x27;scenarios&#x27;]):
-  341          scenario_sets = inputs.get(&#x27;scenario_sets&#x27;, None)
-  342          inputs[&#x27;scenarios&#x27;], was_transposed = transpose_scenarios_if_needed(inputs[&#x27;scenarios&#x27;], scenario_sets)
-  343          if was_transposed and inputs[&#x27;notify_scenarios_transposed&#x27;]:
-  344              print(f&quot;Note: Scenarios were automatically transposed from &#x27;organized by scenario set&#x27; format to &#x27;organized by ensemble member&#x27; format.&quot;)
-  345
-  346      # Downstream loops expect regions to be indexed by category. If the user
-  347      # supplied one region list for all categories, copy that list for every
-  348      # category here.
-  349      if &#x27;regions&#x27; not in inputs or not isinstance(inputs[&#x27;regions&#x27;], dict):
-  350          inputs[&#x27;regions&#x27;] = dict.fromkeys(categories, inputs[&#x27;regions&#x27;])
-  351
-  352      # Check that the value_label column exists in the DataFrame.
-  353      value_label = inputs[&#x27;value_label&#x27;]
-  354      if value_label not in df.columns:
-  355          raise KeyError(f&quot;Error: value_label &#x27;{value_label}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
-  356                         f&quot;Available columns: {list(df.columns)}&quot;)
+  178      if not handles:
+  179          return
+  180
+  181      if not legend_x_offset:
+  182          legend_x_offset = 1.02
+  183      kw = dict(prop={&#x27;size&#x27;: legend_label_size}, frameon=False, ncol=legend_num_columns)
+  184      if legend_place_outside:
+  185          ax.legend(handles=handles, labels=labels, loc=&#x27;center left&#x27;,
+  186                    bbox_to_anchor=(legend_x_offset, 0.5), **kw)
+  187      else:
+  188          ax.legend(handles=handles, labels=labels, loc=&#x27;best&#x27;, **kw)
+  189
+  190  &quot;&quot;&quot; Dictionary of default input values for time series plots. &quot;&quot;&quot;
+  191  default_inputs = {
+  192      &#x27;aggregation_type_in_each_year&#x27;: &#x27;sum&#x27;,
+  193      &#x27;category_label&#x27;: &#x27;sector&#x27;,
+  194      &#x27;end_year&#x27;: 2050,
+  195      &#x27;error_bars_alpha&#x27;: 0.2,
+  196      &#x27;height&#x27;: height_default,
+  197      &#x27;include_mean_across_all_data&#x27;: False,
+  198      &#x27;key_columns&#x27;: None,
+  199      &#x27;landtype_groups&#x27;: &#x27;modified&#x27;,
+  200      &#x27;legend_label_size&#x27;: legend_label_size_default,
+  201      &#x27;legend_num_columns&#x27;: None,
+  202      &#x27;legend_on&#x27;: legend_on_default,
+  203      &#x27;legend_place_outside&#x27;: True,
+  204      &#x27;legend_x_offset&#x27;: None,
+  205      &#x27;linestyle_tuples&#x27;: linestyle_tuples_default,
+  206      &#x27;linewidth&#x27;: linewidth_default,
+  207      &#x27;marker_size&#x27;: 6,
+  208      &#x27;markers&#x27;: markers_default,
+  209      &#x27;multiplier&#x27;: 1,
+  210      &#x27;mean_or_sum_if_more_than_one_row_in_same_landtype_group&#x27;: &#x27;sum&#x27;,
+  211      &#x27;notify_scenarios_transposed&#x27;: False,
+  212      &#x27;p_value_file&#x27;: &#x27;p_values.dat&#x27;,
+  213      &#x27;p_value_file_print_only_if_below_threshold&#x27;: True,
+  214      &#x27;p_value_marker_size&#x27;: 10,
+  215      &#x27;p_value_threshold&#x27;: 0.05,
+  216      &#x27;plot_colors&#x27;: plot_colors_default,
+  217      &#x27;plot_directory&#x27;: &#x27;./&#x27;,
+  218      &#x27;plot_percent_difference&#x27;: False,
+  219      &#x27;plot_type&#x27;: &#x27;ensemble&#x27;,
+  220      &#x27;produce_png&#x27;: produce_png_default,
+  221      &#x27;region_label&#x27;: &#x27;region&#x27;,
+  222      &#x27;regions&#x27;: [&#x27;Global&#x27;],
+  223      &#x27;scenario_label&#x27;: &#x27;scenario&#x27;,
+  224      &#x27;scenario_sets&#x27;: None,
+  225      &#x27;set_nan_to_zero&#x27;: False,
+  226      &#x27;start_year&#x27;: 2015,
+  227      &#x27;std_mean_across_all_data_multiplier&#x27;: 1,
+  228      &#x27;std_multiplier&#x27;: 1,
+  229      &#x27;title&#x27;: None,
+  230      &#x27;title_size&#x27;: axis_label_size_default,
+  231      &#x27;use_latex&#x27;: use_latex_default,
+  232      &#x27;units_label&#x27;: &#x27;units&#x27;,
+  233      &#x27;value_label&#x27;: &#x27;value&#x27;,
+  234      &#x27;width&#x27;: width_default,
+  235      &#x27;x_label_size&#x27;: axis_label_size_default,
+  236      &#x27;x_limits&#x27;: axis_limits_default,
+  237      &#x27;x_scale&#x27;: scale_default,
+  238      &#x27;x_tick_label_size&#x27;: tick_label_size_default,
+  239      &#x27;y_label_size&#x27;: axis_label_size_default,
+  240      &#x27;y_label_abbreviated&#x27;: None,
+  241      &#x27;y_limits&#x27;: axis_limits_default,
+  242      &#x27;y_scale&#x27;: scale_default,
+  243      &#x27;y_tick_label_size&#x27;: tick_label_size_default,
+  244      &#x27;year_label&#x27;: &#x27;year&#x27;
+  245  }
+  246
+  247  def process_inputs(inputs):
+  248      &quot;&quot;&quot;
+  249      Processes a dictionary of inputs (keys are options, values are choices for those options) for creating time series plots.
+  250
+  251      Parameters:
+  252          inputs: Dictionary containing the user plotting choice inputs for different options. This dictionary may be incomplete or have invalid values.
+  253
+  254      Returns:
+  255          Dictionary that completely specifies all plotting options.
+  256          If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
+  257      &quot;&quot;&quot;
+  258      # Check that the output file exists and is non-empty before trying to read it.
+  259      if not os.path.exists(inputs[&#x27;output_file&#x27;]):
+  260          print(f&quot;Warning: output file not found, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
+  261          return None
+  262      if os.path.getsize(inputs[&#x27;output_file&#x27;]) == 0:
+  263          print(f&quot;Warning: output file is empty, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
+  264          return None
+  265      df = read_file_into_dataframe(inputs[&#x27;output_file&#x27;])
+  266
+  267      # If the category label (e.g., sector or landtype) has not been specified, use the default value.
+  268      if &#x27;category_label&#x27; not in inputs:
+  269          category_label = default_inputs[&#x27;category_label&#x27;]
+  270          inputs[&#x27;category_label&#x27;] = category_label
+  271      else:
+  272          category_label = inputs[&#x27;category_label&#x27;]
+  273
+  274      # If the list of categories (e.g., sectors or landtypes) has not been
+  275      # specified, populate it from the data. For a multi-column category_label,
+  276      # each category is a tuple of values drawn from those columns.
+  277      if &#x27;categories&#x27; not in inputs:
+  278          if isinstance(category_label, list) and all(c in df.columns for c in category_label):
+  279              combos = df[category_label].drop_duplicates()
+  280              inputs[&#x27;categories&#x27;] = list(combos.itertuples(index=False, name=None))
+  281              if &#x27;categories_to_exclude&#x27; in inputs:
+  282                  exclude = {tuple(e) if isinstance(e, list) else e for e in inputs[&#x27;categories_to_exclude&#x27;]}
+  283                  inputs[&#x27;categories&#x27;] = [c for c in inputs[&#x27;categories&#x27;] if c not in exclude]
+  284          elif not isinstance(category_label, list) and category_label in df.columns:
+  285              inputs[&#x27;categories&#x27;] = df[category_label].unique()
+  286              if &#x27;categories_to_exclude&#x27; in inputs:
+  287                  inputs[&#x27;categories&#x27;] = [column for column in inputs[&#x27;categories&#x27;] if column not in inputs[&#x27;categories_to_exclude&#x27;]]
+  288          else:
+  289              inputs[&#x27;categories&#x27;] = &#x27;All&#x27;
+  290      categories = inputs[&#x27;categories&#x27;]
+  291      # A multi-column category can also be supplied as a dict, for example:
+  292      # {&quot;sector&quot;: [&quot;crop&quot;], &quot;technology&quot;: [&quot;Corn&quot;, &quot;Wheat&quot;]}. Expand that into
+  293      # explicit tuples so the rest of the code can handle categories uniformly.
+  294      if isinstance(categories, dict) and isinstance(category_label, list):
+  295          per_column = [categories[col] for col in category_label]
+  296          categories = list(itertools.product(*per_column))
+  297          inputs[&#x27;categories&#x27;] = categories
+  298      # If the user entered a string indicating a single category, put that string in a list.
+  299      elif isinstance(categories, str):
+  300          categories = [categories]
+  301          inputs[&#x27;categories&#x27;] = categories
+  302      elif isinstance(category_label, list):
+  303          # Convert any list-type categories (from JSON) to tuples.
+  304          categories = [tuple(c) if isinstance(c, list) else c for c in categories]
+  305          inputs[&#x27;categories&#x27;] = categories
+  306
+  307      # Create the plot directory if it does not already exist. By default, put
+  308      # the p-value output file in the same directory as the plots.
+  309      if &#x27;plot_directory&#x27; not in inputs:
+  310          inputs[&#x27;plot_directory&#x27;] = default_inputs[&#x27;plot_directory&#x27;]
+  311      if not os.path.exists(inputs[&#x27;plot_directory&#x27;]):
+  312          os.makedirs(inputs[&#x27;plot_directory&#x27;])
+  313      if &#x27;p_value_file&#x27; not in inputs:
+  314          inputs[&#x27;p_value_file&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], default_inputs[&#x27;p_value_file&#x27;])
+  315
+  316      # Use the output CSV name as the default y-axis label and plot name. Drop
+  317      # &quot;_processed&quot; so generated plot labels read like user-facing quantities
+  318      # rather than pipeline artifact names.
+  319      index_of_last_backslash = inputs[&#x27;output_file&#x27;].rfind(&#x27;/&#x27;)
+  320      index_of_dot_csv = inputs[&#x27;output_file&#x27;].find(&#x27;.csv&#x27;)
+  321      if index_of_last_backslash == -1:
+  322          output_file_name = inputs[&#x27;output_file&#x27;][:index_of_dot_csv]
+  323      else:
+  324          output_file_name = inputs[&#x27;output_file&#x27;][index_of_last_backslash+1:index_of_dot_csv]
+  325      if &#x27;y_label&#x27; not in inputs:
+  326          inputs[&#x27;y_label&#x27;] = output_file_name
+  327      inputs[&#x27;y_label&#x27;] = inputs[&#x27;y_label&#x27;].replace(&#x27;_processed&#x27;, &#x27;&#x27;)
+  328      output_file_name_clean = output_file_name.replace(&#x27;_processed&#x27;, &#x27;&#x27;)
+  329      if &#x27;plot_name&#x27; not in inputs:
+  330          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], &#x27;time_series_&#x27; + output_file_name_clean)
+  331      elif &#x27;plot_name&#x27; in inputs and &#x27;/&#x27; not in inputs[&#x27;plot_name&#x27;]:
+  332          # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
+  333          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], inputs[&#x27;plot_name&#x27;].replace(&#x27;_processed&#x27;, &#x27;&#x27;))
+  334
+  335      # Add keys for plotting options that have not been specified in the inputs dictionary and use default values for them.
+  336      for key in default_inputs.keys():
+  337          if key not in inputs:
+  338              inputs[key] = default_inputs[key]
+  339
+  340      # If the scenarios have not been specified, use all the scenarios in the Pandas DataFrame.
+  341      if &#x27;scenarios&#x27; not in inputs:
+  342          scenario_label = inputs[&#x27;scenario_label&#x27;]
+  343          inputs[&#x27;scenarios&#x27;] = df[scenario_label].unique()
+  344
+  345      # If the scenarios are specified as a list of lists (for ensemble plots), check if they need to be transposed.
+  346      # Users can now specify scenarios in two formats:
+  347      #   Format A (organized by ensemble member - original format):
+  348      #       [[&quot;Control&quot;, &quot;Full feedback&quot;], [&quot;Control_2&quot;, &quot;Full feedback_2&quot;], ...]
+  349      #   Format B (organized by scenario set - new user-friendly format):
+  350      #       [[&quot;Control&quot;, &quot;Control_2&quot;, ...], [&quot;Full feedback&quot;, &quot;Full feedback_2&quot;, ...]]
+  351      # The plotting functions expect Format A internally, so Format B will be automatically transposed.
+  352      if check_is_list_of_lists(inputs[&#x27;scenarios&#x27;]):
+  353          scenario_sets = inputs.get(&#x27;scenario_sets&#x27;, None)
+  354          inputs[&#x27;scenarios&#x27;], was_transposed = transpose_scenarios_if_needed(inputs[&#x27;scenarios&#x27;], scenario_sets)
+  355          if was_transposed and inputs[&#x27;notify_scenarios_transposed&#x27;]:
+  356              print(f&quot;Note: Scenarios were automatically transposed from &#x27;organized by scenario set&#x27; format to &#x27;organized by ensemble member&#x27; format.&quot;)
   357
-  358      # area_weighted_mean requires the processed CSV to include area metadata.
-  359      # GCAM area columns are added during gcam_process_extracted_data.py using a
-  360      # processed land-allocation file.
-  361      if inputs[&#x27;aggregation_type_in_each_year&#x27;] == &#x27;area_weighted_mean&#x27; and &#x27;area&#x27; not in df.columns:
-  362          raise KeyError(f&quot;Error: aggregation_type_in_each_year is &#x27;area_weighted_mean&#x27; but no &#x27;area&#x27; column &quot;
-  363                         f&quot;found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. Consider using &#x27;mean&#x27; instead, or add area data &quot;
-  364                         f&quot;with gcam_process_extracted_data.py and a land_allocation_file entry.&quot;)
-  365
-  366      # Warn if any specified scenario is not found in the DataFrame.
-  367      scenario_label = inputs[&#x27;scenario_label&#x27;]
-  368      if scenario_label in df.columns:
-  369          available_scenarios = set(df[scenario_label].unique())
-  370          specified_scenarios = inputs[&#x27;scenarios&#x27;]
-  371          if check_is_list_of_lists(specified_scenarios):
-  372              flat_scenarios = [s for member in specified_scenarios for s in member]
-  373          else:
-  374              flat_scenarios = list(specified_scenarios)
-  375          missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
-  376          if missing_scenarios:
-  377              print(f&quot;Warning: the following scenarios were not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27; &quot;
-  378                    f&quot;and will produce empty plots: {missing_scenarios}&quot;)
-  379
-  380      # Extract units from the CSV&#x27;s units column (first non-null, non-NA value).
-  381      # Users can override this with a literal &quot;units&quot; entry in the JSON.
-  382      units_label = inputs[&#x27;units_label&#x27;]
-  383      if &#x27;units&#x27; not in inputs:
-  384          if units_label in df.columns:
-  385              units_values = df[units_label].dropna().unique()
-  386              units_values = [u for u in units_values if str(u).strip().upper() not in (&#x27;NA&#x27;, &#x27;NONE&#x27;, &#x27;&#x27;)]
-  387              inputs[&#x27;units&#x27;] = str(units_values[0]) if units_values else None
-  388          else:
-  389              inputs[&#x27;units&#x27;] = None
-  390
-  391      # Set the plot title to the full y_label if not specified by the user.
-  392      if inputs[&#x27;title&#x27;] is None:
-  393          inputs[&#x27;title&#x27;] = inputs[&#x27;y_label&#x27;]
-  394
-  395      # Keep the full quantity name in the title, but abbreviate long y-axis
-  396      # labels so they fit better in dense time-series plots.
-  397      if inputs[&#x27;y_label_abbreviated&#x27;] is None:
-  398          inputs[&#x27;y_label_abbreviated&#x27;] = abbreviate_label(inputs[&#x27;y_label&#x27;])
-  399
-  400      return inputs
-  401
-  402  def plot_time_series(inputs):
-  403      &quot;&quot;&quot;
-  404      Creates a time series plot with years on the x-axis and perform statistical analysis for a single output file. The data in the file are organized
-  405      into scenarios or scenario sets, categories, and regions.
-  406      Types of plots: 1) Plots in which each scenario is treated as an individual curve (not grouped into an ensemble) in the time series collection.
-  407      2) Ensemble plots in which the scenarios are grouped into sets (referred to as an ensemble) and averages of each set are plotted.
-  408      The scenarios must be specified as a list of lists (nested list) for ensemble plots.
-  409
-  410      Parameters:
-  411          input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
-  412                 This dictionary is assumed to be complete (pre-processed).
+  358      # Downstream loops expect regions to be indexed by category. If the user
+  359      # supplied one region list for all categories, copy that list for every
+  360      # category here.
+  361      if &#x27;regions&#x27; not in inputs or not isinstance(inputs[&#x27;regions&#x27;], dict):
+  362          inputs[&#x27;regions&#x27;] = dict.fromkeys(categories, inputs[&#x27;regions&#x27;])
+  363
+  364      # Check that the value_label column exists in the DataFrame.
+  365      value_label = inputs[&#x27;value_label&#x27;]
+  366      if value_label not in df.columns:
+  367          raise KeyError(f&quot;Error: value_label &#x27;{value_label}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
+  368                         f&quot;Available columns: {list(df.columns)}&quot;)
+  369
+  370      # area_weighted_mean requires the processed CSV to include area metadata.
+  371      # GCAM area columns are added during gcam_process_extracted_data.py using a
+  372      # processed land-allocation file.
+  373      if inputs[&#x27;aggregation_type_in_each_year&#x27;] == &#x27;area_weighted_mean&#x27; and &#x27;area&#x27; not in df.columns:
+  374          raise KeyError(f&quot;Error: aggregation_type_in_each_year is &#x27;area_weighted_mean&#x27; but no &#x27;area&#x27; column &quot;
+  375                         f&quot;found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. Consider using &#x27;mean&#x27; instead, or add area data &quot;
+  376                         f&quot;with gcam_process_extracted_data.py and a land_allocation_file entry.&quot;)
+  377
+  378      # Warn if any specified scenario is not found in the DataFrame.
+  379      scenario_label = inputs[&#x27;scenario_label&#x27;]
+  380      if scenario_label in df.columns:
+  381          available_scenarios = set(df[scenario_label].unique())
+  382          specified_scenarios = inputs[&#x27;scenarios&#x27;]
+  383          if check_is_list_of_lists(specified_scenarios):
+  384              flat_scenarios = [s for member in specified_scenarios for s in member]
+  385          else:
+  386              flat_scenarios = list(specified_scenarios)
+  387          missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
+  388          if missing_scenarios:
+  389              print(f&quot;Warning: the following scenarios were not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27; &quot;
+  390                    f&quot;and will produce empty plots: {missing_scenarios}&quot;)
+  391
+  392      # Extract units from the CSV&#x27;s units column (first non-null, non-NA value).
+  393      # Users can override this with a literal &quot;units&quot; entry in the JSON.
+  394      units_label = inputs[&#x27;units_label&#x27;]
+  395      if &#x27;units&#x27; not in inputs:
+  396          if units_label in df.columns:
+  397              units_values = df[units_label].dropna().unique()
+  398              units_values = [u for u in units_values if str(u).strip().upper() not in (&#x27;NA&#x27;, &#x27;NONE&#x27;, &#x27;&#x27;)]
+  399              inputs[&#x27;units&#x27;] = str(units_values[0]) if units_values else None
+  400          else:
+  401              inputs[&#x27;units&#x27;] = None
+  402
+  403      # Set the plot title to the full y_label if not specified by the user.
+  404      if inputs[&#x27;title&#x27;] is None:
+  405          inputs[&#x27;title&#x27;] = inputs[&#x27;y_label&#x27;]
+  406
+  407      # Keep the full quantity name in the title, but abbreviate long y-axis
+  408      # labels so they fit better in dense time-series plots.
+  409      if inputs[&#x27;y_label_abbreviated&#x27;] is None:
+  410          inputs[&#x27;y_label_abbreviated&#x27;] = abbreviate_label(inputs[&#x27;y_label&#x27;])
+  411
+  412      return inputs
   413
-  414      Returns:
-  415          N/A.
-  416      &quot;&quot;&quot;
-  417      # This function creates a time series plot where the data (scenarios or scenario sets, categories, regions) all come from a single output file.
-  418      start_time = time.time()
-  419      output_file = inputs[&#x27;output_file&#x27;]
-  420
-  421      # Extract all other plotting options.
-  422      aggregation_type_in_each_year = inputs[&#x27;aggregation_type_in_each_year&#x27;]
-  423      categories = inputs[&#x27;categories&#x27;]
-  424      category_label = inputs[&#x27;category_label&#x27;]
-  425      end_year = inputs[&#x27;end_year&#x27;]
-  426      error_bars_alpha = inputs[&#x27;error_bars_alpha&#x27;]
-  427      height = inputs[&#x27;height&#x27;]
-  428      include_mean_across_all_data = inputs[&#x27;include_mean_across_all_data&#x27;]
-  429      key_columns = inputs[&#x27;key_columns&#x27;]
-  430      landtype_groups = inputs[&#x27;landtype_groups&#x27;]
-  431      legend_label_size = inputs[&#x27;legend_label_size&#x27;]
-  432      legend_num_columns = inputs[&#x27;legend_num_columns&#x27;]
-  433      legend_on = inputs[&#x27;legend_on&#x27;]
-  434      legend_place_outside = inputs[&#x27;legend_place_outside&#x27;]
-  435      legend_x_offset = inputs[&#x27;legend_x_offset&#x27;]
-  436      linestyle_tuples = inputs[&#x27;linestyle_tuples&#x27;]
-  437      linewidth = inputs[&#x27;linewidth&#x27;]
-  438      marker_size = inputs[&#x27;marker_size&#x27;]
-  439      markers = inputs[&#x27;markers&#x27;]
-  440      multiplier = inputs[&#x27;multiplier&#x27;]
-  441      mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs[&#x27;mean_or_sum_if_more_than_one_row_in_same_landtype_group&#x27;]
-  442      p_value_file = inputs[&#x27;p_value_file&#x27;]
-  443      p_value_file_print_only_if_below_threshold = inputs[&#x27;p_value_file_print_only_if_below_threshold&#x27;]
-  444      p_value_marker_size = inputs[&#x27;p_value_marker_size&#x27;]
-  445      p_value_threshold = inputs[&#x27;p_value_threshold&#x27;]
-  446      plot_colors = inputs[&#x27;plot_colors&#x27;]
-  447      plot_name = inputs[&#x27;plot_name&#x27;]
-  448      plot_percent_difference = inputs[&#x27;plot_percent_difference&#x27;]
-  449      plot_type = inputs[&#x27;plot_type&#x27;]
-  450      produce_png = inputs[&#x27;produce_png&#x27;]
-  451      region_label = inputs[&#x27;region_label&#x27;]
-  452      scenario_label = inputs[&#x27;scenario_label&#x27;]
-  453      scenario_sets = inputs[&#x27;scenario_sets&#x27;]
-  454      scenarios = inputs[&#x27;scenarios&#x27;]
-  455      set_nan_to_zero = inputs[&#x27;set_nan_to_zero&#x27;]
-  456      start_year = inputs[&#x27;start_year&#x27;]
-  457      std_mean_across_all_data_multiplier = inputs[&#x27;std_mean_across_all_data_multiplier&#x27;]
-  458      std_multiplier = inputs[&#x27;std_multiplier&#x27;]
-  459      use_latex = inputs[&#x27;use_latex&#x27;]
-  460      value_label = inputs[&#x27;value_label&#x27;]
-  461      width = inputs[&#x27;width&#x27;]
-  462      x_label_size = inputs[&#x27;x_label_size&#x27;]
-  463      x_limits = inputs[&#x27;x_limits&#x27;]
-  464      x_scale = inputs[&#x27;x_scale&#x27;]
-  465      x_tick_label_size = inputs[&#x27;x_tick_label_size&#x27;]
-  466      y_label = inputs[&#x27;y_label&#x27;]
-  467      y_label_abbreviated = inputs[&#x27;y_label_abbreviated&#x27;]
-  468      y_label_size = inputs[&#x27;y_label_size&#x27;]
-  469      y_limits = inputs[&#x27;y_limits&#x27;]
-  470      y_scale = inputs[&#x27;y_scale&#x27;]
-  471      y_tick_label_size = inputs[&#x27;y_tick_label_size&#x27;]
-  472      year_label = inputs[&#x27;year_label&#x27;]
-  473      title = inputs[&#x27;title&#x27;]
-  474      title_size = inputs[&#x27;title_size&#x27;]
-  475      units = inputs[&#x27;units&#x27;]
-  476
-  477      # Initialize dictionary to store data from the first scenario or first scenario set, to be the reference for percent difference calculations.
-  478      reference_data = {}
-  479
-  480      # Set the appropriate dictionary for the landtype group.
-  481      if landtype_groups == &#x27;modified&#x27;:
-  482          landtype_groups = gcam_landtype_groups
-  483      elif landtype_groups == &#x27;original&#x27;:
-  484          landtype_groups = gcam_landtype_groups_original
-  485
-  486      # Build the axis label from the display label and units. The CSV can carry
-  487      # units from GCAM processing, while percent-difference plots intentionally
-  488      # replace physical units with percent difference.
-  489      if plot_percent_difference:
-  490          if use_latex:
-  491              axis_y_label = rf&#x27;{y_label_abbreviated} (\% difference)&#x27;
-  492          else:
-  493              axis_y_label = f&#x27;{y_label_abbreviated} (% difference)&#x27;
-  494      elif units and not label_already_contains_units(y_label, units):
-  495          axis_y_label = f&#x27;{y_label_abbreviated} ({units})&#x27;
-  496      else:
-  497          axis_y_label = y_label_abbreviated
-  498      plot_options = dict(width=width, height=height, name=plot_name, x_label=&#x27;Year&#x27;, y_label=fr&#x27;{axis_y_label}&#x27;, title=title, title_size=title_size)
-  499      plot_options.update(zip([&#x27;x_scale&#x27;, &#x27;y_scale&#x27;, &#x27;x_limits&#x27;, &#x27;y_limits&#x27;, &#x27;use_latex&#x27;], [x_scale, y_scale, x_limits, y_limits, use_latex]))
-  500      plot_options.update(zip([&#x27;x_tick_label_size&#x27;, &#x27;y_tick_label_size&#x27;, &#x27;legend_on&#x27;], [x_tick_label_size, y_tick_label_size, legend_on]))
-  501      plot_options.update(zip([&#x27;x_label_size&#x27;, &#x27;y_label_size&#x27;, &#x27;legend_label_size&#x27;], [x_label_size, y_label_size, legend_label_size]))
-  502      plot_options.update(zip([&#x27;produce_png&#x27;, &#x27;legend_x_offset&#x27;, &#x27;legend_place_outside&#x27;], [produce_png, legend_x_offset, legend_place_outside]))
-  503
-  504      # Use LaTeX fonts for figures and set font size of tick labels.
-  505      setup_plot_params(plot_options)
-  506
-  507      # Pre-compute sorted unique values per category column once, then reuse them
-  508      # for line encodings in both individual and ensemble plots.
-  509      if isinstance(category_label, list):
-  510          col_unique_values = [sorted(set(c[i] for c in categories)) for i in range(len(category_label))]
-  511      else:
-  512          col_unique_values = None
-  513      if col_unique_values and len(col_unique_values) &gt; 3:
-  514          print(f&quot;Warning: only 3 category columns are visually encoded (color, marker, linewidth). &quot;
-  515                f&quot;Columns beyond the third will not be visually distinguished: {category_label[3:]}&quot;)
-  516
-  517      # Collect all time series into a list and concatenate once after the nested
-  518      # loops. The growing-concat pattern is O(n^2) in the number of series;
-  519      # collecting into a list is O(n).
-  520      all_time_series = []
-  521      have_not_stored_time_in_df = True
-  522
-  523      # Create the figure and axis for the time series plot.
-  524      fig, ax = plt.subplots(nrows=1, ncols=1)
-  525
-  526      # Read the output file into a DataFrame and filter it to only include data within the specified year range.
-  527      df = read_file_into_dataframe(output_file)
-  528      df = df[(df[year_label] &gt;= start_year) &amp; (df[year_label] &lt;= end_year)]
-  529
-  530      # Option 1: individual plots, in which each such time series plot includes one or more individual (not grouped) curves.
-  531      if not check_is_list_of_lists(scenarios) or plot_type == &#x27;individual&#x27;:
-  532
-  533          # If scenarios is a list of lists but plot_type is &quot;individual&quot;, treat
-  534          # every scenario as its own curve rather than averaging within ensemble
-  535          # groups.
-  536          if check_is_list_of_lists(scenarios) and plot_type == &#x27;individual&#x27;:
-  537              scenarios = list(itertools.chain.from_iterable(scenarios))
-  538              # Turn the corresponding plot_colors to list of lists with enough rows to match, then unpack them.
-  539              plot_colors = list(itertools.chain.from_iterable(plot_colors))
-  540
-  541          num_scenarios = len(scenarios)
-  542          for scenario_index, scenario in enumerate(scenarios):
-  543              scenario = scenarios[scenario_index]
-  544              df_this_scenario = df[df[scenario_label] == scenario]
-  545              num_categories = len(categories)
-  546
-  547              for category_index, category in enumerate(categories):
-  548
-  549                  # One of three choices to consider: 1) all categories (no further winnowing down of the DataFrame), 2) a category that corresponds to
-  550                  # a group of landtypes (e.g., forest, crop, grass, shrub, pasture), and 3) a specific category.
-  551                  if category == &#x27;All&#x27;:
-  552                      df_this_category = df_this_scenario
-  553                  elif isinstance(category_label, str) and category in landtype_groups:
-  554                      df_this_category = produce_dataframe_for_landtype_group(df_this_scenario, category, category_label,
-  555                                  value_label, landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns)
-  556                  else:
-  557                      df_this_category = filter_df_by_category(df_this_scenario, category_label, category)
+  414  def plot_time_series(inputs):
+  415      &quot;&quot;&quot;
+  416      Creates a time series plot with years on the x-axis and perform statistical analysis for a single output file. The data in the file are organized
+  417      into scenarios or scenario sets, categories, and regions.
+  418      Types of plots: 1) Plots in which each scenario is treated as an individual curve (not grouped into an ensemble) in the time series collection.
+  419      2) Ensemble plots in which the scenarios are grouped into sets (referred to as an ensemble) and averages of each set are plotted.
+  420      The scenarios must be specified as a list of lists (nested list) for ensemble plots.
+  421
+  422      Parameters:
+  423          input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
+  424                 This dictionary is assumed to be complete (pre-processed).
+  425
+  426      Returns:
+  427          N/A.
+  428      &quot;&quot;&quot;
+  429      # This function creates a time series plot where the data (scenarios or scenario sets, categories, regions) all come from a single output file.
+  430      start_time = time.time()
+  431      output_file = inputs[&#x27;output_file&#x27;]
+  432
+  433      # Extract all other plotting options.
+  434      aggregation_type_in_each_year = inputs[&#x27;aggregation_type_in_each_year&#x27;]
+  435      categories = inputs[&#x27;categories&#x27;]
+  436      category_label = inputs[&#x27;category_label&#x27;]
+  437      end_year = inputs[&#x27;end_year&#x27;]
+  438      error_bars_alpha = inputs[&#x27;error_bars_alpha&#x27;]
+  439      height = inputs[&#x27;height&#x27;]
+  440      include_mean_across_all_data = inputs[&#x27;include_mean_across_all_data&#x27;]
+  441      key_columns = inputs[&#x27;key_columns&#x27;]
+  442      landtype_groups = inputs[&#x27;landtype_groups&#x27;]
+  443      legend_label_size = inputs[&#x27;legend_label_size&#x27;]
+  444      legend_num_columns = inputs[&#x27;legend_num_columns&#x27;]
+  445      legend_on = inputs[&#x27;legend_on&#x27;]
+  446      legend_place_outside = inputs[&#x27;legend_place_outside&#x27;]
+  447      legend_x_offset = inputs[&#x27;legend_x_offset&#x27;]
+  448      linestyle_tuples = inputs[&#x27;linestyle_tuples&#x27;]
+  449      linewidth = inputs[&#x27;linewidth&#x27;]
+  450      marker_size = inputs[&#x27;marker_size&#x27;]
+  451      markers = inputs[&#x27;markers&#x27;]
+  452      multiplier = inputs[&#x27;multiplier&#x27;]
+  453      mean_or_sum_if_more_than_one_row_in_same_landtype_group = inputs[&#x27;mean_or_sum_if_more_than_one_row_in_same_landtype_group&#x27;]
+  454      p_value_file = inputs[&#x27;p_value_file&#x27;]
+  455      p_value_file_print_only_if_below_threshold = inputs[&#x27;p_value_file_print_only_if_below_threshold&#x27;]
+  456      p_value_marker_size = inputs[&#x27;p_value_marker_size&#x27;]
+  457      p_value_threshold = inputs[&#x27;p_value_threshold&#x27;]
+  458      plot_colors = inputs[&#x27;plot_colors&#x27;]
+  459      plot_name = inputs[&#x27;plot_name&#x27;]
+  460      plot_percent_difference = inputs[&#x27;plot_percent_difference&#x27;]
+  461      plot_type = inputs[&#x27;plot_type&#x27;]
+  462      produce_png = inputs[&#x27;produce_png&#x27;]
+  463      region_label = inputs[&#x27;region_label&#x27;]
+  464      scenario_label = inputs[&#x27;scenario_label&#x27;]
+  465      scenario_sets = inputs[&#x27;scenario_sets&#x27;]
+  466      scenarios = inputs[&#x27;scenarios&#x27;]
+  467      set_nan_to_zero = inputs[&#x27;set_nan_to_zero&#x27;]
+  468      start_year = inputs[&#x27;start_year&#x27;]
+  469      std_mean_across_all_data_multiplier = inputs[&#x27;std_mean_across_all_data_multiplier&#x27;]
+  470      std_multiplier = inputs[&#x27;std_multiplier&#x27;]
+  471      use_latex = inputs[&#x27;use_latex&#x27;]
+  472      value_label = inputs[&#x27;value_label&#x27;]
+  473      width = inputs[&#x27;width&#x27;]
+  474      x_label_size = inputs[&#x27;x_label_size&#x27;]
+  475      x_limits = inputs[&#x27;x_limits&#x27;]
+  476      x_scale = inputs[&#x27;x_scale&#x27;]
+  477      x_tick_label_size = inputs[&#x27;x_tick_label_size&#x27;]
+  478      y_label = inputs[&#x27;y_label&#x27;]
+  479      y_label_abbreviated = inputs[&#x27;y_label_abbreviated&#x27;]
+  480      y_label_size = inputs[&#x27;y_label_size&#x27;]
+  481      y_limits = inputs[&#x27;y_limits&#x27;]
+  482      y_scale = inputs[&#x27;y_scale&#x27;]
+  483      y_tick_label_size = inputs[&#x27;y_tick_label_size&#x27;]
+  484      year_label = inputs[&#x27;year_label&#x27;]
+  485      title = inputs[&#x27;title&#x27;]
+  486      title_size = inputs[&#x27;title_size&#x27;]
+  487      units = inputs[&#x27;units&#x27;]
+  488
+  489      # Initialize dictionary to store data from the first scenario or first scenario set, to be the reference for percent difference calculations.
+  490      reference_data = {}
+  491
+  492      # Set the appropriate dictionary for the landtype group.
+  493      if landtype_groups == &#x27;modified&#x27;:
+  494          landtype_groups = gcam_landtype_groups
+  495      elif landtype_groups == &#x27;original&#x27;:
+  496          landtype_groups = gcam_landtype_groups_original
+  497
+  498      # Build the axis label from the display label and units. The CSV can carry
+  499      # units from GCAM processing, while percent-difference plots intentionally
+  500      # replace physical units with percent difference.
+  501      if plot_percent_difference:
+  502          if use_latex:
+  503              axis_y_label = rf&#x27;{y_label_abbreviated} (\% difference)&#x27;
+  504          else:
+  505              axis_y_label = f&#x27;{y_label_abbreviated} (% difference)&#x27;
+  506      elif units and not label_already_contains_units(y_label, units):
+  507          axis_y_label = f&#x27;{y_label_abbreviated} ({format_units_for_label(units, use_latex)})&#x27;
+  508      else:
+  509          axis_y_label = y_label_abbreviated
+  510      plot_options = dict(width=width, height=height, name=plot_name, x_label=&#x27;Year&#x27;, y_label=fr&#x27;{axis_y_label}&#x27;, title=title, title_size=title_size)
+  511      plot_options.update(zip([&#x27;x_scale&#x27;, &#x27;y_scale&#x27;, &#x27;x_limits&#x27;, &#x27;y_limits&#x27;, &#x27;use_latex&#x27;], [x_scale, y_scale, x_limits, y_limits, use_latex]))
+  512      plot_options.update(zip([&#x27;x_tick_label_size&#x27;, &#x27;y_tick_label_size&#x27;, &#x27;legend_on&#x27;], [x_tick_label_size, y_tick_label_size, legend_on]))
+  513      plot_options.update(zip([&#x27;x_label_size&#x27;, &#x27;y_label_size&#x27;, &#x27;legend_label_size&#x27;], [x_label_size, y_label_size, legend_label_size]))
+  514      plot_options.update(zip([&#x27;produce_png&#x27;, &#x27;legend_x_offset&#x27;, &#x27;legend_place_outside&#x27;], [produce_png, legend_x_offset, legend_place_outside]))
+  515
+  516      # Use LaTeX fonts for figures and set font size of tick labels.
+  517      setup_plot_params(plot_options)
+  518
+  519      # Pre-compute sorted unique values per category column once, then reuse them
+  520      # for line encodings in both individual and ensemble plots.
+  521      if isinstance(category_label, list):
+  522          col_unique_values = [sorted(set(c[i] for c in categories)) for i in range(len(category_label))]
+  523      else:
+  524          col_unique_values = None
+  525      if col_unique_values and len(col_unique_values) &gt; 3:
+  526          print(f&quot;Warning: only 3 category columns are visually encoded (color, marker, linewidth). &quot;
+  527                f&quot;Columns beyond the third will not be visually distinguished: {category_label[3:]}&quot;)
+  528
+  529      # Collect all time series into a list and concatenate once after the nested
+  530      # loops. The growing-concat pattern is O(n^2) in the number of series;
+  531      # collecting into a list is O(n).
+  532      all_time_series = []
+  533      have_not_stored_time_in_df = True
+  534
+  535      # Create the figure and axis for the time series plot.
+  536      fig, ax = plt.subplots(nrows=1, ncols=1)
+  537
+  538      # Read the output file into a DataFrame and filter it to only include data within the specified year range.
+  539      df = read_file_into_dataframe(output_file)
+  540      df = df[(df[year_label] &gt;= start_year) &amp; (df[year_label] &lt;= end_year)]
+  541
+  542      # Option 1: individual plots, in which each such time series plot includes one or more individual (not grouped) curves.
+  543      if not check_is_list_of_lists(scenarios) or plot_type == &#x27;individual&#x27;:
+  544
+  545          # If scenarios is a list of lists but plot_type is &quot;individual&quot;, treat
+  546          # every scenario as its own curve rather than averaging within ensemble
+  547          # groups.
+  548          if check_is_list_of_lists(scenarios) and plot_type == &#x27;individual&#x27;:
+  549              scenarios = list(itertools.chain.from_iterable(scenarios))
+  550              # Turn the corresponding plot_colors to list of lists with enough rows to match, then unpack them.
+  551              plot_colors = list(itertools.chain.from_iterable(plot_colors))
+  552
+  553          num_scenarios = len(scenarios)
+  554          for scenario_index, scenario in enumerate(scenarios):
+  555              scenario = scenarios[scenario_index]
+  556              df_this_scenario = df[df[scenario_label] == scenario]
+  557              num_categories = len(categories)
   558
-  559                  # For multi-column categories, visual encodings are assigned by
-  560                  # category column: first column -&gt; color, second -&gt; marker,
-  561                  # third -&gt; linewidth. For single-column categories, color and
-  562                  # marker vary by category.
-  563                  if col_unique_values and len(col_unique_values) &gt;= 2:
-  564                      marker = markers[col_unique_values[1].index(category[1]) % len(markers)]
-  565                  elif col_unique_values:
-  566                      marker = &#x27;&#x27;
-  567                  else:
-  568                      marker = markers[category_index % len(markers)]
-  569
-  570                  # Color by the first category-column value for multi-column
-  571                  # categories; otherwise color by the category itself.
-  572                  if col_unique_values:
-  573                      line_color = plot_colors[col_unique_values[0].index(category[0]) % len(plot_colors)]
-  574                  else:
-  575                      line_color = plot_colors[category_index % len(plot_colors)]
-  576                  # Use linewidth to distinguish the third category column when
-  577                  # one exists.
-  578                  if col_unique_values and len(col_unique_values) &gt;= 3:
-  579                      plot_linewidth = linewidth * (col_unique_values[2].index(category[2]) + 1)
-  580                  else:
-  581                      plot_linewidth = linewidth
-  582                  if not legend_num_columns:
-  583                      plot_options.update(zip([&#x27;legend_num_columns&#x27;], [1]))
-  584
-  585                  num_regions = len(inputs[&#x27;regions&#x27;][category])
-  586                  for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
-  587                      if region != &#x27;Global&#x27;:
-  588                          df_this_region = df_this_category[df_this_category[region_label] == region]
-  589                      else:
-  590                          df_this_region = df_this_category
-  591
-  592                      # Scenarios take priority for linestyle. If there is only
-  593                      # one plotted scenario, use linestyle for the second
-  594                      # category column or, in the single-column case, for region.
-  595                      if num_scenarios &gt; 1 and not plot_percent_difference:
-  596                          linestyle = linestyle_tuples[scenario_index % len(linestyle_tuples)][1]
-  597                      elif col_unique_values and len(col_unique_values) &gt;= 2:
-  598                          linestyle = linestyle_tuples[col_unique_values[1].index(category[1]) % len(linestyle_tuples)][1]
-  599                      else:
-  600                          linestyle = linestyle_tuples[region_index % len(linestyle_tuples)][1]
-  601
-  602                      # Retrieve the years for the x-axis in the time series plots.
-  603                      x = df_this_region[year_label].unique()
-  604
-  605                      # For each year, collapse all matching rows into one plotted
-  606                      # value. This may be a simple mean, an area-weighted mean,
-  607                      # or a sum, depending on the quantity being plotted.
-  608                      if aggregation_type_in_each_year == &#x27;mean&#x27;:
-  609                          y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
-  610                      elif aggregation_type_in_each_year == &#x27;area_weighted_mean&#x27;:
-  611                          y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g[&#x27;area&#x27;]).sum() / g[&#x27;area&#x27;].sum() if g[&#x27;area&#x27;].sum() != 0 else float(&#x27;nan&#x27;), include_groups=False) * multiplier
-  612                          if set_nan_to_zero:
-  613                              y = y.fillna(0)
-  614                      elif aggregation_type_in_each_year == &#x27;sum&#x27;:
-  615                          y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
+  559              for category_index, category in enumerate(categories):
+  560
+  561                  # One of three choices to consider: 1) all categories (no further winnowing down of the DataFrame), 2) a category that corresponds to
+  562                  # a group of landtypes (e.g., forest, crop, grass, shrub, pasture), and 3) a specific category.
+  563                  if category == &#x27;All&#x27;:
+  564                      df_this_category = df_this_scenario
+  565                  elif isinstance(category_label, str) and category in landtype_groups:
+  566                      df_this_category = produce_dataframe_for_landtype_group(df_this_scenario, category, category_label,
+  567                                  value_label, landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns)
+  568                  else:
+  569                      df_this_category = filter_df_by_category(df_this_scenario, category_label, category)
+  570
+  571                  # For multi-column categories, visual encodings are assigned by
+  572                  # category column: first column -&gt; color, second -&gt; marker,
+  573                  # third -&gt; linewidth. For single-column categories, color and
+  574                  # marker vary by category.
+  575                  if col_unique_values and len(col_unique_values) &gt;= 2:
+  576                      marker = markers[col_unique_values[1].index(category[1]) % len(markers)]
+  577                  elif col_unique_values:
+  578                      marker = &#x27;&#x27;
+  579                  else:
+  580                      marker = markers[category_index % len(markers)]
+  581
+  582                  # Color by the first category-column value for multi-column
+  583                  # categories; otherwise color by the category itself.
+  584                  if col_unique_values:
+  585                      line_color = plot_colors[col_unique_values[0].index(category[0]) % len(plot_colors)]
+  586                  else:
+  587                      line_color = plot_colors[category_index % len(plot_colors)]
+  588                  # Use linewidth to distinguish the third category column when
+  589                  # one exists.
+  590                  if col_unique_values and len(col_unique_values) &gt;= 3:
+  591                      plot_linewidth = linewidth * (col_unique_values[2].index(category[2]) + 1)
+  592                  else:
+  593                      plot_linewidth = linewidth
+  594                  if not legend_num_columns:
+  595                      plot_options.update(zip([&#x27;legend_num_columns&#x27;], [1]))
+  596
+  597                  num_regions = len(inputs[&#x27;regions&#x27;][category])
+  598                  for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
+  599                      if region != &#x27;Global&#x27;:
+  600                          df_this_region = df_this_category[df_this_category[region_label] == region]
+  601                      else:
+  602                          df_this_region = df_this_category
+  603
+  604                      # Scenarios take priority for linestyle. If there is only
+  605                      # one plotted scenario, use linestyle for the second
+  606                      # category column or, in the single-column case, for region.
+  607                      if num_scenarios &gt; 1 and not plot_percent_difference:
+  608                          linestyle = linestyle_tuples[scenario_index % len(linestyle_tuples)][1]
+  609                      elif col_unique_values and len(col_unique_values) &gt;= 2:
+  610                          linestyle = linestyle_tuples[col_unique_values[1].index(category[1]) % len(linestyle_tuples)][1]
+  611                      else:
+  612                          linestyle = linestyle_tuples[region_index % len(linestyle_tuples)][1]
+  613
+  614                      # Retrieve the years for the x-axis in the time series plots.
+  615                      x = df_this_region[year_label].unique()
   616
-  617                      # Set the legend label.
-  618                      cat_str = category_to_label_str(category)
-  619                      if num_categories &gt; 1:
-  620                          if num_regions &gt; 1:
-  621                              label = f&#x27;{cat_str}, {region}&#x27;
-  622                          else:
-  623                              label = f&#x27;{cat_str}&#x27;
-  624                          if (num_scenarios &gt; 2 and plot_percent_difference) or (num_scenarios &gt; 1 and not plot_percent_difference):
-  625                              label += f&#x27; ({scenario})&#x27;
-  626                      elif num_regions &gt; 1:
-  627                          label = region
-  628                          if (num_scenarios &gt; 2 and plot_percent_difference) or (num_scenarios &gt; 1 and not plot_percent_difference):
-  629                              label += f&#x27; ({scenario})&#x27;
-  630                      else:
-  631                          label = scenario
-  632
-  633                      # Percent-difference plots use the first scenario as the
-  634                      # reference and plot only the differences for subsequent
-  635                      # scenarios.
-  636                      if plot_percent_difference:
-  637                          if scenario_index == 0:
-  638                              reference_data[f&#x27;{category}_{region}&#x27;] = y
-  639                          y = (y - reference_data[f&#x27;{category}_{region}&#x27;])/(reference_data[f&#x27;{category}_{region}&#x27;] + EPSILON)*100
-  640                      # Do not include the first scenario if plotting a percent difference. Include the data in the plot otherwise.
-  641                      if not plot_percent_difference or scenario_index != 0:
-  642                          ax.plot(x, y, label=label, color=line_color, linestyle=linestyle, linewidth=plot_linewidth, marker=marker, markersize=marker_size)
-  643                      if have_not_stored_time_in_df:
-  644                          x_series = pd.Series(x, name=&#x27;Year&#x27;)
-  645                          all_time_series.append(x_series)
-  646                          have_not_stored_time_in_df = False
-  647                      y_series = pd.Series(list(y), name=f&#x27;scen={scenario_index}_cat={category_index}_reg={region_index}&#x27;)
-  648                      all_time_series.append(y_series)
-  649
-  650          # Concatenate all collected time series into a single DataFrame now that
-  651          # all loops are complete. The synthetic column names encode scenario,
-  652          # category, and region indices so the t-test loops can match like with
-  653          # like.
-  654          df_all_time_series = pd.concat(all_time_series, axis=1)
-  655          # Calculate the overall mean and standard deviation (for error bars) across all time series.
-  656          df = df_all_time_series
-  657          if include_mean_across_all_data:
-  658              if plot_percent_difference:
-  659                  # If plotting a percent difference with respect to the first scenario, do not include that scenario in calculating the overall mean.
-  660                  columns = [column for column in df.columns if column != &#x27;Year&#x27; and &#x27;scen=0&#x27; not in column]
-  661              else:
-  662                  columns = [column for column in df.columns if column != &#x27;Year&#x27;]
-  663              x = df[&#x27;Year&#x27;]
-  664              y = df[columns].mean(axis=1)
-  665              ax.plot(x, y, label=&#x27;Mean&#x27;, color=&#x27;k&#x27;, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
-  666              if std_mean_across_all_data_multiplier:
-  667                  error = df[columns].std(axis=1)*std_mean_across_all_data_multiplier
-  668                  ax.fill_between(x, y-error, y+error, color=&#x27;k&#x27;, alpha=error_bars_alpha)
-  669
-  670          if num_scenarios &gt; 1:
-  671              # Perform t-tests to compare the entire time series in the first scenario (assumed to be control) vs. other scenarios.
-  672              for scenario_index in range(1, num_scenarios):
-  673                  scenario = scenarios[scenario_index]
-  674                  for category_index, category in enumerate(categories):
-  675                      for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
-  676                          # Categories and regions between the current scenario
-  677                          # and the control scenario are matched before performing
-  678                          # the t-test.
-  679                          control_data = df[f&#x27;scen=0_cat={category_index}_reg={region_index}&#x27;]
-  680                          test_data = df[f&#x27;scen={scenario_index}_cat={category_index}_reg={region_index}&#x27;]
-  681                          control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
-  682                          test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
-  683                          if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
-  684                              with warnings.catch_warnings(record=True) as w:
-  685                                  warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
-  686                                  ttest = stats.ttest_ind(control_num, test_num)
-  687                                  if w:
-  688                                      print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
-  689                              label = f&#x27;scenario={scenario}, category={category_to_label_str(category)}, region={region}&#x27;
-  690                              print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
-  691          elif num_scenarios == 1 and num_regions &gt; 1:
-  692              # If there is only one scenario, but multiple regions for that scenario, perform inter-regional t-tests for each category.
-  693              for category_index, category in enumerate(categories):
-  694                  for region_index in range(1, len(inputs[&#x27;regions&#x27;][category])):
-  695                      control_data = df[f&#x27;scen=0_cat={category_index}_reg=0&#x27;]
-  696                      test_data = df[f&#x27;scen=0_cat={category_index}_reg={region_index}&#x27;]
-  697                      control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
-  698                      test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
-  699                      if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
-  700                          with warnings.catch_warnings(record=True) as w:
-  701                              warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
-  702                              ttest = stats.ttest_ind(control_num, test_num)
-  703                              if w:
-  704                                  print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
-  705                          label = f&#x27;scenario={scenario}, category={category_to_label_str(category)}, region={region}&#x27;
-  706                          print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
-  707
-  708      # Option 2: ensemble plots, in which the outputs are subdivided into groups of curves, where each group (ensemble) represents a set of scenarios.
-  709      elif check_is_list_of_lists(scenarios) and plot_type == &#x27;ensemble&#x27;:
-  710
-  711          # Internally, ensemble scenarios are organized by member:
-  712          # [[&quot;Control&quot;, &quot;Full feedback&quot;], [&quot;Control_2&quot;, &quot;Full feedback_2&quot;]].
-  713          # The number of scenario sets is therefore the length of each inner
-  714          # member list.
-  715          num_scenario_sets = len(scenarios[0])
-  716          num_scenarios_in_each_set = len(scenarios)
-  717
-  718          # Unlike for individual plots, the default for the number of columns in the legend is determined only by the number of scenario sets.
-  719          if not legend_num_columns:
-  720              if plot_percent_difference:
-  721                  plot_options.update(zip([&#x27;legend_num_columns&#x27;], [num_scenario_sets-1]))
-  722              else:
-  723                  plot_options.update(zip([&#x27;legend_num_columns&#x27;], [num_scenario_sets]))
-  724
-  725          for scenario_set_index in range(num_scenario_sets):
-  726              scenarios_in_set = [scenarios[i][scenario_set_index] for i in range(num_scenarios_in_each_set)]
-  727
-  728              for scenario_index, scenario in enumerate(scenarios_in_set):
-  729                  scenario = scenarios_in_set[scenario_index]
-  730                  df_this_scenario = df[df[scenario_label] == scenario]
-  731
-  732                  for category_index, category in enumerate(categories):
-  733                      # Each category can mean one of three things: all rows, a
-  734                      # named GCAM landtype group (only when category_label is a
-  735                      # single landtype column), or an exact category value/tuple.
-  736                      if category == &#x27;All&#x27;:
-  737                          df_this_category = df_this_scenario
-  738                      elif isinstance(category_label, str) and category in landtype_groups:
-  739                          df_this_category = produce_dataframe_for_landtype_group(df_this_scenario, category, category_label,
-  740                                  value_label, landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns)
-  741                      else:
-  742                          df_this_category = filter_df_by_category(df_this_scenario, category_label, category)
+  617                      # For each year, collapse all matching rows into one plotted
+  618                      # value. This may be a simple mean, an area-weighted mean,
+  619                      # or a sum, depending on the quantity being plotted.
+  620                      if aggregation_type_in_each_year == &#x27;mean&#x27;:
+  621                          y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
+  622                      elif aggregation_type_in_each_year == &#x27;area_weighted_mean&#x27;:
+  623                          y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g[&#x27;area&#x27;]).sum() / g[&#x27;area&#x27;].sum() if g[&#x27;area&#x27;].sum() != 0 else float(&#x27;nan&#x27;), include_groups=False) * multiplier
+  624                          if set_nan_to_zero:
+  625                              y = y.fillna(0)
+  626                      elif aggregation_type_in_each_year == &#x27;sum&#x27;:
+  627                          y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
+  628
+  629                      # Set the legend label.
+  630                      cat_str = category_to_label_str(category)
+  631                      if num_categories &gt; 1:
+  632                          if num_regions &gt; 1:
+  633                              label = f&#x27;{cat_str}, {region}&#x27;
+  634                          else:
+  635                              label = f&#x27;{cat_str}&#x27;
+  636                          if (num_scenarios &gt; 2 and plot_percent_difference) or (num_scenarios &gt; 1 and not plot_percent_difference):
+  637                              label += f&#x27; ({scenario})&#x27;
+  638                      elif num_regions &gt; 1:
+  639                          label = region
+  640                          if (num_scenarios &gt; 2 and plot_percent_difference) or (num_scenarios &gt; 1 and not plot_percent_difference):
+  641                              label += f&#x27; ({scenario})&#x27;
+  642                      else:
+  643                          label = scenario
+  644
+  645                      # Percent-difference plots use the first scenario as the
+  646                      # reference and plot only the differences for subsequent
+  647                      # scenarios.
+  648                      if plot_percent_difference:
+  649                          if scenario_index == 0:
+  650                              reference_data[f&#x27;{category}_{region}&#x27;] = y
+  651                          y = (y - reference_data[f&#x27;{category}_{region}&#x27;])/(reference_data[f&#x27;{category}_{region}&#x27;] + EPSILON)*100
+  652                      # Do not include the first scenario if plotting a percent difference. Include the data in the plot otherwise.
+  653                      if not plot_percent_difference or scenario_index != 0:
+  654                          ax.plot(x, y, label=label, color=line_color, linestyle=linestyle, linewidth=plot_linewidth, marker=marker, markersize=marker_size)
+  655                      if have_not_stored_time_in_df:
+  656                          x_series = pd.Series(x, name=&#x27;Year&#x27;)
+  657                          all_time_series.append(x_series)
+  658                          have_not_stored_time_in_df = False
+  659                      y_series = pd.Series(list(y), name=f&#x27;scen={scenario_index}_cat={category_index}_reg={region_index}&#x27;)
+  660                      all_time_series.append(y_series)
+  661
+  662          # Concatenate all collected time series into a single DataFrame now that
+  663          # all loops are complete. The synthetic column names encode scenario,
+  664          # category, and region indices so the t-test loops can match like with
+  665          # like.
+  666          df_all_time_series = pd.concat(all_time_series, axis=1)
+  667          # Calculate the overall mean and standard deviation (for error bars) across all time series.
+  668          df = df_all_time_series
+  669          if include_mean_across_all_data:
+  670              if plot_percent_difference:
+  671                  # If plotting a percent difference with respect to the first scenario, do not include that scenario in calculating the overall mean.
+  672                  columns = [column for column in df.columns if column != &#x27;Year&#x27; and &#x27;scen=0&#x27; not in column]
+  673              else:
+  674                  columns = [column for column in df.columns if column != &#x27;Year&#x27;]
+  675              x = df[&#x27;Year&#x27;]
+  676              y = df[columns].mean(axis=1)
+  677              ax.plot(x, y, label=&#x27;Mean&#x27;, color=&#x27;k&#x27;, linestyle=linestyle_tuples[0][1], linewidth=linewidth)
+  678              if std_mean_across_all_data_multiplier:
+  679                  error = df[columns].std(axis=1)*std_mean_across_all_data_multiplier
+  680                  ax.fill_between(x, y-error, y+error, color=&#x27;k&#x27;, alpha=error_bars_alpha)
+  681
+  682          if num_scenarios &gt; 1:
+  683              # Perform t-tests to compare the entire time series in the first scenario (assumed to be control) vs. other scenarios.
+  684              for scenario_index in range(1, num_scenarios):
+  685                  scenario = scenarios[scenario_index]
+  686                  for category_index, category in enumerate(categories):
+  687                      for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
+  688                          # Categories and regions between the current scenario
+  689                          # and the control scenario are matched before performing
+  690                          # the t-test.
+  691                          control_data = df[f&#x27;scen=0_cat={category_index}_reg={region_index}&#x27;]
+  692                          test_data = df[f&#x27;scen={scenario_index}_cat={category_index}_reg={region_index}&#x27;]
+  693                          control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
+  694                          test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
+  695                          if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
+  696                              with warnings.catch_warnings(record=True) as w:
+  697                                  warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
+  698                                  ttest = stats.ttest_ind(control_num, test_num)
+  699                                  if w:
+  700                                      print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
+  701                              label = f&#x27;scenario={scenario}, category={category_to_label_str(category)}, region={region}&#x27;
+  702                              print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+  703          elif num_scenarios == 1 and num_regions &gt; 1:
+  704              # If there is only one scenario, but multiple regions for that scenario, perform inter-regional t-tests for each category.
+  705              for category_index, category in enumerate(categories):
+  706                  for region_index in range(1, len(inputs[&#x27;regions&#x27;][category])):
+  707                      control_data = df[f&#x27;scen=0_cat={category_index}_reg=0&#x27;]
+  708                      test_data = df[f&#x27;scen=0_cat={category_index}_reg={region_index}&#x27;]
+  709                      control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
+  710                      test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
+  711                      if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
+  712                          with warnings.catch_warnings(record=True) as w:
+  713                              warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
+  714                              ttest = stats.ttest_ind(control_num, test_num)
+  715                              if w:
+  716                                  print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
+  717                          label = f&#x27;scenario={scenario}, category={category_to_label_str(category)}, region={region}&#x27;
+  718                          print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+  719
+  720      # Option 2: ensemble plots, in which the outputs are subdivided into groups of curves, where each group (ensemble) represents a set of scenarios.
+  721      elif check_is_list_of_lists(scenarios) and plot_type == &#x27;ensemble&#x27;:
+  722
+  723          # Internally, ensemble scenarios are organized by member:
+  724          # [[&quot;Control&quot;, &quot;Full feedback&quot;], [&quot;Control_2&quot;, &quot;Full feedback_2&quot;]].
+  725          # The number of scenario sets is therefore the length of each inner
+  726          # member list.
+  727          num_scenario_sets = len(scenarios[0])
+  728          num_scenarios_in_each_set = len(scenarios)
+  729
+  730          # Unlike for individual plots, the default for the number of columns in the legend is determined only by the number of scenario sets.
+  731          if not legend_num_columns:
+  732              if plot_percent_difference:
+  733                  plot_options.update(zip([&#x27;legend_num_columns&#x27;], [num_scenario_sets-1]))
+  734              else:
+  735                  plot_options.update(zip([&#x27;legend_num_columns&#x27;], [num_scenario_sets]))
+  736
+  737          for scenario_set_index in range(num_scenario_sets):
+  738              scenarios_in_set = [scenarios[i][scenario_set_index] for i in range(num_scenarios_in_each_set)]
+  739
+  740              for scenario_index, scenario in enumerate(scenarios_in_set):
+  741                  scenario = scenarios_in_set[scenario_index]
+  742                  df_this_scenario = df[df[scenario_label] == scenario]
   743
-  744                      for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
-  745                          if region != &#x27;Global&#x27;:
-  746                              df_this_region = df_this_category[df_this_category[region_label] == region]
-  747                          else:
-  748                              df_this_region = df_this_category
-  749
-  750                          # Retrieve the years for the x-axis in the time series plots.
-  751                          x = df_this_region[year_label].unique()
-  752
-  753                          # Reduce each scenario/member to one time series for
-  754                          # this category and region. Ensemble averaging happens
-  755                          # later, after all member time series are collected.
-  756                          if aggregation_type_in_each_year == &#x27;mean&#x27;:
-  757                              y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
-  758                          elif aggregation_type_in_each_year == &#x27;area_weighted_mean&#x27;:
-  759                              y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g[&#x27;area&#x27;]).sum() / g[&#x27;area&#x27;].sum() if g[&#x27;area&#x27;].sum() != 0 else float(&#x27;nan&#x27;), include_groups=False) * multiplier
-  760                          elif aggregation_type_in_each_year == &#x27;sum&#x27;:
-  761                              y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
-  762
-  763                          # Collect each time series into a list; a single pd.concat is performed after all loops complete.
-  764                          if have_not_stored_time_in_df:
-  765                              x_series = pd.Series(x, name=&#x27;Year&#x27;)
-  766                              all_time_series.append(x_series)
-  767                              have_not_stored_time_in_df = False
-  768                          y_series = pd.Series(list(y), name=f&#x27;set={scenario_set_index}_scen={scenario_index}_cat={category_index}_reg={region_index}&#x27;)
-  769                          all_time_series.append(y_series)
-  770
-  771          # Concatenate all collected time series into a single DataFrame now that all loops are complete.
-  772          df_all_time_series = pd.concat(all_time_series, axis=1)
-  773
-  774          # Now that each individual time series has been stored, group them into scenario sets (ensembles) and perform analysis on the group/set means.
-  775          x = x_series
-  776          # Initialize DataFrame to store all of the set means.
-  777          df_all_set_means = pd.DataFrame()
-  778          have_not_stored_time_in_df = True
-  779          num_categories = len(categories)
-  780
-  781          for category_index, category in enumerate(categories):
-  782              # Use the same multi-column category encodings as individual plots:
-  783              # first category column -&gt; color, second -&gt; marker, third -&gt;
-  784              # linewidth.
-  785              if col_unique_values and len(col_unique_values) &gt;= 2:
-  786                  marker = markers[col_unique_values[1].index(category[1]) % len(markers)]
-  787              elif col_unique_values:
-  788                  marker = &#x27;&#x27;
-  789              else:
-  790                  marker = markers[category_index % len(markers)]
-  791              # The third category column, when present, is encoded by linewidth.
-  792              if col_unique_values and len(col_unique_values) &gt;= 3:
-  793                  plot_linewidth = linewidth * (col_unique_values[2].index(category[2]) + 1)
-  794              else:
-  795                  plot_linewidth = linewidth
-  796              columns = [column for column in df_all_time_series.columns if f&#x27;cat={category_index}&#x27; in column]
-  797              df_this_category = df_all_time_series[columns]
-  798              num_regions = len(inputs[&#x27;regions&#x27;][category])
-  799
-  800              for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
-  801                  # In ensemble plots, linestyle is reserved for region because
-  802                  # colors distinguish either scenario sets or the first
-  803                  # multi-column category value.
-  804                  linestyle = linestyle_tuples[region_index % len(linestyle_tuples)][1]
-  805                  columns = [column for column in  df_this_category.columns if f&#x27;reg={region_index}&#x27; in column]
-  806                  df_this_region = df_this_category[columns]
-  807
-  808                  for scenario_set_index in range(num_scenario_sets):
-  809                      if col_unique_values:
-  810                          # With multi-column categories, color remains tied to
-  811                          # the first category column so the same category value
-  812                          # is visually stable across scenario sets.
-  813                          line_color = plot_colors[col_unique_values[0].index(category[0]) % len(plot_colors)]
-  814                      elif num_scenario_sets == 1 or (num_scenario_sets == 2 and plot_percent_difference):
-  815                          # If we have 2 scenarios but plotting a percent difference, the reference scenario is not included,
-  816                          # so only one set of curves will appear on the plot. In this case, use the category index to set the line colors.
-  817                          line_color = plot_colors[category_index % len(plot_colors)]
-  818                      else:
-  819                          # Set the line colors based on the scenario if there is more than one scenario.
-  820                          line_color = plot_colors[scenario_set_index % len(plot_colors)]
-  821
-  822                      # Pull the member time series for this scenario set,
-  823                      # category, and region, then average them into the ensemble
-  824                      # mean plotted below.
-  825                      columns = [column for column in df_this_region.columns if f&#x27;set={scenario_set_index}&#x27; in column]
-  826                      df_this_set = df_this_region[columns]
-  827
-  828                      # Set the legend label.
-  829                      cat_str = category_to_label_str(category)
-  830                      if num_categories &gt; 1:
-  831                          if num_regions &gt; 1:
-  832                              label = f&#x27;{cat_str}, {region}&#x27;
-  833                          else:
-  834                              label = f&#x27;{cat_str}&#x27;
-  835                          if (num_scenario_sets &gt; 2 and plot_percent_difference) or (num_scenario_sets &gt; 1 and not plot_percent_difference):
-  836                              if scenario_sets:
-  837                                  scenario_set = scenario_sets[scenario_set_index]
-  838                                  label += f&#x27; ({scenario_set})&#x27;
-  839                      elif num_regions &gt; 1:
-  840                          label = region
-  841                          if (num_scenario_sets &gt; 2 and plot_percent_difference) or (num_scenario_sets &gt; 1 and not plot_percent_difference):
-  842                              if scenario_sets:
-  843                                  scenario_set = scenario_sets[scenario_set_index]
-  844                                  label += f&#x27; ({scenario_set})&#x27;
-  845                      else:
-  846                          if scenario_sets:
-  847                              label = scenario_set
-  848                          else:
-  849                              label = scenario_set_index
-  850
-  851                      # Calculate the ensemble mean and spread over all member
-  852                      # scenarios in the current scenario set.
-  853                      y = df_this_set[columns].mean(axis=1)
-  854                      y_std = df_this_set[columns].std(axis=1)
-  855
-  856                      # If plotting a percent difference, store data for the first set and calculate the percent difference with respect to that.
-  857                      if plot_percent_difference:
-  858                          if scenario_set_index == 0:
-  859                              reference_data[f&#x27;{category}_{region}&#x27;] = y
-  860                          y = (y - reference_data[f&#x27;{category}_{region}&#x27;])/(reference_data[f&#x27;{category}_{region}&#x27;] + EPSILON)*100
-  861                          y_std = y_std/(reference_data[f&#x27;{category}_{region}&#x27;] + EPSILON)*100
+  744                  for category_index, category in enumerate(categories):
+  745                      # Each category can mean one of three things: all rows, a
+  746                      # named GCAM landtype group (only when category_label is a
+  747                      # single landtype column), or an exact category value/tuple.
+  748                      if category == &#x27;All&#x27;:
+  749                          df_this_category = df_this_scenario
+  750                      elif isinstance(category_label, str) and category in landtype_groups:
+  751                          df_this_category = produce_dataframe_for_landtype_group(df_this_scenario, category, category_label,
+  752                                  value_label, landtype_groups, mean_or_sum_if_more_than_one_row_in_same_landtype_group, key_columns)
+  753                      else:
+  754                          df_this_category = filter_df_by_category(df_this_scenario, category_label, category)
+  755
+  756                      for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
+  757                          if region != &#x27;Global&#x27;:
+  758                              df_this_region = df_this_category[df_this_category[region_label] == region]
+  759                          else:
+  760                              df_this_region = df_this_category
+  761
+  762                          # Retrieve the years for the x-axis in the time series plots.
+  763                          x = df_this_region[year_label].unique()
+  764
+  765                          # Reduce each scenario/member to one time series for
+  766                          # this category and region. Ensemble averaging happens
+  767                          # later, after all member time series are collected.
+  768                          if aggregation_type_in_each_year == &#x27;mean&#x27;:
+  769                              y = df_this_region.groupby(year_label)[value_label].mean()*multiplier
+  770                          elif aggregation_type_in_each_year == &#x27;area_weighted_mean&#x27;:
+  771                              y = df_this_region.groupby(year_label).apply(lambda g: (g[value_label] * g[&#x27;area&#x27;]).sum() / g[&#x27;area&#x27;].sum() if g[&#x27;area&#x27;].sum() != 0 else float(&#x27;nan&#x27;), include_groups=False) * multiplier
+  772                          elif aggregation_type_in_each_year == &#x27;sum&#x27;:
+  773                              y = df_this_region.groupby(year_label)[value_label].sum()*multiplier
+  774
+  775                          # Collect each time series into a list; a single pd.concat is performed after all loops complete.
+  776                          if have_not_stored_time_in_df:
+  777                              x_series = pd.Series(x, name=&#x27;Year&#x27;)
+  778                              all_time_series.append(x_series)
+  779                              have_not_stored_time_in_df = False
+  780                          y_series = pd.Series(list(y), name=f&#x27;set={scenario_set_index}_scen={scenario_index}_cat={category_index}_reg={region_index}&#x27;)
+  781                          all_time_series.append(y_series)
+  782
+  783          # Concatenate all collected time series into a single DataFrame now that all loops are complete.
+  784          df_all_time_series = pd.concat(all_time_series, axis=1)
+  785
+  786          # Now that each individual time series has been stored, group them into scenario sets (ensembles) and perform analysis on the group/set means.
+  787          x = x_series
+  788          # Initialize DataFrame to store all of the set means.
+  789          df_all_set_means = pd.DataFrame()
+  790          have_not_stored_time_in_df = True
+  791          num_categories = len(categories)
+  792
+  793          for category_index, category in enumerate(categories):
+  794              # Use the same multi-column category encodings as individual plots:
+  795              # first category column -&gt; color, second -&gt; marker, third -&gt;
+  796              # linewidth.
+  797              if col_unique_values and len(col_unique_values) &gt;= 2:
+  798                  marker = markers[col_unique_values[1].index(category[1]) % len(markers)]
+  799              elif col_unique_values:
+  800                  marker = &#x27;&#x27;
+  801              else:
+  802                  marker = markers[category_index % len(markers)]
+  803              # The third category column, when present, is encoded by linewidth.
+  804              if col_unique_values and len(col_unique_values) &gt;= 3:
+  805                  plot_linewidth = linewidth * (col_unique_values[2].index(category[2]) + 1)
+  806              else:
+  807                  plot_linewidth = linewidth
+  808              columns = [column for column in df_all_time_series.columns if f&#x27;cat={category_index}&#x27; in column]
+  809              df_this_category = df_all_time_series[columns]
+  810              num_regions = len(inputs[&#x27;regions&#x27;][category])
+  811
+  812              for region_index, region in enumerate(inputs[&#x27;regions&#x27;][category]):
+  813                  # In ensemble plots, linestyle is reserved for region because
+  814                  # colors distinguish either scenario sets or the first
+  815                  # multi-column category value.
+  816                  linestyle = linestyle_tuples[region_index % len(linestyle_tuples)][1]
+  817                  columns = [column for column in  df_this_category.columns if f&#x27;reg={region_index}&#x27; in column]
+  818                  df_this_region = df_this_category[columns]
+  819
+  820                  for scenario_set_index in range(num_scenario_sets):
+  821                      if col_unique_values:
+  822                          # With multi-column categories, color remains tied to
+  823                          # the first category column so the same category value
+  824                          # is visually stable across scenario sets.
+  825                          line_color = plot_colors[col_unique_values[0].index(category[0]) % len(plot_colors)]
+  826                      elif num_scenario_sets == 1 or (num_scenario_sets == 2 and plot_percent_difference):
+  827                          # If we have 2 scenarios but plotting a percent difference, the reference scenario is not included,
+  828                          # so only one set of curves will appear on the plot. In this case, use the category index to set the line colors.
+  829                          line_color = plot_colors[category_index % len(plot_colors)]
+  830                      else:
+  831                          # Set the line colors based on the scenario if there is more than one scenario.
+  832                          line_color = plot_colors[scenario_set_index % len(plot_colors)]
+  833
+  834                      # Pull the member time series for this scenario set,
+  835                      # category, and region, then average them into the ensemble
+  836                      # mean plotted below.
+  837                      columns = [column for column in df_this_region.columns if f&#x27;set={scenario_set_index}&#x27; in column]
+  838                      df_this_set = df_this_region[columns]
+  839
+  840                      # Set the legend label.
+  841                      cat_str = category_to_label_str(category)
+  842                      if num_categories &gt; 1:
+  843                          if num_regions &gt; 1:
+  844                              label = f&#x27;{cat_str}, {region}&#x27;
+  845                          else:
+  846                              label = f&#x27;{cat_str}&#x27;
+  847                          if (num_scenario_sets &gt; 2 and plot_percent_difference) or (num_scenario_sets &gt; 1 and not plot_percent_difference):
+  848                              if scenario_sets:
+  849                                  scenario_set = scenario_sets[scenario_set_index]
+  850                                  label += f&#x27; ({scenario_set})&#x27;
+  851                      elif num_regions &gt; 1:
+  852                          label = region
+  853                          if (num_scenario_sets &gt; 2 and plot_percent_difference) or (num_scenario_sets &gt; 1 and not plot_percent_difference):
+  854                              if scenario_sets:
+  855                                  scenario_set = scenario_sets[scenario_set_index]
+  856                                  label += f&#x27; ({scenario_set})&#x27;
+  857                      else:
+  858                          if scenario_sets:
+  859                              label = scenario_set
+  860                          else:
+  861                              label = scenario_set_index
   862
-  863                      # Store the plotted ensemble mean as well; later t-tests
-  864                      # compare these set-mean time series.
-  865                      if have_not_stored_time_in_df:
-  866                          df_all_set_means = pd.concat([df_all_set_means, x_series], axis=1)
-  867                          have_not_stored_time_in_df = False
-  868                      y_series = pd.Series(list(y), name=f&#x27;set={scenario_set_index}_cat={category_index}_reg={region_index}&#x27;)
-  869                      df_all_set_means = pd.concat([df_all_set_means, y_series], axis=1)
-  870
-  871                      # Plot the annual time series, including possibly the error bars.
-  872                      # Do not include the first set if plotting a percent difference (since it is the reference). Include it otherwise.
-  873                      if not plot_percent_difference or scenario_set_index != 0:
-  874                          ax.plot(x, y, label=label, color=line_color, linestyle=linestyle, linewidth=plot_linewidth, marker=marker, markersize=marker_size)
-  875                          if std_multiplier:
-  876                              error = y_std*std_multiplier
-  877                              ax.fill_between(x, y-error, y+error, color=line_color, alpha=error_bars_alpha)
-  878
-  879                      if num_scenario_sets &gt; 1 and scenario_set_index &gt; 0:
-  880                          # Compare the whole control set-mean time series against
-  881                          # the current set-mean time series. Require at least two
-  882                          # numeric points in each series to avoid scipy warnings
-  883                          # on empty or single-point inputs.
-  884                          control_data = df_all_set_means[f&#x27;set=0_cat={category_index}_reg={region_index}&#x27;]
-  885                          test_data = df_all_set_means[f&#x27;set={scenario_set_index}_cat={category_index}_reg={region_index}&#x27;]
-  886                          control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
-  887                          test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
-  888                          if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
-  889                              with warnings.catch_warnings(record=True) as w:
-  890                                  warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
-  891                                  ttest = stats.ttest_ind(control_num, test_num)
-  892                                  if w:
-  893                                      print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
-  894                              label = f&#x27;set={scenario_set_index}, category={category_to_label_str(category)}, region={region}&#x27;
-  895                              print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
-  896                      elif num_scenario_sets == 1 and num_regions &gt; 1:
-  897                          # If there is only one scenario set, but multiple regions for that set, perform inter-regional t-tests for each category.
-  898                          control_data = df_all_set_means[f&#x27;set=0_cat={category_index}_reg=0&#x27;]
-  899                          test_data = df_all_set_means[f&#x27;set=0_cat={category_index}_reg={region_index}&#x27;]
-  900                          control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
-  901                          test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
-  902                          if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
-  903                              with warnings.catch_warnings(record=True) as w:
-  904                                  warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
-  905                                  ttest = stats.ttest_ind(control_num, test_num)
-  906                                  if w:
-  907                                      print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
-  908                              label = f&#x27;category={category_to_label_str(category)}, region={region}&#x27;
-  909                              print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
-  910
-  911                      # Also compare ensemble members year by year. Significant
-  912                      # years are marked directly on the plotted curve.
-  913                      if num_scenario_sets &gt; 1 and scenario_set_index &gt; 0:
-  914                          columns_control_set = [column for column in df_all_time_series.columns if
-  915                                          (f&#x27;set=0&#x27; in column and f&#x27;cat={category_index}_reg={region_index}&#x27; in column)]
-  916                          columns_this_set = [column for column in df_all_time_series.columns if
-  917                                          (f&#x27;set={scenario_set_index}&#x27; in column and f&#x27;cat={category_index}_reg={region_index}&#x27; in column)]
-  918                          p_values = df_all_time_series.apply(perform_ttest, columns_set_1=columns_control_set, \
-  919                                                                 columns_set_2=columns_this_set, axis=1).fillna(1)
-  920                          # If the p-value is below the threshold, add a marker to the plot at that time period (year).
-  921                          mask = p_values &lt;= p_value_threshold
-  922                          ax.plot(df_all_time_series[&#x27;Year&#x27;][mask], y_series[mask], color=line_color, linestyle=&#x27;None&#x27;, linewidth=linewidth, \
-  923                                    marker=marker, markersize=p_value_marker_size)
-  924
-  925                  # Optionally include the overall mean across all scenario sets and error bars indicating the standard deviation for group/set means.
-  926                  if include_mean_across_all_data:
-  927                      if plot_percent_difference:
-  928                      # If plotting a percent difference, do not include the first scenario set in calculating the overall mean.
-  929                          columns = [column for column in df_all_set_means.columns if column != &#x27;Year&#x27; \
-  930                                     and (&#x27;set=0&#x27; not in column and f&#x27;cat={category_index}_reg={region_index}&#x27; in column)]
-  931                      else:
-  932                          columns = [column for column in df_all_set_means.columns if column != &#x27;Year&#x27; \
-  933                                     and f&#x27;cat={category_index}_reg={region_index}&#x27; in column]
-  934                      x = df_all_set_means[&#x27;Year&#x27;]
-  935                      y = df_all_set_means[columns].mean(axis=1)
-  936                      label = &#x27;Mean&#x27;
-  937                      if num_categories &gt; 1 and num_regions &gt; 1:
-  938                          label += f&#x27; ({category_to_label_str(category)}_{region})&#x27;
-  939                      elif num_categories &gt; 1:
-  940                          label += f&#x27; ({category_to_label_str(category)})&#x27;
-  941                      elif num_regions &gt; 1:
-  942                          label += f&#x27; ({region})&#x27;
-  943                      ax.plot(x, y, label=label, color=&#x27;k&#x27;, linestyle=linestyle, linewidth=linewidth, marker=marker, markersize=marker_size)
-  944                      if std_mean_across_all_data_multiplier:
-  945                          error = df_all_set_means[columns].std(axis=1)*std_mean_across_all_data_multiplier
-  946                          ax.fill_between(x, y-error, y+error, color=&#x27;k&#x27;, alpha=error_bars_alpha)
-  947
-  948      # Finalize the time series plot now that all curves have been processed.
-  949      # The custom grouped legend has already been attached, so disable the
-  950      # generic legend behavior inside set_figure_options.
-  951      plot_options[&#x27;name&#x27;] = plot_name
-  952      if legend_on:
-  953          build_grouped_legend(ax, categories, scenarios, scenario_sets, inputs[&#x27;regions&#x27;],
-  954                                plot_colors, markers, linestyle_tuples, marker_size, linewidth,
-  955                                category_label, col_unique_values, plot_percent_difference, plot_options)
-  956      set_figure_options(fig, ax, {**plot_options, &#x27;legend_on&#x27;: False})
-  957
-  958      # Close the plot now that we are done with it. Record the elapsed time.
-  959      plt.close(fig)
-  960      end_time = time.time()
-  961      elapsed_time = end_time - start_time
-  962      print(f&quot;Elapsed time for producing plot {plot_name}: {elapsed_time:.2f} seconds&quot;)
-  963
-  964
-  965  ###---------------Begin execution---------------###
-  966  if __name__ == &#x27;__main__&#x27;:
-  967
-  968      # Run this script together with the input JSON file(s) on the command line.
-  969      start_time = time.time()
-  970      if len(sys.argv) &lt; 2:
-  971          print(&#x27;Usage: python gcam_plot_time_series.py `path/to/json/input/file(s)\&#x27;&#x27;)
-  972          sys.exit()
-  973
-  974      # Read and load the JSON file(s) into a list of dictionaries.
-  975      inputs = []
-  976      for i in range(1, len(sys.argv)):
-  977          input_file = sys.argv[i]
-  978          with open(input_file) as f:
-  979              inputs.extend(json.load(f))
-  980
-  981      # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
-  982      list_of_inputs = []
-  983      for index in range(len(inputs)):
-  984          result = process_inputs(inputs[index])
-  985          if result is not None:
-  986              list_of_inputs.append(result)
-  987
-  988      # Delete all the p-value files before we do any calculations to start a fresh run.
-  989      for input_options in list_of_inputs:
-  990          file = input_options[&#x27;p_value_file&#x27;]
-  991          if os.path.exists(file):
-  992              os.remove(file)
-  993
-  994      # Use any max_processes value requested in the inputs, otherwise use the default.
-  995      # Do not start more worker processes than there are independent plotting jobs.
-  996      max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
-  997      num_processes = min(max_processes, max(1, len(list_of_inputs)))
-  998
-  999      # Create all of the time series plots in parallel.
- 1000      with multiprocessing.Pool(processes=num_processes) as pool:
- 1001          pool.map(plot_time_series, list_of_inputs)
- 1002
- 1003      # Sort all the p-value files alphabetically.
- 1004      for input_options in list_of_inputs:
- 1005          file = input_options[&#x27;p_value_file&#x27;]
- 1006          if os.path.exists(file):
- 1007              sort_file(file)
- 1008
- 1009      # Print the total execution time to produce all the plots.
- 1010      end_time = time.time()
- 1011      elapsed_time = end_time - start_time
- 1012      print(f&quot;Elapsed time for producing all plots: {elapsed_time:.2f} seconds&quot;)</code></pre>
+  863                      # Calculate the ensemble mean and spread over all member
+  864                      # scenarios in the current scenario set.
+  865                      y = df_this_set[columns].mean(axis=1)
+  866                      y_std = df_this_set[columns].std(axis=1)
+  867
+  868                      # If plotting a percent difference, store data for the first set and calculate the percent difference with respect to that.
+  869                      if plot_percent_difference:
+  870                          if scenario_set_index == 0:
+  871                              reference_data[f&#x27;{category}_{region}&#x27;] = y
+  872                          y = (y - reference_data[f&#x27;{category}_{region}&#x27;])/(reference_data[f&#x27;{category}_{region}&#x27;] + EPSILON)*100
+  873                          y_std = y_std/(reference_data[f&#x27;{category}_{region}&#x27;] + EPSILON)*100
+  874
+  875                      # Store the plotted ensemble mean as well; later t-tests
+  876                      # compare these set-mean time series.
+  877                      if have_not_stored_time_in_df:
+  878                          df_all_set_means = pd.concat([df_all_set_means, x_series], axis=1)
+  879                          have_not_stored_time_in_df = False
+  880                      y_series = pd.Series(list(y), name=f&#x27;set={scenario_set_index}_cat={category_index}_reg={region_index}&#x27;)
+  881                      df_all_set_means = pd.concat([df_all_set_means, y_series], axis=1)
+  882
+  883                      # Plot the annual time series, including possibly the error bars.
+  884                      # Do not include the first set if plotting a percent difference (since it is the reference). Include it otherwise.
+  885                      if not plot_percent_difference or scenario_set_index != 0:
+  886                          ax.plot(x, y, label=label, color=line_color, linestyle=linestyle, linewidth=plot_linewidth, marker=marker, markersize=marker_size)
+  887                          if std_multiplier:
+  888                              error = y_std*std_multiplier
+  889                              ax.fill_between(x, y-error, y+error, color=line_color, alpha=error_bars_alpha)
+  890
+  891                      if num_scenario_sets &gt; 1 and scenario_set_index &gt; 0:
+  892                          # Compare the whole control set-mean time series against
+  893                          # the current set-mean time series. Require at least two
+  894                          # numeric points in each series to avoid scipy warnings
+  895                          # on empty or single-point inputs.
+  896                          control_data = df_all_set_means[f&#x27;set=0_cat={category_index}_reg={region_index}&#x27;]
+  897                          test_data = df_all_set_means[f&#x27;set={scenario_set_index}_cat={category_index}_reg={region_index}&#x27;]
+  898                          control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
+  899                          test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
+  900                          if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
+  901                              with warnings.catch_warnings(record=True) as w:
+  902                                  warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
+  903                                  ttest = stats.ttest_ind(control_num, test_num)
+  904                                  if w:
+  905                                      print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
+  906                              label = f&#x27;set={scenario_set_index}, category={category_to_label_str(category)}, region={region}&#x27;
+  907                              print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+  908                      elif num_scenario_sets == 1 and num_regions &gt; 1:
+  909                          # If there is only one scenario set, but multiple regions for that set, perform inter-regional t-tests for each category.
+  910                          control_data = df_all_set_means[f&#x27;set=0_cat={category_index}_reg=0&#x27;]
+  911                          test_data = df_all_set_means[f&#x27;set=0_cat={category_index}_reg={region_index}&#x27;]
+  912                          control_num = pd.to_numeric(control_data, errors=&#x27;coerce&#x27;).dropna()
+  913                          test_num = pd.to_numeric(test_data, errors=&#x27;coerce&#x27;).dropna()
+  914                          if len(control_num) &gt;= 2 and len(test_num) &gt;= 2:
+  915                              with warnings.catch_warnings(record=True) as w:
+  916                                  warnings.simplefilter(&#x27;always&#x27;, RuntimeWarning)
+  917                                  ttest = stats.ttest_ind(control_num, test_num)
+  918                                  if w:
+  919                                      print(f&#x27;Warning (t-test) in {plot_name}: {w[0].message}&#x27;)
+  920                              label = f&#x27;category={category_to_label_str(category)}, region={region}&#x27;
+  921                              print_p_values(ttest, label, p_value_threshold, p_value_file, plot_name, p_value_file_print_only_if_below_threshold)
+  922
+  923                      # Also compare ensemble members year by year. Significant
+  924                      # years are marked directly on the plotted curve.
+  925                      if num_scenario_sets &gt; 1 and scenario_set_index &gt; 0:
+  926                          columns_control_set = [column for column in df_all_time_series.columns if
+  927                                          (f&#x27;set=0&#x27; in column and f&#x27;cat={category_index}_reg={region_index}&#x27; in column)]
+  928                          columns_this_set = [column for column in df_all_time_series.columns if
+  929                                          (f&#x27;set={scenario_set_index}&#x27; in column and f&#x27;cat={category_index}_reg={region_index}&#x27; in column)]
+  930                          p_values = df_all_time_series.apply(perform_ttest, columns_set_1=columns_control_set, \
+  931                                                                 columns_set_2=columns_this_set, axis=1).fillna(1)
+  932                          # If the p-value is below the threshold, add a marker to the plot at that time period (year).
+  933                          mask = p_values &lt;= p_value_threshold
+  934                          ax.plot(df_all_time_series[&#x27;Year&#x27;][mask], y_series[mask], color=line_color, linestyle=&#x27;None&#x27;, linewidth=linewidth, \
+  935                                    marker=marker, markersize=p_value_marker_size)
+  936
+  937                  # Optionally include the overall mean across all scenario sets and error bars indicating the standard deviation for group/set means.
+  938                  if include_mean_across_all_data:
+  939                      if plot_percent_difference:
+  940                      # If plotting a percent difference, do not include the first scenario set in calculating the overall mean.
+  941                          columns = [column for column in df_all_set_means.columns if column != &#x27;Year&#x27; \
+  942                                     and (&#x27;set=0&#x27; not in column and f&#x27;cat={category_index}_reg={region_index}&#x27; in column)]
+  943                      else:
+  944                          columns = [column for column in df_all_set_means.columns if column != &#x27;Year&#x27; \
+  945                                     and f&#x27;cat={category_index}_reg={region_index}&#x27; in column]
+  946                      x = df_all_set_means[&#x27;Year&#x27;]
+  947                      y = df_all_set_means[columns].mean(axis=1)
+  948                      label = &#x27;Mean&#x27;
+  949                      if num_categories &gt; 1 and num_regions &gt; 1:
+  950                          label += f&#x27; ({category_to_label_str(category)}_{region})&#x27;
+  951                      elif num_categories &gt; 1:
+  952                          label += f&#x27; ({category_to_label_str(category)})&#x27;
+  953                      elif num_regions &gt; 1:
+  954                          label += f&#x27; ({region})&#x27;
+  955                      ax.plot(x, y, label=label, color=&#x27;k&#x27;, linestyle=linestyle, linewidth=linewidth, marker=marker, markersize=marker_size)
+  956                      if std_mean_across_all_data_multiplier:
+  957                          error = df_all_set_means[columns].std(axis=1)*std_mean_across_all_data_multiplier
+  958                          ax.fill_between(x, y-error, y+error, color=&#x27;k&#x27;, alpha=error_bars_alpha)
+  959
+  960      # Finalize the time series plot now that all curves have been processed.
+  961      # The custom grouped legend has already been attached, so disable the
+  962      # generic legend behavior inside set_figure_options.
+  963      plot_options[&#x27;name&#x27;] = plot_name
+  964      if legend_on:
+  965          build_grouped_legend(ax, categories, scenarios, scenario_sets, inputs[&#x27;regions&#x27;],
+  966                                plot_colors, markers, linestyle_tuples, marker_size, linewidth,
+  967                                category_label, col_unique_values, plot_percent_difference, plot_options)
+  968      set_figure_options(fig, ax, {**plot_options, &#x27;legend_on&#x27;: False})
+  969
+  970      # Close the plot now that we are done with it. Record the elapsed time.
+  971      plt.close(fig)
+  972      end_time = time.time()
+  973      elapsed_time = end_time - start_time
+  974      print(f&quot;Elapsed time for producing plot {plot_name}: {elapsed_time:.2f} seconds&quot;)
+  975
+  976
+  977  ###---------------Begin execution---------------###
+  978  if __name__ == &#x27;__main__&#x27;:
+  979
+  980      # Run this script together with the input JSON file(s) on the command line.
+  981      start_time = time.time()
+  982      if len(sys.argv) &lt; 2:
+  983          print(&#x27;Usage: python gcam_plot_time_series.py `path/to/json/input/file(s)\&#x27;&#x27;)
+  984          sys.exit()
+  985
+  986      # Read and load the JSON file(s) into a list of dictionaries.
+  987      inputs = []
+  988      for i in range(1, len(sys.argv)):
+  989          input_file = sys.argv[i]
+  990          with open(input_file) as f:
+  991              inputs.extend(json.load(f))
+  992
+  993      # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
+  994      list_of_inputs = []
+  995      for index in range(len(inputs)):
+  996          result = process_inputs(inputs[index])
+  997          if result is not None:
+  998              list_of_inputs.append(result)
+  999
+ 1000      # Delete all the p-value files before we do any calculations to start a fresh run.
+ 1001      for input_options in list_of_inputs:
+ 1002          file = input_options[&#x27;p_value_file&#x27;]
+ 1003          if os.path.exists(file):
+ 1004              os.remove(file)
+ 1005
+ 1006      # Use any max_processes value requested in the inputs, otherwise use the default.
+ 1007      # Do not start more worker processes than there are independent plotting jobs.
+ 1008      max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
+ 1009      num_processes = min(max_processes, max(1, len(list_of_inputs)))
+ 1010
+ 1011      # Create all of the time series plots in parallel.
+ 1012      with multiprocessing.Pool(processes=num_processes) as pool:
+ 1013          pool.map(plot_time_series, list_of_inputs)
+ 1014
+ 1015      # Sort all the p-value files alphabetically.
+ 1016      for input_options in list_of_inputs:
+ 1017          file = input_options[&#x27;p_value_file&#x27;]
+ 1018          if os.path.exists(file):
+ 1019              sort_file(file)
+ 1020
+ 1021      # Print the total execution time to produce all the plots.
+ 1022      end_time = time.time()
+ 1023      elapsed_time = end_time - start_time
+ 1024      print(f&quot;Elapsed time for producing all plots: {elapsed_time:.2f} seconds&quot;)</code></pre>
 </div>
 </body>
 </html>

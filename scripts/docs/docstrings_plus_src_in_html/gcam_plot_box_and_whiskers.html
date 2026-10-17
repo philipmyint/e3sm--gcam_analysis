@@ -29,523 +29,574 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
     5  import multiprocessing
     6  import os
     7  import pandas as pd
-    8  import seaborn as sns
-    9  import sys
-   10  import time
-   11  from utility_constants import *
-   12  from utility_dataframes import read_file_into_dataframe
-   13  from utility_functions import check_is_list_of_lists, get_max_processes_from_inputs, transpose_scenarios_if_needed
-   14  from utility_gcam import gcam_landtype_groups, gcam_landtype_groups_original, produce_dataframe_for_landtype_group
-   15  from utility_plots import *
-   16
-   17  &quot;&quot;&quot; Dictionary of default input values for box plots (i.e., box-and-whisker plots). &quot;&quot;&quot;
-   18  default_inputs = {
-   19      &#x27;aggregation_function&#x27;: &#x27;sum&#x27;,
-   20      &#x27;basin_label&#x27;: &#x27;basin&#x27;,
-   21      &#x27;basins&#x27;: None,
-   22      &#x27;category_label&#x27;: &#x27;sector&#x27;,
-   23      &#x27;fill_boxes&#x27;: True,
-   24      &#x27;height&#x27;: height_default,
-   25      &#x27;hue&#x27;: None,
-   26      &#x27;key_columns&#x27;: None,
-   27      &#x27;landtype_groups&#x27;: &#x27;modified&#x27;,
-   28      &#x27;legend_label_size&#x27;: legend_label_size_default,
-   29      &#x27;legend_num_columns&#x27;: 1,
-   30      &#x27;legend_on&#x27;: legend_on_default,
-   31      &#x27;legend_place_outside&#x27;: False,
-   32      &#x27;legend_x_offset&#x27;: None,
-   33      &#x27;linewidth&#x27;: 1,
-   34      &#x27;marker_size&#x27;: 6,
-   35      &#x27;multiplier&#x27;: 1,
-   36      &#x27;notify_scenarios_transposed&#x27;: False,
-   37      &#x27;plot_colors&#x27;: plot_colors_default,
-   38      &#x27;plot_directory&#x27;: &#x27;./&#x27;,
-   39      &#x27;plot_percent_difference&#x27;: False,
-   40      &#x27;plot_years&#x27;: [2015, 2025, 2035, 2045],
-   41      &#x27;plot_years_ncols&#x27;: 2,
-   42      &#x27;plot_type&#x27;: &#x27;ensemble&#x27;,
-   43      &#x27;produce_png&#x27;: produce_png_default,
-   44      &#x27;region_label&#x27;: &#x27;region&#x27;,
-   45      &#x27;regions&#x27;: [&#x27;Global&#x27;],
-   46      &#x27;scenario_label&#x27;: &#x27;scenario&#x27;,
-   47      &#x27;scenario_sets&#x27;: None,
-   48      &#x27;use_latex&#x27;: use_latex_default,
-   49      &#x27;value_label&#x27;: &#x27;value&#x27;,
-   50      &#x27;width&#x27;: width_default,
-   51      &#x27;x_label&#x27;: None,
-   52      &#x27;x_label_size&#x27;: axis_label_size_default,
-   53      &#x27;x_scale&#x27;: None,
-   54      &#x27;x_tick_labels&#x27;: None,
-   55      &#x27;x_tick_label_size&#x27;: tick_label_size_default,
-   56      &#x27;y_label_size&#x27;: axis_label_size_default,
-   57      &#x27;y_limits&#x27;: axis_limits_default,
-   58      &#x27;y_scale&#x27;: scale_default,
-   59      &#x27;y_tick_label_size&#x27;: tick_label_size_default,
-   60      &#x27;year_label&#x27;: &#x27;year&#x27;
-   61  }
-   62
-   63  def process_inputs(inputs):
-   64      &quot;&quot;&quot;
-   65      Processes a dictionary of inputs (keys are options, values are choices for those options) for creating box (or box-and-whisker) plots.
-   66
-   67      Parameters:
-   68          inputs: Dictionary containing the user plotting choice inputs for different options. This dictionary may be incomplete or have invalid values.
-   69
-   70      Returns:
-   71          Dictionary that completely specifies all plotting options.
-   72          If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
-   73      &quot;&quot;&quot;
-   74      # Check that the output data file exists before trying to read it.
-   75      # Missing data files are skipped so one absent optional plot does not stop a long plotting run.
-   76      if not os.path.exists(inputs[&#x27;output_file&#x27;]):
-   77          print(f&quot;Warning: output file not found, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
-   78          return None
-   79      if os.path.getsize(inputs[&#x27;output_file&#x27;]) == 0:
-   80          print(f&quot;Warning: output file is empty, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
-   81          return None
-   82      df = read_file_into_dataframe(inputs[&#x27;output_file&#x27;])
+    8  import re
+    9  import seaborn as sns
+   10  import sys
+   11  import time
+   12  from utility_constants import *
+   13  from utility_dataframes import read_file_into_dataframe
+   14  from utility_functions import check_is_list_of_lists, get_max_processes_from_inputs, transpose_scenarios_if_needed
+   15  from utility_gcam import gcam_landtype_groups, gcam_landtype_groups_original, produce_dataframe_for_landtype_group
+   16  from utility_plots import *
+   17
+   18  &quot;&quot;&quot; Dictionary of default input values for box plots (i.e., box-and-whisker plots). &quot;&quot;&quot;
+   19  default_inputs = {
+   20      &#x27;aggregation_function&#x27;: &#x27;sum&#x27;,
+   21      &#x27;basin_label&#x27;: &#x27;basin&#x27;,
+   22      &#x27;basins&#x27;: None,
+   23      &#x27;category_label&#x27;: &#x27;sector&#x27;,
+   24      &#x27;fill_boxes&#x27;: True,
+   25      &#x27;height&#x27;: height_default,
+   26      &#x27;hue&#x27;: None,
+   27      &#x27;key_columns&#x27;: None,
+   28      &#x27;landtype_groups&#x27;: &#x27;modified&#x27;,
+   29      &#x27;legend_label_size&#x27;: legend_label_size_default,
+   30      &#x27;legend_num_columns&#x27;: 1,
+   31      &#x27;legend_on&#x27;: legend_on_default,
+   32      &#x27;legend_place_outside&#x27;: False,
+   33      &#x27;legend_x_offset&#x27;: None,
+   34      &#x27;linewidth&#x27;: 1,
+   35      &#x27;marker_size&#x27;: 6,
+   36      &#x27;multipanel&#x27;: True,
+   37      &#x27;multiplier&#x27;: 1,
+   38      &#x27;notify_scenarios_transposed&#x27;: False,
+   39      &#x27;plot_colors&#x27;: plot_colors_default,
+   40      &#x27;plot_directory&#x27;: &#x27;./&#x27;,
+   41      &#x27;plot_percent_difference&#x27;: False,
+   42      &#x27;plot_years&#x27;: [2015, 2025, 2035, 2045],
+   43      &#x27;plot_years_ncols&#x27;: 2,
+   44      &#x27;plot_type&#x27;: &#x27;ensemble&#x27;,
+   45      &#x27;produce_png&#x27;: produce_png_default,
+   46      &#x27;region_label&#x27;: &#x27;region&#x27;,
+   47      &#x27;regions&#x27;: [&#x27;Global&#x27;],
+   48      &#x27;scenario_label&#x27;: &#x27;scenario&#x27;,
+   49      &#x27;scenario_sets&#x27;: None,
+   50      &#x27;use_latex&#x27;: use_latex_default,
+   51      &#x27;value_label&#x27;: &#x27;value&#x27;,
+   52      &#x27;width&#x27;: width_default,
+   53      &#x27;x_label&#x27;: None,
+   54      &#x27;x_label_size&#x27;: axis_label_size_default,
+   55      &#x27;x_scale&#x27;: None,
+   56      &#x27;x_tick_labels&#x27;: None,
+   57      &#x27;x_tick_label_size&#x27;: tick_label_size_default,
+   58      &#x27;y_label_size&#x27;: axis_label_size_default,
+   59      &#x27;y_limits&#x27;: axis_limits_default,
+   60      &#x27;y_scale&#x27;: scale_default,
+   61      &#x27;y_tick_label_size&#x27;: tick_label_size_default,
+   62      &#x27;year_label&#x27;: &#x27;year&#x27;
+   63  }
+   64
+   65  def _safe_plot_name_part(value):
+   66      &quot;&quot;&quot;Return a filesystem-friendly name fragment for a year or category.&quot;&quot;&quot;
+   67      if isinstance(value, (list, tuple)):
+   68          value = &#x27;_&#x27;.join(str(item) for item in value)
+   69      value = str(value).strip().replace(&#x27; &#x27;, &#x27;_&#x27;)
+   70      return re.sub(r&#x27;[^A-Za-z0-9_.=-]+&#x27;, &#x27;_&#x27;, value).strip(&#x27;_&#x27;)
+   71
+   72
+   73  def _add_suffix_to_plot_name(plot_name, *suffix_parts):
+   74      &quot;&quot;&quot;Insert non-empty suffix parts before the plot file extension.&quot;&quot;&quot;
+   75      clean_parts = [_safe_plot_name_part(part) for part in suffix_parts if part is not None]
+   76      clean_parts = [part for part in clean_parts if part]
+   77      if not clean_parts:
+   78          return plot_name
+   79      directory, filename = os.path.split(plot_name)
+   80      stem, extension = os.path.splitext(filename)
+   81      updated_name = f&quot;{stem}_{&#x27;_&#x27;.join(clean_parts)}{extension}&quot;
+   82      return os.path.join(directory, updated_name) if directory else updated_name
    83
-   84      # If the category label (e.g., sector or landtype) has not been specified, use the default value.
-   85      if &#x27;category_label&#x27; not in inputs:
-   86          category_label = default_inputs[&#x27;category_label&#x27;]
-   87          inputs[&#x27;category_label&#x27;] = category_label
-   88      else:
-   89          category_label = inputs[&#x27;category_label&#x27;]
-   90
-   91      # If categories were not specified, populate them from the data. If the
-   92      # category column is absent, use &quot;All&quot; so the plot aggregates over the whole file.
-   93      if &#x27;categories&#x27; not in inputs:
-   94          if category_label in df.columns:
-   95              inputs[&#x27;categories&#x27;] = list(df[category_label].unique())
-   96              if &#x27;categories_to_exclude&#x27; in inputs:
-   97                  inputs[&#x27;categories&#x27;] = [column for column in inputs[&#x27;categories&#x27;] if column not in inputs[&#x27;categories_to_exclude&#x27;]]
-   98          else:
-   99              inputs[&#x27;categories&#x27;] = &#x27;All&#x27;
-  100      categories = inputs[&#x27;categories&#x27;]
-  101      # If the user entered a string indicating a single category, put that string in a list.
-  102      if isinstance(categories, str):
-  103          categories = [categories]
-  104          inputs[&#x27;categories&#x27;] = categories
-  105
-  106      # Create the plot directory if it does not already exist.
-  107      if &#x27;plot_directory&#x27; not in inputs:
-  108          inputs[&#x27;plot_directory&#x27;] = default_inputs[&#x27;plot_directory&#x27;]
-  109      if not os.path.exists(inputs[&#x27;plot_directory&#x27;]):
-  110          os.makedirs(inputs[&#x27;plot_directory&#x27;])
-  111
-  112      # Use the output CSV name as the default y-axis label and as the base for
-  113      # generated plot names.
-  114      index_of_last_backslash = inputs[&#x27;output_file&#x27;].rfind(&#x27;/&#x27;)
-  115      index_of_dot_csv = inputs[&#x27;output_file&#x27;].find(&#x27;.csv&#x27;)
-  116      if index_of_last_backslash == -1:
-  117          output_file_name = inputs[&#x27;output_file&#x27;][:index_of_dot_csv]
-  118      else:
-  119          output_file_name = inputs[&#x27;output_file&#x27;][index_of_last_backslash+1:index_of_dot_csv]
-  120      output_file_name = output_file_name.replace(&#x27;_processed&#x27;, &#x27;&#x27;).replace(&#x27;processed_&#x27;, &#x27;&#x27;)
-  121      if &#x27;y_label&#x27; not in inputs:
-  122          inputs[&#x27;y_label&#x27;] = output_file_name
-  123      if &#x27;plot_name&#x27; not in inputs:
-  124          scenarios = inputs.get(&#x27;scenarios&#x27;, None)
-  125          scenario_sets = inputs.get(&#x27;scenario_sets&#x27;, None)
-  126          if scenarios is None:
-  127              scenario_part = &#x27;all_scenarios&#x27;
-  128          elif check_is_list_of_lists(scenarios):
-  129              num_scenario_sets = len(scenario_sets) if scenario_sets else len(scenarios[0])
-  130              if num_scenario_sets == 1:
-  131                  scenario_part = str(scenario_sets[0] if scenario_sets else &#x27;set0&#x27;).replace(&#x27; &#x27;, &#x27;_&#x27;)
-  132              elif inputs.get(&#x27;plot_percent_difference&#x27;, False):
-  133                  scenario_part = &#x27;pct_diff&#x27;
-  134              else:
-  135                  scenario_part = &#x27;comparison&#x27;
-  136          elif len(scenarios) == 1:
-  137              scenario_part = str(scenarios[0]).replace(&#x27; &#x27;, &#x27;_&#x27;)
-  138          elif inputs.get(&#x27;plot_percent_difference&#x27;, False):
-  139              scenario_part = &#x27;pct_diff&#x27;
-  140          else:
-  141              scenario_part = &#x27;comparison&#x27;
+   84
+   85  def _format_units_for_label(units, use_latex=False):
+   86      &quot;&quot;&quot;Return a readable units label, or None if the units value is empty/noisy.&quot;&quot;&quot;
+   87      if units is None:
+   88          return None
+   89      units_str = str(units).strip()
+   90      if units_str.upper() in (&#x27;&#x27;, &#x27;NA&#x27;, &#x27;NONE&#x27;, &#x27;NAN&#x27;, &#x27;NULL&#x27;) or units_str in (&#x27;(&#x27;, &#x27;)&#x27;):
+   91          return None
+   92      units_str = units_str.replace(&#x27;thous km2&#x27;, &#x27;thousands km2&#x27;)
+   93      if use_latex:
+   94          units_str = units_str.replace(&#x27;^2&#x27;, r&#x27;$^2$&#x27;)
+   95          units_str = units_str.replace(&#x27;km2&#x27;, r&#x27;km$^2$&#x27;)
+   96          units_str = units_str.replace(&#x27;m2&#x27;, r&#x27;m$^2$&#x27;)
+   97      return units_str
+   98
+   99
+  100  def process_inputs(inputs):
+  101      &quot;&quot;&quot;
+  102      Processes a dictionary of inputs (keys are options, values are choices for those options) for creating box (or box-and-whisker) plots.
+  103
+  104      Parameters:
+  105          inputs: Dictionary containing the user plotting choice inputs for different options. This dictionary may be incomplete or have invalid values.
+  106
+  107      Returns:
+  108          Dictionary that completely specifies all plotting options.
+  109          If the user did not make a choice for a particular option, the default choice for that plotting option will be selected.
+  110      &quot;&quot;&quot;
+  111      # Check that the output data file exists before trying to read it.
+  112      # Missing data files are skipped so one absent optional plot does not stop a long plotting run.
+  113      if not os.path.exists(inputs[&#x27;output_file&#x27;]):
+  114          print(f&quot;Warning: output file not found, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
+  115          return None
+  116      if os.path.getsize(inputs[&#x27;output_file&#x27;]) == 0:
+  117          print(f&quot;Warning: output file is empty, skipping: &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;&quot;)
+  118          return None
+  119      df = read_file_into_dataframe(inputs[&#x27;output_file&#x27;])
+  120
+  121      # If the category label (e.g., sector or landtype) has not been specified, use the default value.
+  122      if &#x27;category_label&#x27; not in inputs:
+  123          category_label = default_inputs[&#x27;category_label&#x27;]
+  124          inputs[&#x27;category_label&#x27;] = category_label
+  125      else:
+  126          category_label = inputs[&#x27;category_label&#x27;]
+  127
+  128      # If categories were not specified, populate them from the data. If the
+  129      # category column is absent, use &quot;All&quot; so the plot aggregates over the whole file.
+  130      if &#x27;categories&#x27; not in inputs:
+  131          if category_label in df.columns:
+  132              inputs[&#x27;categories&#x27;] = list(df[category_label].unique())
+  133              if &#x27;categories_to_exclude&#x27; in inputs:
+  134                  inputs[&#x27;categories&#x27;] = [column for column in inputs[&#x27;categories&#x27;] if column not in inputs[&#x27;categories_to_exclude&#x27;]]
+  135          else:
+  136              inputs[&#x27;categories&#x27;] = &#x27;All&#x27;
+  137      categories = inputs[&#x27;categories&#x27;]
+  138      # If the user entered a string indicating a single category, put that string in a list.
+  139      if isinstance(categories, str):
+  140          categories = [categories]
+  141          inputs[&#x27;categories&#x27;] = categories
   142
-  143          plot_years = inputs.get(&#x27;plot_years&#x27;, default_inputs[&#x27;plot_years&#x27;])
-  144          if plot_years is None:
-  145              year_part = &#x27;all_years&#x27;
-  146          elif len(plot_years) == 1:
-  147              year_part = str(plot_years[0])
-  148          else:
-  149              year_part = f&#x27;{min(plot_years)}-{max(plot_years)}&#x27;
-  150
-  151          name = f&#x27;box_plot_{output_file_name}_{scenario_part}_{year_part}&#x27;
-  152          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], name)
-  153      elif &#x27;plot_name&#x27; in inputs and &#x27;/&#x27; not in inputs[&#x27;plot_name&#x27;]:
-  154          # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
-  155          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], inputs[&#x27;plot_name&#x27;])
-  156
-  157      # Add keys for plotting options that have not been specified in the inputs dictionary and use default values for them.
-  158      for key in default_inputs.keys():
-  159          if key not in inputs:
-  160              inputs[key] = default_inputs[key]
-  161
-  162      if inputs[&#x27;hue&#x27;] == &#x27;scenario&#x27; and inputs[&#x27;plot_percent_difference&#x27;]:
-  163          print(f&quot;Warning: skipping &#x27;{inputs[&#x27;output_file&#x27;]}&#x27; because hue=&#x27;scenario&#x27; and &quot;
-  164                &quot;plot_percent_difference=True cannot be used together.&quot;)
-  165          return None
-  166
-  167      # If the scenarios are specified as a list of lists (for ensemble plots), check if they need to be transposed.
-  168      # Users can now specify scenarios in two formats:
-  169      #   Format A (organized by ensemble member - original format):
-  170      #       [[&quot;Control&quot;, &quot;Full feedback&quot;], [&quot;Control_2&quot;, &quot;Full feedback_2&quot;], ...]
-  171      #   Format B (organized by scenario set - new user-friendly format):
-  172      #       [[&quot;Control&quot;, &quot;Control_2&quot;, ...], [&quot;Full feedback&quot;, &quot;Full feedback_2&quot;, ...]]
-  173      # The plotting functions expect Format A internally, so Format B will be automatically transposed.
-  174      if check_is_list_of_lists(inputs[&#x27;scenarios&#x27;]):
-  175          scenario_sets = inputs.get(&#x27;scenario_sets&#x27;, None)
-  176          inputs[&#x27;scenarios&#x27;], was_transposed = transpose_scenarios_if_needed(inputs[&#x27;scenarios&#x27;], scenario_sets)
-  177          if was_transposed and inputs[&#x27;notify_scenarios_transposed&#x27;]:
-  178              print(f&quot;Note: Scenarios were automatically transposed from &#x27;organized by scenario set&#x27; format to &#x27;organized by ensemble member&#x27; format.&quot;)
+  143      # Create the plot directory if it does not already exist.
+  144      if &#x27;plot_directory&#x27; not in inputs:
+  145          inputs[&#x27;plot_directory&#x27;] = default_inputs[&#x27;plot_directory&#x27;]
+  146      if not os.path.exists(inputs[&#x27;plot_directory&#x27;]):
+  147          os.makedirs(inputs[&#x27;plot_directory&#x27;])
+  148
+  149      # Use the output CSV name as the default y-axis label and as the base for
+  150      # generated plot names.
+  151      index_of_last_backslash = inputs[&#x27;output_file&#x27;].rfind(&#x27;/&#x27;)
+  152      index_of_dot_csv = inputs[&#x27;output_file&#x27;].find(&#x27;.csv&#x27;)
+  153      if index_of_last_backslash == -1:
+  154          output_file_name = inputs[&#x27;output_file&#x27;][:index_of_dot_csv]
+  155      else:
+  156          output_file_name = inputs[&#x27;output_file&#x27;][index_of_last_backslash+1:index_of_dot_csv]
+  157      output_file_name = output_file_name.replace(&#x27;_processed&#x27;, &#x27;&#x27;).replace(&#x27;processed_&#x27;, &#x27;&#x27;)
+  158      if &#x27;y_label&#x27; not in inputs:
+  159          inputs[&#x27;y_label&#x27;] = output_file_name
+  160      if &#x27;plot_name&#x27; not in inputs:
+  161          scenarios = inputs.get(&#x27;scenarios&#x27;, None)
+  162          scenario_sets = inputs.get(&#x27;scenario_sets&#x27;, None)
+  163          if scenarios is None:
+  164              scenario_part = &#x27;all_scenarios&#x27;
+  165          elif check_is_list_of_lists(scenarios):
+  166              num_scenario_sets = len(scenario_sets) if scenario_sets else len(scenarios[0])
+  167              if num_scenario_sets == 1:
+  168                  scenario_part = str(scenario_sets[0] if scenario_sets else &#x27;set0&#x27;).replace(&#x27; &#x27;, &#x27;_&#x27;)
+  169              elif inputs.get(&#x27;plot_percent_difference&#x27;, False):
+  170                  scenario_part = &#x27;pct_diff&#x27;
+  171              else:
+  172                  scenario_part = &#x27;comparison&#x27;
+  173          elif len(scenarios) == 1:
+  174              scenario_part = str(scenarios[0]).replace(&#x27; &#x27;, &#x27;_&#x27;)
+  175          elif inputs.get(&#x27;plot_percent_difference&#x27;, False):
+  176              scenario_part = &#x27;pct_diff&#x27;
+  177          else:
+  178              scenario_part = &#x27;comparison&#x27;
   179
-  180      # If the scenarios have not been specified, use all the scenarios in the Pandas DataFrame.
-  181      if &#x27;scenarios&#x27; not in inputs:
-  182          scenario_label = inputs[&#x27;scenario_label&#x27;]
-  183          inputs[&#x27;scenarios&#x27;] = df[scenario_label].unique()
-  184
-  185      # Check that the value_label column exists in the DataFrame.
-  186      value_label = inputs[&#x27;value_label&#x27;]
-  187      if value_label not in df.columns:
-  188          raise KeyError(f&quot;Error: value_label &#x27;{value_label}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
-  189                         f&quot;Available columns: {list(df.columns)}&quot;)
-  190
-  191      # area_weighted_mean requires area metadata from gcam_process_extracted_data.py.
-  192      if inputs[&#x27;aggregation_function&#x27;] == &#x27;area_weighted_mean&#x27; and &#x27;area&#x27; not in df.columns:
-  193          raise KeyError(f&quot;Error: aggregation_function is &#x27;area_weighted_mean&#x27; &quot;
-  194                         f&quot;but no &#x27;area&#x27; column found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
-  195                         f&quot;Consider using &#x27;mean&#x27; or &#x27;sum&#x27; instead, or add area data &quot;
-  196                         f&quot;with gcam_process_extracted_data.py and a land_allocation_file entry.&quot;)
-  197
-  198      # Check that hue and x_variable columns exist in the DataFrame if specified.
-  199      hue = inputs.get(&#x27;hue&#x27;, None)
-  200      if hue and hue not in df.columns:
-  201          raise KeyError(f&quot;Error: hue &#x27;{hue}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
-  202                         f&quot;Available columns: {list(df.columns)}&quot;)
-  203      x_variable = inputs.get(&#x27;x_variable&#x27;, inputs[&#x27;category_label&#x27;])
-  204      if x_variable not in df.columns:
-  205          raise KeyError(f&quot;Error: x_variable &#x27;{x_variable}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
-  206                         f&quot;Available columns: {list(df.columns)}&quot;)
-  207
-  208      # Warn if any specified scenario is not found in the DataFrame.
-  209      scenario_label = inputs[&#x27;scenario_label&#x27;]
-  210      if scenario_label in df.columns:
-  211          available_scenarios = set(df[scenario_label].unique())
-  212          specified_scenarios = inputs[&#x27;scenarios&#x27;]
-  213          if check_is_list_of_lists(specified_scenarios):
-  214              flat_scenarios = [s for member in specified_scenarios for s in member]
-  215          else:
-  216              flat_scenarios = list(specified_scenarios)
-  217          missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
-  218          if missing_scenarios:
-  219              print(f&quot;Warning: the following scenarios were not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27; &quot;
-  220                    f&quot;and will produce empty plots: {missing_scenarios}&quot;)
+  180          plot_years = inputs.get(&#x27;plot_years&#x27;, default_inputs[&#x27;plot_years&#x27;])
+  181          if plot_years is None:
+  182              year_part = &#x27;all_years&#x27;
+  183          elif len(plot_years) == 1:
+  184              year_part = str(plot_years[0])
+  185          else:
+  186              year_part = f&#x27;{min(plot_years)}-{max(plot_years)}&#x27;
+  187
+  188          name = f&#x27;box_plot_{output_file_name}_{scenario_part}_{year_part}&#x27;
+  189          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], name)
+  190      elif &#x27;plot_name&#x27; in inputs and &#x27;/&#x27; not in inputs[&#x27;plot_name&#x27;]:
+  191          # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
+  192          inputs[&#x27;plot_name&#x27;] = os.path.join(inputs[&#x27;plot_directory&#x27;], inputs[&#x27;plot_name&#x27;])
+  193
+  194      # Add keys for plotting options that have not been specified in the inputs dictionary and use default values for them.
+  195      for key in default_inputs.keys():
+  196          if key not in inputs:
+  197              inputs[key] = default_inputs[key]
+  198
+  199      if inputs[&#x27;hue&#x27;] == &#x27;scenario&#x27; and inputs[&#x27;plot_percent_difference&#x27;]:
+  200          print(f&quot;Warning: skipping &#x27;{inputs[&#x27;output_file&#x27;]}&#x27; because hue=&#x27;scenario&#x27; and &quot;
+  201                &quot;plot_percent_difference=True cannot be used together.&quot;)
+  202          return None
+  203
+  204      # If the scenarios are specified as a list of lists (for ensemble plots), check if they need to be transposed.
+  205      # Users can now specify scenarios in two formats:
+  206      #   Format A (organized by ensemble member - original format):
+  207      #       [[&quot;Control&quot;, &quot;Full feedback&quot;], [&quot;Control_2&quot;, &quot;Full feedback_2&quot;], ...]
+  208      #   Format B (organized by scenario set - new user-friendly format):
+  209      #       [[&quot;Control&quot;, &quot;Control_2&quot;, ...], [&quot;Full feedback&quot;, &quot;Full feedback_2&quot;, ...]]
+  210      # The plotting functions expect Format A internally, so Format B will be automatically transposed.
+  211      if check_is_list_of_lists(inputs[&#x27;scenarios&#x27;]):
+  212          scenario_sets = inputs.get(&#x27;scenario_sets&#x27;, None)
+  213          inputs[&#x27;scenarios&#x27;], was_transposed = transpose_scenarios_if_needed(inputs[&#x27;scenarios&#x27;], scenario_sets)
+  214          if was_transposed and inputs[&#x27;notify_scenarios_transposed&#x27;]:
+  215              print(f&quot;Note: Scenarios were automatically transposed from &#x27;organized by scenario set&#x27; format to &#x27;organized by ensemble member&#x27; format.&quot;)
+  216
+  217      # If the scenarios have not been specified, use all the scenarios in the Pandas DataFrame.
+  218      if &#x27;scenarios&#x27; not in inputs:
+  219          scenario_label = inputs[&#x27;scenario_label&#x27;]
+  220          inputs[&#x27;scenarios&#x27;] = df[scenario_label].unique()
   221
-  222      # Verify the plot directory is writable before doing the plotting work.
-  223      plot_name = inputs[&#x27;plot_name&#x27;]
-  224      plot_dir = os.path.dirname(plot_name) or &#x27;.&#x27;
-  225      if not os.access(plot_dir, os.W_OK):
-  226          raise OSError(f&quot;Error: plot directory is not writable: &#x27;{plot_dir}&#x27;&quot;)
+  222      # Check that the value_label column exists in the DataFrame.
+  223      value_label = inputs[&#x27;value_label&#x27;]
+  224      if value_label not in df.columns:
+  225          raise KeyError(f&quot;Error: value_label &#x27;{value_label}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
+  226                         f&quot;Available columns: {list(df.columns)}&quot;)
   227
-  228      return inputs
-  229
-  230  def plot_box_and_whiskers(inputs):
-  231      &quot;&quot;&quot;
-  232      Creates a box plot (box-and-whisker plot) and perform basic statistical analysis for a single output file. The data in the file are organized
-  233      into scenarios or scenario sets, categories, and regions.
-  234      Types of plots: 1) Plots in which each scenario is treated as an individual data set (not grouped into an ensemble) in the collection.
-  235      2) Ensemble plots in which the scenarios are grouped into sets (referred to as an ensemble) and results from of each set are plotted.
-  236      The scenarios must be specified as a list of lists (nested list) for ensemble plots.
-  237
-  238      Parameters:
-  239          input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
-  240                 This dictionary is assumed to be complete (pre-processed).
-  241
-  242      Returns:
-  243          N/A.
-  244      &quot;&quot;&quot;
-  245      # This function creates one multi-panel box-and-whisker figure from a single
-  246      # processed GCAM CSV. The data may be split by scenario, scenario set,
-  247      # category, region, basin, hue, and year depending on the JSON options.
-  248      start_time = time.time()
-  249      output_file = inputs[&#x27;output_file&#x27;]
-  250
-  251      # Extract all other plotting options.
-  252      basin_label = inputs[&#x27;basin_label&#x27;]
-  253      basins = inputs[&#x27;basins&#x27;]
-  254      categories = inputs[&#x27;categories&#x27;]
-  255      category_label = inputs[&#x27;category_label&#x27;]
-  256      fill_boxes = inputs[&#x27;fill_boxes&#x27;]
-  257      height = inputs[&#x27;height&#x27;]
-  258      hue = inputs[&#x27;hue&#x27;]
-  259      key_columns = inputs[&#x27;key_columns&#x27;]
-  260      landtype_groups = inputs[&#x27;landtype_groups&#x27;]
-  261      legend_label_size = inputs[&#x27;legend_label_size&#x27;]
-  262      legend_num_columns = inputs[&#x27;legend_num_columns&#x27;]
-  263      legend_on = inputs[&#x27;legend_on&#x27;]
-  264      legend_place_outside = inputs[&#x27;legend_place_outside&#x27;]
-  265      legend_x_offset = inputs[&#x27;legend_x_offset&#x27;]
-  266      linewidth = inputs[&#x27;linewidth&#x27;]
-  267      marker_size = inputs[&#x27;marker_size&#x27;]
-  268      multiplier = inputs[&#x27;multiplier&#x27;]
-  269      aggregation_function = inputs[&#x27;aggregation_function&#x27;]
-  270      plot_colors = inputs[&#x27;plot_colors&#x27;]
-  271      plot_name = inputs[&#x27;plot_name&#x27;]
-  272      plot_percent_difference = inputs[&#x27;plot_percent_difference&#x27;]
-  273      plot_years = inputs[&#x27;plot_years&#x27;]
-  274      plot_type = inputs[&#x27;plot_type&#x27;]
-  275      produce_png = inputs[&#x27;produce_png&#x27;]
-  276      region_label = inputs[&#x27;region_label&#x27;]
-  277      regions = inputs[&#x27;regions&#x27;]
-  278      scenario_label = inputs[&#x27;scenario_label&#x27;]
-  279      scenario_sets = inputs[&#x27;scenario_sets&#x27;]
-  280      scenarios = inputs[&#x27;scenarios&#x27;]
-  281      use_latex = inputs[&#x27;use_latex&#x27;]
-  282      value_label = inputs[&#x27;value_label&#x27;]
-  283      width = inputs[&#x27;width&#x27;]
-  284      x_label = inputs[&#x27;x_label&#x27;]
-  285      x_label_size = inputs[&#x27;x_label_size&#x27;]
-  286      x_scale = inputs[&#x27;x_scale&#x27;]
-  287      x_tick_labels = inputs[&#x27;x_tick_labels&#x27;] or {}
-  288      x_tick_label_size = inputs[&#x27;x_tick_label_size&#x27;]
-  289      x_variable = inputs.get(&#x27;x_variable&#x27;, category_label)
-  290      y_label = inputs[&#x27;y_label&#x27;]
-  291      y_label_size = inputs[&#x27;y_label_size&#x27;]
-  292      y_limits = inputs[&#x27;y_limits&#x27;]
-  293      y_scale = inputs[&#x27;y_scale&#x27;]
-  294      y_tick_label_size = inputs[&#x27;y_tick_label_size&#x27;]
-  295      year_label = inputs[&#x27;year_label&#x27;]
-  296
-  297      # Collect the plotting options that are shared across all year panels.
-  298      plot_options = dict(width=width, height=height, name=plot_name, x_label=x_label, y_label=fr&#x27;{y_label}&#x27;)
-  299      plot_options.update(zip([&#x27;x_scale&#x27;, &#x27;y_scale&#x27;, &#x27;y_limits&#x27;, &#x27;use_latex&#x27;], [x_scale, y_scale, y_limits, use_latex]))
-  300      plot_options.update(zip([&#x27;x_tick_label_size&#x27;, &#x27;y_tick_label_size&#x27;, &#x27;legend_on&#x27;], [x_tick_label_size, y_tick_label_size, legend_on]))
-  301      plot_options.update(zip([&#x27;x_label_size&#x27;, &#x27;y_label_size&#x27;, &#x27;legend_label_size&#x27;], [x_label_size, y_label_size, legend_label_size]))
-  302      plot_options.update(zip([&#x27;produce_png&#x27;, &#x27;legend_x_offset&#x27;, &#x27;legend_place_outside&#x27;], [produce_png, legend_x_offset, legend_place_outside]))
-  303      plot_options.update(zip([&#x27;legend_num_columns&#x27;], [legend_num_columns]))
-  304
-  305      # Use LaTeX fonts for figures and set font size of tick labels.
-  306      setup_plot_params(plot_options)
-  307
-  308      # Read the data file, filter to requested years, and apply the user-specified multiplier.
-  309      df = read_file_into_dataframe(output_file)
-  310      if plot_years is not None:
-  311          df = df[df[year_label].isin(plot_years)]
-  312      df[value_label] *= multiplier
-  313
-  314      # Create regional subsets for plotting. &quot;Global&quot; is represented by a copy
-  315      # of the whole DataFrame with the region label overwritten, so it pools all regions.
-  316      dataframes = []
-  317      if &#x27;Global&#x27; in regions:
-  318          df_global = df.copy()
-  319          df_global[region_label] = &#x27;Global&#x27;
-  320          dataframes.append(df_global)
-  321          regions.remove(&#x27;Global&#x27;)
-  322      if regions:
-  323          df_these_regions = df[df[region_label].isin(regions)]
-  324          dataframes.append(df_these_regions)
-  325      if basins:
-  326          df_these_basins = df[df[basin_label].isin(basins)]
-  327          dataframes.append(df_these_basins)
-  328      df = pd.concat(dataframes)
-  329
-  330      # Option 1: individual plots, where each scenario remains its own plotted data set.
-  331      if not check_is_list_of_lists(scenarios) or plot_type == &#x27;individual&#x27;:
-  332
-  333          # If scenarios is a list of lists, but we do not actually want to group each inner list into an ensemble,
-  334          # unpack scenarios into a list of strings, with one string for each output file.
-  335          if check_is_list_of_lists(scenarios) and plot_type == &#x27;individual&#x27;:
-  336              scenarios = list(itertools.chain.from_iterable(scenarios))
-  337              # Turn the corresponding plot_colors to list of lists with enough rows to match, then unpack them.
-  338              plot_colors = list(itertools.chain.from_iterable(plot_colors))
-  339
-  340          # Select the scenarios of interest.
-  341          df = df[df[scenario_label].isin(scenarios)]
-  342          scenario_list = scenarios
-  343
-  344      # Option 2: ensemble plots, where scenarios are grouped into named scenario sets.
-  345      elif check_is_list_of_lists(scenarios) and plot_type == &#x27;ensemble&#x27;:
-  346          # For each scenario set, collect all scenarios that belong to that set and put in a DataFrame, then concatenate the DataFrames for all sets.
-  347          dataframes = []
-  348          for index, scenario_set_name in enumerate(scenario_sets):
-  349              scenarios_in_set = [scenarios[i][index] for i in range(len(scenarios))]
-  350              df_this_set = df[df[scenario_label].isin(scenarios_in_set)].copy()
-  351              # All scenarios in this set will be collected together and have the same label.
-  352              df_this_set[scenario_label] = scenario_set_name
-  353              dataframes.append(df_this_set)
-  354          # Concatenate all DataFrames for all scenario sets by row.
-  355          # Averages over each scenario set will be automatically computed later when creating the box plot.
-  356          df = pd.concat(dataframes)
-  357          scenario_list = scenario_sets
-  358
-  359      # From this point on, individual and ensemble plots share the same category
-  360      # preparation and plotting logic.
-  361
-  362      # Set the appropriate dictionary for the landtype group.
-  363      if landtype_groups == &#x27;modified&#x27;:
-  364          landtype_groups = gcam_landtype_groups
-  365      elif landtype_groups == &#x27;original&#x27;:
-  366          landtype_groups = gcam_landtype_groups_original
-  367
-  368      # Create separate DataFrames for three category cases: all rows, named GCAM
-  369      # landtype groups (e.g., forest/crop/grass), and exact category values.
-  370      dataframes = []
-  371      if &#x27;All&#x27; in categories:
-  372          df_all = df.copy()
-  373          df_all[category_label] = &#x27;All&#x27;
-  374          dataframes.append(df_all)
-  375          categories.remove(&#x27;All&#x27;)
-  376      if any(item in landtype_groups for item in categories):
-  377          for landtype_group in landtype_groups:
-  378              if landtype_group in categories:
-  379                  if not df[category_label].isin(landtype_groups[landtype_group]).any():
-  380                      continue
-  381                  df_this_landtype_group = produce_dataframe_for_landtype_group(df, landtype_group, category_label,
-  382                      value_label, landtype_groups, aggregation_function, key_columns)
-  383                  dataframes.append(df_this_landtype_group)
-  384                  categories.remove(landtype_group)
-  385      if categories:
-  386          df = df[df[category_label].isin(categories)]
-  387          dataframes.append(df)
-  388      df = pd.concat(dataframes).reset_index()
-  389
-  390      # If different plotted categories use related units such as kg/yr and kg/m2/yr,
-  391      # keep the shared numerator on the y-axis and put each denominator on the x tick.
-  392      units_by_category = {}
-  393      if isinstance(category_label, str) and x_variable == category_label and &#x27;units&#x27; in df.columns:
-  394          for category, group in df.groupby(category_label):
-  395              units = group[&#x27;units&#x27;].dropna().unique()
-  396              if len(units) == 1 and &#x27;/&#x27; in units[0]:
-  397                  units_by_category[str(category)] = units[0]
-  398          numerators = {unit.split(&#x27;/&#x27;, 1)[0] for unit in units_by_category.values()}
-  399          if units_by_category and len(numerators) == 1:
-  400              numerator = numerators.pop()
-  401              if numerator not in y_label:
-  402                  y_label += f&#x27; (% diff in {numerator})&#x27; if plot_percent_difference else f&#x27; ({numerator})&#x27;
-  403                  plot_options[&#x27;y_label&#x27;] = fr&#x27;{y_label}&#x27;
-  404      units = df[&#x27;units&#x27;].dropna().unique() if &#x27;units&#x27; in df.columns else []
-  405      if not units_by_category and len(units) == 1 and units[0] not in y_label:
-  406          unit_label = f&#x27;% diff in {units[0]}&#x27; if plot_percent_difference else units[0]
-  407          y_label += f&#x27; ({unit_label})&#x27;
-  408          plot_options[&#x27;y_label&#x27;] = fr&#x27;{y_label}&#x27;
-  409
-  410      # Each requested year gets its own panel in the same output figure.
-  411      years_to_plot = plot_years if plot_years is not None else sorted(df[year_label].unique())
-  412      ncols = inputs[&#x27;plot_years_ncols&#x27;] or len(years_to_plot)
-  413      nrows = math.ceil(len(years_to_plot) / ncols)
-  414      fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
-  415      axes_flat = list(axes.flat) if hasattr(axes, &#x27;flat&#x27;) else [axes]
+  228      # area_weighted_mean requires area metadata from gcam_process_extracted_data.py.
+  229      if inputs[&#x27;aggregation_function&#x27;] == &#x27;area_weighted_mean&#x27; and &#x27;area&#x27; not in df.columns:
+  230          raise KeyError(f&quot;Error: aggregation_function is &#x27;area_weighted_mean&#x27; &quot;
+  231                         f&quot;but no &#x27;area&#x27; column found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
+  232                         f&quot;Consider using &#x27;mean&#x27; or &#x27;sum&#x27; instead, or add area data &quot;
+  233                         f&quot;with gcam_process_extracted_data.py and a land_allocation_file entry.&quot;)
+  234
+  235      # Check that hue and x_variable columns exist in the DataFrame if specified.
+  236      hue = inputs.get(&#x27;hue&#x27;, None)
+  237      if hue and hue not in df.columns:
+  238          raise KeyError(f&quot;Error: hue &#x27;{hue}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
+  239                         f&quot;Available columns: {list(df.columns)}&quot;)
+  240      x_variable = inputs.get(&#x27;x_variable&#x27;, inputs[&#x27;category_label&#x27;])
+  241      if x_variable not in df.columns:
+  242          raise KeyError(f&quot;Error: x_variable &#x27;{x_variable}&#x27; not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27;. &quot;
+  243                         f&quot;Available columns: {list(df.columns)}&quot;)
+  244
+  245      # Warn if any specified scenario is not found in the DataFrame.
+  246      scenario_label = inputs[&#x27;scenario_label&#x27;]
+  247      if scenario_label in df.columns:
+  248          available_scenarios = set(df[scenario_label].unique())
+  249          specified_scenarios = inputs[&#x27;scenarios&#x27;]
+  250          if check_is_list_of_lists(specified_scenarios):
+  251              flat_scenarios = [s for member in specified_scenarios for s in member]
+  252          else:
+  253              flat_scenarios = list(specified_scenarios)
+  254          missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
+  255          if missing_scenarios:
+  256              print(f&quot;Warning: the following scenarios were not found in &#x27;{inputs[&#x27;output_file&#x27;]}&#x27; &quot;
+  257                    f&quot;and will produce empty plots: {missing_scenarios}&quot;)
+  258
+  259      # Verify the plot directory is writable before doing the plotting work.
+  260      plot_name = inputs[&#x27;plot_name&#x27;]
+  261      plot_dir = os.path.dirname(plot_name) or &#x27;.&#x27;
+  262      if not os.access(plot_dir, os.W_OK):
+  263          raise OSError(f&quot;Error: plot directory is not writable: &#x27;{plot_dir}&#x27;&quot;)
+  264
+  265      return inputs
+  266
+  267  def plot_box_and_whiskers(inputs):
+  268      &quot;&quot;&quot;
+  269      Creates a box plot (box-and-whisker plot) and perform basic statistical analysis for a single output file. The data in the file are organized
+  270      into scenarios or scenario sets, categories, and regions.
+  271      Types of plots: 1) Plots in which each scenario is treated as an individual data set (not grouped into an ensemble) in the collection.
+  272      2) Ensemble plots in which the scenarios are grouped into sets (referred to as an ensemble) and results from of each set are plotted.
+  273      The scenarios must be specified as a list of lists (nested list) for ensemble plots.
+  274
+  275      Parameters:
+  276          input: Dictionary containing user inputs for different plotting options, where the keys are options and values are choices for those options.
+  277                 This dictionary is assumed to be complete (pre-processed).
+  278
+  279      Returns:
+  280          N/A.
+  281      &quot;&quot;&quot;
+  282      # This function creates one multi-panel box-and-whisker figure from a single
+  283      # processed GCAM CSV. The data may be split by scenario, scenario set,
+  284      # category, region, basin, hue, and year depending on the JSON options.
+  285      start_time = time.time()
+  286      output_file = inputs[&#x27;output_file&#x27;]
+  287
+  288      # Extract all other plotting options.
+  289      basin_label = inputs[&#x27;basin_label&#x27;]
+  290      basins = list(inputs[&#x27;basins&#x27;]) if isinstance(inputs[&#x27;basins&#x27;], list) else inputs[&#x27;basins&#x27;]
+  291      categories = list(inputs[&#x27;categories&#x27;]) if isinstance(inputs[&#x27;categories&#x27;], list) else inputs[&#x27;categories&#x27;]
+  292      category_label = inputs[&#x27;category_label&#x27;]
+  293      fill_boxes = inputs[&#x27;fill_boxes&#x27;]
+  294      height = inputs[&#x27;height&#x27;]
+  295      hue = inputs[&#x27;hue&#x27;]
+  296      key_columns = inputs[&#x27;key_columns&#x27;]
+  297      landtype_groups = inputs[&#x27;landtype_groups&#x27;]
+  298      legend_label_size = inputs[&#x27;legend_label_size&#x27;]
+  299      legend_num_columns = inputs[&#x27;legend_num_columns&#x27;]
+  300      legend_on = inputs[&#x27;legend_on&#x27;]
+  301      legend_place_outside = inputs[&#x27;legend_place_outside&#x27;]
+  302      legend_x_offset = inputs[&#x27;legend_x_offset&#x27;]
+  303      linewidth = inputs[&#x27;linewidth&#x27;]
+  304      marker_size = inputs[&#x27;marker_size&#x27;]
+  305      multipanel = inputs[&#x27;multipanel&#x27;]
+  306      multiplier = inputs[&#x27;multiplier&#x27;]
+  307      aggregation_function = inputs[&#x27;aggregation_function&#x27;]
+  308      plot_colors = inputs[&#x27;plot_colors&#x27;]
+  309      plot_name = inputs[&#x27;plot_name&#x27;]
+  310      plot_percent_difference = inputs[&#x27;plot_percent_difference&#x27;]
+  311      plot_years = inputs[&#x27;plot_years&#x27;]
+  312      plot_type = inputs[&#x27;plot_type&#x27;]
+  313      produce_png = inputs[&#x27;produce_png&#x27;]
+  314      region_label = inputs[&#x27;region_label&#x27;]
+  315      regions = list(inputs[&#x27;regions&#x27;]) if isinstance(inputs[&#x27;regions&#x27;], list) else inputs[&#x27;regions&#x27;]
+  316      scenario_label = inputs[&#x27;scenario_label&#x27;]
+  317      scenario_sets = inputs[&#x27;scenario_sets&#x27;]
+  318      scenarios = inputs[&#x27;scenarios&#x27;]
+  319      use_latex = inputs[&#x27;use_latex&#x27;]
+  320      value_label = inputs[&#x27;value_label&#x27;]
+  321      width = inputs[&#x27;width&#x27;]
+  322      x_label = inputs[&#x27;x_label&#x27;]
+  323      x_label_size = inputs[&#x27;x_label_size&#x27;]
+  324      x_scale = inputs[&#x27;x_scale&#x27;]
+  325      x_tick_labels = inputs[&#x27;x_tick_labels&#x27;] or {}
+  326      x_tick_label_size = inputs[&#x27;x_tick_label_size&#x27;]
+  327      x_variable = inputs.get(&#x27;x_variable&#x27;, category_label)
+  328      y_label = inputs[&#x27;y_label&#x27;]
+  329      y_label_size = inputs[&#x27;y_label_size&#x27;]
+  330      y_limits = inputs[&#x27;y_limits&#x27;]
+  331      y_scale = inputs[&#x27;y_scale&#x27;]
+  332      y_tick_label_size = inputs[&#x27;y_tick_label_size&#x27;]
+  333      year_label = inputs[&#x27;year_label&#x27;]
+  334
+  335      # Collect the plotting options that are shared across all year panels.
+  336      plot_options = dict(width=width, height=height, name=plot_name, x_label=x_label, y_label=fr&#x27;{y_label}&#x27;)
+  337      plot_options.update(zip([&#x27;x_scale&#x27;, &#x27;y_scale&#x27;, &#x27;y_limits&#x27;, &#x27;use_latex&#x27;], [x_scale, y_scale, y_limits, use_latex]))
+  338      plot_options.update(zip([&#x27;x_tick_label_size&#x27;, &#x27;y_tick_label_size&#x27;, &#x27;legend_on&#x27;], [x_tick_label_size, y_tick_label_size, legend_on]))
+  339      plot_options.update(zip([&#x27;x_label_size&#x27;, &#x27;y_label_size&#x27;, &#x27;legend_label_size&#x27;], [x_label_size, y_label_size, legend_label_size]))
+  340      plot_options.update(zip([&#x27;produce_png&#x27;, &#x27;legend_x_offset&#x27;, &#x27;legend_place_outside&#x27;], [produce_png, legend_x_offset, legend_place_outside]))
+  341      plot_options.update(zip([&#x27;legend_num_columns&#x27;], [legend_num_columns]))
+  342
+  343      # Use LaTeX fonts for figures and set font size of tick labels.
+  344      setup_plot_params(plot_options)
+  345
+  346      # Read the data file, filter to requested years, and apply the user-specified multiplier.
+  347      df = read_file_into_dataframe(output_file)
+  348      if not multipanel:
+  349          years_to_loop = plot_years if plot_years is not None else sorted(df[year_label].unique())
+  350          include_year_in_name = plot_years is None or len(plot_years) != 1
+  351          for year in years_to_loop:
+  352              child_inputs = inputs.copy()
+  353              child_inputs[&#x27;multipanel&#x27;] = True
+  354              child_inputs[&#x27;plot_years&#x27;] = [year]
+  355              if include_year_in_name:
+  356                  child_inputs[&#x27;plot_name&#x27;] = _add_suffix_to_plot_name(plot_name, year)
+  357              plot_box_and_whiskers(child_inputs)
+  358          return
+  359      if plot_years is not None:
+  360          df = df[df[year_label].isin(plot_years)]
+  361      df[value_label] *= multiplier
+  362
+  363      # Create regional subsets for plotting. &quot;Global&quot; is represented by a copy
+  364      # of the whole DataFrame with the region label overwritten, so it pools all regions.
+  365      dataframes = []
+  366      if &#x27;Global&#x27; in regions:
+  367          df_global = df.copy()
+  368          df_global[region_label] = &#x27;Global&#x27;
+  369          dataframes.append(df_global)
+  370          regions.remove(&#x27;Global&#x27;)
+  371      if regions:
+  372          df_these_regions = df[df[region_label].isin(regions)]
+  373          dataframes.append(df_these_regions)
+  374      if basins:
+  375          df_these_basins = df[df[basin_label].isin(basins)]
+  376          dataframes.append(df_these_basins)
+  377      df = pd.concat(dataframes)
+  378
+  379      # Option 1: individual plots, where each scenario remains its own plotted data set.
+  380      if not check_is_list_of_lists(scenarios) or plot_type == &#x27;individual&#x27;:
+  381
+  382          # If scenarios is a list of lists, but we do not actually want to group each inner list into an ensemble,
+  383          # unpack scenarios into a list of strings, with one string for each output file.
+  384          if check_is_list_of_lists(scenarios) and plot_type == &#x27;individual&#x27;:
+  385              scenarios = list(itertools.chain.from_iterable(scenarios))
+  386              # Turn the corresponding plot_colors to list of lists with enough rows to match, then unpack them.
+  387              plot_colors = list(itertools.chain.from_iterable(plot_colors))
+  388
+  389          # Select the scenarios of interest.
+  390          df = df[df[scenario_label].isin(scenarios)]
+  391          scenario_list = scenarios
+  392
+  393      # Option 2: ensemble plots, where scenarios are grouped into named scenario sets.
+  394      elif check_is_list_of_lists(scenarios) and plot_type == &#x27;ensemble&#x27;:
+  395          # For each scenario set, collect all scenarios that belong to that set and put in a DataFrame, then concatenate the DataFrames for all sets.
+  396          dataframes = []
+  397          for index, scenario_set_name in enumerate(scenario_sets):
+  398              scenarios_in_set = [scenarios[i][index] for i in range(len(scenarios))]
+  399              df_this_set = df[df[scenario_label].isin(scenarios_in_set)].copy()
+  400              # All scenarios in this set will be collected together and have the same label.
+  401              df_this_set[scenario_label] = scenario_set_name
+  402              dataframes.append(df_this_set)
+  403          # Concatenate all DataFrames for all scenario sets by row.
+  404          # Averages over each scenario set will be automatically computed later when creating the box plot.
+  405          df = pd.concat(dataframes)
+  406          scenario_list = scenario_sets
+  407
+  408      # From this point on, individual and ensemble plots share the same category
+  409      # preparation and plotting logic.
+  410
+  411      # Set the appropriate dictionary for the landtype group.
+  412      if landtype_groups == &#x27;modified&#x27;:
+  413          landtype_groups = gcam_landtype_groups
+  414      elif landtype_groups == &#x27;original&#x27;:
+  415          landtype_groups = gcam_landtype_groups_original
   416
-  417      for panel_idx, year in enumerate(years_to_plot):
-  418          ax = axes_flat[panel_idx]
-  419          df_year = df[df[year_label] == year].copy()
-  420          if df_year.empty:
-  421              print(f&quot;Warning: year {year} not found in data. Skipping panel.&quot;)
-  422              ax.set_visible(False)
-  423              continue
-  424          if plot_percent_difference:
-  425              # Percent-difference box plots use the first scenario/scenario set as
-  426              # the reference and then drop that reference from the plotted data.
-  427              reference = df_year[df_year[scenario_label] == scenario_list[0]][value_label].to_numpy()
-  428              for scenario in scenario_list:
-  429                  scenario_filter = df_year[scenario_label] == scenario
-  430                  df_year.loc[scenario_filter, value_label] -= reference
-  431                  df_year.loc[scenario_filter, value_label] *= 100 / (reference + EPSILON)
-  432              df_year = df_year[df_year[scenario_label] != scenario_list[0]]
-  433
-  434          if df_year.empty or not df_year[value_label].notna().any():
-  435              print(f&quot;Warning: no plottable data for year {year}. Skipping panel.&quot;)
-  436              ax.set_visible(False)
-  437              continue
+  417      # Create separate DataFrames for three category cases: all rows, named GCAM
+  418      # landtype groups (e.g., forest/crop/grass), and exact category values.
+  419      dataframes = []
+  420      if &#x27;All&#x27; in categories:
+  421          df_all = df.copy()
+  422          df_all[category_label] = &#x27;All&#x27;
+  423          dataframes.append(df_all)
+  424          categories.remove(&#x27;All&#x27;)
+  425      if any(item in landtype_groups for item in categories):
+  426          for landtype_group in landtype_groups:
+  427              if landtype_group in categories:
+  428                  if not df[category_label].isin(landtype_groups[landtype_group]).any():
+  429                      continue
+  430                  df_this_landtype_group = produce_dataframe_for_landtype_group(df, landtype_group, category_label,
+  431                      value_label, landtype_groups, aggregation_function, key_columns)
+  432                  dataframes.append(df_this_landtype_group)
+  433                  categories.remove(landtype_group)
+  434      if categories:
+  435          df = df[df[category_label].isin(categories)]
+  436          dataframes.append(df)
+  437      df = pd.concat(dataframes).reset_index()
   438
-  439          num_x_variables = len(df_year[hue].unique()) if hue else len(df_year[x_variable].unique())
-  440          palette = plot_colors[:num_x_variables] if not plot_percent_difference else plot_colors[1:num_x_variables + 1]
-  441          box_properties = {&#x27;edgecolor&#x27;: &#x27;black&#x27;} if fill_boxes else {&#x27;color&#x27;: &#x27;black&#x27;}
-  442          line_properties = {&#x27;color&#x27;: &#x27;black&#x27;}
-  443          flier_properties = {&#x27;markeredgecolor&#x27;: &#x27;black&#x27;, &#x27;markerfacecolor&#x27;: &#x27;none&#x27;}
-  444          if hue:
-  445              sns.boxplot(df_year, x=x_variable, y=value_label, hue=hue, ax=ax, linewidth=linewidth,
-  446                          palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
-  447                          whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
-  448                          flierprops=flier_properties)
-  449          else:
-  450              sns.boxplot(df_year, x=x_variable, y=value_label, hue=x_variable, ax=ax, legend=False, linewidth=linewidth,
-  451                          palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
-  452                          whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
-  453                          flierprops=flier_properties)
-  454          if units_by_category:
-  455              ticks = ax.get_xticks()
-  456              labels = [tick.get_text() for tick in ax.get_xticklabels()]
-  457              ax.set_xticks(ticks, labels=[
-  458                  f&quot;{x_tick_labels.get(label, label)} ({units_by_category[label].split(&#x27;/&#x27;, 1)[1]})&quot;
-  459                  if label in units_by_category else x_tick_labels.get(label, label)
-  460                  for label in labels
-  461              ])
-  462          elif x_tick_labels:
-  463              ticks = ax.get_xticks()
-  464              labels = [tick.get_text() for tick in ax.get_xticklabels()]
-  465              ax.set_xticks(ticks, labels=[x_tick_labels.get(label, label) for label in labels])
-  466          plt.setp(ax.get_xticklabels(), rotation=45, ha=&#x27;right&#x27;, rotation_mode=&#x27;anchor&#x27;)
-  467          ax.set_title(f&#x27;{chr(ord(&quot;a&quot;) + panel_idx)}) {year}&#x27;)
-  468          panel_options = plot_options.copy()
-  469          panel_options[&#x27;legend_on&#x27;] = legend_on if hue else False
-  470          panel_options[&#x27;y_label&#x27;] = &#x27;&#x27;
-  471          set_figure_options(fig, ax, panel_options)
-  472
-  473      for panel_idx in range(len(years_to_plot), nrows * ncols):
-  474          axes_flat[panel_idx].set_visible(False)
-  475
-  476      fig.set_size_inches(width * ncols, height * nrows)
-  477      fig.supylabel(plot_options[&#x27;y_label&#x27;], fontsize=y_label_size)
-  478      fig.tight_layout(rect=(0.04, 0, 1, 1))
-  479      plot_options[&#x27;name&#x27;] = plot_name
-  480      save_figure(plot_name, fig, plot_options)
-  481
-  482      # Close the plot now that we are done with it. Record the elapsed time.
-  483      plt.close(fig)
-  484      end_time = time.time()
-  485      elapsed_time = end_time - start_time
-  486      print(f&quot;Elapsed time for producing plot {plot_name}: {elapsed_time:.2f} seconds&quot;)
-  487
-  488
-  489  ###---------------Begin execution---------------###
-  490  if __name__ == &#x27;__main__&#x27;:
-  491
-  492      # Run this script together with the input JSON file(s) on the command line.
-  493      start_time = time.time()
-  494      if len(sys.argv) &lt; 2:
-  495          print(&#x27;Usage: python gcam_plot_box_and_whiskers.py `path/to/json/input/file(s)\&#x27;&#x27;)
-  496          sys.exit()
-  497
-  498      # Read and load the JSON file(s) into a list of dictionaries.
-  499      inputs = []
-  500      for i in range(1, len(sys.argv)):
-  501          input_file = sys.argv[i]
-  502          with open(input_file) as f:
-  503              inputs.extend(json.load(f))
-  504
-  505      # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
-  506      list_of_inputs = []
-  507      for index in range(len(inputs)):
-  508          result = process_inputs(inputs[index])
-  509          if result is not None:
-  510              list_of_inputs.append(result)
-  511
-  512      # Use any max_processes value requested in the inputs, otherwise use the default.
-  513      # Do not start more worker processes than there are independent plotting jobs.
-  514      max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
-  515      num_processes = min(max_processes, max(1, len(list_of_inputs)))
-  516
-  517      # Create all of the box plots in parallel.
-  518      with multiprocessing.Pool(processes=num_processes) as pool:
-  519          pool.map(plot_box_and_whiskers, list_of_inputs)
-  520
-  521      # Print the total execution time to produce all the plots.
-  522      end_time = time.time()
-  523      elapsed_time = end_time - start_time
-  524      print(f&quot;Elapsed time for producing all plots: {elapsed_time:.2f} seconds&quot;)</code></pre>
+  439      # If different plotted categories use related units such as kg/yr and kg/m2/yr,
+  440      # keep the shared numerator on the y-axis and put each denominator on the x tick.
+  441      units_by_category = {}
+  442      if isinstance(category_label, str) and x_variable == category_label and &#x27;units&#x27; in df.columns:
+  443          for category, group in df.groupby(category_label):
+  444              units = [_format_units_for_label(unit, use_latex) for unit in group[&#x27;units&#x27;].dropna().unique()]
+  445              units = [unit for unit in units if unit]
+  446              if len(units) == 1 and &#x27;/&#x27; in units[0]:
+  447                  units_by_category[str(category)] = units[0]
+  448          numerators = {unit.split(&#x27;/&#x27;, 1)[0] for unit in units_by_category.values()}
+  449          if units_by_category and len(numerators) == 1:
+  450              numerator = numerators.pop()
+  451              if numerator not in y_label:
+  452                  y_label += f&#x27; (% diff in {numerator})&#x27; if plot_percent_difference else f&#x27; ({numerator})&#x27;
+  453                  plot_options[&#x27;y_label&#x27;] = fr&#x27;{y_label}&#x27;
+  454      units = [_format_units_for_label(unit, use_latex) for unit in df[&#x27;units&#x27;].dropna().unique()] if &#x27;units&#x27; in df.columns else []
+  455      units = [unit for unit in units if unit]
+  456      if not units_by_category and len(units) == 1 and units[0] not in y_label:
+  457          unit_label = f&#x27;% diff in {units[0]}&#x27; if plot_percent_difference else units[0]
+  458          y_label += f&#x27; ({unit_label})&#x27;
+  459          plot_options[&#x27;y_label&#x27;] = fr&#x27;{y_label}&#x27;
+  460
+  461      # Each requested year gets its own panel in the same output figure.
+  462      years_to_plot = plot_years if plot_years is not None else sorted(df[year_label].unique())
+  463      ncols = inputs[&#x27;plot_years_ncols&#x27;] or len(years_to_plot)
+  464      nrows = math.ceil(len(years_to_plot) / ncols)
+  465      fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
+  466      axes_flat = list(axes.flat) if hasattr(axes, &#x27;flat&#x27;) else [axes]
+  467
+  468      for panel_idx, year in enumerate(years_to_plot):
+  469          ax = axes_flat[panel_idx]
+  470          df_year = df[df[year_label] == year].copy()
+  471          if df_year.empty:
+  472              print(f&quot;Warning: year {year} not found in data. Skipping panel.&quot;)
+  473              ax.set_visible(False)
+  474              continue
+  475          if plot_percent_difference:
+  476              # Percent-difference box plots use the first scenario/scenario set as
+  477              # the reference and then drop that reference from the plotted data.
+  478              reference = df_year[df_year[scenario_label] == scenario_list[0]][value_label].to_numpy()
+  479              for scenario in scenario_list:
+  480                  scenario_filter = df_year[scenario_label] == scenario
+  481                  df_year.loc[scenario_filter, value_label] -= reference
+  482                  df_year.loc[scenario_filter, value_label] *= 100 / (reference + EPSILON)
+  483              df_year = df_year[df_year[scenario_label] != scenario_list[0]]
+  484
+  485          if df_year.empty or not df_year[value_label].notna().any():
+  486              print(f&quot;Warning: no plottable data for year {year}. Skipping panel.&quot;)
+  487              ax.set_visible(False)
+  488              continue
+  489
+  490          num_x_variables = len(df_year[hue].unique()) if hue else len(df_year[x_variable].unique())
+  491          palette = plot_colors[:num_x_variables] if not plot_percent_difference else plot_colors[1:num_x_variables + 1]
+  492          box_properties = {&#x27;edgecolor&#x27;: &#x27;black&#x27;} if fill_boxes else {&#x27;color&#x27;: &#x27;black&#x27;}
+  493          line_properties = {&#x27;color&#x27;: &#x27;black&#x27;}
+  494          flier_properties = {&#x27;markeredgecolor&#x27;: &#x27;black&#x27;, &#x27;markerfacecolor&#x27;: &#x27;none&#x27;}
+  495          if hue:
+  496              sns.boxplot(df_year, x=x_variable, y=value_label, hue=hue, ax=ax, linewidth=linewidth,
+  497                          palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
+  498                          whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
+  499                          flierprops=flier_properties)
+  500          else:
+  501              sns.boxplot(df_year, x=x_variable, y=value_label, hue=x_variable, ax=ax, legend=False, linewidth=linewidth,
+  502                          palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
+  503                          whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
+  504                          flierprops=flier_properties)
+  505          if units_by_category:
+  506              ticks = ax.get_xticks()
+  507              labels = [tick.get_text() for tick in ax.get_xticklabels()]
+  508              ax.set_xticks(ticks, labels=[
+  509                  f&quot;{x_tick_labels.get(label, label)} ({units_by_category[label].split(&#x27;/&#x27;, 1)[1]})&quot;
+  510                  if label in units_by_category else x_tick_labels.get(label, label)
+  511                  for label in labels
+  512              ])
+  513          elif x_tick_labels:
+  514              ticks = ax.get_xticks()
+  515              labels = [tick.get_text() for tick in ax.get_xticklabels()]
+  516              ax.set_xticks(ticks, labels=[x_tick_labels.get(label, label) for label in labels])
+  517          plt.setp(ax.get_xticklabels(), rotation=45, ha=&#x27;right&#x27;, rotation_mode=&#x27;anchor&#x27;)
+  518          ax.set_title(f&#x27;{chr(ord(&quot;a&quot;) + panel_idx)}) {year}&#x27;)
+  519          panel_options = plot_options.copy()
+  520          panel_options[&#x27;legend_on&#x27;] = legend_on if hue else False
+  521          panel_options[&#x27;y_label&#x27;] = &#x27;&#x27;
+  522          set_figure_options(fig, ax, panel_options)
+  523
+  524      for panel_idx in range(len(years_to_plot), nrows * ncols):
+  525          axes_flat[panel_idx].set_visible(False)
+  526
+  527      fig.set_size_inches(width * ncols, height * nrows)
+  528      fig.supylabel(plot_options[&#x27;y_label&#x27;], fontsize=y_label_size)
+  529      fig.tight_layout(rect=(0.04, 0, 1, 1))
+  530      plot_options[&#x27;name&#x27;] = plot_name
+  531      save_figure(plot_name, fig, plot_options)
+  532
+  533      # Close the plot now that we are done with it. Record the elapsed time.
+  534      plt.close(fig)
+  535      end_time = time.time()
+  536      elapsed_time = end_time - start_time
+  537      print(f&quot;Elapsed time for producing plot {plot_name}: {elapsed_time:.2f} seconds&quot;)
+  538
+  539
+  540  ###---------------Begin execution---------------###
+  541  if __name__ == &#x27;__main__&#x27;:
+  542
+  543      # Run this script together with the input JSON file(s) on the command line.
+  544      start_time = time.time()
+  545      if len(sys.argv) &lt; 2:
+  546          print(&#x27;Usage: python gcam_plot_box_and_whiskers.py `path/to/json/input/file(s)\&#x27;&#x27;)
+  547          sys.exit()
+  548
+  549      # Read and load the JSON file(s) into a list of dictionaries.
+  550      inputs = []
+  551      for i in range(1, len(sys.argv)):
+  552          input_file = sys.argv[i]
+  553          with open(input_file) as f:
+  554              inputs.extend(json.load(f))
+  555
+  556      # Process each dictionary so that each of them specifies a complete set of options (e.g., by adding default values) for a single plot.
+  557      list_of_inputs = []
+  558      for index in range(len(inputs)):
+  559          result = process_inputs(inputs[index])
+  560          if result is not None:
+  561              list_of_inputs.append(result)
+  562
+  563      # Use any max_processes value requested in the inputs, otherwise use the default.
+  564      # Do not start more worker processes than there are independent plotting jobs.
+  565      max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
+  566      num_processes = min(max_processes, max(1, len(list_of_inputs)))
+  567
+  568      # Create all of the box plots in parallel.
+  569      with multiprocessing.Pool(processes=num_processes) as pool:
+  570          pool.map(plot_box_and_whiskers, list_of_inputs)
+  571
+  572      # Print the total execution time to produce all the plots.
+  573      end_time = time.time()
+  574      elapsed_time = end_time - start_time
+  575      print(f&quot;Elapsed time for producing all plots: {elapsed_time:.2f} seconds&quot;)</code></pre>
 </div>
 </body>
 </html>
