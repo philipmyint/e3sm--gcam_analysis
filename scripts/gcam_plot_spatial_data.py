@@ -667,8 +667,7 @@ def plot_spatial_data(inputs):
                 panel_vmin, panel_vmax = -100, 100
 
             title_text = f'{selected_category} ({year}){units_str}' if selected_category is not None else f'{year}{units_str}'
-            panel_title = f'{chr(ord("a") + panel_idx)}) {title_text}'
-            ax.set_title(panel_title, fontdict={'fontsize': title_size})
+            ax.set_title(title_text, fontdict={'fontsize': title_size})
             gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                            legend_kwds={'shrink': 0.55, 'fraction': 0.035, 'pad': 0.01},
                            edgecolor='k', linewidth=linewidth)
@@ -772,7 +771,7 @@ def plot_spatial_data(inputs):
                 if plot_type == 'percent_difference' and not cbar_limits and gdf_panel['plot'].abs().max() > 100:
                     panel_vmin, panel_vmax = -100, 100
 
-                panel_title = f'{chr(ord("a") + panel_idx)}) {category} ({year}){_panel_units_str(df_cat, plot_type, units_str, use_latex)}'
+                panel_title = f'{category} ({year}){_panel_units_str(df_cat, plot_type, units_str, use_latex)}'
                 ax.set_title(panel_title, fontdict={'fontsize': title_size})
                 gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                                legend_kwds={'shrink': 0.55, 'fraction': 0.035, 'pad': 0.01},

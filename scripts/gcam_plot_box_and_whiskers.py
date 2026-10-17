@@ -49,6 +49,7 @@ default_inputs = {
     'regions': ['Global'],
     'scenario_label': 'scenario', 
     'scenario_sets': None,
+    'title_size': axis_label_size_default,
     'use_latex': use_latex_default, 
     'value_label': 'value',
     'width': width_default,   
@@ -125,6 +126,7 @@ def process_inputs(inputs):
         print(f"Warning: output file is empty, skipping: '{inputs['output_file']}'")
         return None
     df = read_file_into_dataframe(inputs['output_file'])
+    plot_years_was_specified = 'plot_years' in inputs
 
     # If the category label (e.g., sector or landtype) has not been specified, use the default value.
     if 'category_label' not in inputs:
@@ -203,6 +205,7 @@ def process_inputs(inputs):
     for key in default_inputs.keys():
         if key not in inputs:
             inputs[key] = default_inputs[key]
+    inputs['_plot_years_was_specified'] = plot_years_was_specified
 
     if inputs['hue'] == 'scenario' and inputs['plot_percent_difference']:
         print(f"Warning: skipping '{inputs['output_file']}' because hue='scenario' and "
@@ -319,6 +322,7 @@ def plot_box_and_whiskers(inputs):
     plot_name = inputs['plot_name']
     plot_percent_difference = inputs['plot_percent_difference']
     plot_years = inputs['plot_years']
+    plot_years_was_specified = inputs.get('_plot_years_was_specified', True)
     plot_type = inputs['plot_type']
     produce_png = inputs['produce_png']
     region_label = inputs['region_label']
@@ -326,6 +330,7 @@ def plot_box_and_whiskers(inputs):
     scenario_label = inputs['scenario_label']
     scenario_sets = inputs['scenario_sets']
     scenarios = inputs['scenarios']
+    title_size = inputs['title_size']
     use_latex = inputs['use_latex']
     value_label = inputs['value_label']
     width = inputs['width']
@@ -357,6 +362,12 @@ def plot_box_and_whiskers(inputs):
     df = read_file_into_dataframe(output_file)
     if not multipanel:
         years_to_loop = plot_years if plot_years is not None else sorted(df[year_label].unique())
+        # If plot_years came from the script default rather than the JSON file,
+        # quietly drop default years that are absent from this dataset. Explicit
+        # user-requested years are kept so missing-year warnings still surface.
+        if plot_years is not None and not plot_years_was_specified:
+            available_years = set(df[year_label].unique())
+            years_to_loop = [year for year in years_to_loop if year in available_years]
         include_year_in_name = plot_years is None or len(plot_years) != 1
         for year in years_to_loop:
             child_inputs = inputs.copy()
@@ -479,7 +490,8 @@ def plot_box_and_whiskers(inputs):
         ax = axes_flat[panel_idx]
         df_year = df[df[year_label] == year].copy()
         if df_year.empty:
-            print(f"Warning: year {year} not found in data. Skipping panel.")
+            if plot_years_was_specified:
+                print(f"Warning: year {year} not found in data. Skipping panel.")
             ax.set_visible(False)
             continue
         if plot_percent_difference:
@@ -525,7 +537,7 @@ def plot_box_and_whiskers(inputs):
             labels = [tick.get_text() for tick in ax.get_xticklabels()]
             ax.set_xticks(ticks, labels=[x_tick_labels.get(label, label) for label in labels])
         plt.setp(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
-        ax.set_title(f'{chr(ord("a") + panel_idx)}) {year}')
+        ax.set_title(str(year), fontsize=title_size)
         panel_options = plot_options.copy()
         panel_options['legend_on'] = legend_on if hue else False
         panel_options['y_label'] = ''
