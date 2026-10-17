@@ -102,39 +102,18 @@ resid_cooling_diag.csv
 
 ## Example
 
-The ensemble member directories shown below must exist if downstream plotting
-JSON requests `Control_2` through `Control_5` and `Full feedback_2` through
-`Full feedback_5`; otherwise those scenarios will be skipped during compile and
-the plotting script will warn that they are missing.
-
 ```json
 [
     {
         "input_directories": [
             "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control",
             "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_2",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_2",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_3",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_3",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_4",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_4",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_5",
-            "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_5",
             "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/ag_scaling",
             "./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/carbon_scaling"
         ],
         "scenarios": [
             "Control",
             "Full feedback",
-            "Control_2",
-            "Full feedback_2",
-            "Control_3",
-            "Full feedback_3",
-            "Control_4",
-            "Full feedback_4",
-            "Control_5",
-            "Full feedback_5",
             "Ag scaling",
             "Carbon scaling"
         ],

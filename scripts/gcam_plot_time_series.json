@@ -141,7 +141,7 @@
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars_ensemble.csv",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
             ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
@@ -159,7 +159,7 @@
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars_ensemble.csv",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
             ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
@@ -178,7 +178,7 @@
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/soil_scalars.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/soil_scalars_ensemble.csv",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
             ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
@@ -196,7 +196,7 @@
         "use_latex": true
     },
     {
-        "output_file": "./../2025_DiVittorio_et_al_gcam/soil_scalars.csv",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/soil_scalars_ensemble.csv",
         "scenarios": [
             ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
             ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
