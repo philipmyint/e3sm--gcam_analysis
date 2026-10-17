@@ -5,6 +5,7 @@ import matplotlib.lines as mlines
 import multiprocessing
 import os
 import pandas as pd
+import re
 from scipy import stats
 import sys
 import time
@@ -23,12 +24,27 @@ def abbreviate_label(label, max_length=30):
     """Return an abbreviated version of label if it exceeds max_length characters."""
     if len(label) <= max_length:
         return label
+    # Do not abbreviate labels that contain LaTeX/math text; slicing those
+    # strings can produce invalid markup such as an unmatched "$".
+    if '$' in label:
+        return label
     words = label.replace('_', ' ').split()
     abbreviated_words = [w[:4] + '.' if len(w) > 5 else w for w in words]
     result = ' '.join(abbreviated_words)
     if len(result) > max_length:
         result = result[:max_length].rstrip() + '...'
     return result
+
+def label_already_contains_units(label, units):
+    """Return True if the user-supplied label already includes the units text."""
+    if not label or not units:
+        return False
+    # Compare a simplified text form so labels such as "thousands km$^2$" are
+    # recognized as containing CSV units such as "thous km2".
+    def normalize(text):
+        text = str(text).lower().replace('thousands', 'thous')
+        return re.sub(r'[^a-z0-9%]+', '', text)
+    return normalize(units) in normalize(label)
 
 def category_to_label_str(category):
     """Return a display string for a category that may be a string or a multi-column tuple."""
@@ -471,7 +487,7 @@ def plot_time_series(inputs):
             axis_y_label = rf'{y_label_abbreviated} (\% difference)'
         else:
             axis_y_label = f'{y_label_abbreviated} (% difference)'
-    elif units:
+    elif units and not label_already_contains_units(y_label, units):
         axis_y_label = f'{y_label_abbreviated} ({units})'
     else:
         axis_y_label = y_label_abbreviated

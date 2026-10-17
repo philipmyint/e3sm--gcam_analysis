@@ -52,7 +52,7 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 <tr><td><code>units_label</code></td><td>No</td><td><code>&quot;units&quot;</code></td><td>Units column used for labels.</td></tr>
 <tr><td><code>max_processes</code></td><td>No</td><td><code>MAX_PROCESSES</code></td><td>Maximum parallel workers. Defaults to all CPUs minus one, with a minimum of one.</td></tr>
 </tbody></table>
-<p>Styling options include <code>plot_directory</code>, <code>plot_name</code>, <code>plot_colors</code>, <code>markers</code>, <code>linestyle_tuples</code>, <code>linewidth</code>, <code>marker_size</code>, <code>y_label</code>, <code>y_label_abbreviated</code>, <code>x_limits</code>, <code>y_limits</code>, <code>legend_on</code>, <code>legend_place_outside</code>, <code>use_latex</code>, <code>produce_png</code>, <code>width</code>, and <code>height</code>.</p>
+<p>Styling options include <code>plot_directory</code>, <code>plot_name</code>, <code>plot_colors</code>, <code>markers</code>, <code>linestyle_tuples</code>, <code>linewidth</code>, <code>marker_size</code>, <code>y_label</code>, <code>y_label_abbreviated</code>, <code>x_limits</code>, <code>y_limits</code>, <code>legend_on</code>, <code>legend_place_outside</code>, <code>use_latex</code>, <code>produce_png</code>, <code>width</code>, and <code>height</code>. <code>y_label</code> should usually name only the quantity; units are read from the processed CSV's <code>units</code> column and appended automatically.</p>
 <h2>Scenario Formats</h2>
 <p>Flat scenario lists are plotted as individual scenario curves:</p>
 <pre><code>&quot;scenarios&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;]</code></pre>

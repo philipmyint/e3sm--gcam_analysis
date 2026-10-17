@@ -47,7 +47,7 @@ python gcam_plot_time_series.py config1.json config2.json
 | `units_label` | No | `"units"` | Units column used for labels. |
 | `max_processes` | No | `MAX_PROCESSES` | Maximum parallel workers. Defaults to all CPUs minus one, with a minimum of one. |
 
-Styling options include `plot_directory`, `plot_name`, `plot_colors`, `markers`, `linestyle_tuples`, `linewidth`, `marker_size`, `y_label`, `y_label_abbreviated`, `x_limits`, `y_limits`, `legend_on`, `legend_place_outside`, `use_latex`, `produce_png`, `width`, and `height`.
+Styling options include `plot_directory`, `plot_name`, `plot_colors`, `markers`, `linestyle_tuples`, `linewidth`, `marker_size`, `y_label`, `y_label_abbreviated`, `x_limits`, `y_limits`, `legend_on`, `legend_place_outside`, `use_latex`, `produce_png`, `width`, and `height`. `y_label` should usually name only the quantity; units are read from the processed CSV's `units` column and appended automatically.
 
 ## Scenario Formats
 
