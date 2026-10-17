@@ -29,6 +29,8 @@ default_inputs = {
     'landtype_groups': 'modified',
     'linewidth': 0.5,
     'multipanel': True,
+    'multipanel_hspace': 0.16,
+    'multipanel_wspace': 0.02,
     'multiplier': 1,
     'aggregation_function': 'sum',
     'notify_scenarios_transposed': False,
@@ -84,6 +86,32 @@ def _display_label_part(value):
     if isinstance(value, (list, tuple)):
         return ' / '.join(str(item) for item in value)
     return str(value)
+
+
+def _capitalize_plain_label(value):
+    """Capitalize simple lowercase labels without changing mixed-case GCAM names."""
+    label = _display_label_part(value)
+    return label.capitalize() if label.islower() else label
+
+
+def _split_plot_title(base_title, title_parts, category=None, year=None):
+    """Return a concise title for a panel request split into one-map files."""
+    if category is not None:
+        category_label = _capitalize_plain_label(category)
+        base_title_lower = base_title.strip().lower()
+        if base_title_lower == 'agricultural commodity prices':
+            return f'{category_label} prices, {year}', True
+        if base_title_lower == 'land area':
+            return f'{category_label} area, {year}', False
+        if base_title_lower in ('vegetation scalars', 'soil scalars'):
+            return f'{category_label} scalars, {year}', True
+    return ', '.join(title_parts) if title_parts else base_title, True
+
+
+def _apply_multipanel_spacing(fig, wspace, hspace):
+    """Tighten map panels after colorbars and hidden axes have been created."""
+    fig.subplots_adjust(left=0.02, right=0.98, bottom=0.03, top=0.94,
+                        wspace=wspace, hspace=hspace)
 
 
 def _format_units_for_label(units, use_latex=False):
@@ -391,6 +419,8 @@ def plot_spatial_data(inputs):
     landtype_groups = inputs['landtype_groups']
     linewidth = inputs['linewidth']
     multipanel = inputs['multipanel']
+    multipanel_hspace = inputs['multipanel_hspace']
+    multipanel_wspace = inputs['multipanel_wspace']
     multiplier = inputs['multiplier']
     aggregation_function = inputs['aggregation_function']
     p_value_file = inputs['p_value_file']
@@ -552,8 +582,12 @@ def plot_spatial_data(inputs):
                 title_parts.append(_display_label_part(year))
 
                 child_inputs['plot_name'] = _add_suffix_to_plot_name(plot_name, *suffix_parts)
-                child_inputs['title'] = f"{title} ({', '.join(title_parts)})" if title_parts else title
-                child_inputs['_title_already_formatted'] = True
+                # Once a panel request is split into individual map files, use
+                # the panel identity as the title. For area plots, make the
+                # category the subject, e.g., "Forest area, 2045".
+                child_inputs['title'], title_already_formatted = _split_plot_title(
+                    title, title_parts, category=category, year=year)
+                child_inputs['_title_already_formatted'] = title_already_formatted
                 plot_spatial_data(child_inputs)
         return
 
@@ -636,7 +670,8 @@ def plot_spatial_data(inputs):
             panel_title = f'{chr(ord("a") + panel_idx)}) {title_text}'
             ax.set_title(panel_title, fontdict={'fontsize': title_size})
             gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
-                           legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
+                           legend_kwds={'shrink': 0.55, 'fraction': 0.035, 'pad': 0.01},
+                           edgecolor='k', linewidth=linewidth)
             if 'p_value' in gdf_panel.columns and stippling_on:
                 gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
                     ax=ax, facecolor='none', color='none', hatch=stippling_hatches, linewidth=0)
@@ -646,6 +681,7 @@ def plot_spatial_data(inputs):
 
         plot_options['name'] = plot_name
         fig.set_size_inches(width * ncols, height * nrows)
+        _apply_multipanel_spacing(fig, multipanel_wspace, multipanel_hspace)
         save_figure(plot_name, fig, plot_options)
         plt.close(fig)
         print(f"Elapsed time for producing plot {plot_name}: {time.time() - start_time:.2f} seconds")
@@ -739,7 +775,8 @@ def plot_spatial_data(inputs):
                 panel_title = f'{chr(ord("a") + panel_idx)}) {category} ({year}){_panel_units_str(df_cat, plot_type, units_str, use_latex)}'
                 ax.set_title(panel_title, fontdict={'fontsize': title_size})
                 gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
-                               legend_kwds={'shrink': .5}, edgecolor='k', linewidth=linewidth)
+                               legend_kwds={'shrink': 0.55, 'fraction': 0.035, 'pad': 0.01},
+                               edgecolor='k', linewidth=linewidth)
                 if 'p_value' in gdf_panel.columns and stippling_on:
                     gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
                         ax=ax, facecolor='none', color='none', hatch=stippling_hatches, linewidth=0)
@@ -750,6 +787,7 @@ def plot_spatial_data(inputs):
             year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else _add_suffix_to_plot_name(plot_name, year)
             plot_options['name'] = year_plot_name
             fig.set_size_inches(width * ncols, height * nrows)
+            _apply_multipanel_spacing(fig, multipanel_wspace, multipanel_hspace)
             save_figure(year_plot_name, fig, plot_options)
             plt.close(fig)
             print(f"Elapsed time for producing plot {year_plot_name}: {time.time() - start_time:.2f} seconds")

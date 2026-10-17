@@ -34,6 +34,8 @@ default_inputs = {
     'linewidth': 1,
     'marker_size': 6,
     'multipanel': True,
+    'multipanel_hspace': 0.35,
+    'multipanel_wspace': 0.18,
     'multiplier': 1,
     'notify_scenarios_transposed': False,
     'plot_colors': plot_colors_default,
@@ -95,6 +97,12 @@ def _format_units_for_label(units, use_latex=False):
         units_str = units_str.replace('km2', r'km$^2$')
         units_str = units_str.replace('m2', r'm$^2$')
     return units_str
+
+
+def _apply_multipanel_spacing(fig, wspace, hspace):
+    """Keep year panels compact without clipping rotated labels or the shared y label."""
+    fig.tight_layout(rect=(0.04, 0.02, 1, 0.98), pad=0.4, h_pad=0.6, w_pad=0.4)
+    fig.subplots_adjust(wspace=wspace, hspace=hspace)
 
 
 def process_inputs(inputs):
@@ -303,6 +311,8 @@ def plot_box_and_whiskers(inputs):
     linewidth = inputs['linewidth']
     marker_size = inputs['marker_size']
     multipanel = inputs['multipanel']
+    multipanel_hspace = inputs['multipanel_hspace']
+    multipanel_wspace = inputs['multipanel_wspace']
     multiplier = inputs['multiplier']
     aggregation_function = inputs['aggregation_function']
     plot_colors = inputs['plot_colors']
@@ -526,7 +536,7 @@ def plot_box_and_whiskers(inputs):
 
     fig.set_size_inches(width * ncols, height * nrows)
     fig.supylabel(plot_options['y_label'], fontsize=y_label_size)
-    fig.tight_layout(rect=(0.04, 0, 1, 1))
+    _apply_multipanel_spacing(fig, multipanel_wspace, multipanel_hspace)
     plot_options['name'] = plot_name
     save_figure(plot_name, fig, plot_options)
 
