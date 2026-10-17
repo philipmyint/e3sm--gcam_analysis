@@ -118,7 +118,9 @@
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "category_label": "landtype",
         "key_columns": ["scenario", "region", "basin", "year"],
-        "y_label": "vegetation scalars",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Vegetation scalars",
         "legend_num_columns": 1,
         "legend_x_offset": 1.45,
         "use_latex": true
@@ -131,9 +133,85 @@
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "category_label": "landtype",
         "key_columns": ["scenario", "region", "basin", "year"],
-        "y_label": "soil scalars",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Soil scalars",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.45,
+        "legend_x_offset": 1.25,
+        "use_latex": true
+    },
+    {
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
+        "scenarios": [
+            ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+            ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
+        ],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble",
+        "scenario_sets": ["Control", "Full feedback"],
+        "categories": ["crop", "forest", "shrub", "pasture", "grass"],
+        "category_label": "landtype",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Vegetation scalars",
+        "legend_num_columns": 1,
+        "legend_x_offset": 1.35,
+        "use_latex": true
+    },
+    {
+        "output_file": "./../2025_DiVittorio_et_al_gcam/vegetation_scalars.csv",
+        "scenarios": [
+            ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+            ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
+        ],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble_percent_difference",
+        "scenario_sets": ["Control", "Full feedback"],
+        "categories": ["crop", "forest", "shrub", "pasture", "grass"],
+        "category_label": "landtype",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Vegetation scalars",
+        "plot_percent_difference": true,
+        "legend_num_columns": 1,
+        "legend_x_offset": 1.2,
+        "use_latex": true
+    },
+    {
+        "output_file": "./../2025_DiVittorio_et_al_gcam/soil_scalars.csv",
+        "scenarios": [
+            ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+            ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
+        ],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble",
+        "scenario_sets": ["Control", "Full feedback"],
+        "categories": ["crop", "forest", "shrub", "pasture", "grass"],
+        "category_label": "landtype",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Soil scalars",
+        "legend_num_columns": 1,
+        "legend_x_offset": 1.35,
+        "use_latex": true
+    },
+    {
+        "output_file": "./../2025_DiVittorio_et_al_gcam/soil_scalars.csv",
+        "scenarios": [
+            ["Control", "Control_2", "Control_3", "Control_4", "Control_5"],
+            ["Full feedback", "Full feedback_2", "Full feedback_3", "Full feedback_4", "Full feedback_5"]
+        ],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble_percent_difference",
+        "scenario_sets": ["Control", "Full feedback"],
+        "categories": ["crop", "forest", "shrub", "pasture", "grass"],
+        "category_label": "landtype",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Soil scalars",
+        "plot_percent_difference": true,
+        "legend_num_columns": 1,
+        "legend_x_offset": 1.2,
         "use_latex": true
     },
     {
@@ -144,7 +222,9 @@
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "category_label": "landtype",
         "key_columns": ["scenario", "region", "basin", "year"],
-        "y_label": "vegetation scalars",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Vegetation scalars",
         "legend_num_columns": 1,
         "legend_x_offset": 1.4,
         "use_latex": true
@@ -157,7 +237,9 @@
         "categories": ["crop", "forest", "shrub", "pasture", "grass"],
         "category_label": "landtype",
         "key_columns": ["scenario", "region", "basin", "year"],
-        "y_label": "vegetation scalars",
+        "aggregation_type_in_each_year": "area_weighted_mean",
+        "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
+        "y_label": "Vegetation scalars",
         "plot_percent_difference": true, 
         "legend_num_columns": 1,
         "use_latex": true

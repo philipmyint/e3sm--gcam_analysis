@@ -120,7 +120,7 @@ When requesting landtype groups such as `crop` or `forest`, use `mean_or_sum_if_
     "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
     "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots",
     "plot_name": "time_series_vegetation_scalars.pdf",
-    "y_label": "vegetation scalars"
+    "y_label": "Vegetation scalars"
 }
 ```
 
