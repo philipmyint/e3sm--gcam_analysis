@@ -14,6 +14,8 @@ from utility_functions import check_is_list_of_lists, check_substrings_in_list, 
 from utility_functions import transpose_scenarios_if_needed
 from utility_plots import *
 
+_missing_time_coverage_warnings_printed = set()
+
 """ Dictionary of default input values for time series plots. """
 default_inputs = {
     'areas_in_thousands_km2': True,
@@ -275,19 +277,24 @@ def read_file_into_single_variable_dataframe(file, variable, start_year, end_yea
     df = read_file_into_dataframe(file)
     df = df[(df['Year'] >= start_year) & (df['Year'] <= end_year)]
 
-    # Check for missing year-month combinations in the filtered data. Warn the user about any gaps in the time series.
+    # Check for missing time coverage in the filtered data. Warn once per file/year range so multi-variable plots do not
+    # repeat the same message for every variable.
     if 'Month' in df.columns:
         expected = {(y, m) for y in range(start_year, end_year + 1) for m in range(1, 13)}
         actual = set(zip(df['Year'], df['Month']))
         missing = sorted(expected - actual)
-        if missing:
+        warning_key = ('month', file, start_year, end_year, tuple(missing))
+        if missing and warning_key not in _missing_time_coverage_warnings_printed:
             print(f"Warning: {len(missing)} missing year-month combinations in {file}: {missing[:5]}{'...' if len(missing) > 5 else ''}")
+            _missing_time_coverage_warnings_printed.add(warning_key)
     else:
         expected_years = set(range(start_year, end_year + 1))
         actual_years = set(df['Year'])
         missing_years = sorted(expected_years - actual_years)
-        if missing_years:
+        warning_key = ('year', file, start_year, end_year, tuple(missing_years))
+        if missing_years and warning_key not in _missing_time_coverage_warnings_printed:
             print(f"Warning: {len(missing_years)} missing years in {file}: {missing_years}")
+            _missing_time_coverage_warnings_printed.add(warning_key)
 
     # Check that the year filter produced a non-empty DataFrame. If it is empty, the requested year range is not in the file.
     if df.empty:

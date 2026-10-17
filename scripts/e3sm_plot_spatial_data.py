@@ -49,6 +49,29 @@ default_inputs = {
 LANDFRAC_EPSILON = 1e-12
 EPSILON = 1e-12  # avoid division by zero in percent difference
 
+def contourf_lat_lon_mask(ax, mask, stippling_hatches):
+    """Add a hatched contour overlay for a lat/lon DataArray mask."""
+    lat_name = next((name for name in ['lat', 'latitude'] if name in mask.coords), None)
+    lon_name = next((name for name in ['lon', 'longitude'] if name in mask.coords), None)
+    if lat_name is None or lon_name is None:
+        raise ValueError(f"Cannot add stippling because mask has no lat/lon coordinates. Coordinates: {list(mask.coords)}")
+
+    # Matplotlib contourf expects z to be shaped as (len(y), len(x)). Some ELM outputs are stored
+    # as (lon, lat), so transpose the mask to (lat, lon) before passing it to contourf.
+    z = mask
+    if lat_name in mask.dims and lon_name in mask.dims:
+        z = mask.transpose(lat_name, lon_name)
+
+    ax.contourf(
+        mask[lon_name].values,
+        mask[lat_name].values,
+        z.values,
+        levels=1,
+        hatches=['', stippling_hatches],
+        alpha=0,
+        transform=ccrs.PlateCarree(),
+    )
+
 def process_inputs(inputs):
     """ 
     Processes a dictionary of inputs (keys are options, values are choices for those options) for creating spatial plots from data in NetCDF files.
@@ -451,9 +474,7 @@ def plot_spatial_data_eam(inputs, grid_file):
                 # If there are two data sets and at least two files in each data set so that we will have previously calculated p-values at each
                 # lat/lon coordinate, the stippling will indicate regions where the p-value is less than the designated threshold.
                 mask = da_pvalues <= p_value_threshold
-                #print(mask)
-                ax.contourf(da_pvalues.lon, da_pvalues.lat, mask, levels=1, hatches=['', stippling_hatches], 
-                            alpha=0, transform=ccrs.PlateCarree())
+                contourf_lat_lon_mask(ax, mask, stippling_hatches)
             else:
                 # For all other cases, the stippling will indicate regions where the value is +/- some multiple of the standard deviation 
                 # (default is 2*std) away from the mean.
@@ -738,12 +759,12 @@ def plot_spatial_data_elm(inputs):
                 # If there are two data sets and at least two files in each data set so that we will have previously calculated p-values at each
                 # lat/lon coordinate, the stippling will indicate regions where the p-value is less than the designated threshold.
                 mask = da_pvalues <= p_value_threshold
-                ax.contourf(da_pvalues.lon, da_pvalues.lat, mask, levels=1, hatches=['', stippling_hatches], alpha=0, transform=ccrs.PlateCarree())
+                contourf_lat_lon_mask(ax, mask, stippling_hatches)
             else:
                 # For all other cases, the stippling will indicate regions where the value is +/- some multiple of the standard deviation 
                 # (default is 2*std) away from the mean.
                 mask = np.abs(da) >= mean + stippling_std_multiple*std
-                ax.contourf(da.lon, da.lat, mask, levels=1, hatches=['', stippling_hatches], alpha=0, transform=ccrs.PlateCarree())
+                contourf_lat_lon_mask(ax, mask, stippling_hatches)
         
         # Display statistics.
         ax.text(x=0.88, y=0.9, s=f'Max:{max:.2e}\nMean:{mean:.2e}\nMedian:{median:.2e}\nMin:{min:.2e}', ha='left', 
