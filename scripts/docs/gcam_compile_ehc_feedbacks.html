@@ -76,17 +76,34 @@ comm_cooling_diag.csv
 resid_heating_diag.csv
 resid_cooling_diag.csv</code></pre>
 <h2>Example</h2>
+<p>The ensemble member directories shown below must exist if downstream plotting JSON requests <code>Control_2</code> through <code>Control_5</code> and <code>Full feedback_2</code> through <code>Full feedback_5</code>; otherwise those scenarios will be skipped during compile and the plotting script will warn that they are missing.</p>
 <pre><code>[
     {
         &quot;input_directories&quot;: [
             &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control&quot;,
             &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_2&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_2&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_3&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_3&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_4&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_4&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/control_5&quot;,
+            &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/full_feedback_5&quot;,
             &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/ag_scaling&quot;,
             &quot;./../2025_DiVittorio_et_al_gcam/scalars_ehc_output/carbon_scaling&quot;
         ],
         &quot;scenarios&quot;: [
             &quot;Control&quot;,
             &quot;Full feedback&quot;,
+            &quot;Control_2&quot;,
+            &quot;Full feedback_2&quot;,
+            &quot;Control_3&quot;,
+            &quot;Full feedback_3&quot;,
+            &quot;Control_4&quot;,
+            &quot;Full feedback_4&quot;,
+            &quot;Control_5&quot;,
+            &quot;Full feedback_5&quot;,
             &quot;Ag scaling&quot;,
             &quot;Carbon scaling&quot;
         ],
