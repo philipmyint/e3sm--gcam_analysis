@@ -28,7 +28,7 @@
         "scenarios": ["Control"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
         "regions": ["Global", "USA", "Brazil", "Canada"],
-        "legend_x_offset": 1.4,
+        "legend_x_offset": 1.05,
         "legend_num_columns": 1,
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/individual_regions",
@@ -45,7 +45,7 @@
         "y_scale": "log",
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.4,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -58,7 +58,7 @@
         "categories": ["Rice", "Soybean", "Wheat"],
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble_percent_difference",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.2,
+        "legend_x_offset": 1.05,
         "plot_percent_difference": true,
         "use_latex": true
     },
@@ -75,7 +75,7 @@
         "scenarios": ["Control"],
         "categories": ["agricultural energy use", "construction energy use", "trn_aviation_intl", "refining"],
         "regions": ["Global", "EU-15", "Japan", "India"],
-        "legend_x_offset": 1.45,
+        "legend_x_offset": 1.05,
         "legend_num_columns": 1,
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/individual_regions",
         "aggregation_type_in_each_year": "sum",
@@ -92,7 +92,7 @@
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble",
         "aggregation_type_in_each_year": "sum",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.55,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -106,7 +106,7 @@
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/time_series_plots/ensemble_percent_difference",
         "aggregation_type_in_each_year": "sum",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "plot_percent_difference": true,
         "use_latex": true
     },
@@ -122,7 +122,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
         "y_label": "Vegetation scalars",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.45,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -137,7 +137,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
         "y_label": "Soil scalars",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.25,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -155,7 +155,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
         "y_label": "Vegetation scalars",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -174,7 +174,7 @@
         "y_label": "Vegetation scalars",
         "plot_percent_difference": true,
         "legend_num_columns": 1,
-        "legend_x_offset": 1.2,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -192,7 +192,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
         "y_label": "Soil scalars",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -211,7 +211,7 @@
         "y_label": "Soil scalars",
         "plot_percent_difference": true,
         "legend_num_columns": 1,
-        "legend_x_offset": 1.2,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -226,7 +226,7 @@
         "mean_or_sum_if_more_than_one_row_in_same_landtype_group": "area_weighted_mean",
         "y_label": "Vegetation scalars",
         "legend_num_columns": 1,
-        "legend_x_offset": 1.4,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -260,7 +260,7 @@
         "y_label": "Global land area",
         "key_columns": ["scenario", "region", "basin", "year"],
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -278,7 +278,7 @@
         "y_label": "Global land area",
         "key_columns": ["scenario", "region", "basin", "year"],
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -293,7 +293,7 @@
         "y_label": "Global land area",
         "key_columns": ["scenario", "region", "basin", "year"],
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "use_latex": true
     },
     {
@@ -307,7 +307,7 @@
         "y_label": "Global land area",
         "key_columns": ["scenario", "region", "basin", "year"],
         "legend_num_columns": 1,
-        "legend_x_offset": 1.35,
+        "legend_x_offset": 1.05,
         "use_latex": true
     }
 ]

@@ -52,6 +52,10 @@ def category_to_label_str(category):
         return ' / '.join(str(v) for v in category)
     return str(category)
 
+def legend_header_label(label):
+    """Return a readable legend section label for a DataFrame column name."""
+    return ' '.join(part[:1].upper() + part[1:] for part in str(label).replace('_', ' ').split())
+
 def filter_df_by_category(df, category_label, category):
     """Filter df to rows matching category, supporting a single-column string or multi-column list."""
     if isinstance(category_label, list):
@@ -103,7 +107,7 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
         for col_idx, col_name in enumerate(category_label):
             if col_idx >= 3:  # color (0), marker (1), linewidth (2) exhaust available encodings
                 continue
-            h, l = _legend_section_header(col_name + ':', use_latex, bool(handles))
+            h, l = _legend_section_header(legend_header_label(col_name) + ':', use_latex, bool(handles))
             handles.extend(h); labels.extend(l)
             for val_idx, val in enumerate(col_unique_values[col_idx]):
                 if col_idx == 0:
@@ -118,7 +122,7 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
                                            linewidth=linewidth * (val_idx + 1))
                 handles.append(handle); labels.append(str(val))
     elif len(categories) > 1 or color_by_category:
-        col_name = category_label if isinstance(category_label, str) else 'Categories'
+        col_name = legend_header_label(category_label) if isinstance(category_label, str) else 'Categories'
         h, l = _legend_section_header(col_name + ':', use_latex, bool(handles))
         handles.extend(h); labels.extend(l)
         for cat_idx, cat in enumerate(categories):
