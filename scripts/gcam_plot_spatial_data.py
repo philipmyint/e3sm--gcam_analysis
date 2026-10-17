@@ -747,7 +747,7 @@ def plot_spatial_data(inputs):
             for panel_idx in range(len(plot_categories), nrows * ncols):
                 axes_flat[panel_idx].set_visible(False)
 
-            year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else f'{plot_name}_{year}'
+            year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else _add_suffix_to_plot_name(plot_name, year)
             plot_options['name'] = year_plot_name
             fig.set_size_inches(width * ncols, height * nrows)
             save_figure(year_plot_name, fig, plot_options)

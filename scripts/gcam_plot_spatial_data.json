@@ -16,6 +16,20 @@
     {
         "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
         "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "scenarios": ["Control"],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "plot_categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean"],
+        "plot_years": [2045],
+        "multipanel": true,
+        "aggregation_function": "area_weighted_mean",
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots/multipanel",
+        "plot_name": "spatial_ag_commodity_prices_control_2045_multipanel.pdf",
+        "title": "Agricultural commodity prices",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
         "scenarios": ["Control", "Full feedback"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
         "plot_categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean"],
@@ -41,6 +55,21 @@
         "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots",
         "plot_name": "spatial_land_allocation_control_landtype_groups.pdf",
         "title": "Land area",
+        "use_latex": true
+    },
+    {
+        "shape_file": "./../2025_DiVittorio_et_al_gcam/gcam_boundaries_moirai_3p1_0p5arcmin_wgs84/reg_glu_boundaries_moirai_combined_3p1_0p5arcmin.shp",
+        "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_processed.csv",
+        "scenarios": ["Control"],
+        "category_label": "landtype",
+        "categories": ["crop"],
+        "plot_years": [2015, 2025, 2035, 2045],
+        "multipanel": true,
+        "aggregation_function": "sum",
+        "key_columns": ["scenario", "region", "basin", "year"],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/spatial_plots/multipanel",
+        "plot_name": "spatial_land_allocation_control_crop_years_multipanel.pdf",
+        "title": "Crop land area",
         "use_latex": true
     },
     {

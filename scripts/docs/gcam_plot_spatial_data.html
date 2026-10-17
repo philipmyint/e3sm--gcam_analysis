@@ -70,6 +70,7 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 <p>By default, <code>multipanel</code> is <code>true</code>. In this mode, if <code>plot_years</code> is set and <code>plot_categories</code> is omitted, the script creates one multi-panel figure with one map per year.</p>
 <p>If <code>plot_categories</code> is set, the script creates one output file per year, with one map panel per requested category. When <code>plot_years</code> has one year, the configured <code>plot_name</code> is used directly.</p>
 <p>Set <code>&quot;multipanel&quot;: false</code> to split those same requests into separate single-map figures. The script appends the category and/or year to the configured <code>plot_name</code> so the individual outputs do not overwrite one another.</p>
+<p>The example JSON in <code>scripts/</code> includes both multipanel and non-multipanel blocks.</p>
 <p>For regional scalar files such as <code>hdd_scalars.csv</code> and <code>cdd_scalars.csv</code>, omit <code>category_label</code>, <code>categories</code>, and <code>plot_categories</code> unless a real category column exists.</p>
 <h2>Aggregation</h2>
 <p><code>aggregation_function</code> controls how rows are collapsed into one value per scenario and map polygon:</p>

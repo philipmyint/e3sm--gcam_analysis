@@ -80,6 +80,8 @@ If `plot_categories` is set, the script creates one output file per year, with o
 
 Set `"multipanel": false` to split those same requests into separate single-map figures. The script appends the category and/or year to the configured `plot_name` so the individual outputs do not overwrite one another.
 
+The example JSON in `scripts/` includes both multipanel and non-multipanel blocks.
+
 For regional scalar files such as `hdd_scalars.csv` and `cdd_scalars.csv`, omit `category_label`, `categories`, and `plot_categories` unless a real category column exists.
 
 ## Aggregation

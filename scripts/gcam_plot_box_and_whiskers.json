@@ -12,6 +12,18 @@
     },
     {
         "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
+        "scenarios": ["Control"],
+        "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],
+        "aggregation_function": "area_weighted_mean",
+        "y_scale": "log",
+        "plot_years": [2025, 2035, 2045],
+        "plot_directory": "./../2025_DiVittorio_et_al_gcam/box_plots/multipanel",
+        "plot_name": "box_plot_ag_commodity_prices_control_years_multipanel.pdf",
+        "multipanel": true,
+        "use_latex": true
+    },
+    {
+        "output_file": "./../2025_DiVittorio_et_al_gcam/ag_commodity_prices_processed.csv",
         "hue": "region",
         "scenarios": ["Control"],
         "categories": ["BioenergyCrop", "Rice", "SugarCrop", "Soybean", "Wheat"],

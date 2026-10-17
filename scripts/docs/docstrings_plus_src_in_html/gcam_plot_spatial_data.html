@@ -771,7 +771,7 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
   747              for panel_idx in range(len(plot_categories), nrows * ncols):
   748                  axes_flat[panel_idx].set_visible(False)
   749
-  750              year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else f&#x27;{plot_name}_{year}&#x27;
+  750              year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else _add_suffix_to_plot_name(plot_name, year)
   751              plot_options[&#x27;name&#x27;] = year_plot_name
   752              fig.set_size_inches(width * ncols, height * nrows)
   753              save_figure(year_plot_name, fig, plot_options)

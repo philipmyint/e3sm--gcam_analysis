@@ -173,3 +173,5 @@ Use `"x_variable": "region"` instead when the goal is to compare regional distri
 By default, `multipanel` is `true`, so each requested year is rendered as a panel in the same output figure. If `plot_years` is omitted, the default years are used. If `plot_years` is set to `null`, all years in the file are plotted.
 
 Set `"multipanel": false` to split the same request into separate single-year figures. The script appends the year to the configured `plot_name` when needed so the individual outputs do not overwrite one another.
+
+The example JSON in `scripts/` includes both multipanel and non-multipanel blocks.
