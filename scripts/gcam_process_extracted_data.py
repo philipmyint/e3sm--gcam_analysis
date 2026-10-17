@@ -19,7 +19,7 @@ def process_extracted_data(inputs):
         inputs: Dictionary with user-specified inputs, like the names of the input file (the one extracted from GCAM) and the output (processed) file.
 
     Returns:
-        N/A.
+        True if processing completed successfully; False otherwise.
     """
     start_time = time.time()
     input_file = inputs['input_file']
@@ -35,20 +35,22 @@ def process_extracted_data(inputs):
     # Verify input file exists and output file is writable before doing any processing.
     if not os.path.exists(input_file):
         print(f"Error: input file '{input_file}' does not exist.")
-        return
+        return False
     if os.path.getsize(input_file) == 0:
         print(f"Warning: input file '{input_file}' is empty. Skipping.")
-        return
-    try:
-        open(output_file, 'a').close()
-    except OSError as e:
-        print(f"Error: cannot write to output file '{output_file}': {e}")
-        return
+        return False
+    output_dir = os.path.dirname(os.path.abspath(output_file)) or '.'
+    if not os.path.isdir(output_dir):
+        print(f"Error: output directory does not exist: '{output_dir}'")
+        return False
+    if not os.access(output_dir, os.W_OK):
+        print(f"Error: output directory is not writable: '{output_dir}'")
+        return False
 
     df = read_file_into_dataframe(input_file)
     if df.empty or len(df.columns) == 0:
         print(f"Warning: input file '{input_file}' contains no data. Skipping.")
-        return
+        return False
 
     # Check that columns_to_drop columns actually exist before dropping, and warn about any that are missing.
     if columns_to_drop:
@@ -64,7 +66,7 @@ def process_extracted_data(inputs):
     # Check that the 'year' column exists after lowercasing before sorting by it.
     if 'year' not in df.columns:
         print(f"Error: no 'year' column found in '{input_file}' after lowercasing. Available columns: {list(df.columns)}")
-        return
+        return False
     df = df.sort_values(by='year')
 
     # For carbon-density files, replace 'None Specified' in the 'units' column with 'MgC/ha'.
@@ -86,7 +88,7 @@ def process_extracted_data(inputs):
             if column_to_split not in df.columns:
                 print(f"Error: columns_to_split column '{column_to_split}' not found in '{input_file}' after lowercasing. "
                       f"Available columns: {list(df.columns)}")
-                return
+                return False
             mask = df[column_to_split].str.contains('_', na=False)
             # Initialize all new columns to "".
             for col_name in new_columns:
@@ -96,7 +98,7 @@ def process_extracted_data(inputs):
                 if split_result.shape[1] > len(new_columns):
                     print(f"Error: columns_to_split column '{column_to_split}' in '{input_file}' produces "
                           f"{split_result.shape[1]} split elements but only {len(new_columns)} new columns were specified.")
-                    return
+                    return False
                 for i, col_name in enumerate(new_columns):
                     if i < split_result.shape[1]:
                         df.loc[mask, col_name] = split_result.iloc[:, i].fillna('')
@@ -111,7 +113,7 @@ def process_extracted_data(inputs):
             if col_lower not in df.columns:
                 print(f"Error: columns_to_split_on_substring column '{col}' not found in '{input_file}' "
                       f"after lowercasing. Available columns: {list(df.columns)}")
-                return
+                return False
             split_before = spec['split_before']
             new_columns = spec['new_columns']
             pattern = re.compile(r'(?=' + re.escape(split_before) + r')')
@@ -134,11 +136,11 @@ def process_extracted_data(inputs):
         if missing_keys:
             print(f"Error: the following key_columns were not found in '{input_file}' after all processing steps: {missing_keys}. "
                   f"Available columns: {list(df.columns)}")
-            return
+            return False
         # Check that a 'value' column exists before selecting key_columns + ['value'].
         if 'value' not in df.columns:
             print(f"Error: no 'value' column found in '{input_file}'. Available columns: {list(df.columns)}")
-            return
+            return False
         df = df.sort_values(by=key_columns)
         df = df[key_columns + ['value']]
 
@@ -152,10 +154,13 @@ def process_extracted_data(inputs):
                       f"without modifying the crop names (call_modify_crop_names = false).")
                 print(f"Error: The default 'land_allocation_file' is called 'detailed_land_allocation_processed.csv' "
                       f"and is should be located in the 'output/gcam_csv/' directory.")
-                return
+                return False
             if not os.path.exists(land_allocation_file):
                 print(f"Error: land_allocation_file not found: '{land_allocation_file}'")
-                return
+                return False
+            if os.path.getsize(land_allocation_file) == 0:
+                print(f"Error: land_allocation_file is empty: '{land_allocation_file}'")
+                return False
             df_land = read_file_into_dataframe(land_allocation_file)
             df = add_areas_to_dataframe(df, df_land)
 
@@ -197,6 +202,7 @@ def process_extracted_data(inputs):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed time for producing {output_file}: {elapsed_time:.2f} seconds")
+    return True
 
 
 ###---------------Begin execution---------------###
@@ -221,7 +227,9 @@ if __name__ == '__main__':
     other_inputs = [i for i in list_of_inputs if 'land_allocation' not in i['input_file']]
 
     for inputs in land_alloc_inputs:
-        process_extracted_data(inputs)
+        if not process_extracted_data(inputs):
+            print("Error: land allocation processing failed; stopping because later blocks depend on its output.")
+            sys.exit(1)
 
     max_processes = get_max_processes_from_inputs(list_of_inputs, MAX_PROCESSES)
 
@@ -229,7 +237,10 @@ if __name__ == '__main__':
     if other_inputs:
         num_processes = min(max_processes, len(other_inputs))
         with multiprocessing.Pool(processes=num_processes) as pool:
-            pool.map(process_extracted_data, other_inputs)
+            results = pool.map(process_extracted_data, other_inputs)
+        if not all(results):
+            print("Error: one or more files failed during processing.")
+            sys.exit(1)
     
     # Print the total execution time needed to process/compile the scalars for all files.
     end_time = time.time()

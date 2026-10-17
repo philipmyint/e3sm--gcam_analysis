@@ -85,9 +85,9 @@ SugarCropC4 -&gt; SugarCrop</code></pre>
 <pre><code>{
     &quot;input_file&quot;: &quot;./../2025_DiVittorio_et_al_gcam/land_allocation.csv&quot;,
     &quot;output_file&quot;: &quot;./../2025_DiVittorio_et_al_gcam/land_allocation_processed.csv&quot;,
-    &quot;columns_to_drop&quot;: [&quot;Unnamed: 0&quot;, &quot;Units&quot;],
-    &quot;columns_to_split&quot;: {&quot;landleaf&quot;: [&quot;landtype&quot;, &quot;basin&quot;]},
-    &quot;key_columns&quot;: [&quot;scenario&quot;, &quot;region&quot;, &quot;basin&quot;, &quot;landtype&quot;, &quot;year&quot;],
+    &quot;columns_to_drop&quot;: [&quot;Unnamed: 0&quot;],
+    &quot;columns_to_split&quot;: {&quot;landleaf&quot;: [&quot;landtype&quot;, &quot;basin&quot;, &quot;water&quot;, &quot;fertilizer&quot;]},
+    &quot;key_columns&quot;: [&quot;scenario&quot;, &quot;region&quot;, &quot;basin&quot;, &quot;landtype&quot;, &quot;water&quot;, &quot;fertilizer&quot;, &quot;year&quot;, &quot;units&quot;],
     &quot;aggregate_function&quot;: &quot;sum&quot;,
     &quot;call_modify_crop_names&quot;: true
 }</code></pre>
@@ -95,9 +95,9 @@ SugarCropC4 -&gt; SugarCrop</code></pre>
 <pre><code>{
     &quot;input_file&quot;: &quot;./../2025_DiVittorio_et_al_gcam/land_allocation.csv&quot;,
     &quot;output_file&quot;: &quot;./../2025_DiVittorio_et_al_gcam/land_allocation_processed_original_crop_names.csv&quot;,
-    &quot;columns_to_drop&quot;: [&quot;Unnamed: 0&quot;, &quot;Units&quot;],
-    &quot;columns_to_split&quot;: {&quot;landleaf&quot;: [&quot;landtype&quot;, &quot;basin&quot;]},
-    &quot;key_columns&quot;: [&quot;scenario&quot;, &quot;region&quot;, &quot;basin&quot;, &quot;landtype&quot;, &quot;year&quot;],
+    &quot;columns_to_drop&quot;: [&quot;Unnamed: 0&quot;],
+    &quot;columns_to_split&quot;: {&quot;landleaf&quot;: [&quot;landtype&quot;, &quot;basin&quot;, &quot;water&quot;, &quot;fertilizer&quot;]},
+    &quot;key_columns&quot;: [&quot;scenario&quot;, &quot;region&quot;, &quot;basin&quot;, &quot;landtype&quot;, &quot;water&quot;, &quot;fertilizer&quot;, &quot;year&quot;, &quot;units&quot;],
     &quot;aggregate_function&quot;: &quot;sum&quot;,
     &quot;call_modify_crop_names&quot;: false
 }</code></pre>

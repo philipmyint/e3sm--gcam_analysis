@@ -43,7 +43,7 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
    19          inputs: Dictionary with user-specified inputs, like the names of the input file (the one extracted from GCAM) and the output (processed) file.
    20
    21      Returns:
-   22          N/A.
+   22          True if processing completed successfully; False otherwise.
    23      &quot;&quot;&quot;
    24      start_time = time.time()
    25      input_file = inputs[&#x27;input_file&#x27;]
@@ -59,206 +59,217 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
    35      # Verify input file exists and output file is writable before doing any processing.
    36      if not os.path.exists(input_file):
    37          print(f&quot;Error: input file &#x27;{input_file}&#x27; does not exist.&quot;)
-   38          return
+   38          return False
    39      if os.path.getsize(input_file) == 0:
    40          print(f&quot;Warning: input file &#x27;{input_file}&#x27; is empty. Skipping.&quot;)
-   41          return
-   42      try:
-   43          open(output_file, &#x27;a&#x27;).close()
-   44      except OSError as e:
-   45          print(f&quot;Error: cannot write to output file &#x27;{output_file}&#x27;: {e}&quot;)
-   46          return
-   47
-   48      df = read_file_into_dataframe(input_file)
-   49      if df.empty or len(df.columns) == 0:
-   50          print(f&quot;Warning: input file &#x27;{input_file}&#x27; contains no data. Skipping.&quot;)
-   51          return
-   52
-   53      # Check that columns_to_drop columns actually exist before dropping, and warn about any that are missing.
-   54      if columns_to_drop:
-   55          missing_drop = [c for c in columns_to_drop if c not in df.columns]
-   56          if missing_drop:
-   57              print(f&quot;Warning: the following columns_to_drop were not found in &#x27;{input_file}&#x27; and will be skipped: {missing_drop}&quot;)
-   58          columns_to_drop_existing = [c for c in columns_to_drop if c in df.columns]
-   59          df = df.drop(columns_to_drop_existing, axis=1)
-   60
-   61      # Lowercase all column names to avoid case sensitivity issues.
-   62      df.columns = df.columns.str.lower()
-   63
-   64      # Check that the &#x27;year&#x27; column exists after lowercasing before sorting by it.
-   65      if &#x27;year&#x27; not in df.columns:
-   66          print(f&quot;Error: no &#x27;year&#x27; column found in &#x27;{input_file}&#x27; after lowercasing. Available columns: {list(df.columns)}&quot;)
-   67          return
-   68      df = df.sort_values(by=&#x27;year&#x27;)
-   69
-   70      # For carbon-density files, replace &#x27;None Specified&#x27; in the &#x27;units&#x27; column with &#x27;MgC/ha&#x27;.
-   71      if &#x27;carbon_density&#x27; in input_file and &#x27;units&#x27; in df.columns:
-   72          df.loc[df[&#x27;units&#x27;] == &#x27;None Specified&#x27;, &#x27;units&#x27;] = &#x27;MgC/ha&#x27;
-   73
-   74      # For scaler files, replace NA in the &#x27;units&#x27; column with &#x27;Unitless&#x27;.
-   75      if &#x27;scaler&#x27; in input_file and &#x27;units&#x27; in df.columns:
-   76          df[&#x27;units&#x27;] = df[&#x27;units&#x27;].fillna(&#x27;Unitless&#x27;)
-   77
-   78      # Split each specified column (if any) separated by underscores into a set of new columns.
-   79      # Rows with no &#x27;_&#x27; have the full value placed in the first new column and remaining new
-   80      # columns set to &quot;&quot;. Rows with &#x27;_&#x27; are split across the new columns; extra new columns
-   81      # beyond the number of split elements are set to &quot;&quot;. It is an error if any row produces
-   82      # more split elements than there are new columns.
-   83      if columns_to_split:
-   84          for column_to_split, new_columns in columns_to_split.items():
-   85              # Check that the column to split exists after lowercasing.
-   86              if column_to_split not in df.columns:
-   87                  print(f&quot;Error: columns_to_split column &#x27;{column_to_split}&#x27; not found in &#x27;{input_file}&#x27; after lowercasing. &quot;
-   88                        f&quot;Available columns: {list(df.columns)}&quot;)
-   89                  return
-   90              mask = df[column_to_split].str.contains(&#x27;_&#x27;, na=False)
-   91              # Initialize all new columns to &quot;&quot;.
-   92              for col_name in new_columns:
-   93                  df[col_name] = &quot;&quot;
-   94              if mask.any():
-   95                  split_result = df.loc[mask, column_to_split].str.split(&#x27;_&#x27;, expand=True)
-   96                  if split_result.shape[1] &gt; len(new_columns):
-   97                      print(f&quot;Error: columns_to_split column &#x27;{column_to_split}&#x27; in &#x27;{input_file}&#x27; produces &quot;
-   98                            f&quot;{split_result.shape[1]} split elements but only {len(new_columns)} new columns were specified.&quot;)
-   99                      return
-  100                  for i, col_name in enumerate(new_columns):
-  101                      if i &lt; split_result.shape[1]:
-  102                          df.loc[mask, col_name] = split_result.iloc[:, i].fillna(&#x27;&#x27;)
-  103              # Rows without &#x27;_&#x27;: the full value goes into the first new column.
-  104              df.loc[~mask, new_columns[0]] = df.loc[~mask, column_to_split]
-  105
-  106      # Split each specified column on the first occurrence of a substring, placing text before it
-  107      # in the first new column and text from the substring onward in the second new column.
-  108      if columns_to_split_on_substring:
-  109          for col, spec in columns_to_split_on_substring.items():
-  110              col_lower = col.lower()
-  111              if col_lower not in df.columns:
-  112                  print(f&quot;Error: columns_to_split_on_substring column &#x27;{col}&#x27; not found in &#x27;{input_file}&#x27; &quot;
-  113                        f&quot;after lowercasing. Available columns: {list(df.columns)}&quot;)
-  114                  return
-  115              split_before = spec[&#x27;split_before&#x27;]
-  116              new_columns = spec[&#x27;new_columns&#x27;]
-  117              pattern = re.compile(r&#x27;(?=&#x27; + re.escape(split_before) + r&#x27;)&#x27;)
-  118              parts = df[col_lower].str.split(pattern, n=1, expand=True)
-  119              # Drop before assigning new columns to avoid clobbering a new column that shares the source name.
-  120              df = df.drop(columns=[col_lower])
-  121              if parts.shape[1] == 1:
-  122                  # Substring not found in any row; full value goes in first new column.
-  123                  df[new_columns[0]] = parts[0]
-  124                  for nc in new_columns[1:]:
-  125                      df[nc] = &#x27;&#x27;
-  126              else:
-  127                  df[new_columns[0]] = parts[0]
-  128                  df[new_columns[1]] = parts[1].fillna(&#x27;&#x27;)
-  129
-  130      # Sort columns by a set of keys if specified to do so.
-  131      if key_columns:
-  132          # Check that all key_columns exist (including any newly created columns from columns_to_split).
-  133          missing_keys = [c for c in key_columns if c not in df.columns]
-  134          if missing_keys:
-  135              print(f&quot;Error: the following key_columns were not found in &#x27;{input_file}&#x27; after all processing steps: {missing_keys}. &quot;
-  136                    f&quot;Available columns: {list(df.columns)}&quot;)
-  137              return
-  138          # Check that a &#x27;value&#x27; column exists before selecting key_columns + [&#x27;value&#x27;].
-  139          if &#x27;value&#x27; not in df.columns:
-  140              print(f&quot;Error: no &#x27;value&#x27; column found in &#x27;{input_file}&#x27;. Available columns: {list(df.columns)}&quot;)
-  141              return
-  142          df = df.sort_values(by=key_columns)
-  143          df = df[key_columns + [&#x27;value&#x27;]]
-  144
-  145          # Add areas from the processed land allocation file.
-  146          # Skip this for land allocation data itself, since those files ARE the area data.
-  147          if &#x27;land_allocation&#x27; not in input_file:
-  148              if land_allocation_file is None:
-  149                  print(f&quot;Error: A &#x27;land_allocation_file&#x27; file must be specified in the JSON input&quot;)
-  150                  print(f&quot;Error: So first the &#x27;detailed_land_allocation_processed.csv&#x27; must be created by running &quot;
-  151                        f&quot;the &#x27;gcam_process_extracted_data.py&#x27; script on the &#x27;detailed_land_allocation.csv&#x27; file.&quot;
-  152                        f&quot;without modifying the crop names (call_modify_crop_names = false).&quot;)
-  153                  print(f&quot;Error: The default &#x27;land_allocation_file&#x27; is called &#x27;detailed_land_allocation_processed.csv&#x27; &quot;
-  154                        f&quot;and is should be located in the &#x27;output/gcam_csv/&#x27; directory.&quot;)
-  155                  return
-  156              if not os.path.exists(land_allocation_file):
-  157                  print(f&quot;Error: land_allocation_file not found: &#x27;{land_allocation_file}&#x27;&quot;)
-  158                  return
-  159              df_land = read_file_into_dataframe(land_allocation_file)
-  160              df = add_areas_to_dataframe(df, df_land)
-  161
-  162      # Perform either a sum (default) or a weighted mean if there happens to be more than one row that agrees on all the table keys
-  163      #    (i.e., belongs to the same group).
-  164      # This also works for means where the areas are the same, e.g., groups that are in the same area unit,
-  165      #  in which case the weighted mean is equivalent to a simple mean.
-  166      if aggregate_function == &#x27;sum&#x27; and key_columns:
-  167          # Save string non-key columns (e.g. area_units) to rejoin after aggregation,
-  168          # since groupby().sum() cannot aggregate string columns.
-  169          str_non_key = [c for c in df.columns if c not in key_columns and df[c].dtype == object]
-  170          str_first = df.groupby(key_columns)[str_non_key].first().reset_index() if str_non_key else None
-  171          df = df.drop(columns=str_non_key).groupby(key_columns).sum().reset_index()
-  172          if str_first is not None:
-  173              df = df.merge(str_first, on=key_columns, how=&#x27;left&#x27;)
-  174      elif aggregate_function == &#x27;area_weighted_mean&#x27; and key_columns:
-  175          # Save string non-key columns (e.g. area_units) to rejoin after aggregation.
-  176          str_non_key = [c for c in df.columns if c not in key_columns and df[c].dtype == object]
-  177          str_first = df.groupby(key_columns)[str_non_key].first().reset_index() if str_non_key else None
-  178          df_numeric = df.drop(columns=str_non_key)
-  179          # Compute area-weighted mean: for each group, sum(value * area) / sum(area).
-  180          df_numeric[&#x27;weighted_value&#x27;] = df_numeric[&#x27;value&#x27;] * df_numeric[&#x27;area&#x27;]
-  181          grouped = df_numeric.groupby(key_columns)[[&#x27;weighted_value&#x27;, &#x27;area&#x27;]].sum().reset_index()
-  182          grouped[&#x27;value&#x27;] = grouped[&#x27;weighted_value&#x27;] / grouped[&#x27;area&#x27;].replace(0, float(&#x27;nan&#x27;))
-  183          df = grouped.drop(&#x27;weighted_value&#x27;, axis=1)
-  184          if str_first is not None:
-  185              df = df.merge(str_first, on=key_columns, how=&#x27;left&#x27;)
-  186
-  187      # Update original crop names to a common, standardized set of names.
-  188      if call_modify_crop_names:
-  189          df = modify_crop_names(df, key_columns, aggregate_function)
-  190
-  191      # Reorder columns so the last four are: value, units, area, area_units.
-  192      trailing = [c for c in [&#x27;value&#x27;, &#x27;units&#x27;, &#x27;area&#x27;, &#x27;area_units&#x27;] if c in df.columns]
-  193      other_cols = [c for c in df.columns if c not in trailing]
-  194      df = df[other_cols + trailing]
+   41          return False
+   42      output_dir = os.path.dirname(os.path.abspath(output_file)) or &#x27;.&#x27;
+   43      if not os.path.isdir(output_dir):
+   44          print(f&quot;Error: output directory does not exist: &#x27;{output_dir}&#x27;&quot;)
+   45          return False
+   46      if not os.access(output_dir, os.W_OK):
+   47          print(f&quot;Error: output directory is not writable: &#x27;{output_dir}&#x27;&quot;)
+   48          return False
+   49
+   50      df = read_file_into_dataframe(input_file)
+   51      if df.empty or len(df.columns) == 0:
+   52          print(f&quot;Warning: input file &#x27;{input_file}&#x27; contains no data. Skipping.&quot;)
+   53          return False
+   54
+   55      # Check that columns_to_drop columns actually exist before dropping, and warn about any that are missing.
+   56      if columns_to_drop:
+   57          missing_drop = [c for c in columns_to_drop if c not in df.columns]
+   58          if missing_drop:
+   59              print(f&quot;Warning: the following columns_to_drop were not found in &#x27;{input_file}&#x27; and will be skipped: {missing_drop}&quot;)
+   60          columns_to_drop_existing = [c for c in columns_to_drop if c in df.columns]
+   61          df = df.drop(columns_to_drop_existing, axis=1)
+   62
+   63      # Lowercase all column names to avoid case sensitivity issues.
+   64      df.columns = df.columns.str.lower()
+   65
+   66      # Check that the &#x27;year&#x27; column exists after lowercasing before sorting by it.
+   67      if &#x27;year&#x27; not in df.columns:
+   68          print(f&quot;Error: no &#x27;year&#x27; column found in &#x27;{input_file}&#x27; after lowercasing. Available columns: {list(df.columns)}&quot;)
+   69          return False
+   70      df = df.sort_values(by=&#x27;year&#x27;)
+   71
+   72      # For carbon-density files, replace &#x27;None Specified&#x27; in the &#x27;units&#x27; column with &#x27;MgC/ha&#x27;.
+   73      if &#x27;carbon_density&#x27; in input_file and &#x27;units&#x27; in df.columns:
+   74          df.loc[df[&#x27;units&#x27;] == &#x27;None Specified&#x27;, &#x27;units&#x27;] = &#x27;MgC/ha&#x27;
+   75
+   76      # For scaler files, replace NA in the &#x27;units&#x27; column with &#x27;Unitless&#x27;.
+   77      if &#x27;scaler&#x27; in input_file and &#x27;units&#x27; in df.columns:
+   78          df[&#x27;units&#x27;] = df[&#x27;units&#x27;].fillna(&#x27;Unitless&#x27;)
+   79
+   80      # Split each specified column (if any) separated by underscores into a set of new columns.
+   81      # Rows with no &#x27;_&#x27; have the full value placed in the first new column and remaining new
+   82      # columns set to &quot;&quot;. Rows with &#x27;_&#x27; are split across the new columns; extra new columns
+   83      # beyond the number of split elements are set to &quot;&quot;. It is an error if any row produces
+   84      # more split elements than there are new columns.
+   85      if columns_to_split:
+   86          for column_to_split, new_columns in columns_to_split.items():
+   87              # Check that the column to split exists after lowercasing.
+   88              if column_to_split not in df.columns:
+   89                  print(f&quot;Error: columns_to_split column &#x27;{column_to_split}&#x27; not found in &#x27;{input_file}&#x27; after lowercasing. &quot;
+   90                        f&quot;Available columns: {list(df.columns)}&quot;)
+   91                  return False
+   92              mask = df[column_to_split].str.contains(&#x27;_&#x27;, na=False)
+   93              # Initialize all new columns to &quot;&quot;.
+   94              for col_name in new_columns:
+   95                  df[col_name] = &quot;&quot;
+   96              if mask.any():
+   97                  split_result = df.loc[mask, column_to_split].str.split(&#x27;_&#x27;, expand=True)
+   98                  if split_result.shape[1] &gt; len(new_columns):
+   99                      print(f&quot;Error: columns_to_split column &#x27;{column_to_split}&#x27; in &#x27;{input_file}&#x27; produces &quot;
+  100                            f&quot;{split_result.shape[1]} split elements but only {len(new_columns)} new columns were specified.&quot;)
+  101                      return False
+  102                  for i, col_name in enumerate(new_columns):
+  103                      if i &lt; split_result.shape[1]:
+  104                          df.loc[mask, col_name] = split_result.iloc[:, i].fillna(&#x27;&#x27;)
+  105              # Rows without &#x27;_&#x27;: the full value goes into the first new column.
+  106              df.loc[~mask, new_columns[0]] = df.loc[~mask, column_to_split]
+  107
+  108      # Split each specified column on the first occurrence of a substring, placing text before it
+  109      # in the first new column and text from the substring onward in the second new column.
+  110      if columns_to_split_on_substring:
+  111          for col, spec in columns_to_split_on_substring.items():
+  112              col_lower = col.lower()
+  113              if col_lower not in df.columns:
+  114                  print(f&quot;Error: columns_to_split_on_substring column &#x27;{col}&#x27; not found in &#x27;{input_file}&#x27; &quot;
+  115                        f&quot;after lowercasing. Available columns: {list(df.columns)}&quot;)
+  116                  return False
+  117              split_before = spec[&#x27;split_before&#x27;]
+  118              new_columns = spec[&#x27;new_columns&#x27;]
+  119              pattern = re.compile(r&#x27;(?=&#x27; + re.escape(split_before) + r&#x27;)&#x27;)
+  120              parts = df[col_lower].str.split(pattern, n=1, expand=True)
+  121              # Drop before assigning new columns to avoid clobbering a new column that shares the source name.
+  122              df = df.drop(columns=[col_lower])
+  123              if parts.shape[1] == 1:
+  124                  # Substring not found in any row; full value goes in first new column.
+  125                  df[new_columns[0]] = parts[0]
+  126                  for nc in new_columns[1:]:
+  127                      df[nc] = &#x27;&#x27;
+  128              else:
+  129                  df[new_columns[0]] = parts[0]
+  130                  df[new_columns[1]] = parts[1].fillna(&#x27;&#x27;)
+  131
+  132      # Sort columns by a set of keys if specified to do so.
+  133      if key_columns:
+  134          # Check that all key_columns exist (including any newly created columns from columns_to_split).
+  135          missing_keys = [c for c in key_columns if c not in df.columns]
+  136          if missing_keys:
+  137              print(f&quot;Error: the following key_columns were not found in &#x27;{input_file}&#x27; after all processing steps: {missing_keys}. &quot;
+  138                    f&quot;Available columns: {list(df.columns)}&quot;)
+  139              return False
+  140          # Check that a &#x27;value&#x27; column exists before selecting key_columns + [&#x27;value&#x27;].
+  141          if &#x27;value&#x27; not in df.columns:
+  142              print(f&quot;Error: no &#x27;value&#x27; column found in &#x27;{input_file}&#x27;. Available columns: {list(df.columns)}&quot;)
+  143              return False
+  144          df = df.sort_values(by=key_columns)
+  145          df = df[key_columns + [&#x27;value&#x27;]]
+  146
+  147          # Add areas from the processed land allocation file.
+  148          # Skip this for land allocation data itself, since those files ARE the area data.
+  149          if &#x27;land_allocation&#x27; not in input_file:
+  150              if land_allocation_file is None:
+  151                  print(f&quot;Error: A &#x27;land_allocation_file&#x27; file must be specified in the JSON input&quot;)
+  152                  print(f&quot;Error: So first the &#x27;detailed_land_allocation_processed.csv&#x27; must be created by running &quot;
+  153                        f&quot;the &#x27;gcam_process_extracted_data.py&#x27; script on the &#x27;detailed_land_allocation.csv&#x27; file.&quot;
+  154                        f&quot;without modifying the crop names (call_modify_crop_names = false).&quot;)
+  155                  print(f&quot;Error: The default &#x27;land_allocation_file&#x27; is called &#x27;detailed_land_allocation_processed.csv&#x27; &quot;
+  156                        f&quot;and is should be located in the &#x27;output/gcam_csv/&#x27; directory.&quot;)
+  157                  return False
+  158              if not os.path.exists(land_allocation_file):
+  159                  print(f&quot;Error: land_allocation_file not found: &#x27;{land_allocation_file}&#x27;&quot;)
+  160                  return False
+  161              if os.path.getsize(land_allocation_file) == 0:
+  162                  print(f&quot;Error: land_allocation_file is empty: &#x27;{land_allocation_file}&#x27;&quot;)
+  163                  return False
+  164              df_land = read_file_into_dataframe(land_allocation_file)
+  165              df = add_areas_to_dataframe(df, df_land)
+  166
+  167      # Perform either a sum (default) or a weighted mean if there happens to be more than one row that agrees on all the table keys
+  168      #    (i.e., belongs to the same group).
+  169      # This also works for means where the areas are the same, e.g., groups that are in the same area unit,
+  170      #  in which case the weighted mean is equivalent to a simple mean.
+  171      if aggregate_function == &#x27;sum&#x27; and key_columns:
+  172          # Save string non-key columns (e.g. area_units) to rejoin after aggregation,
+  173          # since groupby().sum() cannot aggregate string columns.
+  174          str_non_key = [c for c in df.columns if c not in key_columns and df[c].dtype == object]
+  175          str_first = df.groupby(key_columns)[str_non_key].first().reset_index() if str_non_key else None
+  176          df = df.drop(columns=str_non_key).groupby(key_columns).sum().reset_index()
+  177          if str_first is not None:
+  178              df = df.merge(str_first, on=key_columns, how=&#x27;left&#x27;)
+  179      elif aggregate_function == &#x27;area_weighted_mean&#x27; and key_columns:
+  180          # Save string non-key columns (e.g. area_units) to rejoin after aggregation.
+  181          str_non_key = [c for c in df.columns if c not in key_columns and df[c].dtype == object]
+  182          str_first = df.groupby(key_columns)[str_non_key].first().reset_index() if str_non_key else None
+  183          df_numeric = df.drop(columns=str_non_key)
+  184          # Compute area-weighted mean: for each group, sum(value * area) / sum(area).
+  185          df_numeric[&#x27;weighted_value&#x27;] = df_numeric[&#x27;value&#x27;] * df_numeric[&#x27;area&#x27;]
+  186          grouped = df_numeric.groupby(key_columns)[[&#x27;weighted_value&#x27;, &#x27;area&#x27;]].sum().reset_index()
+  187          grouped[&#x27;value&#x27;] = grouped[&#x27;weighted_value&#x27;] / grouped[&#x27;area&#x27;].replace(0, float(&#x27;nan&#x27;))
+  188          df = grouped.drop(&#x27;weighted_value&#x27;, axis=1)
+  189          if str_first is not None:
+  190              df = df.merge(str_first, on=key_columns, how=&#x27;left&#x27;)
+  191
+  192      # Update original crop names to a common, standardized set of names.
+  193      if call_modify_crop_names:
+  194          df = modify_crop_names(df, key_columns, aggregate_function)
   195
-  196      write_dataframe_to_file(df, output_file)
-  197      end_time = time.time()
-  198      elapsed_time = end_time - start_time
-  199      print(f&quot;Elapsed time for producing {output_file}: {elapsed_time:.2f} seconds&quot;)
+  196      # Reorder columns so the last four are: value, units, area, area_units.
+  197      trailing = [c for c in [&#x27;value&#x27;, &#x27;units&#x27;, &#x27;area&#x27;, &#x27;area_units&#x27;] if c in df.columns]
+  198      other_cols = [c for c in df.columns if c not in trailing]
+  199      df = df[other_cols + trailing]
   200
-  201
-  202  ###---------------Begin execution---------------###
-  203  if __name__ == &#x27;__main__&#x27;:
-  204
-  205      # Run this script together with the input JSON file(s) on the command line.
-  206      start_time = time.time()
-  207      if len(sys.argv) &lt; 2:
-  208          print(&#x27;Usage: python gcam_process_extracted_data.py `path/to/json/input/file(s)\&#x27;&#x27;)
-  209          sys.exit()
+  201      write_dataframe_to_file(df, output_file)
+  202      end_time = time.time()
+  203      elapsed_time = end_time - start_time
+  204      print(f&quot;Elapsed time for producing {output_file}: {elapsed_time:.2f} seconds&quot;)
+  205      return True
+  206
+  207
+  208  ###---------------Begin execution---------------###
+  209  if __name__ == &#x27;__main__&#x27;:
   210
-  211      # Read and load the JSON file(s) into a list of dictionaries.
-  212      list_of_inputs = []
-  213      for i in range(1, len(sys.argv)):
-  214          input_file = sys.argv[i]
-  215          with open(input_file) as f:
-  216              list_of_inputs.extend(json.load(f))
-  217
-  218      # Split inputs: land allocation blocks must run first (serially) because other blocks
-  219      # depend on their output as the land_allocation_file for area-weighted calculations.
-  220      land_alloc_inputs = [i for i in list_of_inputs if &#x27;land_allocation&#x27; in i[&#x27;input_file&#x27;]]
-  221      other_inputs = [i for i in list_of_inputs if &#x27;land_allocation&#x27; not in i[&#x27;input_file&#x27;]]
-  222
-  223      for inputs in land_alloc_inputs:
-  224          process_extracted_data(inputs)
-  225
-  226      max_processes = get_max_processes_from_inputs(list_of_inputs, MAX_PROCESSES)
-  227
-  228      # Produce the remaining data in parallel.
-  229      if other_inputs:
-  230          num_processes = min(max_processes, len(other_inputs))
-  231          with multiprocessing.Pool(processes=num_processes) as pool:
-  232              pool.map(process_extracted_data, other_inputs)
+  211      # Run this script together with the input JSON file(s) on the command line.
+  212      start_time = time.time()
+  213      if len(sys.argv) &lt; 2:
+  214          print(&#x27;Usage: python gcam_process_extracted_data.py `path/to/json/input/file(s)\&#x27;&#x27;)
+  215          sys.exit()
+  216
+  217      # Read and load the JSON file(s) into a list of dictionaries.
+  218      list_of_inputs = []
+  219      for i in range(1, len(sys.argv)):
+  220          input_file = sys.argv[i]
+  221          with open(input_file) as f:
+  222              list_of_inputs.extend(json.load(f))
+  223
+  224      # Split inputs: land allocation blocks must run first (serially) because other blocks
+  225      # depend on their output as the land_allocation_file for area-weighted calculations.
+  226      land_alloc_inputs = [i for i in list_of_inputs if &#x27;land_allocation&#x27; in i[&#x27;input_file&#x27;]]
+  227      other_inputs = [i for i in list_of_inputs if &#x27;land_allocation&#x27; not in i[&#x27;input_file&#x27;]]
+  228
+  229      for inputs in land_alloc_inputs:
+  230          if not process_extracted_data(inputs):
+  231              print(&quot;Error: land allocation processing failed; stopping because later blocks depend on its output.&quot;)
+  232              sys.exit(1)
   233
-  234      # Print the total execution time needed to process/compile the scalars for all files.
-  235      end_time = time.time()
-  236      elapsed_time = end_time - start_time
-  237      print(f&quot;Elapsed time for producing all files: {elapsed_time:.2f} seconds&quot;)</code></pre>
+  234      max_processes = get_max_processes_from_inputs(list_of_inputs, MAX_PROCESSES)
+  235
+  236      # Produce the remaining data in parallel.
+  237      if other_inputs:
+  238          num_processes = min(max_processes, len(other_inputs))
+  239          with multiprocessing.Pool(processes=num_processes) as pool:
+  240              results = pool.map(process_extracted_data, other_inputs)
+  241          if not all(results):
+  242              print(&quot;Error: one or more files failed during processing.&quot;)
+  243              sys.exit(1)
+  244
+  245      # Print the total execution time needed to process/compile the scalars for all files.
+  246      end_time = time.time()
+  247      elapsed_time = end_time - start_time
+  248      print(f&quot;Elapsed time for producing all files: {elapsed_time:.2f} seconds&quot;)</code></pre>
 </div>
 </body>
 </html>

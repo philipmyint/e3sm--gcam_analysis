@@ -100,9 +100,9 @@ When both area metadata and crop-name standardization are needed, area is added 
 {
     "input_file": "./../2025_DiVittorio_et_al_gcam/land_allocation.csv",
     "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_processed.csv",
-    "columns_to_drop": ["Unnamed: 0", "Units"],
-    "columns_to_split": {"landleaf": ["landtype", "basin"]},
-    "key_columns": ["scenario", "region", "basin", "landtype", "year"],
+    "columns_to_drop": ["Unnamed: 0"],
+    "columns_to_split": {"landleaf": ["landtype", "basin", "water", "fertilizer"]},
+    "key_columns": ["scenario", "region", "basin", "landtype", "water", "fertilizer", "year", "units"],
     "aggregate_function": "sum",
     "call_modify_crop_names": true
 }
@@ -114,9 +114,9 @@ When both area metadata and crop-name standardization are needed, area is added 
 {
     "input_file": "./../2025_DiVittorio_et_al_gcam/land_allocation.csv",
     "output_file": "./../2025_DiVittorio_et_al_gcam/land_allocation_processed_original_crop_names.csv",
-    "columns_to_drop": ["Unnamed: 0", "Units"],
-    "columns_to_split": {"landleaf": ["landtype", "basin"]},
-    "key_columns": ["scenario", "region", "basin", "landtype", "year"],
+    "columns_to_drop": ["Unnamed: 0"],
+    "columns_to_split": {"landleaf": ["landtype", "basin", "water", "fertilizer"]},
+    "key_columns": ["scenario", "region", "basin", "landtype", "water", "fertilizer", "year", "units"],
     "aggregate_function": "sum",
     "call_modify_crop_names": false
 }
