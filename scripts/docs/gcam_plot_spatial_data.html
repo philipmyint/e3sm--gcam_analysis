@@ -67,9 +67,22 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 &quot;scenario_sets&quot;: [&quot;Control&quot;, &quot;Full feedback&quot;]</code></pre>
 <p>For differences, the first scenario or scenario set is the reference.</p>
 <h2>Plot Layouts</h2>
-<p>By default, <code>multipanel</code> is <code>true</code>. In this mode, if <code>plot_years</code> is set and <code>plot_categories</code> is omitted, the script creates one multi-panel figure with one map per year.</p>
-<p>If <code>plot_categories</code> is set, the script creates one output file per year, with one map panel per requested category. When <code>plot_years</code> has one year, the configured <code>plot_name</code> is used directly.</p>
-<p>Set <code>&quot;multipanel&quot;: false</code> to split those same requests into separate single-map figures. The script appends the category and/or year to the configured <code>plot_name</code> so the individual outputs do not overwrite one another.</p>
+<p>By default, <code>multipanel</code> is <code>true</code>. The output layout depends on whether the JSON block requests year panels, category panels, or both:</p>
+<table>
+<thead><tr><th>JSON options</th><th>Output</th></tr></thead>
+<tbody>
+<tr><td><code>multipanel: true</code>, <code>plot_years</code> set, <code>plot_categories</code> omitted</td><td>One output file with one map panel per requested year.</td></tr>
+<tr><td><code>multipanel: true</code>, <code>plot_categories</code> set, <code>plot_years</code> set</td><td>One output file per requested year; each file has one map panel per requested category.</td></tr>
+<tr><td><code>multipanel: true</code>, <code>plot_categories</code> set, <code>plot_years</code> omitted or <code>null</code></td><td>One output file per year found in the data; each file has one map panel per requested category.</td></tr>
+<tr><td><code>multipanel: false</code>, <code>plot_years</code> and/or <code>plot_categories</code> set</td><td>Separate one-map files for each requested year/category combination.</td></tr>
+</tbody>
+</table>
+<p>For example:</p>
+<pre><code>&quot;plot_categories&quot;: [&quot;crop&quot;, &quot;forest&quot;, &quot;pasture&quot;, &quot;grass&quot;],
+&quot;plot_years&quot;: [2015, 2025, 2035, 2045],
+&quot;multipanel&quot;: true</code></pre>
+<p>produces four output files, one for each year. Each file contains four map panels: crop, forest, pasture, and grass. It does not produce one 4-by-4 figure.</p>
+<p>With the same <code>plot_categories</code> and <code>plot_years</code> but <code>&quot;multipanel&quot;: false</code>, the script writes 16 single-map files, one for each category/year pair. The script appends the category and/or year to the configured <code>plot_name</code> so the individual outputs do not overwrite one another.</p>
 <p>The example JSON in <code>scripts/</code> includes both multipanel and non-multipanel blocks.</p>
 <p>For regional scalar files such as <code>hdd_scalars.csv</code> and <code>cdd_scalars.csv</code>, omit <code>category_label</code>, <code>categories</code>, and <code>plot_categories</code> unless a real category column exists.</p>
 <h2>Aggregation</h2>

@@ -172,6 +172,21 @@ Use `"x_variable": "region"` instead when the goal is to compare regional distri
 
 By default, `multipanel` is `true`, so each requested year is rendered as a panel in the same output figure. If `plot_years` is omitted, the default years are used. If `plot_years` is set to `null`, all years in the file are plotted.
 
-Set `"multipanel": false` to split the same request into separate single-year figures. The script appends the year to the configured `plot_name` when needed so the individual outputs do not overwrite one another.
+For box-and-whisker plots, `multipanel` controls only the year layout:
+
+| JSON options | Output |
+|--------------|--------|
+| `multipanel: true`, `plot_years: [2025, 2035, 2045]` | One output file with three panels: 2025, 2035, and 2045. |
+| `multipanel: false`, `plot_years: [2025, 2035, 2045]` | Three separate single-year output files. |
+
+For example, the `scripts/gcam_plot_box_and_whiskers.json` commodity-price multipanel block uses:
+
+```json
+"plot_years": [2025, 2035, 2045],
+"plot_name": "box_plot_ag_commodity_prices_control_years_multipanel.pdf",
+"multipanel": true
+```
+
+and produces one PDF with year panels. The nearby non-multipanel commodity-price examples use the same years with `"multipanel": false`, so the script writes separate files such as `box_plot_ag_commodity_prices_control_2025.pdf`, `box_plot_ag_commodity_prices_control_2035.pdf`, and `box_plot_ag_commodity_prices_control_2045.pdf`.
 
 The example JSON in `scripts/` includes both multipanel and non-multipanel blocks.

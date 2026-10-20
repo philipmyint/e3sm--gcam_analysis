@@ -135,7 +135,19 @@ blockquote { border-left: 4px solid #cbd5e1; margin-left: 0; padding-left: 1rem;
 <p>Use <code>&quot;x_variable&quot;: &quot;region&quot;</code> instead when the goal is to compare regional distributions.</p>
 <h2>Notes</h2>
 <p>By default, <code>multipanel</code> is <code>true</code>, so each requested year is rendered as a panel in the same output figure. If <code>plot_years</code> is omitted, the default years are used. If <code>plot_years</code> is set to <code>null</code>, all years in the file are plotted.</p>
-<p>Set <code>&quot;multipanel&quot;: false</code> to split the same request into separate single-year figures. The script appends the year to the configured <code>plot_name</code> when needed so the individual outputs do not overwrite one another.</p>
+<p>For box-and-whisker plots, <code>multipanel</code> controls only the year layout:</p>
+<table>
+<thead><tr><th>JSON options</th><th>Output</th></tr></thead>
+<tbody>
+<tr><td><code>multipanel: true</code>, <code>plot_years: [2025, 2035, 2045]</code></td><td>One output file with three panels: 2025, 2035, and 2045.</td></tr>
+<tr><td><code>multipanel: false</code>, <code>plot_years: [2025, 2035, 2045]</code></td><td>Three separate single-year output files.</td></tr>
+</tbody>
+</table>
+<p>For example, the <code>scripts/gcam_plot_box_and_whiskers.json</code> commodity-price multipanel block uses:</p>
+<pre><code>&quot;plot_years&quot;: [2025, 2035, 2045],
+&quot;plot_name&quot;: &quot;box_plot_ag_commodity_prices_control_years_multipanel.pdf&quot;,
+&quot;multipanel&quot;: true</code></pre>
+<p>and produces one PDF with year panels. The nearby non-multipanel commodity-price examples use the same years with <code>&quot;multipanel&quot;: false</code>, so the script writes separate files such as <code>box_plot_ag_commodity_prices_control_2025.pdf</code>, <code>box_plot_ag_commodity_prices_control_2035.pdf</code>, and <code>box_plot_ag_commodity_prices_control_2045.pdf</code>.</p>
 <p>The example JSON in <code>scripts/</code> includes both multipanel and non-multipanel blocks.</p>
 </div>
 </body>

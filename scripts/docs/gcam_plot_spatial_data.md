@@ -74,11 +74,26 @@ For differences, the first scenario or scenario set is the reference.
 
 ## Plot Layouts
 
-By default, `multipanel` is `true`. In this mode, if `plot_years` is set and `plot_categories` is omitted, the script creates one multi-panel figure with one map per year.
+By default, `multipanel` is `true`. The output layout depends on whether the JSON block requests year panels, category panels, or both:
 
-If `plot_categories` is set, the script creates one output file per year, with one map panel per requested category. When `plot_years` has one year, the configured `plot_name` is used directly.
+| JSON options | Output |
+|--------------|--------|
+| `multipanel: true`, `plot_years` set, `plot_categories` omitted | One output file with one map panel per requested year. |
+| `multipanel: true`, `plot_categories` set, `plot_years` set | One output file per requested year; each file has one map panel per requested category. |
+| `multipanel: true`, `plot_categories` set, `plot_years` omitted or `null` | One output file per year found in the data; each file has one map panel per requested category. |
+| `multipanel: false`, `plot_years` and/or `plot_categories` set | Separate one-map files for each requested year/category combination. |
 
-Set `"multipanel": false` to split those same requests into separate single-map figures. The script appends the category and/or year to the configured `plot_name` so the individual outputs do not overwrite one another.
+For example:
+
+```json
+"plot_categories": ["crop", "forest", "pasture", "grass"],
+"plot_years": [2015, 2025, 2035, 2045],
+"multipanel": true
+```
+
+produces four output files, one for each year. Each file contains four map panels: crop, forest, pasture, and grass. It does not produce one 4-by-4 figure.
+
+With the same `plot_categories` and `plot_years` but `"multipanel": false`, the script writes 16 single-map files, one for each category/year pair. The script appends the category and/or year to the configured `plot_name` so the individual outputs do not overwrite one another.
 
 The example JSON in `scripts/` includes both multipanel and non-multipanel blocks.
 
