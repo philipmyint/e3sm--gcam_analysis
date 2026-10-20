@@ -148,7 +148,7 @@ The script intentionally skips that combination because percent-difference plots
     "categories": ["crop", "forest", "shrub", "pasture", "grass"],
     "key_columns": ["scenario", "region", "basin", "year"],
     "aggregation_function": "area_weighted_mean",
-    "y_label": "vegetation scalars"
+    "y_label": "Vegetation scalars"
 }
 ```
 

@@ -455,6 +455,7 @@ def plot_spatial_data(inputs):
     stippling_hatches = inputs['stippling_hatches']
     stippling_on = inputs['stippling_on']
     title = inputs['title']
+    raw_title = title
     title_size = inputs['title_size']
     use_latex = inputs['use_latex']
     value_label = inputs['value_label']
@@ -603,7 +604,7 @@ def plot_spatial_data(inputs):
                 # the panel identity as the title. For area plots, make the
                 # category the subject, e.g., "Forest area, 2045".
                 child_inputs['title'], title_already_formatted = _split_plot_title(
-                    title, title_parts, category=category, year=year)
+                    raw_title, title_parts, category=category, year=year)
                 child_inputs['_title_already_formatted'] = title_already_formatted
                 plot_spatial_data(child_inputs)
         return

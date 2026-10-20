@@ -90,7 +90,10 @@ def _format_units_for_label(units, use_latex=False):
     if units is None:
         return None
     units_str = str(units).strip()
-    if units_str.upper() in ('', 'NA', 'NONE', 'NAN', 'NULL') or units_str in ('(', ')'):
+    if units_str.upper() in ('', 'NA', 'NONE', 'NAN', 'NULL') or units_str in ('(', ')', '()'):
+        return None
+    units_str = units_str.strip('()').strip()
+    if units_str.upper() in ('', 'NA', 'NONE', 'NAN', 'NULL'):
         return None
     units_str = units_str.replace('thous km2', 'thousands km2')
     if use_latex:
@@ -98,6 +101,14 @@ def _format_units_for_label(units, use_latex=False):
         units_str = units_str.replace('km2', r'km$^2$')
         units_str = units_str.replace('m2', r'm$^2$')
     return units_str
+
+
+def _valid_units_fragment(fragment):
+    """Return True if a piece of a unit label is worth displaying."""
+    if fragment is None:
+        return False
+    fragment = str(fragment).strip().strip('()').strip()
+    return bool(fragment) and fragment.upper() not in ('NA', 'NONE', 'NAN', 'NULL')
 
 
 def _apply_multipanel_spacing(fig, wspace, hspace):
@@ -457,27 +468,39 @@ def plot_box_and_whiskers(inputs):
         dataframes.append(df)
     df = pd.concat(dataframes).reset_index()
 
+    # Percent-difference plots are dimensionless, so label them directly as
+    # percent differences instead of carrying through physical units such as
+    # thousands km2. This also avoids dangling labels when source unit metadata
+    # are empty or malformed.
+    units_by_category = {}
+    if plot_percent_difference:
+        y_label_lower = y_label.lower()
+        if '%' not in y_label and 'percent' not in y_label_lower and 'difference' not in y_label_lower:
+            percent_label = r'(\% difference)' if use_latex else '(% difference)'
+            y_label += f' {percent_label}'
+            plot_options['y_label'] = fr'{y_label}'
     # If different plotted categories use related units such as kg/yr and kg/m2/yr,
     # keep the shared numerator on the y-axis and put each denominator on the x tick.
-    units_by_category = {}
-    if isinstance(category_label, str) and x_variable == category_label and 'units' in df.columns:
+    elif isinstance(category_label, str) and x_variable == category_label and 'units' in df.columns:
         for category, group in df.groupby(category_label):
             units = [_format_units_for_label(unit, use_latex) for unit in group['units'].dropna().unique()]
             units = [unit for unit in units if unit]
             if len(units) == 1 and '/' in units[0]:
-                units_by_category[str(category)] = units[0]
+                numerator, denominator = units[0].split('/', 1)
+                if _valid_units_fragment(numerator) and _valid_units_fragment(denominator):
+                    units_by_category[str(category)] = units[0]
         numerators = {unit.split('/', 1)[0] for unit in units_by_category.values()}
         if units_by_category and len(numerators) == 1:
             numerator = numerators.pop()
-            if numerator not in y_label:
+            if _valid_units_fragment(numerator) and numerator not in y_label:
                 y_label += f' (% diff in {numerator})' if plot_percent_difference else f' ({numerator})'
                 plot_options['y_label'] = fr'{y_label}'
-    units = [_format_units_for_label(unit, use_latex) for unit in df['units'].dropna().unique()] if 'units' in df.columns else []
-    units = [unit for unit in units if unit]
-    if not units_by_category and len(units) == 1 and units[0] not in y_label:
-        unit_label = f'% diff in {units[0]}' if plot_percent_difference else units[0]
-        y_label += f' ({unit_label})'
-        plot_options['y_label'] = fr'{y_label}'
+    if not plot_percent_difference:
+        units = [_format_units_for_label(unit, use_latex) for unit in df['units'].dropna().unique()] if 'units' in df.columns else []
+        units = [unit for unit in units if unit]
+        if not units_by_category and len(units) == 1 and units[0] not in y_label:
+            y_label += f' ({units[0]})'
+            plot_options['y_label'] = fr'{y_label}'
 
     # Each requested year gets its own panel in the same output figure.
     years_to_plot = plot_years if plot_years is not None else sorted(df[year_label].unique())
