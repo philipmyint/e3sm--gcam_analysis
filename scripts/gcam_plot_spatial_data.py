@@ -29,8 +29,9 @@ default_inputs = {
     'landtype_groups': 'modified',
     'linewidth': 0.5,
     'multipanel': True,
+    'multipanel_height_scale': 0.55,
     'multipanel_hspace': 0.16,
-    'multipanel_wspace': 0.02,
+    'multipanel_wspace': 0.08,
     'multiplier': 1,
     'aggregation_function': 'sum',
     'notify_scenarios_transposed': False,
@@ -112,6 +113,21 @@ def _apply_multipanel_spacing(fig, wspace, hspace):
     """Tighten map panels after colorbars and hidden axes have been created."""
     fig.subplots_adjust(left=0.02, right=0.98, bottom=0.03, top=0.94,
                         wspace=wspace, hspace=hspace)
+
+
+def _multipanel_figsize(width, height, ncols, nrows, height_scale):
+    """Return a flatter figure size for fixed-aspect global map panels."""
+    return (width * ncols, height * nrows * height_scale)
+
+
+def _format_multipanel_map_axis(ax, panel_idx, ncols, nrows):
+    """Reduce repeated map tick labels so adjacent panels and colorbars do not overlap."""
+    row = panel_idx // ncols
+    col = panel_idx % ncols
+    if col != 0:
+        ax.tick_params(axis='y', labelleft=False)
+    if row != nrows - 1:
+        ax.tick_params(axis='x', labelbottom=False)
 
 
 def _format_units_for_label(units, use_latex=False):
@@ -419,6 +435,7 @@ def plot_spatial_data(inputs):
     landtype_groups = inputs['landtype_groups']
     linewidth = inputs['linewidth']
     multipanel = inputs['multipanel']
+    multipanel_height_scale = inputs['multipanel_height_scale']
     multipanel_hspace = inputs['multipanel_hspace']
     multipanel_wspace = inputs['multipanel_wspace']
     multiplier = inputs['multiplier']
@@ -596,7 +613,8 @@ def plot_spatial_data(inputs):
     if plot_years is not None and plot_categories is None:
         ncols = inputs.get('plot_years_ncols') or len(plot_years)
         nrows = math.ceil(len(plot_years) / ncols)
-        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
+        panel_figsize = _multipanel_figsize(width, height, ncols, nrows, multipanel_height_scale)
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=panel_figsize)
         axes_flat = list(axes.flat) if hasattr(axes, 'flat') else [axes]
         num_scenario_sets_local = len(scenarios[0]) if check_is_list_of_lists(scenarios) else 0
         vmin, vmax = (cbar_limits[0], cbar_limits[1]) if cbar_limits else (None, None)
@@ -671,6 +689,7 @@ def plot_spatial_data(inputs):
             gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                            legend_kwds={'shrink': 0.55, 'fraction': 0.035, 'pad': 0.01},
                            edgecolor='k', linewidth=linewidth)
+            _format_multipanel_map_axis(ax, panel_idx, ncols, nrows)
             if 'p_value' in gdf_panel.columns and stippling_on:
                 gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
                     ax=ax, facecolor='none', color='none', hatch=stippling_hatches, linewidth=0)
@@ -679,7 +698,7 @@ def plot_spatial_data(inputs):
             axes_flat[panel_idx].set_visible(False)
 
         plot_options['name'] = plot_name
-        fig.set_size_inches(width * ncols, height * nrows)
+        fig.set_size_inches(*panel_figsize)
         _apply_multipanel_spacing(fig, multipanel_wspace, multipanel_hspace)
         save_figure(plot_name, fig, plot_options)
         plt.close(fig)
@@ -699,7 +718,8 @@ def plot_spatial_data(inputs):
                 continue
             ncols = inputs.get('plot_categories_ncols') or len(plot_categories)
             nrows = math.ceil(len(plot_categories) / ncols)
-            fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(width * ncols, height * nrows))
+            panel_figsize = _multipanel_figsize(width, height, ncols, nrows, multipanel_height_scale)
+            fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=panel_figsize)
             axes_flat = list(axes.flat) if hasattr(axes, 'flat') else [axes]
             vmin, vmax = (cbar_limits[0], cbar_limits[1]) if cbar_limits else (None, None)
 
@@ -776,6 +796,7 @@ def plot_spatial_data(inputs):
                 gdf_panel.plot('plot', ax=ax, legend=cbar_on, cmap=cmap_color, vmin=panel_vmin, vmax=panel_vmax,
                                legend_kwds={'shrink': 0.55, 'fraction': 0.035, 'pad': 0.01},
                                edgecolor='k', linewidth=linewidth)
+                _format_multipanel_map_axis(ax, panel_idx, ncols, nrows)
                 if 'p_value' in gdf_panel.columns and stippling_on:
                     gdf_panel[gdf_panel['p_value'] <= p_value_threshold].plot(
                         ax=ax, facecolor='none', color='none', hatch=stippling_hatches, linewidth=0)
@@ -785,7 +806,7 @@ def plot_spatial_data(inputs):
 
             year_plot_name = plot_name if plot_years is not None and len(plot_years) == 1 else _add_suffix_to_plot_name(plot_name, year)
             plot_options['name'] = year_plot_name
-            fig.set_size_inches(width * ncols, height * nrows)
+            fig.set_size_inches(*panel_figsize)
             _apply_multipanel_spacing(fig, multipanel_wspace, multipanel_hspace)
             save_figure(year_plot_name, fig, plot_options)
             plt.close(fig)
