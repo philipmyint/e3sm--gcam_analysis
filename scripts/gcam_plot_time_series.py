@@ -411,8 +411,16 @@ def process_inputs(inputs):
             flat_scenarios = list(specified_scenarios)
         missing_scenarios = [s for s in flat_scenarios if s not in available_scenarios]
         if missing_scenarios:
-            print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
-                  f"and will produce empty plots: {missing_scenarios}")
+            if check_is_list_of_lists(specified_scenarios):
+                print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
+                      f"and will produce empty ensemble members: {missing_scenarios}")
+            else:
+                inputs['scenarios'] = [s for s in specified_scenarios if s in available_scenarios]
+                print(f"Warning: the following scenarios were not found in '{inputs['output_file']}' "
+                      f"and will be skipped: {missing_scenarios}")
+                if not inputs['scenarios']:
+                    print(f"Warning: no requested scenarios were found in '{inputs['output_file']}', skipping plot.")
+                    return None
 
     # Extract units from the CSV's units column (first non-null, non-NA value).
     # Users can override this with a literal "units" entry in the JSON.
