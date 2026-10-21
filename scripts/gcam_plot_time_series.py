@@ -108,13 +108,40 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
     scenario_linestyle_encodes_set = (not is_ensemble) and num_scen > 1 and not plot_percent_difference
     region_linestyle_encodes_region = not isinstance(category_label, list) and not scenario_linestyle_encodes_set
     color_by_category = not scenario_color_encodes_set
+    all_regions = []
+    for cat in categories:
+        for region in regions_per_category.get(cat, ['Global']):
+            if region not in all_regions:
+                all_regions.append(region)
+    single_region = len(all_regions) <= 1
+    show_category_scenario_combinations = (scenario_linestyle_encodes_set
+                                           and not isinstance(category_label, list)
+                                           and len(categories) > 1
+                                           and single_region)
+
+    # In individual plots with several landtypes/categories and several
+    # scenarios, each plotted line is a category-scenario combination. A
+    # decomposed legend is compact, but it can look like only the scenario
+    # entries are actual plotted lines. Use exact proxy handles for each
+    # combination so the legend matches the figure one-for-one.
+    if show_category_scenario_combinations:
+        col_name = legend_header_label(category_label) if isinstance(category_label, str) else 'Category'
+        h, l = _legend_section_header(f'{col_name} and Scenarios:', use_latex, bool(handles))
+        handles.extend(h); labels.extend(l)
+        for cat_idx, cat in enumerate(categories):
+            for scen_idx, scenario in enumerate(scen_display):
+                handle = mlines.Line2D([], [], color=plot_colors[cat_idx % len(plot_colors)],
+                                       linestyle=linestyle_tuples[scen_idx % len(linestyle_tuples)][1],
+                                       marker=markers[cat_idx % len(markers)],
+                                       markersize=marker_size, linewidth=linewidth)
+                handles.append(handle); labels.append(f'{category_to_label_str(cat)} ({scenario})')
 
     # Multi-column categories can create many plotted lines. Instead of adding
     # one legend entry per line, build proxy handles that explain the visual
     # encoding: first category column -> color, second -> marker, third ->
     # linewidth. Additional category columns are still filtered, but they are
     # not visually distinguished.
-    if isinstance(category_label, list) and col_unique_values:
+    if not show_category_scenario_combinations and isinstance(category_label, list) and col_unique_values:
         if len(col_unique_values) > 3:
             print(f"Warning: only 3 category columns are visually encoded (color, marker, linewidth). "
                   f"Columns beyond the third will not be visually distinguished: {category_label[3:]}")
@@ -135,7 +162,7 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
                     handle = mlines.Line2D([], [], color='gray', linestyle='-',
                                            linewidth=linewidth * (val_idx + 1))
                 handles.append(handle); labels.append(str(val))
-    elif len(categories) > 1 or color_by_category:
+    elif not show_category_scenario_combinations and (len(categories) > 1 or color_by_category):
         col_name = legend_header_label(category_label) if isinstance(category_label, str) else 'Categories'
         h, l = _legend_section_header(col_name + ':', use_latex, bool(handles))
         handles.extend(h); labels.extend(l)
@@ -150,11 +177,6 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
     # In the multi-column case, the category legend already uses the available
     # marker/line encodings, so adding regions would make the legend misleading.
     if region_linestyle_encodes_region:
-        all_regions = []
-        for cat in categories:
-            for region in regions_per_category.get(cat, ['Global']):
-                if region not in all_regions:
-                    all_regions.append(region)
         if len(all_regions) > 1:
             h, l = _legend_section_header('Regions:', use_latex, bool(handles))
             handles.extend(h); labels.extend(l)
@@ -166,7 +188,7 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
 
     # Scenario entries are included only when scenario/scenario-set identity is
     # actually represented by a visual encoding in the plotted lines.
-    if scenario_color_encodes_set or scenario_linestyle_encodes_set:
+    if (scenario_color_encodes_set or scenario_linestyle_encodes_set) and not show_category_scenario_combinations:
         h, l = _legend_section_header('Scenarios:', use_latex, bool(handles))
         handles.extend(h); labels.extend(l)
         start = 1 if plot_percent_difference else 0
