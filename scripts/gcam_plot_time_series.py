@@ -104,8 +104,10 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
     num_scen = len(scenarios[0]) if is_ensemble else len(scenarios)
     scen_display = (scenario_sets if scenario_sets else [str(i) for i in range(num_scen)]) if is_ensemble else list(scenarios)
     is_two_scen_pct_diff = (num_scen == 2 and plot_percent_difference)
-    multi_scen = num_scen > 1
-    color_by_category = True
+    scenario_color_encodes_set = is_ensemble and not isinstance(category_label, list) and num_scen > 1 and not is_two_scen_pct_diff
+    scenario_linestyle_encodes_set = (not is_ensemble) and num_scen > 1 and not plot_percent_difference
+    region_linestyle_encodes_region = not isinstance(category_label, list) and not scenario_linestyle_encodes_set
+    color_by_category = not scenario_color_encodes_set
 
     # Multi-column categories can create many plotted lines. Instead of adding
     # one legend entry per line, build proxy handles that explain the visual
@@ -139,7 +141,7 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
         handles.extend(h); labels.extend(l)
         for cat_idx, cat in enumerate(categories):
             color = plot_colors[cat_idx % len(plot_colors)] if color_by_category else 'gray'
-            handle = mlines.Line2D([], [], color=color, linestyle='-',
+            handle = mlines.Line2D([], [], color=color, linestyle='-' if color_by_category else 'None',
                                     marker=markers[cat_idx % len(markers)],
                                     markersize=marker_size, linewidth=linewidth)
             handles.append(handle); labels.append(category_to_label_str(cat))
@@ -147,7 +149,7 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
     # Region legend entries are shown only for the single-column category case.
     # In the multi-column case, the category legend already uses the available
     # marker/line encodings, so adding regions would make the legend misleading.
-    if not isinstance(category_label, list):
+    if region_linestyle_encodes_region:
         all_regions = []
         for cat in categories:
             for region in regions_per_category.get(cat, ['Global']):
@@ -162,16 +164,17 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
                                         linewidth=linewidth)
                 handles.append(handle); labels.append(region)
 
-    # Scenario entries describe line styles. For a two-scenario percent
-    # difference plot, the reference scenario is not plotted, so there is no
-    # separate scenario section to show.
-    if multi_scen and not is_two_scen_pct_diff:
+    # Scenario entries are included only when scenario/scenario-set identity is
+    # actually represented by a visual encoding in the plotted lines.
+    if scenario_color_encodes_set or scenario_linestyle_encodes_set:
         h, l = _legend_section_header('Scenarios:', use_latex, bool(handles))
         handles.extend(h); labels.extend(l)
         start = 1 if plot_percent_difference else 0
         for scen_idx in range(start, num_scen):
-            handle = mlines.Line2D([], [], color='gray',
-                                    linestyle=linestyle_tuples[scen_idx % len(linestyle_tuples)][1],
+            color = plot_colors[scen_idx % len(plot_colors)] if scenario_color_encodes_set else 'gray'
+            linestyle = '-' if scenario_color_encodes_set else linestyle_tuples[scen_idx % len(linestyle_tuples)][1]
+            handle = mlines.Line2D([], [], color=color,
+                                    linestyle=linestyle,
                                     linewidth=linewidth)
             handles.append(handle); labels.append(str(scen_display[scen_idx]))
 
