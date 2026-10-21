@@ -90,7 +90,8 @@ def _legend_section_header(text, use_latex, has_prior):
 
 def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_category,
                           plot_colors, markers, linestyle_tuples, marker_size, linewidth,
-                          category_label, col_unique_values, plot_percent_difference, plot_options):
+                          category_label, col_unique_values, plot_percent_difference, plot_options,
+                          plotted_category_scenario_pairs=None):
     """Build a multi-section proxy-handle legend grouping categories, regions, and scenarios."""
     use_latex = plot_options.get('use_latex', False)
     legend_label_size = plot_options.get('legend_label_size', legend_label_size_default)
@@ -125,16 +126,22 @@ def build_grouped_legend(ax, categories, scenarios, scenario_sets, regions_per_c
     # entries are actual plotted lines. Use exact proxy handles for each
     # combination so the legend matches the figure one-for-one.
     if show_category_scenario_combinations:
-        col_name = legend_header_label(category_label) if isinstance(category_label, str) else 'Category'
-        h, l = _legend_section_header(f'{col_name} and Scenarios:', use_latex, bool(handles))
-        handles.extend(h); labels.extend(l)
+        combo_handles, combo_labels = [], []
         for cat_idx, cat in enumerate(categories):
             for scen_idx, scenario in enumerate(scen_display):
+                if (plotted_category_scenario_pairs is not None
+                        and (cat_idx, scen_idx) not in plotted_category_scenario_pairs):
+                    continue
                 handle = mlines.Line2D([], [], color=plot_colors[cat_idx % len(plot_colors)],
                                        linestyle=linestyle_tuples[scen_idx % len(linestyle_tuples)][1],
                                        marker=markers[cat_idx % len(markers)],
                                        markersize=marker_size, linewidth=linewidth)
-                handles.append(handle); labels.append(f'{category_to_label_str(cat)} ({scenario})')
+                combo_handles.append(handle); combo_labels.append(f'{category_to_label_str(cat)} ({scenario})')
+        if combo_handles:
+            col_name = legend_header_label(category_label) if isinstance(category_label, str) else 'Category'
+            h, l = _legend_section_header(f'{col_name} and Scenarios:', use_latex, bool(handles))
+            handles.extend(h); labels.extend(l)
+            handles.extend(combo_handles); labels.extend(combo_labels)
 
     # Multi-column categories can create many plotted lines. Instead of adding
     # one legend entry per line, build proxy handles that explain the visual
@@ -564,6 +571,7 @@ def plot_time_series(inputs):
     # collecting into a list is O(n).
     all_time_series = []
     have_not_stored_time_in_df = True
+    plotted_category_scenario_pairs = set()
 
     # Create the figure and axis for the time series plot.
     fig, ax = plt.subplots(nrows=1, ncols=1)
@@ -685,6 +693,8 @@ def plot_time_series(inputs):
                     # Do not include the first scenario if plotting a percent difference. Include the data in the plot otherwise.
                     if not plot_percent_difference or scenario_index != 0:
                         ax.plot(x, y, label=label, color=line_color, linestyle=linestyle, linewidth=plot_linewidth, marker=marker, markersize=marker_size)
+                        if len(y.dropna()) > 0:
+                            plotted_category_scenario_pairs.add((category_index, scenario_index))
                     if have_not_stored_time_in_df:
                         x_series = pd.Series(x, name='Year')
                         all_time_series.append(x_series)
@@ -997,7 +1007,8 @@ def plot_time_series(inputs):
     if legend_on:
         build_grouped_legend(ax, categories, scenarios, scenario_sets, inputs['regions'],
                               plot_colors, markers, linestyle_tuples, marker_size, linewidth,
-                              category_label, col_unique_values, plot_percent_difference, plot_options)
+                              category_label, col_unique_values, plot_percent_difference, plot_options,
+                              plotted_category_scenario_pairs)
     set_figure_options(fig, ax, {**plot_options, 'legend_on': False})
 
     # Close the plot now that we are done with it. Record the elapsed time.
