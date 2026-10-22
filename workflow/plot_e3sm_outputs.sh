@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # This script runs the Python scripts that extract and plot E3SM outputs (ELM and EAM).
 # These JSON config files are configured to make simple plots for two cases for a default set of E3SM outputs.
 

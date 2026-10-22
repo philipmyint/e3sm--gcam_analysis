@@ -1,5 +1,6 @@
 import fileinput
 import numpy as np
+import os
 import pandas as pd
 from scipy import stats
 import sys
@@ -170,6 +171,11 @@ def read_file_into_dataframe(file_name, clean_up_df=False):
     Returns:
         DataFrame containing the contents of the file.
     """
+    if not os.path.exists(file_name):
+        raise FileNotFoundError(f"Error: input file not found: '{file_name}'")
+    if os.path.getsize(file_name) == 0:
+        raise ValueError(f"Error: input file is empty: '{file_name}'")
+
     if file_name.endswith('.csv'):
         df = pd.read_csv(file_name, low_memory=False)
     else:
