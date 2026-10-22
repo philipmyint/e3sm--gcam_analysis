@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# set some sbatch directives for optional job submission (sbatch plot_e3sm_outputs.sh)
+#SBATCH --job-name=plot_e3sm_outputs
+#SBATCH --output=plot_e3sm_outputs.out
+#SBATCH --error=plot_e3sm_outputs.err
+#SBATCH --time=01:00:00
+#SBATCH --qos=regular
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH -C cpu
+#SBATCH -A e3sm
+
 set -eo pipefail
 
 # This script runs the Python scripts that extract and plot E3SM outputs (ELM and EAM).
@@ -20,17 +31,6 @@ set -eo pipefail
 
 # Check that the correct grid scrip file is set in e3sm_plot_spatial_data.json for EAM spatial plots.
 #    The default grid file is set to the ne30pg2 grid file in this repository.
-
-# set some sbatch directives for optional job submission (sbatch plot_e3sm_outputs.sh)
-#SBATCH --job-name=plot_e3sm_outputs
-#SBATCH --output=plot_e3sm_outputs.out
-#SBATCH --error=plot_e3sm_outputs.err
-#SBATCH --time=01:00:00
-#SBATCH --qos=regular
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH -C cpu
-#SBATCH -A e3sm
 
 MACHINE="perlmutter"
 OVERWRITE_ARGS=()
