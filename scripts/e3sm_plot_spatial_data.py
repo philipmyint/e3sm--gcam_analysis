@@ -314,22 +314,10 @@ def plot_spatial_data_eam(inputs, grid_file):
                     ds_full.close()
                     raise ValueError(f"Plot end_year {end_year} not in '{file}' (available: {file_start}–{file_end}); update input json file")
 
-                # Create a temporary NetCDF file with data between only the start and end years.
-                # Include plot_type in the name to prevent collisions between abs_diff and pct_diff workers running in parallel.
-                ds = ds_full.sel(year=slice(start_year, end_year))[variable]
-                ds_full.close()
-                wfile = os.path.join(plot_directory, f'temp_{plot_type}_{variable}_{file_index}_{file_set_index}.nc')
-                ds.to_netcdf(wfile, 'w')
-                ds.close()
-                # Reopen the sliced temporary file with xarray and collapse the year dimension before storing it in uxds.
                 if time_calculation == 'mean':
-                    xr_ds = xr.open_dataset(wfile).mean(dim='year')
-                    uxda = xr_ds[variable]*multiplier
-                    xr_ds.close()
+                    uxda = ds_full.sel(year=slice(start_year, end_year)).mean(dim='year')[variable].load()*multiplier
                 elif time_calculation == 'sum':
-                    xr_ds = xr.open_dataset(wfile).sum(dim='year')
-                    uxda = xr_ds[variable]*multiplier
-                    xr_ds.close()
+                    uxda = ds_full.sel(year=slice(start_year, end_year)).sum(dim='year')[variable].load()*multiplier
                     # If calculating the sum, change the per-time quantities and their units accordingly.
                     per_time_labels = ['/year', '/month', '/day', '/hour', '/min', '/s']
                     time_multipliers = np.array([1, years_TO_months, years_TO_days, years_TO_hours, years_TO_mins, years_TO_s])
@@ -339,8 +327,7 @@ def plot_spatial_data_eam(inputs, grid_file):
                             uxda.attrs['units'] = uxda.attrs['units'].replace(per_time_label, '')
                             uxda *= time_multipliers[index]
                             break
-                # Delete the temporary NetCDF file now that the data have been read.
-                os.system(f'rm {wfile}')
+                ds_full.close()
             else:
                 uxda = ds_full[variable].load()*multiplier
                 ds_full.close()
@@ -837,6 +824,7 @@ if __name__ == '__main__':
     # Do not start more worker processes than there are independent plotting jobs.
     max_processes = get_max_processes_from_inputs(inputs, MAX_PROCESSES)
     num_processes = min(max_processes, max(1, len(list_of_inputs)))
+    print(f"Producing {len(list_of_inputs)} spatial plot(s) using {num_processes} process(es).")
 
     # Create all of the spatial plots in parallel.
     try:
@@ -844,7 +832,6 @@ if __name__ == '__main__':
             pool.map(plot_spatial_data_from_netcdf_files, list_of_inputs)
     except Exception as e:
         print(e)
-        sys.exit(1)
         sys.exit(1)
 
     # Sort all the p-value files alphabetically.
