@@ -11,15 +11,17 @@
 #SBATCH -C cpu
 #SBATCH -A e3sm
 
-echo "Starting job at: $(date)"
-
-set -e
+set -eo pipefail
 trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 
 MACHINE="perlmutter"
+OVERWRITE_REQUESTED=false
 
 # Parse optional command-line arguments. The --machine flag selects a known
 # E3SM unified environment to source for the Python steps; with no flag, default to Perlmutter.
+# The --overwrite flag is accepted for consistency with the E3SM workflow. The
+# GCAM scripts already replace their declared CSV and plot outputs by default,
+# so no extra flag is forwarded to the individual scripts.
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --machine)
@@ -40,19 +42,29 @@ while [[ $# -gt 0 ]]; do
             esac
             shift 2
             ;;
+        --overwrite)
+            OVERWRITE_REQUESTED=true
+            shift
+            ;;
         -h|--help)
-            echo "Usage: $0 [--machine perlmutter|compy]"
+            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite]"
             echo "Default: --machine perlmutter"
+            echo "--overwrite is accepted for consistency; GCAM outputs are overwritten by default."
             echo "Note: chrysalis is not supported for this workflow because the R extraction step cannot run there."
             exit 0
             ;;
         *)
             echo "ERROR: unknown option: $1" >&2
-            echo "Usage: $0 [--machine perlmutter|compy]" >&2
+            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite]" >&2
             exit 1
             ;;
     esac
 done
+
+echo "Starting job at: $(date)"
+if [[ "${OVERWRITE_REQUESTED}" == true ]]; then
+    echo "Note: --overwrite was requested; GCAM workflow outputs are overwritten by default."
+fi
 
 # This script runs the Python scripts that extract and plot GCAM outputs.
 # These JSON config files are configured to make simple plots for two cases for a default set of GCAM outputs.

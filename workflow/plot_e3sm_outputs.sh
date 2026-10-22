@@ -32,12 +32,13 @@ set -eo pipefail
 #SBATCH -C cpu
 #SBATCH -A e3sm
 
-echo "Starting job at: $(date)"
-
 MACHINE="perlmutter"
+OVERWRITE_ARGS=()
 
 # Parse optional command-line arguments. The --machine flag selects a known
 # E3SM unified environment to source; with no flag, default to Perlmutter.
+# The --overwrite flag is forwarded to extraction scripts so existing extracted
+# output files are replaced before plotting.
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --machine)
@@ -48,18 +49,25 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 2
             ;;
+        --overwrite)
+            OVERWRITE_ARGS=(--overwrite)
+            shift
+            ;;
         -h|--help)
-            echo "Usage: $0 [--machine perlmutter|compy|chrysalis]"
+            echo "Usage: $0 [--machine perlmutter|compy|chrysalis] [--overwrite]"
             echo "Default: --machine perlmutter"
+            echo "--overwrite replaces existing extracted output files before plotting"
             exit 0
             ;;
         *)
             echo "ERROR: unknown option: $1" >&2
-            echo "Usage: $0 [--machine perlmutter|compy|chrysalis]" >&2
+            echo "Usage: $0 [--machine perlmutter|compy|chrysalis] [--overwrite]" >&2
             exit 1
             ;;
     esac
 done
+
+echo "Starting job at: $(date)"
 
 # Load the E3SM unified environment for the selected machine.
 case "${MACHINE}" in
@@ -91,14 +99,17 @@ fi
 
 # extract time series of specified H0 variables from E3SM outputs and write to text files
 python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_h0.py" \
+    "${OVERWRITE_ARGS[@]}" \
     "${SCRIPT_DIR}/e3sm_extract_time_series_h0.json"
 
 # extract time series of specified surfdata variables from E3SM outputs and write to text files
 python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_time_series_landuse.py" \
+    "${OVERWRITE_ARGS[@]}" \
     "${SCRIPT_DIR}/e3sm_extract_time_series_landuse.json"
 
 # extract spatial data of specified H0 variables from E3SM outputs and write to netcdf files
 python3 "${SCRIPT_DIR}/../scripts/e3sm_extract_spatial_data_h0.py" \
+    "${OVERWRITE_ARGS[@]}" \
     "${SCRIPT_DIR}/e3sm_extract_spatial_data_h0.json"
 
 # plot time series of specified H0 and surfdata variables from E3SM outputs
