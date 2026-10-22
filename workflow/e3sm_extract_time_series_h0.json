@@ -19,7 +19,7 @@
 	    "max_processes": 8
     },
     {
-        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026042816_v3_pr_test/run/",
+        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_TER_DEG_FDBK_INI2015_2026091708_n30p2_f09_EC30/run/",
         "output_file": "./output/case1_time_series.dat",
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [

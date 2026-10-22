@@ -10,7 +10,7 @@
         ],
         "xmlFiles": [
             "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/run/GCAMDBOutput_E3SM_GCAM_SSP245_51442298.xml",
-            "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026042816_v3_pr_test/run/GCAMDBOutput_E3SM_GCAM_SSP245_52431283.xml"
+            "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_TER_DEG_FDBK_INI2015_2026091708_n30p2_f09_EC30/run/GCAMDBOutput_E3SM_GCAM_SSP245_52431283.xml"
         ],
         "createProjectFiles": true
     },
