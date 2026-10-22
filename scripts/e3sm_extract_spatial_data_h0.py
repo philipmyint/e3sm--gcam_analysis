@@ -177,9 +177,8 @@ def extract_spatial_data_from_netcdf_files(inputs):
 
     # Check that at least one matching file was found.
     if len(netcdf_files) == 0:
-        print(f"Error: no NetCDF files found in '{simulation_path}' matching substrings {netcdf_substrings} "
-              f"between years {start_year} and {end_year}.")
-        return
+        raise FileNotFoundError(f"Error: no NetCDF files found in '{simulation_path}' matching substrings {netcdf_substrings} "
+                                f"between years {start_year} and {end_year} for output file '{output_file}'.")
     print(f"Found {len(netcdf_files)} file(s) for '{output_file}'. Checking variables...")
 
     # Check that all requested variables exist in the first file before opening the full dataset.

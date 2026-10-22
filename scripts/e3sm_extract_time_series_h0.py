@@ -366,6 +366,11 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         netcdf_files = get_netcdf_files_between_start_and_end_years(netcdf_files, start_year, end_year)
         # Derive a readable name for this file type from its identifying substrings.
         file_type_name = ', '.join(netcdf_substrings[index])
+        if not netcdf_files:
+            raise FileNotFoundError(
+                f"Error: no NetCDF files found for file type {index+1}/{len(variables)} ({file_type_name}) "
+                f"in '{simulation_path}' between years {start_year} and {end_year}. "
+                f"Check simulation_path, netcdf_substrings, and the requested year range for output file '{output_file}'.")
     
         # Open the first NetCDF file to check that all requested variables exist and to print their names and units before spawning the pool.
         vars_to_use = variables[index]
@@ -428,6 +433,8 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
         dataframes.append(df)
 
     # Combine the DataFrames for all NetCDF types into a single large DataFrame by merging on the year and month columns.
+    if not dataframes:
+        raise ValueError(f"Error: no data were extracted for '{output_file}'.")
     df = dataframes[0]
     for df_index in range(1, len(dataframes)):
         df = pd.merge(df, dataframes[df_index], on=['Year', 'Month'], how='inner')
