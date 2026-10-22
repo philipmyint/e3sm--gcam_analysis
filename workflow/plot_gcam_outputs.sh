@@ -16,6 +16,7 @@ trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 
 MACHINE="perlmutter"
 OVERWRITE_REQUESTED=false
+INSTALL_R_PACKAGES=false
 
 # Parse optional command-line arguments. The --machine flag selects a known
 # E3SM unified environment to source for the Python steps; with no flag, default to Perlmutter.
@@ -46,16 +47,21 @@ while [[ $# -gt 0 ]]; do
             OVERWRITE_REQUESTED=true
             shift
             ;;
+        --install-r-packages)
+            INSTALL_R_PACKAGES=true
+            shift
+            ;;
         -h|--help)
-            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite]"
+            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite] [--install-r-packages]"
             echo "Default: --machine perlmutter"
             echo "--overwrite is accepted for consistency; GCAM outputs are overwritten by default."
+            echo "--install-r-packages installs missing R packages into the user R library."
             echo "Note: chrysalis is not supported for this workflow because the R extraction step cannot run there."
             exit 0
             ;;
         *)
             echo "ERROR: unknown option: $1" >&2
-            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite]" >&2
+            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite] [--install-r-packages]" >&2
             exit 1
             ;;
     esac
@@ -95,6 +101,54 @@ fi
 
 # First load the R module and make sure the needed libraries are installed.
 module load R/4.3.3
+
+export R_LIBS_USER="${R_LIBS_USER:-${HOME}/R/x86_64-pc-linux-gnu-library/4.3}"
+mkdir -p "${R_LIBS_USER}"
+echo "Using R user library: ${R_LIBS_USER}"
+
+if ! INSTALL_R_PACKAGES="${INSTALL_R_PACKAGES}" Rscript --vanilla -e '
+user_lib <- Sys.getenv("R_LIBS_USER")
+if (!dir.exists(user_lib)) {
+    dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
+}
+.libPaths(c(user_lib, .libPaths()))
+
+install_missing <- identical(Sys.getenv("INSTALL_R_PACKAGES"), "true")
+required_packages <- c("dplyr", "rgcam", "rjson")
+missing_packages <- required_packages[
+    !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+
+if (length(missing_packages) > 0 && install_missing) {
+    cran_packages <- setdiff(missing_packages, "rgcam")
+    if (length(cran_packages) > 0) {
+        install.packages(cran_packages, lib = user_lib, repos = "https://cloud.r-project.org")
+    }
+    if ("rgcam" %in% missing_packages) {
+        if (!requireNamespace("remotes", quietly = TRUE)) {
+            install.packages("remotes", lib = user_lib, repos = "https://cloud.r-project.org")
+        }
+        remotes::install_github("JGCRI/rgcam", lib = user_lib, dependencies = TRUE, upgrade = "never")
+    }
+    missing_packages <- required_packages[
+        !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+    ]
+}
+
+if (length(missing_packages) > 0) {
+    message("ERROR: missing required R package(s): ", paste(missing_packages, collapse = ", "))
+    message("Install the missing package(s) into the R user library visible to R/4.3.3.")
+    message("This workflow is using R_LIBS_USER=", user_lib)
+    message("You can rerun this wrapper with --install-r-packages, or install manually.")
+    message("For CRAN packages, for example:")
+    message("  Rscript -e '\''install.packages(c(\"dplyr\", \"rjson\"), lib=Sys.getenv(\"R_LIBS_USER\"), repos=\"https://cloud.r-project.org\")'\''")
+    message("For rgcam, for example:")
+    message("  Rscript -e '\''install.packages(\"remotes\", lib=Sys.getenv(\"R_LIBS_USER\"), repos=\"https://cloud.r-project.org\"); remotes::install_github(\"JGCRI/rgcam\", lib=Sys.getenv(\"R_LIBS_USER\"), upgrade=\"never\")'\''")
+    quit(status = 1)
+}
+'; then
+    exit 1
+fi
 
 # perlmutter (and compy?) has the required R packages, but chrysalis does not
 # chrysalis also does not have the required system libraries to install the required R packages
