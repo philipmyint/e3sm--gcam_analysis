@@ -336,6 +336,10 @@ def extract_time_series_from_netcdf_files(simulation_path, output_file, netcdf_s
             print(f"  {name}: {length}")
         sys.exit(1)
 
+    # Check that the simulation path exists before scanning for NetCDF files.
+    if not os.path.exists(simulation_path):
+        raise FileNotFoundError(f"Error: simulation path not found: '{simulation_path}'")
+
     # Verify the output file is writable before doing any processing, so a bad path or permissions problem surfaces immediately.
     output_dir = os.path.dirname(os.path.abspath(output_file))
     if not os.path.exists(output_dir):
