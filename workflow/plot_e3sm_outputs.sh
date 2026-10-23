@@ -34,6 +34,7 @@ set -eo pipefail
 
 MACHINE="perlmutter"
 OVERWRITE_ARGS=()
+E3SM_ENV_SCRIPT=""
 
 # Parse optional command-line arguments. The --machine flag selects a known
 # E3SM unified environment to source; with no flag, default to Perlmutter.
@@ -53,15 +54,24 @@ while [[ $# -gt 0 ]]; do
             OVERWRITE_ARGS=(--overwrite)
             shift
             ;;
+        --env-script)
+            E3SM_ENV_SCRIPT="${2:-}"
+            if [[ -z "${E3SM_ENV_SCRIPT}" ]]; then
+                echo "ERROR: --env-script requires a path to an environment loader script" >&2
+                exit 1
+            fi
+            shift 2
+            ;;
         -h|--help)
-            echo "Usage: $0 [--machine perlmutter|compy|chrysalis] [--overwrite]"
+            echo "Usage: $0 [--machine perlmutter|compy|chrysalis] [--overwrite] [--env-script PATH]"
             echo "Default: --machine perlmutter"
             echo "--overwrite replaces existing extracted output files before plotting"
+            echo "--env-script PATH sources a specific E3SM Unified loader script"
             exit 0
             ;;
         *)
             echo "ERROR: unknown option: $1" >&2
-            echo "Usage: $0 [--machine perlmutter|compy|chrysalis] [--overwrite]" >&2
+            echo "Usage: $0 [--machine perlmutter|compy|chrysalis] [--overwrite] [--env-script PATH]" >&2
             exit 1
             ;;
     esac
@@ -70,22 +80,30 @@ done
 echo "Starting job at: $(date)"
 
 # Load the E3SM unified environment for the selected machine.
-case "${MACHINE}" in
-    perlmutter)
-        source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
-        ;;
-    compy)
-        source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
-        ;;
-    chrysalis)
-        source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh
-        ;;
-    *)
-        echo "ERROR: unknown machine: ${MACHINE}" >&2
-        echo "Valid machines: perlmutter, compy, chrysalis" >&2
-        exit 1
-        ;;
-esac
+if [[ -z "${E3SM_ENV_SCRIPT}" ]]; then
+    case "${MACHINE}" in
+        perlmutter)
+            E3SM_ENV_SCRIPT="/global/common/software/e3sm/anaconda_envs/load_e3sm_unified_1.12.0_pm-cpu.sh"
+            ;;
+        compy)
+            E3SM_ENV_SCRIPT="/share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh"
+            ;;
+        chrysalis)
+            E3SM_ENV_SCRIPT="/lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh"
+            ;;
+        *)
+            echo "ERROR: unknown machine: ${MACHINE}" >&2
+            echo "Valid machines: perlmutter, compy, chrysalis" >&2
+            exit 1
+            ;;
+    esac
+fi
+if [[ ! -f "${E3SM_ENV_SCRIPT}" ]]; then
+    echo "ERROR: E3SM environment loader not found: ${E3SM_ENV_SCRIPT}" >&2
+    echo "Use --env-script PATH to point to a valid E3SM Unified loader script." >&2
+    exit 1
+fi
+source "${E3SM_ENV_SCRIPT}"
 
 # Resolve the directory containing this script so JSON files are found
 # regardless of the working directory from which this script is called.
