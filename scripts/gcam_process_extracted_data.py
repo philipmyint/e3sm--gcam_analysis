@@ -36,9 +36,6 @@ def process_extracted_data(inputs):
     if not os.path.exists(input_file):
         print(f"Error: input file '{input_file}' does not exist.")
         return False
-    if os.path.getsize(input_file) == 0:
-        print(f"Warning: input file '{input_file}' is empty. Skipping.")
-        return False
     output_dir = os.path.dirname(os.path.abspath(output_file)) or '.'
     if not os.path.isdir(output_dir):
         print(f"Error: output directory does not exist: '{output_dir}'")
@@ -46,11 +43,18 @@ def process_extracted_data(inputs):
     if not os.access(output_dir, os.W_OK):
         print(f"Error: output directory is not writable: '{output_dir}'")
         return False
+    if os.path.getsize(input_file) == 0:
+        print(f"Warning: input file '{input_file}' is empty. Writing empty processed file.")
+        empty_columns = (key_columns or []) + ['value']
+        write_dataframe_to_file(pd.DataFrame(columns=empty_columns), output_file)
+        return True
 
     df = read_file_into_dataframe(input_file)
     if df.empty or len(df.columns) == 0:
-        print(f"Warning: input file '{input_file}' contains no data. Skipping.")
-        return False
+        print(f"Warning: input file '{input_file}' contains no data. Writing empty processed file.")
+        empty_columns = (key_columns or []) + ['value']
+        write_dataframe_to_file(pd.DataFrame(columns=empty_columns), output_file)
+        return True
 
     # Check that columns_to_drop columns actually exist before dropping, and warn about any that are missing.
     if columns_to_drop:

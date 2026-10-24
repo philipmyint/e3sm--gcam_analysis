@@ -115,6 +115,12 @@ else
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
+# Save the Python environment that was active before loading the R module.
+# The R module can change CONDA_DEFAULT_ENV/PATH, but the Python steps should
+# reuse the E3SM Unified environment that was active when the workflow started.
+PRE_R_CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-}"
+PRE_R_PYTHON3="$(command -v python3 || true)"
+
 # First load the R module and make sure the needed libraries are installed.
 module load R/4.3.3
 
@@ -201,15 +207,15 @@ Rscript "${SCRIPT_DIR}/../scripts/gcam_extract_csv_from_xml_or_project_files.R" 
 
 # Load the E3SM unified environment for the selected machine before running the Python steps.
 if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
-    case "${CONDA_DEFAULT_ENV:-}" in
+    case "${PRE_R_CONDA_DEFAULT_ENV}" in
         e3sm_unified*|e3sm-unified*)
-            echo "Using active E3SM Unified environment: ${CONDA_DEFAULT_ENV}"
+            echo "Using active E3SM Unified environment from workflow start: ${PRE_R_CONDA_DEFAULT_ENV}"
             LOAD_ENV=false
             ;;
         "")
             ;;
         *)
-            echo "Active Conda environment is '${CONDA_DEFAULT_ENV}', not an E3SM Unified environment; loading ${MACHINE} default."
+            echo "Active Conda environment at workflow start was '${PRE_R_CONDA_DEFAULT_ENV}', not an E3SM Unified environment; loading ${MACHINE} default."
             ;;
     esac
 fi
@@ -241,27 +247,33 @@ if [[ "${LOAD_ENV}" == true ]]; then
         exit 1
     fi
 else
-    echo "Skipping E3SM environment load; using active Python: $(command -v python3)"
+    if [[ -n "${PRE_R_PYTHON3}" ]]; then
+        PYTHON_CMD="${PRE_R_PYTHON3}"
+    else
+        PYTHON_CMD="$(command -v python3)"
+    fi
+    echo "Skipping E3SM environment load; using Python: ${PYTHON_CMD}"
 fi
+PYTHON_CMD="${PYTHON_CMD:-python3}"
 
 # process the extracted csv files to create 'processed' csv files for plotting
-python3 "${SCRIPT_DIR}/../scripts/gcam_process_extracted_data.py" \
+"${PYTHON_CMD}" "${SCRIPT_DIR}/../scripts/gcam_process_extracted_data.py" \
     "${SCRIPT_DIR}/gcam_process_extracted_data.json"
 
 # process the ehc diagnostics into single variable csv files for plotting
-python3 "${SCRIPT_DIR}/../scripts/gcam_compile_ehc_feedbacks.py" \
+"${PYTHON_CMD}" "${SCRIPT_DIR}/../scripts/gcam_compile_ehc_feedbacks.py" \
     "${SCRIPT_DIR}/gcam_compile_ehc_feedbacks.json"
 
 # plot time series of specified variables from GCAM outputs
-python3 "${SCRIPT_DIR}/../scripts/gcam_plot_time_series.py" \
+"${PYTHON_CMD}" "${SCRIPT_DIR}/../scripts/gcam_plot_time_series.py" \
     "${SCRIPT_DIR}/gcam_plot_time_series.json"
 
 # plot spatial data of specified variables from GCAM outputs
-python3 "${SCRIPT_DIR}/../scripts/gcam_plot_spatial_data.py" \
+"${PYTHON_CMD}" "${SCRIPT_DIR}/../scripts/gcam_plot_spatial_data.py" \
     "${SCRIPT_DIR}/gcam_plot_spatial_data.json"
 
 # plot box and whisker plots of specified variables from GCAM outputs
-python3 "${SCRIPT_DIR}/../scripts/gcam_plot_box_and_whiskers.py" \
+"${PYTHON_CMD}" "${SCRIPT_DIR}/../scripts/gcam_plot_box_and_whiskers.py" \
     "${SCRIPT_DIR}/gcam_plot_box_and_whiskers.json"
 
 echo "Finished job at: $(date)"
