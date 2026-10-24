@@ -78,6 +78,7 @@ for (indexJSON in 1:numJSON)
         }
 
         # If createProjectFiles is TRUE but all project files already exist, warn and skip creation.
+        # If only some exist, the loop below will create just the missing project files.
         if (createProjectFiles && all(file.exists(projectFiles)))
         {
             message("Warning: project files already exist. Not creating new project files from model output. ",
@@ -121,28 +122,36 @@ for (indexJSON in 1:numJSON)
             if (createProjectFiles)
             {
                 xmlFile = xmlFiles[indexScenario]
-                if (!file.exists(xmlFile))
+                if (file.exists(projectFile))
                 {
-                    stop(paste0("Error: XML file not found: '", xmlFile, "' (scenario '", scenario, "')"))
+                    message(paste0("Project file already exists for scenario '", scenario,
+                                   "': '", projectFile, "'. Skipping project-file creation."))
                 }
-                projectFileDir = dirname(projectFile)
-                if (!dir.exists(projectFileDir))
+                else
                 {
-                    message(paste0("Directory for project file does not exist: '", projectFileDir, "'. Creating it now..."))
-                    dir.create(projectFileDir, recursive=TRUE)
+                    if (!file.exists(xmlFile))
+                    {
+                        stop(paste0("Error: XML file not found: '", xmlFile, "' (scenario '", scenario, "')"))
+                    }
+                    projectFileDir = dirname(projectFile)
+                    if (!dir.exists(projectFileDir))
+                    {
+                        message(paste0("Directory for project file does not exist: '", projectFileDir, "'. Creating it now..."))
+                        dir.create(projectFileDir, recursive=TRUE)
+                    }
+                    message(paste0("Creating project file '", projectFile, "' from '", xmlFile, "'..."))
+                    conn = tryCatch(
+                        localDBConn(dbPath='', dbFile=xmlFile, maxMemory=maxMemory),
+                        error = function(e) stop(paste0("Error opening XML file '", xmlFile, "': ", e$message))
+                    )
+                    tryCatch(
+                        addScenario(conn, projectFile, scenario=NULL, queryFile=queryFileContents, clobber=TRUE),
+                        error = function(e) stop(paste0("Error creating project file '", projectFile, "': ", e$message))
+                    )
+                    # Invalidate any cached version of this project file since it has just been (re)created.
+                    projectCache[[projectFile]] = NULL
+                    message(paste0("  Project file created: ", projectFile))
                 }
-                message(paste0("Creating project file '", projectFile, "' from '", xmlFile, "'..."))
-                conn = tryCatch(
-                    localDBConn(dbPath='', dbFile=xmlFile, maxMemory=maxMemory),
-                    error = function(e) stop(paste0("Error opening XML file '", xmlFile, "': ", e$message))
-                )
-                tryCatch(
-                    addScenario(conn, projectFile, scenario=NULL, queryFile=queryFileContents, clobber=TRUE),
-                    error = function(e) stop(paste0("Error creating project file '", projectFile, "': ", e$message))
-                )
-                # Invalidate any cached version of this project file since it has just been (re)created.
-                projectCache[[projectFile]] = NULL
-                message(paste0("  Project file created: ", projectFile))
             }
 
             # Check that the project file exists before trying to load it.
