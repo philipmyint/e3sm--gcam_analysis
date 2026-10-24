@@ -145,14 +145,23 @@ def get_max_processes_from_inputs(inputs, default_max_processes):
     """
     Returns the process count for a shared multiprocessing pool.
 
-    Each input block can specify max_processes. Blocks that omit it use default_max_processes.
+    Each input block can specify max_processes as a scalar or a per-variable mapping.
+    Blocks that omit it use default_max_processes.
     For a shared pool, use the most restrictive effective value across all blocks.
     """
     if isinstance(inputs, dict):
         inputs = [inputs]
     if not inputs:
         return validate_max_processes(default_max_processes)
-    effective_values = [i.get('max_processes', default_max_processes) for i in inputs]
+
+    effective_values = []
+    for i in inputs:
+        value = i.get('max_processes', default_max_processes)
+        if isinstance(value, dict):
+            effective_values.extend(value.values() or [default_max_processes])
+        else:
+            effective_values.append(value)
+
     return min(validate_max_processes(value) for value in effective_values)
 
 def modify_list_based_on_condition(original_list, condition, new_value_function):

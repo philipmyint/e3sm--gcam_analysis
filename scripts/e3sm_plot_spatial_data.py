@@ -181,10 +181,11 @@ def process_inputs(inputs):
         # Default for the title of a variable is to use the column header for that variable from the Dataset.
         if not any(key == variable for key in inputs['title'].keys()):
             # Replace ^2 with $^2$ in the units for the variable, so that the intended exponent (e.g., m^2) gets rendered correctly.
-            units = ds[variable].attrs['units'].replace('^2', '$^2$')
+            units = ds[variable].attrs.get('units', '')
+            units = units.replace('^2', '$^2$')
             # Replace /m2 with /m$^2$ in the units for the variable, so that it gets rendered correctly.
             units = units.replace('/m2', '/m$^2$')
-            inputs['title'][variable] = rf'{variable} ({units})'
+            inputs['title'][variable] = rf'{variable} ({units})' if units else variable
         # Default for the other plotting options are specified in the default_inputs dictionary.
         for key, value in inputs.items():
             if key not in ['variables', 'plot_directory', 'plot_name', 'title']:
@@ -324,7 +325,8 @@ def plot_spatial_data_eam(inputs, grid_file):
                     for index, per_time_label in enumerate(per_time_labels):
                         if per_time_label in title:
                             title = title.replace(per_time_label, '')
-                            uxda.attrs['units'] = uxda.attrs['units'].replace(per_time_label, '')
+                            if 'units' in uxda.attrs:
+                                uxda.attrs['units'] = uxda.attrs['units'].replace(per_time_label, '')
                             uxda *= time_multipliers[index]
                             break
                 ds_full.close()
@@ -602,7 +604,8 @@ def plot_spatial_data_elm(inputs):
                     for index, per_time_label in enumerate(per_time_labels):
                         if per_time_label in title:
                             title = title.replace(per_time_label, '')
-                            da.attrs['units'] = da.attrs['units'].replace(per_time_label, '')
+                            if 'units' in da.attrs:
+                                da.attrs['units'] = da.attrs['units'].replace(per_time_label, '')
                             da *= time_multipliers[index]
                             break
                 ds_full.close()
