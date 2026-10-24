@@ -17,6 +17,8 @@ trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 MACHINE="perlmutter"
 OVERWRITE_REQUESTED=false
 INSTALL_R_PACKAGES=false
+E3SM_ENV_SCRIPT=""
+LOAD_ENV=true
 
 # Parse optional command-line arguments. The --machine flag selects a known
 # E3SM unified environment to source for the Python steps; with no flag, default to Perlmutter.
@@ -51,17 +53,31 @@ while [[ $# -gt 0 ]]; do
             INSTALL_R_PACKAGES=true
             shift
             ;;
+        --env-script)
+            E3SM_ENV_SCRIPT="${2:-}"
+            if [[ -z "${E3SM_ENV_SCRIPT}" ]]; then
+                echo "ERROR: --env-script requires a path to an environment loader script" >&2
+                exit 1
+            fi
+            shift 2
+            ;;
+        --skip-env-load)
+            LOAD_ENV=false
+            shift
+            ;;
         -h|--help)
-            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite] [--install-r-packages]"
+            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite] [--install-r-packages] [--env-script PATH] [--skip-env-load]"
             echo "Default: --machine perlmutter"
             echo "--overwrite is accepted for consistency; GCAM outputs are overwritten by default."
             echo "--install-r-packages installs missing R packages into the user R library."
+            echo "--env-script PATH sources a specific E3SM Unified loader script for Python steps."
+            echo "--skip-env-load uses the currently active Python environment for Python steps."
             echo "Note: chrysalis is not supported for this workflow because the R extraction step cannot run there."
             exit 0
             ;;
         *)
             echo "ERROR: unknown option: $1" >&2
-            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite] [--install-r-packages]" >&2
+            echo "Usage: $0 [--machine perlmutter|compy] [--overwrite] [--install-r-packages] [--env-script PATH] [--skip-env-load]" >&2
             exit 1
             ;;
     esac
@@ -184,20 +200,49 @@ Rscript "${SCRIPT_DIR}/../scripts/gcam_extract_csv_from_xml_or_project_files.R" 
     "${SCRIPT_DIR}/gcam_extract_csv_from_xml_or_project_files.json"
 
 # Load the E3SM unified environment for the selected machine before running the Python steps.
-case "${MACHINE}" in
-    perlmutter)
-        source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
-        ;;
-    compy)
-        source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh
-        ;;
-    *)
-        echo "ERROR: unknown or unsupported machine for this GCAM workflow: ${MACHINE}" >&2
-        echo "Valid machines: perlmutter, compy" >&2
-        echo "Chrysalis is not supported because the R extraction step cannot run there." >&2
+if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
+    case "${CONDA_DEFAULT_ENV:-}" in
+        e3sm_unified*|e3sm-unified*)
+            echo "Using active E3SM Unified environment: ${CONDA_DEFAULT_ENV}"
+            LOAD_ENV=false
+            ;;
+        "")
+            ;;
+        *)
+            echo "Active Conda environment is '${CONDA_DEFAULT_ENV}', not an E3SM Unified environment; loading ${MACHINE} default."
+            ;;
+    esac
+fi
+if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
+    case "${MACHINE}" in
+        perlmutter)
+            E3SM_ENV_SCRIPT="/global/common/software/e3sm/anaconda_envs/load_e3sm_unified_1.12.0_pm-cpu.sh"
+            ;;
+        compy)
+            E3SM_ENV_SCRIPT="/share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh"
+            ;;
+        *)
+            echo "ERROR: unknown or unsupported machine for this GCAM workflow: ${MACHINE}" >&2
+            echo "Valid machines: perlmutter, compy" >&2
+            echo "Chrysalis is not supported because the R extraction step cannot run there." >&2
+            exit 1
+            ;;
+    esac
+fi
+if [[ "${LOAD_ENV}" == true ]]; then
+    if [[ ! -f "${E3SM_ENV_SCRIPT}" ]]; then
+        echo "ERROR: E3SM environment loader not found: ${E3SM_ENV_SCRIPT}" >&2
+        echo "Use --env-script PATH to point to a valid E3SM Unified loader script." >&2
         exit 1
-        ;;
-esac
+    fi
+    if ! source "${E3SM_ENV_SCRIPT}"; then
+        echo "ERROR: failed to source E3SM environment loader: ${E3SM_ENV_SCRIPT}" >&2
+        echo "Submit from an active E3SM Unified environment or use --env-script PATH / --skip-env-load." >&2
+        exit 1
+    fi
+else
+    echo "Skipping E3SM environment load; using active Python: $(command -v python3)"
+fi
 
 # process the extracted csv files to create 'processed' csv files for plotting
 python3 "${SCRIPT_DIR}/../scripts/gcam_process_extracted_data.py" \

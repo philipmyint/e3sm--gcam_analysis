@@ -4,7 +4,7 @@
 #SBATCH --job-name=plot_e3sm_outputs
 #SBATCH --output=plot_e3sm_outputs.out
 #SBATCH --error=plot_e3sm_outputs.err
-#SBATCH --time=01:00:00
+#SBATCH --time=08:00:00
 #SBATCH --qos=regular
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
