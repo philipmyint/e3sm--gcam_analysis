@@ -86,9 +86,18 @@ done
 echo "Starting job at: $(date)"
 
 # Load the E3SM unified environment for the selected machine.
-if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" && "${CONDA_DEFAULT_ENV:-}" == e3sm_unified* ]]; then
-    echo "Using active E3SM Unified environment: ${CONDA_DEFAULT_ENV}"
-    LOAD_ENV=false
+if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
+    case "${CONDA_DEFAULT_ENV:-}" in
+        e3sm_unified*|e3sm-unified*)
+            echo "Using active E3SM Unified environment: ${CONDA_DEFAULT_ENV}"
+            LOAD_ENV=false
+            ;;
+        "")
+            ;;
+        *)
+            echo "Active Conda environment is '${CONDA_DEFAULT_ENV}', not an E3SM Unified environment; loading ${MACHINE} default."
+            ;;
+    esac
 fi
 if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
     case "${MACHINE}" in
