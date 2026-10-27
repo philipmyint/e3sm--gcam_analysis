@@ -49,17 +49,26 @@ def uxda_to_polycollection(uxda):
     """
     Convert a uxarray DataArray to a PolyCollection across uxarray versions.
 
-    Some uxarray releases forward periodic_elements internally, which conflicts
-    with passing the same keyword explicitly. Prefer split periodic elements when
-    supported, and fall back to the installed default for that duplicate-keyword
-    API variant.
+    Some uxarray releases forward plotting kwargs differently. Prefer split
+    periodic elements and cached conversion when supported, then fall back
+    through older/newer API variants.
     """
-    try:
-        return uxda.to_polycollection(cache=True, periodic_elements='split')
-    except TypeError as exc:
-        if "periodic_elements" not in str(exc) or "multiple values" not in str(exc):
-            raise
-        return uxda.to_polycollection(cache=True)
+    option_sets = [
+        {'cache': True, 'periodic_elements': 'split'},
+        {'periodic_elements': 'split'},
+        {'cache': True},
+        {},
+    ]
+    last_error = None
+    for options in option_sets:
+        try:
+            return uxda.to_polycollection(**options)
+        except TypeError as exc:
+            message = str(exc)
+            if not any(keyword in message for keyword in ['periodic_elements', 'cache']):
+                raise
+            last_error = exc
+    raise last_error
 
 # Treat land fractions at or below this tiny threshold as non-land, avoiding numerical noise near zero.
 LANDFRAC_EPSILON = 1e-12
