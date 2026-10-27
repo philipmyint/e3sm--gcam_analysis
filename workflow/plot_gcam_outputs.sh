@@ -120,6 +120,10 @@ fi
 # reuse the E3SM Unified environment that was active when the workflow started.
 PRE_R_CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-}"
 PRE_R_PYTHON3="$(command -v python3 || true)"
+PRE_R_PROJ_LIB_WAS_SET="${PROJ_LIB+x}"
+PRE_R_PROJ_LIB="${PROJ_LIB:-}"
+PRE_R_PROJ_DATA_WAS_SET="${PROJ_DATA+x}"
+PRE_R_PROJ_DATA="${PROJ_DATA:-}"
 
 # First load the R module and make sure the needed libraries are installed.
 module load R/4.3.3
@@ -255,6 +259,20 @@ else
     echo "Skipping E3SM environment load; using Python: ${PYTHON_CMD}"
 fi
 PYTHON_CMD="${PYTHON_CMD:-python3}"
+
+# The R module can leave PROJ pointing at R's proj.db, which is incompatible
+# with pyproj from E3SM Unified. Restore the projection environment that was
+# active before loading R, or clear it so pyproj can find its bundled database.
+if [[ -n "${PRE_R_PROJ_LIB_WAS_SET}" ]]; then
+    export PROJ_LIB="${PRE_R_PROJ_LIB}"
+else
+    unset PROJ_LIB
+fi
+if [[ -n "${PRE_R_PROJ_DATA_WAS_SET}" ]]; then
+    export PROJ_DATA="${PRE_R_PROJ_DATA}"
+else
+    unset PROJ_DATA
+fi
 
 # process the extracted csv files to create 'processed' csv files for plotting
 "${PYTHON_CMD}" "${SCRIPT_DIR}/../scripts/gcam_process_extracted_data.py" \
