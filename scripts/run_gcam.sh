@@ -67,7 +67,30 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+resolve_script_dir() {
+    local marker="$1"
+    local source_dir candidate
+
+    source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    for candidate in \
+        "${source_dir}" \
+        "${SLURM_SUBMIT_DIR:-}" \
+        "${SLURM_SUBMIT_DIR:+${SLURM_SUBMIT_DIR}/scripts}" \
+        "${PWD}" \
+        "${PWD}/scripts"
+    do
+        if [[ -n "${candidate}" && -f "${candidate}/${marker}" ]]; then
+            cd "${candidate}" && pwd
+            return 0
+        fi
+    done
+
+    echo "ERROR: could not find scripts directory containing ${marker}." >&2
+    echo "Submit from the repository scripts directory or from the repository root." >&2
+    return 1
+}
+
+SCRIPT_DIR="$(resolve_script_dir gcam_extract_csv_from_xml_or_project_files.R)"
 cd "${SCRIPT_DIR}"
 
 export MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/${USER:-e3sm_gcam}_matplotlib}"
@@ -117,7 +140,9 @@ if ! command -v Rscript >/dev/null 2>&1; then
 fi
 
 # Extract GCAM query results from the existing project files.
-Rscript gcam_extract_csv_from_xml_or_project_files.R gcam_extract_csv_from_xml_or_project_files.json
+Rscript \
+    "${SCRIPT_DIR}/gcam_extract_csv_from_xml_or_project_files.R" \
+    "${SCRIPT_DIR}/gcam_extract_csv_from_xml_or_project_files.json"
 
 # Keep Python GIS libraries from inheriting an incompatible PROJ database path
 # from an R module.
