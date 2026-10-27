@@ -46,7 +46,7 @@ default_inputs = {
     'width': width_default               
 }
 
-def uxda_to_polycollection(uxda):
+def uxda_to_polycollection(uxda, grid=None):
     """
     Convert a uxarray DataArray to a PolyCollection across uxarray versions.
 
@@ -70,9 +70,14 @@ def uxda_to_polycollection(uxda):
                 raise
             last_error = exc
     try:
-        return uxda_to_polycollection_manual(uxda)
-    except Exception:
-        raise last_error
+        return uxda_to_polycollection_manual(uxda, grid=grid)
+    except Exception as manual_error:
+        if last_error is None:
+            raise
+        raise RuntimeError(
+            "uxarray.to_polycollection failed for this uxarray version, and "
+            f"the manual PolyCollection fallback also failed: {manual_error}"
+        ) from last_error
 
 def get_grid_array(grid, *names):
     """Return a numpy array for the first matching uxarray grid field."""
@@ -90,17 +95,18 @@ def get_grid_array(grid, *names):
                 return np.asarray(value.values if hasattr(value, 'values') else value)
     raise AttributeError(f"Could not find any of these uxarray grid fields: {', '.join(names)}")
 
-def uxda_to_polycollection_manual(uxda):
+def uxda_to_polycollection_manual(uxda, grid=None):
     """Build a PolyCollection directly from uxarray grid connectivity."""
-    grid = getattr(uxda, 'uxgrid', None)
+    if grid is None:
+        grid = getattr(uxda, 'uxgrid', None)
     if grid is None:
         grid = getattr(uxda, 'grid', None)
     if grid is None:
         raise AttributeError("Could not find a uxarray grid on the DataArray.")
 
-    face_node_connectivity = get_grid_array(grid, 'face_node_connectivity')
-    node_lon = get_grid_array(grid, 'node_lon', 'node_x')
-    node_lat = get_grid_array(grid, 'node_lat', 'node_y')
+    face_node_connectivity = get_grid_array(grid, 'face_node_connectivity', 'face_nodes')
+    node_lon = get_grid_array(grid, 'node_lon', 'node_x', 'lon')
+    node_lat = get_grid_array(grid, 'node_lat', 'node_y', 'lat')
     values = np.asarray(uxda.values).reshape(-1)
 
     polygons = []
@@ -510,7 +516,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         fig = plt.figure(figsize=(width, height))
         ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=projection())
         uxda = uxda[variable]
-        uxda_fig = uxda_to_polycollection(uxda)
+        uxda_fig = uxda_to_polycollection(uxda, grid=grid)
         uxda_fig.set_transform(ccrs.PlateCarree())
         uxda_fig.set_cmap(cmap_color)
         ax.set_title(title)
