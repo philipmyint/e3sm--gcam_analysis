@@ -64,7 +64,7 @@ def uxda_to_polycollection(uxda, grid=None):
     for options in option_sets:
         try:
             return uxda.to_polycollection(**options)
-        except TypeError as exc:
+        except (TypeError, AttributeError) as exc:
             message = str(exc)
             if not any(keyword in message for keyword in ['periodic_elements', 'cache']):
                 raise
