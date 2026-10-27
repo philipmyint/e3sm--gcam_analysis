@@ -5,6 +5,7 @@ trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
 
 MAX_PROCESSES="${MAX_PROCESSES:-}"
 LOAD_R_MODULE=true
+R_MODULE="${R_MODULE:-R/4.3.3}"
 USE_LATEX=true
 TMP_JSON_DIR=""
 
@@ -29,20 +30,29 @@ while [[ $# -gt 0 ]]; do
             LOAD_R_MODULE=false
             shift
             ;;
+        --r-module)
+            R_MODULE="${2:-}"
+            if [[ -z "${R_MODULE}" ]]; then
+                echo "ERROR: --r-module requires a module name" >&2
+                exit 1
+            fi
+            shift 2
+            ;;
         --no-latex)
             USE_LATEX=false
             shift
             ;;
         -h|--help)
-            echo "Usage: $0 [--max-processes N] [--skip-r-module-load] [--no-latex]"
+            echo "Usage: $0 [--max-processes N] [--r-module NAME] [--skip-r-module-load] [--no-latex]"
             echo "Runs GCAM R extraction, processing, synthetic-data generation, and plotting."
             echo "By default, plot max_processes and use_latex come from each JSON file."
+            echo "By default, loads R/4.3.3 only if Rscript is not already available."
             echo "Temporary plotting JSON copies are used only with --max-processes or --no-latex."
             exit 0
             ;;
         *)
             echo "ERROR: unknown option: $1" >&2
-            echo "Usage: $0 [--max-processes N] [--skip-r-module-load] [--no-latex]" >&2
+            echo "Usage: $0 [--max-processes N] [--r-module NAME] [--skip-r-module-load] [--no-latex]" >&2
             exit 1
             ;;
     esac
@@ -80,14 +90,20 @@ if missing:
     sys.exit(1)
 PY
 
-if [[ "${LOAD_R_MODULE}" == true && -z "${__LMOD_REF_COUNT_R:-}" ]]; then
+if [[ "${LOAD_R_MODULE}" == true ]] && ! command -v Rscript >/dev/null 2>&1; then
     if command -v module >/dev/null 2>&1; then
-        module load R/4.3.3
+        if module is-avail "${R_MODULE}" >/dev/null 2>&1; then
+            module load "${R_MODULE}"
+        else
+            echo "Warning: R module '${R_MODULE}' is not available; continuing with current environment." >&2
+            echo "Use --r-module NAME for this machine, or --skip-r-module-load if Rscript is already active." >&2
+        fi
     fi
 fi
 
 if ! command -v Rscript >/dev/null 2>&1; then
     echo "ERROR: Rscript was not found. Load an R module or rerun with an R environment active." >&2
+    echo "You can also pass --r-module NAME if this machine uses a different R module name." >&2
     exit 1
 fi
 
