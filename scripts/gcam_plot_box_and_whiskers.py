@@ -1,4 +1,5 @@
 import itertools
+import inspect
 import json
 import math
 from matplotlib import pyplot as plt
@@ -115,6 +116,86 @@ def _apply_multipanel_spacing(fig, wspace, hspace):
     """Keep year panels compact without clipping rotated labels or the shared y label."""
     fig.tight_layout(rect=(0.04, 0.02, 1, 0.98), pad=0.4, h_pad=0.6, w_pad=0.4)
     fig.subplots_adjust(wspace=wspace, hspace=hspace)
+
+
+def _calculate_percent_difference(df_year, scenario_label, scenario_list, value_label):
+    """
+    Return rows for non-reference scenarios with values converted to percent difference.
+
+    GCAM outputs are not always perfectly rectangular: a scenario may be missing
+    rows that exist in the reference scenario, or vice versa. Pair rows by their
+    shared identifier columns instead of relying on row order/array length.
+    """
+    reference_scenario = scenario_list[0]
+    reference_df = df_year[df_year[scenario_label] == reference_scenario].copy()
+    comparison_df = df_year[df_year[scenario_label] != reference_scenario].copy()
+
+    if reference_df.empty:
+        print(f"Warning: no reference data for scenario '{reference_scenario}'. Skipping percent-difference panel.")
+        return df_year.iloc[0:0].copy()
+    if comparison_df.empty:
+        print("Warning: no comparison data found for percent-difference panel.")
+        return comparison_df
+
+    ignored_columns = {scenario_label, value_label, 'area', 'index', 'level_0'}
+    merge_columns = [column for column in df_year.columns if column not in ignored_columns]
+    if not merge_columns:
+        if len(reference_df) != len(comparison_df):
+            print("Warning: cannot pair reference and comparison rows for percent-difference panel. Skipping panel.")
+            return df_year.iloc[0:0].copy()
+        comparison_df[value_label] = (
+            (comparison_df[value_label].to_numpy() - reference_df[value_label].to_numpy())
+            / (reference_df[value_label].to_numpy() + EPSILON) * 100
+        )
+        return comparison_df
+
+    reference_values = reference_df[merge_columns + [value_label]].rename(
+        columns={value_label: '_reference_value'}
+    )
+    if reference_values.duplicated(merge_columns).any():
+        reference_values = (
+            reference_values
+            .groupby(merge_columns, as_index=False, dropna=False)['_reference_value']
+            .mean()
+        )
+
+    merged = comparison_df.merge(reference_values, on=merge_columns, how='inner')
+    missing_rows = len(comparison_df) - len(merged)
+    if missing_rows > 0:
+        print(f"Warning: dropped {missing_rows} row(s) without matching reference data for percent-difference panel.")
+    if merged.empty:
+        print("Warning: no matched reference/comparison rows for percent-difference panel.")
+        return comparison_df.iloc[0:0].copy()
+
+    merged[value_label] = (
+        (merged[value_label] - merged['_reference_value'])
+        / (merged['_reference_value'] + EPSILON) * 100
+    )
+    return merged.drop(columns=['_reference_value'])
+
+
+def _draw_boxplot(df_year, x_variable, value_label, hue, ax, linewidth, palette,
+                  marker_size, fill_boxes, box_properties, line_properties,
+                  flier_properties):
+    """Draw a seaborn boxplot with kwargs supported by the installed seaborn."""
+    boxplot_parameters = inspect.signature(sns.boxplot).parameters
+    supports_fill = 'fill' in boxplot_parameters
+
+    kwargs = dict(data=df_year, x=x_variable, y=value_label, ax=ax,
+                  linewidth=linewidth, palette=palette, fliersize=marker_size,
+                  boxprops=box_properties, whiskerprops=line_properties,
+                  capprops=line_properties, medianprops=line_properties,
+                  flierprops=flier_properties)
+    if hue:
+        kwargs['hue'] = hue
+    if supports_fill:
+        kwargs['fill'] = fill_boxes
+
+    sns.boxplot(**kwargs)
+
+    if not fill_boxes and not supports_fill:
+        for patch in ax.artists:
+            patch.set_facecolor('none')
 
 
 def process_inputs(inputs):
@@ -520,12 +601,7 @@ def plot_box_and_whiskers(inputs):
         if plot_percent_difference:
             # Percent-difference box plots use the first scenario/scenario set as
             # the reference and then drop that reference from the plotted data.
-            reference = df_year[df_year[scenario_label] == scenario_list[0]][value_label].to_numpy()
-            for scenario in scenario_list:
-                scenario_filter = df_year[scenario_label] == scenario
-                df_year.loc[scenario_filter, value_label] -= reference
-                df_year.loc[scenario_filter, value_label] *= 100 / (reference + EPSILON)
-            df_year = df_year[df_year[scenario_label] != scenario_list[0]]
+            df_year = _calculate_percent_difference(df_year, scenario_label, scenario_list, value_label)
 
         if df_year.empty or not df_year[value_label].notna().any():
             print(f"Warning: no plottable data for year {year}. Skipping panel.")
@@ -538,15 +614,13 @@ def plot_box_and_whiskers(inputs):
         line_properties = {'color': 'black'}
         flier_properties = {'markeredgecolor': 'black', 'markerfacecolor': 'none'}
         if hue:
-            sns.boxplot(df_year, x=x_variable, y=value_label, hue=hue, ax=ax, linewidth=linewidth,
-                        palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
-                        whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
-                        flierprops=flier_properties)
+            _draw_boxplot(df_year, x_variable, value_label, hue, ax, linewidth,
+                          palette, marker_size, fill_boxes, box_properties,
+                          line_properties, flier_properties)
         else:
-            sns.boxplot(df_year, x=x_variable, y=value_label, hue=x_variable, ax=ax, legend=False, linewidth=linewidth,
-                        palette=palette, fliersize=marker_size, fill=fill_boxes, boxprops=box_properties,
-                        whiskerprops=line_properties, capprops=line_properties, medianprops=line_properties,
-                        flierprops=flier_properties)
+            _draw_boxplot(df_year, x_variable, value_label, None, ax, linewidth,
+                          palette, marker_size, fill_boxes, box_properties,
+                          line_properties, flier_properties)
         if units_by_category:
             ticks = ax.get_xticks()
             labels = [tick.get_text() for tick in ax.get_xticklabels()]
