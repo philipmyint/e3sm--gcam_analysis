@@ -45,6 +45,22 @@ default_inputs = {
     'width': width_default               
 }
 
+def uxda_to_polycollection(uxda):
+    """
+    Convert a uxarray DataArray to a PolyCollection across uxarray versions.
+
+    Some uxarray releases forward periodic_elements internally, which conflicts
+    with passing the same keyword explicitly. Prefer split periodic elements when
+    supported, and fall back to the installed default for that duplicate-keyword
+    API variant.
+    """
+    try:
+        return uxda.to_polycollection(cache=True, periodic_elements='split')
+    except TypeError as exc:
+        if "periodic_elements" not in str(exc) or "multiple values" not in str(exc):
+            raise
+        return uxda.to_polycollection(cache=True)
+
 # Treat land fractions at or below this tiny threshold as non-land, avoiding numerical noise near zero.
 LANDFRAC_EPSILON = 1e-12
 EPSILON = 1e-12  # avoid division by zero in percent difference
@@ -436,7 +452,7 @@ def plot_spatial_data_eam(inputs, grid_file):
         fig = plt.figure(figsize=(width, height))
         ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=projection())
         uxda = uxda[variable]
-        uxda_fig = uxda.to_polycollection(cache=True, periodic_elements='split')
+        uxda_fig = uxda_to_polycollection(uxda)
         uxda_fig.set_transform(ccrs.PlateCarree())
         uxda_fig.set_cmap(cmap_color)
         ax.set_title(title)
