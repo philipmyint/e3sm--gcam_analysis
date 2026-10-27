@@ -1,4 +1,5 @@
 #!/bin/bash
+#SBATCH --time=01:00:00
 
 set -eo pipefail
 trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
