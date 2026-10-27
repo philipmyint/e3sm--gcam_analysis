@@ -1,5 +1,6 @@
 import cartopy.crs as ccrs
 import json
+from matplotlib.collections import PolyCollection
 from matplotlib import pyplot as plt
 import multiprocessing
 import numpy as np
@@ -68,7 +69,55 @@ def uxda_to_polycollection(uxda):
             if not any(keyword in message for keyword in ['periodic_elements', 'cache']):
                 raise
             last_error = exc
-    raise last_error
+    try:
+        return uxda_to_polycollection_manual(uxda)
+    except Exception:
+        raise last_error
+
+def get_grid_array(grid, *names):
+    """Return a numpy array for the first matching uxarray grid field."""
+    for name in names:
+        if hasattr(grid, name):
+            value = getattr(grid, name)
+            return np.asarray(value.values if hasattr(value, 'values') else value)
+    for dataset_name in ['_ds', '_grid_ds', 'ds']:
+        dataset = getattr(grid, dataset_name, None)
+        if dataset is None:
+            continue
+        for name in names:
+            if name in dataset:
+                value = dataset[name]
+                return np.asarray(value.values if hasattr(value, 'values') else value)
+    raise AttributeError(f"Could not find any of these uxarray grid fields: {', '.join(names)}")
+
+def uxda_to_polycollection_manual(uxda):
+    """Build a PolyCollection directly from uxarray grid connectivity."""
+    grid = getattr(uxda, 'uxgrid', None)
+    if grid is None:
+        grid = getattr(uxda, 'grid', None)
+    if grid is None:
+        raise AttributeError("Could not find a uxarray grid on the DataArray.")
+
+    face_node_connectivity = get_grid_array(grid, 'face_node_connectivity')
+    node_lon = get_grid_array(grid, 'node_lon', 'node_x')
+    node_lat = get_grid_array(grid, 'node_lat', 'node_y')
+    values = np.asarray(uxda.values).reshape(-1)
+
+    polygons = []
+    polygon_values = []
+    for face_index, face_nodes in enumerate(np.asarray(face_node_connectivity)):
+        nodes = np.asarray(face_nodes).reshape(-1)
+        valid = np.isfinite(nodes) & (nodes >= 0) & (nodes < len(node_lon))
+        nodes = nodes[valid].astype(int)
+        if len(nodes) >= 3:
+            polygons.append(np.column_stack([node_lon[nodes], node_lat[nodes]]))
+            if face_index < len(values):
+                polygon_values.append(values[face_index])
+
+    polycollection = PolyCollection(polygons)
+    if len(polygon_values) == len(polygons):
+        polycollection.set_array(np.asarray(polygon_values))
+    return polycollection
 
 # Treat land fractions at or below this tiny threshold as non-land, avoiding numerical noise near zero.
 LANDFRAC_EPSILON = 1e-12
