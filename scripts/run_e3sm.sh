@@ -1,5 +1,13 @@
 #!/bin/bash
+#SBATCH --job-name=run_e3sm
+#SBATCH --output=run_e3sm.out
+#SBATCH --error=run_e3sm.err
 #SBATCH --time=01:00:00
+#SBATCH --qos=regular
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH -C cpu
+#SBATCH -A e3sm
 
 set -eo pipefail
 trap 'echo "ERROR: script failed at line $LINENO. Exiting." >&2' ERR
