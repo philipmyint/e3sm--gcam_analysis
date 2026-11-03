@@ -102,7 +102,7 @@ fi
 if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
     case "${MACHINE}" in
         perlmutter)
-            E3SM_ENV_SCRIPT="/global/common/software/e3sm/anaconda_envs/load_e3sm_unified_1.12.0_pm-cpu.sh"
+            E3SM_ENV_SCRIPT="/global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh"
             ;;
         compy)
             E3SM_ENV_SCRIPT="/share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh"
@@ -127,6 +127,9 @@ if [[ "${LOAD_ENV}" == true ]]; then
         echo "ERROR: failed to source E3SM environment loader: ${E3SM_ENV_SCRIPT}" >&2
         echo "Submit from an active E3SM Unified environment or use --env-script PATH / --skip-env-load." >&2
         exit 1
+    else
+        echo "Successfully sourced E3SM environment loader: ${E3SM_ENV_SCRIPT}"
+        echo "Active Python environment: $(command -v python3)"
     fi
 else
     echo "Skipping E3SM environment load; using active Python: $(command -v python3)"
