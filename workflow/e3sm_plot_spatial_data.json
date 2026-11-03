@@ -2,16 +2,32 @@
     {
         "netcdf_files": "./output/control_spatial_data_elm.nc",
         "plot_directory": "./output/spatial_plots_e3sm/elm_control",
-	    "start_year": 2015,
-        "end_year": 2020,
+	    "start_year": 2025,
+        "end_year": 2045,
 	    "plot_type": "mean",
         "max_processes": 2
     },
     {
-        "netcdf_files": "./output/case1_spatial_data_elm.nc",
-        "plot_directory": "./output/spatial_plots_e3sm/elm_case1",
-	    "start_year": 2015,
-        "end_year": 2020,
+        "netcdf_files": "./output/ter_fdbk_spatial_data_elm.nc",
+        "plot_directory": "./output/spatial_plots_e3sm/elm_ter_fdbk",
+	    "start_year": 2025,
+        "end_year": 2045,
+	    "plot_type": "mean",
+        "max_processes": 2
+    },
+    {
+        "netcdf_files": "./output/ter_deg_fdbk_spatial_data_elm.nc",
+        "plot_directory": "./output/spatial_plots_e3sm/elm_ter_deg_fdbk",
+	    "start_year": 2025,
+        "end_year": 2045,
+	    "plot_type": "mean",
+        "max_processes": 2
+    },
+    {
+        "netcdf_files": "./output/ter_deg_read_spatial_data_elm.nc",
+        "plot_directory": "./output/spatial_plots_e3sm/elm_ter_deg_read",
+	    "start_year": 2025,
+        "end_year": 2045,
 	    "plot_type": "mean",
         "max_processes": 2
     },
@@ -19,64 +35,105 @@
         "netcdf_files": "./output/control_spatial_data_eam.nc",
         "plot_directory": "./output/spatial_plots_e3sm/eam_control",
         "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
-        "start_year": 2015,
-        "end_year": 2020,
+        "start_year": 2025,
+        "end_year": 2045,
         "plot_type": "mean",
         "max_processes": 2
     },
     {
-        "netcdf_files": "./output/case1_spatial_data_eam.nc",
-        "plot_directory": "./output/spatial_plots_e3sm/eam_case1",
+        "netcdf_files": "./output/ter_fdbk_spatial_data_eam.nc",
+        "plot_directory": "./output/spatial_plots_e3sm/eam_ter_fdbk",
         "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
-        "start_year": 2015,
-        "end_year": 2020,
+        "start_year": 2025,
+        "end_year": 2045,
+        "plot_type": "mean",
+        "max_processes": 2
+    },
+    {
+        "netcdf_files": "./output/ter_deg_fdbk_spatial_data_eam.nc",
+        "plot_directory": "./output/spatial_plots_e3sm/eam_ter_deg_fdbk",
+        "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
+        "start_year": 2025,
+        "end_year": 2045,
+        "plot_type": "mean",
+        "max_processes": 2
+    },
+    {
+        "netcdf_files": "./output/ter_deg_read_spatial_data_eam.nc",
+        "plot_directory": "./output/spatial_plots_e3sm/eam_ter_deg_read",
+        "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
+        "start_year": 2025,
+        "end_year": 2045,
         "plot_type": "mean",
         "max_processes": 2
     },
     {
         "netcdf_files": [
             "./output/control_spatial_data_elm.nc",
-            "./output/case1_spatial_data_elm.nc"
+            "./output/ter_fdbk_spatial_data_elm.nc"
         ],
-        "plot_directory": "./output/spatial_plots_e3sm/compare_elm",
+        "plot_directory": "./output/spatial_plots_e3sm/compare_elm_ter_fdbk",
         "plot_type": "percent_difference",
-        "start_year": 2015,
-        "end_year": 2020,
+        "start_year": 2025,
+        "end_year": 2045,
         "max_processes": 2
     },
     {
         "netcdf_files": [
             "./output/control_spatial_data_eam.nc",
-            "./output/case1_spatial_data_eam.nc"
+            "./output/ter_fdbk_spatial_data_eam.nc"
         ],
-        "plot_directory": "./output/spatial_plots_e3sm/compare_eam",
+        "plot_directory": "./output/spatial_plots_e3sm/compare_eam_ter_fdbk",
         "plot_type": "percent_difference",
         "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
-        "start_year": 2015,
-        "end_year": 2020,
+        "start_year": 2025,
+        "end_year": 2045,
         "max_processes": 2
     },
     {
         "netcdf_files": [
             "./output/control_spatial_data_elm.nc",
-            "./output/case1_spatial_data_elm.nc"
+            "./output/ter_deg_fdbk_spatial_data_elm.nc"
         ],
-        "plot_directory": "./output/spatial_plots_e3sm/compare_elm",
-        "plot_type": "absolute_difference",
-        "start_year": 2015,
-        "end_year": 2020,
+        "plot_directory": "./output/spatial_plots_e3sm/compare_elm_ter_deg_fdbk",
+        "plot_type": "percent_difference",
+        "start_year": 2025,
+        "end_year": 2045,
         "max_processes": 2
     },
     {
         "netcdf_files": [
             "./output/control_spatial_data_eam.nc",
-            "./output/case1_spatial_data_eam.nc"
+            "./output/ter_deg_fdbk_spatial_data_eam.nc"
         ],
-        "plot_directory": "./output/spatial_plots_e3sm/compare_eam",
-        "plot_type": "absolute_difference",
+        "plot_directory": "./output/spatial_plots_e3sm/compare_eam_ter_deg_fdbk",
+        "plot_type": "percent_difference",
         "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
-        "start_year": 2015,
-        "end_year": 2020,
+        "start_year": 2025,
+        "end_year": 2045,
+        "max_processes": 2
+    },
+    {
+        "netcdf_files": [
+            "./output/control_spatial_data_elm.nc",
+            "./output/ter_deg_read_spatial_data_elm.nc"
+        ],
+        "plot_directory": "./output/spatial_plots_e3sm/compare_elm_ter_deg_read",
+        "plot_type": "percent_difference",
+        "start_year": 2025,
+        "end_year": 2045,
+        "max_processes": 2
+    },
+    {
+        "netcdf_files": [
+            "./output/control_spatial_data_eam.nc",
+            "./output/ter_deg_read_spatial_data_eam.nc"
+        ],
+        "plot_directory": "./output/spatial_plots_e3sm/compare_eam_ter_deg_read",
+        "plot_type": "percent_difference",
+        "grid_file": "../2025_DiVittorio_et_al_e3sm/eam_grid_file/ne30pg2_scrip_c20191218.nc",
+        "start_year": 2025,
+        "end_year": 2045,
         "max_processes": 2
     }
 ]

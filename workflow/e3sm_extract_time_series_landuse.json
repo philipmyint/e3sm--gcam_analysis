@@ -1,16 +1,30 @@
 [
     {
-        "landuse_file": "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/run/surfdata_iESM_dyn.nc",
+        "landuse_file": "/pscratch/sd/a/avdivitt/e3sm_scratch/v3.LR.SSP245_ZATM_CONTROL_INI_2015_20261026_n30p2_f09_EC30/run/surfdata_iESM_dyn.nc",
         "output_file": "./output/control_time_series_surfdata_iESM_dyn.dat",
         "variables": ["PCT_NATVEG", "PCT_NAT_PFT", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
         "start_year": 2015,
-        "end_year": 2038
+        "end_year": 2050
     },
     {
-        "landuse_file": "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_TER_DEG_FDBK_INI2015_2026091708_n30p2_f09_EC30/run/surfdata_iESM_dyn.nc",
-        "output_file": "./output/case1_time_series_surfdata_iESM_dyn.dat",
+        "landuse_file": "/pscratch/sd/f/feng809/e3sm_scratch/pm-cpu/v3.LR.SSP245_ZATM_TER_FDBK_INI_2015_20261027_n30p2_f09_EC30/run/surfdata_iESM_dyn.nc",
+        "output_file": "./output/ter_fdbk_time_series_surfdata_iESM_dyn.dat",
         "variables": ["PCT_NATVEG", "PCT_NAT_PFT", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
         "start_year": 2015,
-        "end_year": 2038
+        "end_year": 2050
+    },
+    {
+        "landuse_file": "/pscratch/sd/e/esinha/e3sm_scratch/v3.LR.SSP245_ZATM_TER_DEG_FDBK_INI_2015_20261026_n30p2_f09_EC30/run/surfdata_iESM_dyn.nc",
+        "output_file": "./output/ter_deg_fdbk_time_series_surfdata_iESM_dyn.dat",
+        "variables": ["PCT_NATVEG", "PCT_NAT_PFT", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "start_year": 2015,
+        "end_year": 2050
+    },
+    {
+        "landuse_file": "/pscratch/sd/a/avdivitt/e3sm_scratch/v3.LR.SSP245_ZATM_TER_DEG_FDBK_READ_INI_2015_20261029_n30p2_f09_EC30/run/surfdata_iESM_dyn.nc",
+        "output_file": "./output/ter_deg_read_time_series_surfdata_iESM_dyn.dat",
+        "variables": ["PCT_NATVEG", "PCT_NAT_PFT", "HARVEST_SH1", "HARVEST_SH2", "HARVEST_SH3", "HARVEST_VH1", "HARVEST_VH2"],
+        "start_year": 2015,
+        "end_year": 2050
     }
 ]

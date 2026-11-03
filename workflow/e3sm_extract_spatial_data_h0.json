@@ -1,6 +1,6 @@
 [
     {
-        "simulation_path": "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/archive/",
+        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/v3.LR.SSP245_ZATM_CONTROL_INI_2015_20261026_n30p2_f09_EC30/",
         "output_files": ["./output/control_spatial_data_elm.nc", "./output/control_spatial_data_eam.nc"],
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [
@@ -12,13 +12,13 @@
             "SMINN_TO_PLANT", "SMINP_TO_PLANT", "SMIN_NO3_LEACHED", "SNOW", "TLAI", "TOTSOMN", "TOTSOMP", "TSOI", "TWS", "XR"],
             ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
         ],
-        "start_years": 2015,
-        "end_years": 2020,
+        "start_years": 2025,
+        "end_years": 2045,
 	    "max_processes": 8
     },
     {
-        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_TER_DEG_FDBK_INI2015_2026091708_n30p2_f09_EC30/run",
-        "output_files": ["./output/case1_spatial_data_elm.nc", "./output/case1_spatial_data_eam.nc"],
+        "simulation_path": "/pscratch/sd/f/feng809/e3sm_scratch/pm-cpu/v3.LR.SSP245_ZATM_TER_FDBK_INI_2015_20261027_n30p2_f09_EC30/",
+        "output_files": ["./output/ter_fdbk_spatial_data_elm.nc", "./output/ter_fdbk_spatial_data_eam.nc"],
         "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
         "variables": [
             ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
@@ -29,8 +29,42 @@
             "SMINN_TO_PLANT", "SMINP_TO_PLANT", "SMIN_NO3_LEACHED", "SNOW", "TLAI", "TOTSOMN", "TOTSOMP", "TSOI", "TWS", "XR"],
             ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
         ],
-        "start_years": 2015,
-        "end_years": 2020,
+        "start_years": 2025,
+        "end_years": 2045,
+	    "max_processes": 8
+    },
+    {
+        "simulation_path": "/pscratch/sd/e/esinha/e3sm_scratch/v3.LR.SSP245_ZATM_TER_DEG_FDBK_INI_2015_20261026_n30p2_f09_EC30/",
+        "output_files": ["./output/ter_deg_fdbk_spatial_data_elm.nc", "./output/ter_deg_fdbk_spatial_data_eam.nc"],
+        "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
+        "variables": [
+            ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
+            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC",
+            "ACTUAL_IMMOB_P", "ACTUAL_IMMOB", "BTRAN", "CH4PROD", "CPOOL", "CWDC", "DEADSTEMC", "DENIT", "EFLX_LH_TOT", "FAREA_BURNED",
+            "FCH4", "FPG_P", "FPG", "FSDS", "FSH", "F_CO2_SOIL", "GROSS_NMIN", "GROSS_PMIN", "LEAFC", "NDEP_TO_SMINN", "NFIX_TO_SMINN",
+            "PLANT_NDEMAND", "PLANT_PDEMAND", "POTENTIAL_IMMOB_P", "POTENTIAL_IMMOB", "QRUNOFF", "QSOIL", "QVEGE", "QVEGT", "RAIN",
+            "SMINN_TO_PLANT", "SMINP_TO_PLANT", "SMIN_NO3_LEACHED", "SNOW", "TLAI", "TOTSOMN", "TOTSOMP", "TSOI", "TWS", "XR"],
+            ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
+        ],
+        "start_years": 2025,
+        "end_years": 2045,
+	    "max_processes": 8
+    },
+    {
+        "simulation_path": "/pscratch/sd/a/avdivitt/e3sm_scratch/v3.LR.SSP245_ZATM_TER_DEG_FDBK_READ_INI_2015_20261029_n30p2_f09_EC30/run",
+        "output_files": ["./output/ter_deg_read_spatial_data_elm.nc", "./output/ter_deg_read_spatial_data_eam.nc"],
+        "netcdf_substrings": [["elm.h0"], ["eam.h0"]],
+        "variables": [
+            ["DWT_CONV_CFLUX_GRC", "ER", "GPP", "HR", "LAND_UPTAKE", "LAND_USE_FLUX", "NBP", "NEE", "NEP", "NPP", "PFT_FIRE_CLOSS", "WOOD_HARVESTC", "WOODC_ALLOC", "WOODC_LOSS", 
+            "PBOT", "PCO2", "QBOT", "TBOT", "TOTECOSYSC", "TOTSOMC", "TOTLITC", "TOTVEGC", "TOTVEGC_ABG", "TSA", "WOODC",
+            "ACTUAL_IMMOB_P", "ACTUAL_IMMOB", "BTRAN", "CH4PROD", "CPOOL", "CWDC", "DEADSTEMC", "DENIT", "EFLX_LH_TOT", "FAREA_BURNED",
+            "FCH4", "FPG_P", "FPG", "FSDS", "FSH", "F_CO2_SOIL", "GROSS_NMIN", "GROSS_PMIN", "LEAFC", "NDEP_TO_SMINN", "NFIX_TO_SMINN",
+            "PLANT_NDEMAND", "PLANT_PDEMAND", "POTENTIAL_IMMOB_P", "POTENTIAL_IMMOB", "QRUNOFF", "QSOIL", "QVEGE", "QVEGT", "RAIN",
+            "SMINN_TO_PLANT", "SMINP_TO_PLANT", "SMIN_NO3_LEACHED", "SNOW", "TLAI", "TOTSOMN", "TOTSOMP", "TSOI", "TWS", "XR"],
+            ["CO2", "PRECC", "PRECL", "PRECSC", "PRECSL", "SFCO2", "SFCO2_FFF", "SFCO2_LND", "SFCO2_OCN", "TMCO2", "TMCO2_FFF", "TMCO2_LND", "TMCO2_OCN", "TREFHT"]
+        ],
+        "start_years": 2025,
+        "end_years": 2045,
 	    "max_processes": 8
     }
 ]

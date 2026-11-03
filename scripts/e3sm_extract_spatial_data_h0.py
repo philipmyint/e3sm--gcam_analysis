@@ -194,7 +194,10 @@ def extract_spatial_data_from_netcdf_files(inputs):
 
     # Collect the NetCDF files (one for each month between the start and end years) in an xarray Dataset and store only the specified variables.
     print(f"Opening {len(netcdf_files)} file(s) with xarray...")
-    ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=True, compat='no_conflicts')[variables]
+    # parallel=False avoids nested parallelism (this call already runs inside one of several
+    # multiprocessing.Pool worker processes), which was causing intermittent netCDF4/HDF5
+    # read errors (e.g. corrupted variable shapes/dimensions) when opening many files at once.
+    ds = xr.open_mfdataset(netcdf_files, decode_times=True, combine='nested', concat_dim='time', data_vars='minimal', parallel=False, compat='no_conflicts')[variables]
 
     # For variables with extra dimensions beyond time/lat/lon/ncol (e.g. levgrnd for TSOI), select index 0 or average before computing annual means.
     # CO2 lev selection is handled later in process_dataset.
