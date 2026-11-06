@@ -92,7 +92,14 @@ gcam_basin_names_and_abbrevations = {
 'Solomon_Islands': 'SolomonIsl', 'Gulf_of_Thailand_Coast': 'ThaiGulf', 'Viet_Nam_Coast': 'VietnamCst', 'Arkansas_White_Red_Basin': 'ArkWhtRedR', 
 'Great_Basin': 'GreatBasin', 'Hawaii': 'Hawaii', 'Upper_Mississippi_Basin': 'MissppRN', 'Lower_Mississippi_River_Basin': 'MissppRS', 
 'Ohio_River_Basin': 'OhioR', 'Tennessee_River_Basin': 'TennR', 'Texas_Gulf_Coast_Basin': 'TexasCst', 'Upper_Colorado_River_Basin': 'UsaColoRN', 
-'Mid_Atlantic_Basin': 'UsaCstE', 'South_Atlantic_Gulf_Basin': 'UsaCstSE'
+'Mid_Atlantic_Basin': 'UsaCstE', 'South_Atlantic_Gulf_Basin': 'UsaCstSE',
+# The reg_glu_boundaries_moirai shape file spells some basins differently than above (likely due to
+# an encoding issue when the shape file was created), so the basin lookup fails and those polygons
+# are plotted as 0. These aliases map the shape file's actual glu_nm spellings to the same
+# abbreviations as their counterparts above: Rfo_Balsas/Rio_Balsas, Rfo_Lerma/Rio_Lerma,
+# Rfo_Verde/Rio_Verde, Rh(ne/Rhone, Brahamani/Brahmani, Mahandi/Mahanadi, Sittang/Sittaung, Yenisey/Yenisei.
+'Rfo_Balsas': 'RioBalsas', 'Rfo_Lerma': 'RioLerma', 'Rfo_Verde': 'RioVerde', 'Rh(ne': 'RhoneR',
+'Brahamani': 'BrahmaniR', 'Mahandi': 'MahanadiR', 'Sittang': 'SittaungR', 'Yenisey': 'YeniseiR'
 }
 
 def modify_crop_names(df, columns, mean_or_sum_if_more_than_one_row_for_crop_name='area_weighted_mean'):
