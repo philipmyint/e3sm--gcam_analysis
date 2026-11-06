@@ -24,7 +24,8 @@
             "units"
         ],
         "aggregate_function": "sum",
-        "call_modify_crop_names": false
+        "call_modify_crop_names": false,
+        "max_processes": 8
     },
     {
         "input_file": "./output/gcam_csv/aggregated_land_allocation.csv",

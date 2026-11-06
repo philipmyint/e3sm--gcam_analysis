@@ -3,14 +3,18 @@
         "variable": "detailed land allocation",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/detailed_land_allocation.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ],
         "xmlFiles": [
-            "/pscratch/sd/d/daleihao/e3sm_scratch/SSP245_ZATM_BGC_ne30pg2_f09_oEC60to30v3_2026041205_v3_24years/run/GCAMDBOutput_E3SM_GCAM_SSP245_51442298.xml",
-            "/pscratch/sd/a/avdivitt/e3sm_scratch/SSP245_ZATM_BGC_TER_DEG_FDBK_INI2015_2026091708_n30p2_f09_EC30/run/GCAMDBOutput_E3SM_GCAM_SSP245_58470821.xml"
+            "/pscratch/sd/a/avdivitt/e3sm_scratch/v3.LR.SSP245_ZATM_CONTROL_INI_2015_20261026_n30p2_f09_EC30/run/GCAMDBOutput_E3SM_GCAM_SSP245_60507137.xml",
+            "/pscratch/sd/f/feng809/e3sm_scratch/pm-cpu/v3.LR.SSP245_ZATM_TER_FDBK_INI_2015_20261027_n30p2_f09_EC30/run/GCAMDBOutput_E3SM_GCAM_SSP245_60538210.xml",
+            "/pscratch/sd/e/esinha/e3sm_scratch/v3.LR.SSP245_ZATM_TER_DEG_FDBK_INI_2015_20261026_n30p2_f09_EC30/run/GCAMDBOutput_E3SM_GCAM_SSP245_60432890.xml",
+            "/pscratch/sd/a/avdivitt/e3sm_scratch/v3.LR.SSP245_ZATM_TER_DEG_FDBK_READ_INI_2015_20261029_n30p2_f09_EC30/run/GCAMDBOutput_E3SM_GCAM_SSP245_60658678.xml"
         ],
         "createProjectFiles": true
     },
@@ -18,310 +22,372 @@
         "variable": "aggregated land allocation",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/aggregated_land_allocation.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "CO2 emissions by subsector",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/co2_emissions_by_subsector.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "CO2 sequestration by tech",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/co2_sequestration_by_tech.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "ag production by subsector (land use region)",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/ag_production_by_subsector.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "ag commodity prices",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/ag_commodity_prices.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "purpose-grown biomass production",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/purpose_grown_biomass_production.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "residue biomass production",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/residue_biomass_production.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "MSW production",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/msw_production.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "regional biomass consumption",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/regional_biomass_consumption.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "meat and dairy prices",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/meat_and_dairy_prices.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "food demand prices",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/food_demand_prices.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "food demand",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/food_demand.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "yield-scaler",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/yield_scaler.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "above-ground-carbon-density",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/above_ground_carbon_density.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "below-ground-carbon-density",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/below_ground_carbon_density.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "CO2 prices",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/co2_prices.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "profit rate",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/profit_rate.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "water withdrawals by tech",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/water_withdrawals_by_tech.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "water consumption by tech",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/water_consumption_by_tech.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "irrigation water withdrawals by crop type and land region",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/irrigation_water_withdrawals_by_crop_type_and_land_region.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "irrigation water consumption by crop type and land region",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/irrigation_water_consumption_by_crop_type_and_land_region.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "biophysical water demand by crop type and land region",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/biophysical_water_demand_by_crop_type_and_land_region.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "fertilizer consumption by ag tech",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/fertilizer_consumption_by_ag_tech.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "total final energy by sector",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/total_final_energy_by_sector.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "final energy consumption by region and sector and fuel",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/final_energy_consumption_by_region_and_sector_and_fuel.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "final energy prices",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/final_energy_prices.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "building final energy by service and fuel",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/building_final_energy_by_service_and_fuel.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "building service costs",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/building_service_costs.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "fuel prices to buildings",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/fuel_prices_to_buildings.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "elec prices by sector",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/elec_prices_by_sector.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     },
     {
         "variable": "elec gen by gen tech and cooling tech",
         "queryFile": "./e3sm_gcam_queries.xml",
         "outputFile": "./output/gcam_csv/elec_gen_by_gen_tech_and_cooling_tech.csv",
-        "scenarios": ["control", "case1"],
+        "scenarios": ["control", "ter_fdbk", "ter_deg_fdbk", "ter_deg_read"],
         "projectFiles": [
             "./output/control.dat",
-            "./output/case1.dat"
+            "./output/ter_fdbk.dat",
+            "./output/ter_deg_fdbk.dat",
+            "./output/ter_deg_read.dat"
         ]
     }
 ]

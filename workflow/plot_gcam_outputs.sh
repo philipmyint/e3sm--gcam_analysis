@@ -126,9 +126,9 @@ PRE_R_PROJ_DATA_WAS_SET="${PROJ_DATA+x}"
 PRE_R_PROJ_DATA="${PROJ_DATA:-}"
 
 # First load the R module and make sure the needed libraries are installed.
-module load R/4.3.3
+module load cray-R/4.4.0
 
-export R_LIBS_USER="${R_LIBS_USER:-${HOME}/R/x86_64-pc-linux-gnu-library/4.3}"
+export R_LIBS_USER="${R_LIBS_USER:-${HOME}/R/x86_64-suse-linux-gnu-library/4.4}"
 mkdir -p "${R_LIBS_USER}"
 echo "Using R user library: ${R_LIBS_USER}"
 
@@ -163,7 +163,7 @@ if (length(missing_packages) > 0 && install_missing) {
 
 if (length(missing_packages) > 0) {
     message("ERROR: missing required R package(s): ", paste(missing_packages, collapse = ", "))
-    message("Install the missing package(s) into the R user library visible to R/4.3.3.")
+    message("Install the missing package(s) into the R user library visible to cray-R/4.4.0.")
     message("This workflow is using R_LIBS_USER=", user_lib)
     message("You can rerun this wrapper with --install-r-packages, or install manually.")
     message("For CRAN packages, for example:")
@@ -226,7 +226,7 @@ fi
 if [[ "${LOAD_ENV}" == true && -z "${E3SM_ENV_SCRIPT}" ]]; then
     case "${MACHINE}" in
         perlmutter)
-            E3SM_ENV_SCRIPT="/global/common/software/e3sm/anaconda_envs/load_e3sm_unified_1.12.0_pm-cpu.sh"
+            E3SM_ENV_SCRIPT="/global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh"
             ;;
         compy)
             E3SM_ENV_SCRIPT="/share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh"
@@ -249,6 +249,9 @@ if [[ "${LOAD_ENV}" == true ]]; then
         echo "ERROR: failed to source E3SM environment loader: ${E3SM_ENV_SCRIPT}" >&2
         echo "Submit from an active E3SM Unified environment or use --env-script PATH / --skip-env-load." >&2
         exit 1
+    else
+        echo "Successfully sourced E3SM environment loader: ${E3SM_ENV_SCRIPT}"
+        echo "Active Python environment: $(command -v python3)"
     fi
 else
     if [[ -n "${PRE_R_PYTHON3}" ]]; then
