@@ -302,11 +302,18 @@ def process_inputs(inputs):
         plot_type_str = _plot_type_abbrevs.get(_raw_plot_type, _raw_plot_type)
 
         raw_scenarios = inputs.get('scenarios', None)
-        # Include scenario name only when there is no comparison (exactly one scenario).
-        if raw_scenarios is None or check_is_list_of_lists(raw_scenarios) or len(list(raw_scenarios)) != 1:
+        # Include the scenario name for a single scenario, or "scenario0_vs_scenario1"
+        # for a two-scenario comparison (percent_difference or absolute_difference).
+        # Ensembles (lists of scenario lists) and comparisons of more than two
+        # scenarios are ambiguous to name this way, so they are left out.
+        if raw_scenarios is None or check_is_list_of_lists(raw_scenarios):
             scen_part = None
-        else:
+        elif len(list(raw_scenarios)) == 1:
             scen_part = str(list(raw_scenarios)[0]).replace(' ', '_')
+        elif len(list(raw_scenarios)) == 2:
+            scen_part = '_vs_'.join(str(s).replace(' ', '_') for s in raw_scenarios)
+        else:
+            scen_part = None
 
         plot_years_val = inputs.get('plot_years', default_inputs['plot_years'])
         if plot_years_val is None:

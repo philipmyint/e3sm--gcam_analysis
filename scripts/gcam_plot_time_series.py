@@ -358,8 +358,65 @@ def process_inputs(inputs):
         inputs['y_label'] = output_file_name
     inputs['y_label'] = inputs['y_label'].replace('_processed', '')
     output_file_name_clean = output_file_name.replace('_processed', '')
+
+    # Scenario identity is encoded via linestyle whenever there is more than one
+    # plotted scenario curve per category/region: either 2+ plain scenarios, or
+    # more than 2 scenarios in a percent-difference plot (which draws one
+    # difference line per non-reference scenario). This matches the linestyle
+    # condition in the plotting loop below. In that situation there is no
+    # visual channel left to also distinguish multiple regions (they would
+    # render identically), so require a single region.
+    raw_scenarios = inputs.get('scenarios', None)
+    num_scenarios = None if (raw_scenarios is None or check_is_list_of_lists(raw_scenarios)) else len(list(raw_scenarios))
+    plot_pct_diff = inputs.get('plot_percent_difference', default_inputs['plot_percent_difference'])
+    # A percent-difference plot needs at least one reference scenario (index 0)
+    # plus at least one other scenario to diff against it; with fewer than 2
+    # scenarios there is nothing to compare, and the plot would silently end up
+    # empty (see the "scenario_index != 0" skip below).
+    if plot_pct_diff and num_scenarios is not None and num_scenarios < 2:
+        raise ValueError(
+            f"Error: plot_percent_difference is True but only {num_scenarios} scenario(s) were "
+            f"specified for '{inputs['output_file']}'. A percent-difference plot needs at least "
+            f"2 scenarios (the first is used as the reference)."
+        )
+    scenario_linestyle_conflict = num_scenarios is not None and (
+        (num_scenarios > 1 and not plot_pct_diff) or (num_scenarios > 2 and plot_pct_diff)
+    )
+    raw_regions = inputs.get('regions', None)
+    region_list = list(raw_regions) if (raw_regions is not None and not isinstance(raw_regions, dict)) else None
+    if (scenario_linestyle_conflict and region_list is not None and len(region_list) > 1):
+        raise ValueError(
+            f"Error: {len(region_list)} regions were specified ({region_list}) together with "
+            f"{num_scenarios} scenarios ({'percent-difference' if plot_pct_diff else 'non-percent-difference'}) "
+            f"in a time series plot for '{inputs['output_file']}'. Scenario comparisons in this "
+            f"configuration use linestyle to distinguish scenarios, leaving no way to also "
+            f"distinguish regions. Specify a single region for this block, or split it into one "
+            f"block per region."
+        )
+    region_part = str(region_list[0]).replace(' ', '_') if (region_list is not None and len(region_list) == 1) else None
+
     if 'plot_name' not in inputs:
-        inputs['plot_name'] = os.path.join(inputs['plot_directory'], 'time_series_' + output_file_name_clean)
+        # Include the scenario name for a single scenario, or "scenario0_vs_scenario1"
+        # for a two-scenario comparison (e.g., percent_difference). Ensembles (lists
+        # of scenario lists) and comparisons of more than two scenarios are
+        # ambiguous to name this way, so they are left out.
+        if raw_scenarios is None or check_is_list_of_lists(raw_scenarios):
+            scen_part = None
+        elif len(list(raw_scenarios)) == 1:
+            scen_part = str(list(raw_scenarios)[0]).replace(' ', '_')
+        elif len(list(raw_scenarios)) == 2:
+            scen_part = '_vs_'.join(str(s).replace(' ', '_') for s in raw_scenarios)
+        else:
+            scen_part = None
+
+        name_parts = ['time_series', output_file_name_clean]
+        if scen_part:
+            name_parts.append(scen_part)
+        if plot_pct_diff:
+            name_parts.append('pct_diff')
+        if region_part:
+            name_parts.append(region_part)
+        inputs['plot_name'] = os.path.join(inputs['plot_directory'], '_'.join(name_parts))
     elif 'plot_name' in inputs and '/' not in inputs['plot_name']:
         # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
         inputs['plot_name'] = os.path.join(inputs['plot_directory'], inputs['plot_name'].replace('_processed', ''))
@@ -645,7 +702,12 @@ def plot_time_series(inputs):
                     # Scenarios take priority for linestyle. If there is only
                     # one plotted scenario, use linestyle for the second
                     # category column or, in the single-column case, for region.
-                    if num_scenarios > 1 and not plot_percent_difference:
+                    # A percent-difference plot with more than 2 scenarios draws
+                    # one difference line per non-reference scenario, so those
+                    # also need scenario-based linestyle to stay distinguishable
+                    # (with exactly 2 scenarios only one difference line is drawn,
+                    # so no extra encoding is needed there).
+                    if (num_scenarios > 1 and not plot_percent_difference) or (num_scenarios > 2 and plot_percent_difference):
                         linestyle = linestyle_tuples[scenario_index % len(linestyle_tuples)][1]
                     elif col_unique_values and len(col_unique_values) >= 2:
                         linestyle = linestyle_tuples[col_unique_values[1].index(category[1]) % len(linestyle_tuples)][1]

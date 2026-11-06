@@ -259,6 +259,29 @@ def process_inputs(inputs):
     output_file_name = output_file_name.replace('_processed', '').replace('processed_', '')
     if 'y_label' not in inputs:
         inputs['y_label'] = output_file_name
+    # A percent-difference box-and-whiskers plot compares exactly one reference
+    # scenario (index 0) against exactly one other scenario; this script does not
+    # support the N-scenario-vs-reference layout the way the underlying
+    # _calculate_percent_difference helper technically could, so enforce it here.
+    plot_pct_diff = inputs.get('plot_percent_difference', False)
+    scenarios_for_check = inputs.get('scenarios', None)
+    if plot_pct_diff and scenarios_for_check is not None:
+        if check_is_list_of_lists(scenarios_for_check):
+            scenario_sets_for_check = inputs.get('scenario_sets', None)
+            num_scenario_sets = len(scenario_sets_for_check) if scenario_sets_for_check else len(scenarios_for_check[0])
+            if num_scenario_sets != 2:
+                raise ValueError(
+                    f"Error: plot_percent_difference is True but {num_scenario_sets} scenario set(s) "
+                    f"were specified for '{inputs['output_file']}'. A percent-difference plot needs "
+                    f"exactly 2 scenario sets (the first is used as the reference)."
+                )
+        elif len(scenarios_for_check) != 2:
+            raise ValueError(
+                f"Error: plot_percent_difference is True but {len(scenarios_for_check)} scenario(s) "
+                f"were specified for '{inputs['output_file']}'. A percent-difference plot needs "
+                f"exactly 2 scenarios (the first is used as the reference)."
+            )
+
     if 'plot_name' not in inputs:
         scenarios = inputs.get('scenarios', None)
         scenario_sets = inputs.get('scenario_sets', None)
@@ -268,14 +291,17 @@ def process_inputs(inputs):
             num_scenario_sets = len(scenario_sets) if scenario_sets else len(scenarios[0])
             if num_scenario_sets == 1:
                 scenario_part = str(scenario_sets[0] if scenario_sets else 'set0').replace(' ', '_')
-            elif inputs.get('plot_percent_difference', False):
-                scenario_part = 'pct_diff'
+            elif plot_pct_diff:
+                # Validated above to be exactly 2 scenario sets.
+                set_names = scenario_sets if scenario_sets else ['set0', 'set1']
+                scenario_part = '_vs_'.join(str(s).replace(' ', '_') for s in set_names) + '_pct_diff'
             else:
                 scenario_part = 'comparison'
         elif len(scenarios) == 1:
             scenario_part = str(scenarios[0]).replace(' ', '_')
-        elif inputs.get('plot_percent_difference', False):
-            scenario_part = 'pct_diff'
+        elif plot_pct_diff:
+            # Validated above to be exactly 2 scenarios.
+            scenario_part = '_vs_'.join(str(s).replace(' ', '_') for s in scenarios) + '_pct_diff'
         else:
             scenario_part = 'comparison'
 
@@ -292,6 +318,7 @@ def process_inputs(inputs):
     elif 'plot_name' in inputs and '/' not in inputs['plot_name']:
         # If the user specified only a file name (no path) for the plot name, put the plot in the plot directory.
         inputs['plot_name'] = os.path.join(inputs['plot_directory'], inputs['plot_name'])
+
 
     # Add keys for plotting options that have not been specified in the inputs dictionary and use default values for them.
     for key in default_inputs.keys():
